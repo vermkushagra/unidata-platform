@@ -56,6 +56,11 @@ import org.unidata.mdm.data.dto.TimelineDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
 import org.unidata.mdm.data.dto.UpsertRelationDTO;
 import org.unidata.mdm.data.dto.UpsertRelationsDTO;
+import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
+import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
+import org.unidata.mdm.data.service.segments.RecordGetFinishExecutor;
+import org.unidata.mdm.data.service.segments.RecordGetSecurityExecutor;
+import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertFinishExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertIndexingExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertLobSubmitExecutor;
@@ -167,20 +172,13 @@ public class DataRecordsServiceImpl implements DataRecordsService {
      */
     @Override
     public GetRecordDTO getRecord(GetRequestContext ctx) {
-        // TODO: @Modules
-//        try {
-//            GetRecordDTO result = recordsComponent.loadRecord(ctx);
-//            if (AuditLevel.AUDIT_SUCCESS <= ctx.getAuditLevel()) {
-//                auditEventsWriter.writeSuccessEvent(AuditActions.DATA_GET, ctx);
-//            }
-//            return result;
-//        } catch (Exception e) {
-//            if (AuditLevel.AUDIT_ERRORS <= ctx.getAuditLevel()) {
-//                auditEventsWriter.writeUnsuccessfulEvent(AuditActions.DATA_GET, e, ctx);
-//            }
-//            throw e;
-//        }
-        return null;
+        Pipeline p = Pipeline.start(pipelineService.start(RecordGetStartExecutor.SEGMENT_ID))
+                .with(pipelineService.point(RecordGetSecurityExecutor.SEGMENT_ID))
+                .with(pipelineService.point(RecordGetDiffExecutor.SEGMENT_ID))
+                .with(pipelineService.point(RecordGetAttributesPostProcessingExecutor.SEGMENT_ID))
+                .end(pipelineService.finish(RecordGetFinishExecutor.SEGMENT_ID));
+
+        return executionService.execute(p, ctx);
     }
 
     /**
