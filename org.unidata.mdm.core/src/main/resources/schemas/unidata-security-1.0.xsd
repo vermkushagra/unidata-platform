@@ -1,0 +1,243 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:security="http://security.mdm.unidata.com/"
+           targetNamespace="http://security.mdm.unidata.com/"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+           jaxb:version="2.1"
+           jaxb:extensionBindingPrefixes="xjc">
+
+    <xs:complexType name="UserDef">
+        <xs:annotation>
+            <xs:documentation>Пользователь</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="login" type="xs:string"/>
+            <xs:element name="email" type="xs:string"/>
+            <xs:element name="firstName" type="xs:string" minOccurs="0"/>
+            <xs:element name="lastName" type="xs:string" minOccurs="0"/>
+            <xs:element name="notes" type="xs:string" minOccurs="0"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string" minOccurs="0"/>
+            <xs:element name="active" type="xs:boolean"/>
+            <xs:element name="admin" type="xs:boolean"/>
+            <xs:element name="source" type="xs:string"/>
+            <xs:element name="external" type="xs:boolean"/>
+            <xs:element name="locale" type="xs:string"/>
+            <xs:element name="passwords" type="security:UserPasswordDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="propertiesValues" type="security:PropertyValueDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="roles" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="labels" type="security:LabelDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="apis" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="emailNotification" type="xs:boolean"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="UserPasswordDef">
+        <xs:annotation>
+            <xs:documentation>Пароль пользователя</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="passwordText" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string" minOccurs="0"/>
+            <xs:element name="active" type="xs:boolean"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="UserPropertyDef">
+        <xs:annotation>
+            <xs:documentation>Свойство пользователя</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="required" type="xs:boolean"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="RoleDef">
+        <xs:annotation>
+            <xs:documentation>Роль</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="rType" type="xs:string"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+            <xs:element name="propertiesValues" type="security:PropertyValueDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="roleLabels" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="labels" type="security:LabelDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="rightsToResources" type="security:RightToResourceDef" minOccurs="0"
+                        maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="RolePropertyDef">
+        <xs:annotation>
+            <xs:documentation>Свойство роли</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="required" type="xs:boolean"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="PropertyValueDef">
+        <xs:annotation>
+            <xs:documentation>Значение свойства роли</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="propertyName" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="LabelDef">
+        <xs:annotation>
+            <xs:documentation>Метка безопасности</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+            <xs:element name="attributes" type="security:LabelAttributeDef" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long"/>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="LabelAttributeDef">
+        <xs:annotation>
+            <xs:documentation>Метка безопасности</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+            <xs:element name="path" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:long"/>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+
+    <!--<xs:complexType name="ApiDef">-->
+    <!--<xs:annotation>-->
+    <!--<xs:documentation>Api</xs:documentation>-->
+    <!--</xs:annotation>-->
+    <!--<xs:sequence>-->
+    <!--<xs:element name="name" type="xs:string"/>-->
+    <!--<xs:element name="displayName" type="xs:string"/>-->
+    <!--<xs:element name="description" type="xs:string"/>-->
+    <!--<xs:element name="createdBy" type="xs:string"/>-->
+    <!--<xs:element name="updatedBy" type="xs:string"/>-->
+    <!--</xs:sequence>-->
+    <!--<xs:attribute name="createdAt" type="xs:dateTime"/>-->
+    <!--<xs:attribute name="updatedAt" type="xs:dateTime"/>-->
+    <!--</xs:complexType>-->
+
+    <xs:complexType name="CustomStorageDef">
+        <xs:annotation>
+            <xs:documentation>Custom storage</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="key" type="xs:string"/>
+            <xs:element name="userName" type="xs:string"/>
+            <xs:element name="value" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="updatedDate" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <!-- xs:complexType name="ResourceDef">
+        <xs:annotation>
+            <xs:documentation>Custom storage</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="displayName" type="xs:string"/>
+            <xs:element name="rType" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+            <xs:element name="childrenResources" type="security:ResourceDef" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType -->
+
+    <xs:complexType name="RightDef">
+        <xs:annotation>
+            <xs:documentation>Custom storage</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="description" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="RightToResourceDef">
+        <xs:annotation>
+            <xs:documentation>Права на ресурсы</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="resource" type="xs:string"/>
+            <xs:element name="right" type="xs:string"/>
+            <xs:element name="createdBy" type="xs:string"/>
+            <xs:element name="updatedBy" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="createdAt" type="xs:dateTime"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:element name="security">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>Элементы безопасности</xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="users" type="security:UserDef" minOccurs="0" maxOccurs="unbounded"/>
+                <!--<xs:element name="api" type="security:ApiDef" minOccurs="0" maxOccurs="unbounded"/>-->
+                <xs:element name="userProperties" type="security:UserPropertyDef" minOccurs="0" maxOccurs="unbounded"/>
+
+                <xs:element name="roles" type="security:RoleDef" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="roleProperties" type="security:RolePropertyDef" minOccurs="0" maxOccurs="unbounded"/>
+                <!--<xs:element name="resources" type="security:ResourceDef" minOccurs="0" maxOccurs="unbounded"/>-->
+                <xs:element name="labels" type="security:LabelDef" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+</xs:schema>

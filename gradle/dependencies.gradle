@@ -1,0 +1,51 @@
+dependencies {
+    implementation platform('org.springframework:spring-framework-bom:5.2.1.RELEASE')
+    implementation platform('org.springframework.security:spring-security-bom:5.2.1.RELEASE')
+    implementation platform('org.springframework.integration:spring-integration-bom:5.2.1.RELEASE')
+
+    implementation platform('io.projectreactor:reactor-bom:Dysprosium-SR1')
+
+    implementation platform('io.dropwizard.metrics5:metrics-bom:5.0.0')
+
+    implementation platform('org.junit:junit-bom:5.5.1')
+}
+
+dependencyManagement {
+    dependencies {
+        dependencySet(group: 'org.springframework.batch', version: '4.2.0.RELEASE') {
+            entry 'spring-batch-core'
+            entry 'spring-batch-infrastructure'
+            entry 'spring-batch-integration'
+        }
+
+        dependencySet(group: 'org.apache.poi', version: '3.17') {
+            entry 'poi'
+            entry 'poi-ooxml'
+            entry 'poi-ooxml-schemas'
+        }
+
+        dependencySet(group: 'com.hazelcast', version: '3.12') {
+            entry 'hazelcast'
+            entry 'hazelcast-spring'
+        }
+
+        dependencySet(group: 'org.glassfish.jaxb', version: '2.2.11') {
+            entry 'jaxb-xjc'
+            entry 'jaxb-core'
+            entry 'jaxb-runtime'
+            entry 'txwc2'
+        }
+
+        dependencySet(group: 'com.sun.xml.bind', version: '2.2.11') {
+            entry 'jaxb-xjc'
+            entry 'jaxb-core'
+            entry 'jaxb-impl'
+        }
+
+        dependencySet(group: 'io.prometheus', version: '0.8.0') {
+            entry 'simpleclient_servlet'
+            entry 'simpleclient_dropwizard'
+            entry 'simpleclient_hotspot'
+        }
+    }
+}

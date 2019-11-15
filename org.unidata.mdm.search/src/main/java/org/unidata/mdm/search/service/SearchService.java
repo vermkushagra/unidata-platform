@@ -1,0 +1,167 @@
+package org.unidata.mdm.search.service;
+
+import java.util.Collection;
+import java.util.Map;
+
+import org.unidata.mdm.search.context.ComplexSearchRequestContext;
+import org.unidata.mdm.search.context.IndexRequestContext;
+import org.unidata.mdm.search.context.MappingRequestContext;
+import org.unidata.mdm.search.context.SearchRequestContext;
+import org.unidata.mdm.search.context.TypedSearchContext;
+import org.unidata.mdm.search.dto.SearchResultDTO;
+
+public interface SearchService {
+    // From search component
+    /**
+     * Returns number of all existing records for an entity.
+     *
+     * @param type the name of the type
+     * @return count
+     */
+    long countAll(SearchRequestContext ctx);
+    /**
+     * Delete using DBQ.
+     *
+     * @param ctx the context
+     * @return true, if successful, false otherwise (some failed shards returned)
+     */
+    boolean deleteAll(SearchRequestContext ctx);
+    /**
+     * Delete using DBQ.
+     *
+     * @param ctx the context
+     * @param refresh forcibly refresh index
+     * @return true, if successful, false otherwise
+     */
+    boolean deleteAll(SearchRequestContext ctx, boolean refresh);
+    /**
+     * Result of search will be deleted.
+     * Notice : post filters, facets, roles won't be applied
+     *
+     * @param requestForDelete - search request
+     * @return true, if successful, false otherwise
+     */
+    boolean deleteFoundResult(SearchRequestContext requestForDelete);
+
+    /**
+     * Result of search will be deleted.
+     * Notice : post filters, facets, roles won't be applied
+     *
+     * @param requestForDelete - search request
+     * @return true, if successful, false otherwise
+     */
+    boolean deleteFoundResult(SearchRequestContext requestForDelete, boolean refreshImmediate);
+
+    /**
+     * Result of search will be deleted.
+     * Notice : post filters, facets, roles won't be applied
+     *
+     * @param requestForDelete - search request
+     * @return true, if successful, false otherwise
+     */
+    boolean deleteFoundResult(ComplexSearchRequestContext requestForDelete);
+    /**
+     * Complex Search. Supported two types:
+     *  - HIERARCHICAL: linked types search
+     *  - MULTI: multi index search
+     *
+     * @param searchRequest - search request
+     * @return map where keys is a main request in related request or each request in multi.
+     */
+    Map<SearchRequestContext, SearchResultDTO> search(ComplexSearchRequestContext searchRequest);
+    /**
+     * Search method, taking parameters from the context.
+     *
+     * @param ctx the search context
+     * @return search results
+     */
+    SearchResultDTO search(SearchRequestContext ctx);
+    // From mapping component
+    /**
+     * Does process a mapping request.
+     *
+     * @param ctx the request
+     * @return true, if successful, false otherwise
+     */
+    boolean process(MappingRequestContext ctx);
+    /**
+     * Attempts to drop an index, identified by the supplied context.
+     *
+     * @param ctx the context
+     * @return true if succesful
+     */
+    boolean dropIndex(TypedSearchContext ctx);
+    /**
+     * Checks existence of an index, identified by the supplied context.
+     *
+     * @param ctx the context
+     * @return true, if exists
+     */
+    boolean indexExists(TypedSearchContext ctx);
+    /**
+     * Attempts to refresh an index, identified by the supplied context.
+     *
+     * @param ctx the context
+     * @param wait wait for completion or not
+     * @return true if succesful
+     */
+    boolean refreshIndex(TypedSearchContext ctx, boolean wait);
+    /**
+     * Attempts to close an index, identified by the supplied context.
+     *
+     * @param ctx the context
+     * @return true if succesful
+     */
+    boolean closeIndex(TypedSearchContext ctx);
+    /**
+     * Attempts to open an index, identified by the supplied context.
+     *
+     * @param ctx the context
+     * @return true if succesful
+     */
+    boolean openIndex(TypedSearchContext ctx);
+    /**
+     * Attempts to set index settings.
+     *
+     * @param ctx the context
+     * @param settings the setting to set (direct ES format)
+     * @return true if succesful
+     */
+    boolean setIndexSettings(TypedSearchContext ctx, Map<String, Object> settings);
+    /**
+     * Attempts to set cluster wide settings.
+     *
+     * @param settings the settings to set (direct ES format)
+     * @param persistent set the settings persistently or not
+     * @return true if succesful
+     */
+    boolean setClusterSettings(Map<String, Object> settings, boolean persistent);
+    // From index component
+    /**
+     * Does indexing processing.
+     * @param ctx the context to process
+     * @return true, if successful, false otherwise
+     */
+    void process(IndexRequestContext ctx);
+    /**
+     * Does indexing processing.
+     * @param ctxs the contexts to process
+     * @return true, if successful, false otherwise
+     */
+    void process(Collection<IndexRequestContext> ctxs);
+    /**
+     * Does indexing processing.
+     * @param ctxs the contexts to process
+     * @return true, if successful, false otherwise
+     */
+    void process(Collection<IndexRequestContext> ctxs, boolean refresh);
+    // Settings
+    /**
+     * @return the numberOfShardsForSystem
+     */
+    String getNumberOfShardsForSystem();
+    /**
+     * @return the numberOfReplicasForSystem
+     */
+    String getNumberOfReplicasForSystem();
+}

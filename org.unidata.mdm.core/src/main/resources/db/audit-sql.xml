@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="insertAuditEvent">
+        <![CDATA[
+            insert into audit_events (create_date, created_by, operation_id, details, action)
+            values (?, ?, ?, ?, ?)
+        ]]>
+    </entry>
+    <entry key="deleteOldAuditEvents">
+        <![CDATA[
+            delete from audit_events
+            where create_date < ?
+        ]]>
+    </entry>
+</properties>

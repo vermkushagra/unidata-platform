@@ -1,0 +1,9 @@
+package org.unidata.mdm.core.po;
+
+/**
+ * @author Mikhail Mikhailov
+ * Marker interface for PO objects.
+ */
+public interface ObjectPO {
+
+}

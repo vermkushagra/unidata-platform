@@ -1,0 +1,49 @@
+package org.unidata.mdm.core.type.data.extended;
+
+import org.unidata.mdm.core.type.data.BinaryLargeValue;
+import org.unidata.mdm.core.type.data.impl.BlobSimpleAttributeImpl;
+
+/**
+ * @author Dmitry Kopin
+ * Extended Blob attribute.
+ */
+public class ExtendedBlobSimpleAttributeImpl extends BlobSimpleAttributeImpl
+        implements WinnerInformationSimpleAttribute<BinaryLargeValue> {
+
+    /**
+     * Winner source system
+     */
+    private final String winnerSourceSystem;
+    /**
+     * Winner external id
+     */
+    private final String winnerExternalId;
+    /**
+     * Constructor.
+     */
+    public ExtendedBlobSimpleAttributeImpl(String name, BinaryLargeValue value, String sourceSystem, String externalId) {
+        super(name, value);
+        this.winnerSourceSystem = sourceSystem;
+        this.winnerExternalId = externalId;
+    }
+
+    @Override
+    public String getWinnerSourceSystem(){
+        return winnerSourceSystem;
+    }
+
+    @Override
+    public String getWinnerExternalId(){
+        return winnerExternalId;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+}

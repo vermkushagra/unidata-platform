@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="CHECK_USER_EXISTS_SQL">
+        <![CDATA[
+        select count(*) as result
+        from s_user
+        where login = ?
+        ]]>
+    </entry>
+    <entry key="INSERT_ROLE_RESOURCE_RIGHT_LINK_SQL">
+        <![CDATA[
+        insert into s_right_s_resource(s_role_id, s_resource_id, s_right_id, created_by, created_at)
+        values (?, ?, ?, ?, current_timestamp)
+        ]]>
+    </entry>
+    <entry key="UPDATE_ROLE_RESOURCE_RIGHT_LINK_SQL">
+        <![CDATA[
+        update s_right_s_resource
+        set updated_by= ?,
+            updated_at = current_timestamp
+        where id = ?
+        ]]>
+    </entry>
+    <entry key="DELETE_BY_ROLE_RESOURCE_RIGHT_LINK_SQL">
+        <![CDATA[
+        delete
+        from s_right_s_resource
+        where s_role_id = ?
+          and s_resource_id = ?
+          and s_right_id = ?
+        ]]>
+    </entry>
+    <entry key="LOAD_ALL_RESOURCES_SQL">
+        <![CDATA[
+        with recursive resources (id, parent_id, name, display_name, r_type, category, created_at, updated_at,
+                                  created_by, updated_by) as (
+            select r.id,
+                   r.parent_id,
+                   r.name,
+                   r.display_name,
+                   r.r_type,
+                   r.category,
+                   r.created_at,
+                   r.updated_at,
+                   r.created_by,
+                   r.updated_by
+            from s_resource r
+            where r.parent_id is null
+            union
+            select r.id,
+                   r.parent_id,
+                   r.name,
+                   r.display_name,
+                   r.r_type,
+                   r.category,
+                   r.created_at,
+                   r.updated_at,
+                   r.created_by,
+                   r.updated_by
+            from s_resource r,
+                 resources
+            where r.parent_id = resources.id)
+
+        select r.id,
+               r.parent_id,
+               r.name,
+               r.display_name,
+               r.r_type,
+               r.category,
+               r.created_at,
+               r.updated_at,
+               r.created_by,
+               r.updated_by
+        from resources r
+        order by r.name;
+        ]]>
+    </entry>
+    <entry key="INSERT_RESOURCE_SQL">
+        <![CDATA[
+        insert into s_resource(name, display_name, r_type, category, created_by, parent_id)
+        select ?, ?, ?, ?, ?, (select id from s_resource where name = coalesce(?, ''))
+        ]]>
+    </entry>
+    <entry key="DROP_ALL_NON_SYSTEM_RESOURCES_SQL">
+        <![CDATA[
+        delete
+        from s_resource
+        where r_type <> 'SYSTEM'
+        ]]>
+    </entry>
+    <entry key="DELETE_RESOURCES_BY_CATEGORY_SQL">
+        <![CDATA[
+        delete
+        from s_resource
+        where category = ?
+        ]]>
+    </entry>
+    <entry key="UPDATE_RESOURCE_DISPLAY_NAME_SQL">
+        <![CDATA[
+        update s_resource
+        set display_name = :display_name,
+            updated_at   = :updated_at,
+            updated_by   = :updated_by
+        where name = :name
+        ]]>
+    </entry>
+    <entry key="LOAD_USER_EVENTS_BY_LOGIN_AND_DATE_SQL">
+        <![CDATA[
+        select e.id::text,
+               e.user_id,
+               e.type,
+               e.content,
+               e.details,
+               (select b.id from binary_data b where b.event_id = e.id)    as binary_data_id,
+               (select c.id from character_data c where c.event_id = e.id) as character_data_id,
+               e.create_date,
+               e.created_by,
+               e.update_date,
+               e.updated_by
+        from user_event e,
+             s_user u
+        where e.user_id = u.id
+          and u.login = ?
+          and not (e.create_date < coalesce(?, e.create_date))
+        order by e.create_date desc
+        ]]>
+    </entry>
+    <entry key="LOAD_USER_EVENTS_BY_LOGIN_LIMIT_OFFSET_AND_DATE_SQL">
+        <![CDATA[
+        select e.id::text,
+               e.user_id,
+               e.type,
+               e.content,
+               e.details,
+               (select b.id::text from binary_data b where b.event_id = e.id)    as binary_data_id,
+               (select c.id::text from character_data c where c.event_id = e.id) as character_data_id,
+               e.create_date,
+               e.created_by,
+               e.update_date,
+               e.updated_by
+        from user_event e,
+             s_user u
+        where e.user_id = u.id
+          and u.login = ?
+          and not (e.create_date < coalesce(?, e.create_date))
+        order by e.create_date asc
+            offset ?
+        limit ?
+        ]]>
+    </entry>
+    <entry key="DELETE_EVENT_BY_EVENT_ID_SQL">
+        <![CDATA[
+        delete
+        from user_event
+        where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="DELETE_EVENTS_BY_EVENT_IDS_SQL">
+        <![CDATA[
+        delete
+        from user_event
+        where id in (:id)
+        ]]>
+    </entry>
+    <entry key="COUNT_EVENT_BY_LOGIN">
+        <![CDATA[
+        select count(user_event.id)
+        from user_event,
+             s_user
+        where s_user.login = ?
+          and user_event.user_id = s_user.id
+        ]]>
+    </entry>
+    <entry key="DELETE_EVENTS_BY_LOGIN_AND_DATE_SQL">
+        <![CDATA[
+        delete
+        from user_event using s_user u
+        where u.login = ?
+          and user_event.user_id = u.id
+          and user_event.create_date <= coalesce(?, user_event.create_date)
+        ]]>
+    </entry>
+    <entry key="PUT_USER_EVENT_BY_LOGIN_SQL">
+        <![CDATA[
+        insert into user_event(id, user_id, type, content, details, created_by)
+        select ?::uuid, (select id from s_user where login = ?), ?, ?, ?, ?
+        ]]>
+    </entry>
+    <entry key="PUT_USER_EVENT_SQL">
+        <![CDATA[
+        insert into user_event(id, user_id, type, content, details, created_by)
+        select ?::uuid, ?, ?, ?, ?, ?
+        ]]>
+    </entry>
+    <entry key="LOAD_ROLES_RESOURCES_AND_RIGHTS_BY_USER_LOGIN_SQL">
+        <![CDATA[
+        (SELECT r.id             AS role_id,
+                r.name           AS role_name,
+                r.r_type         AS role_type,
+                r.display_name   AS role_display_name,
+                r.description    AS role_description,
+
+                rr.id            AS resource_right_id,
+
+                res.id           AS resource_id,
+                res.name         AS resource_name,
+                res.display_name AS resource_display_name,
+                res.r_type       AS resource_type,
+                res.category     AS resource_category,
+
+                ri.id            AS right_id,
+                ri.name          AS right_name,
+                ri.description   AS right_description
+         FROM s_role r,
+              s_user_s_role ur,
+              s_resource res,
+              s_right ri,
+              s_right_s_resource rr
+         WHERE ur.s_users_id = (SELECT id FROM s_user WHERE login = ?)
+           AND ur.s_roles_id = r.id
+           AND rr.s_role_id = r.id
+           AND rr.s_resource_id = res.id
+           AND rr.s_right_id = ri.id)
+        UNION ALL
+        (SELECT r.id           AS role_id,
+                r.name         AS role_name,
+                r.r_type       AS role_type,
+                r.display_name AS role_display_name,
+                r.description  AS role_description,
+
+                NULL           AS resource_right_id,
+
+                NULL           AS resource_id,
+                NULL           AS resource_name,
+                NULL           AS resource_display_name,
+                NULL           AS resource_type,
+                NULL           AS resource_category,
+
+                NULL           AS right_id,
+                NULL           AS right_name,
+                NULL           AS right_description
+         FROM s_role r,
+              s_user_s_role ur
+         WHERE ur.s_users_id = (SELECT id FROM s_user WHERE login = ?)
+           AND ur.s_roles_id = r.id)
+        ]]>
+    </entry>
+    <!-- TODO implemant same as above -->
+    <entry key="LOAD_ROLES_RESOURCES_AND_RIGHTS_BY_ROLE_NAME_SQL">
+        <![CDATA[
+        select sre.id,
+               sre.name,
+               sre.r_type,
+               sre.category,
+               sre.display_name,
+               srr.id as link_id,
+               sr.*
+        from s_right sr
+                 inner join s_right_s_resource srr on sr.id = srr.s_right_id
+                 inner join s_resource sre on srr.s_resource_id = sre.id
+        where srr.s_role_id = ?;
+        ]]>
+    </entry>
+    <entry key="LOAD_ALL_ROLE_PROPERTIES">
+        <![CDATA[
+        select rp.id,
+               rp.required,
+               rp.name,
+               rp.display_name
+        from s_role_property rp
+        ]]>
+    </entry>
+    <entry key="LOAD_ROLE_PROPERTY_BY_NAME">
+        <![CDATA[
+        select rp.id,
+               rp.required,
+               rp.name,
+               rp.display_name
+        from s_role_property rp
+        where name = :name
+        ]]>
+    </entry>
+    <entry key="LOAD_ROLE_PROPERTY_BY_DISPLAY_NAME">
+        <![CDATA[
+        select rp.id,
+               rp.required,
+               rp.name,
+               rp.display_name
+        from s_role_property rp
+        where display_name = :display_name
+        ]]>
+    </entry>
+    <entry key="INSERT_ROLE_PROPERTY">
+        <![CDATA[
+        INSERT INTO s_role_property (name,
+                                     required,
+                                     display_name,
+                                     created_at,
+                                     updated_at,
+                                     created_by,
+                                     updated_by)
+        VALUES (:name,
+                :required,
+                :display_name,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by)
+        ]]>
+    </entry>
+    <entry key="UPDATE_ROLE_PROPERTY_BY_ID">
+        <![CDATA[
+        update s_role_property
+        set name         = :name,
+            required     = :required,
+            display_name = :display_name,
+            updated_at   = :updated_at,
+            updated_by   = :updated_by
+        where id = :id
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLE_PROPERTY_VALUES_BY_ROLE_PROPERTY_ID">
+        <![CDATA[
+        delete
+        from s_role_property_value
+        where property_id = :rolePropertyId
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLE_PROPERTY_BY_ID">
+        <![CDATA[
+        delete
+        from s_role_property
+        where id = :rolePropertyId
+        ]]>
+    </entry>
+
+    <entry key="INSERT_ROLE_PROPERTY_VALUE">
+        <![CDATA[
+        INSERT INTO s_role_property_value (id,
+                                           role_id,
+                                           property_id,
+                                           value,
+                                           created_at,
+                                           updated_at,
+                                           created_by,
+                                           updated_by)
+        VALUES (:id,
+                :role_id,
+                :property_id,
+                :value,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by)
+        ]]>
+    </entry>
+    <entry key="UPDATE_ROLE_PROPERTY_VALUE_BY_ID">
+        <![CDATA[
+        update s_role_property_value
+        set value      = :value,
+            updated_at = :updated_at,
+            updated_by = :updated_by
+        where id = :id
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLE_PROPERTY_VALUES_BY_IDS">
+        <![CDATA[
+        delete from s_role_property_value where id in (:listId)
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLE_PROPERTY_VALUES_BY_ROLE_ID">
+        <![CDATA[
+        delete
+        from s_role_property_value
+        where role_id = :roleId
+        ]]>
+    </entry>
+    <entry key="LOAD_ROLE_PROPERTY_VALUES_BY_ROLE_IDS">
+        <![CDATA[
+        select (select v.id
+                from s_role_property_value v
+                where s.role_id = v.role_id
+                  and s.property_id = v.property_id) as id,
+               (select v.value
+                from s_role_property_value v
+                where s.role_id = v.role_id
+                  and s.property_id = v.property_id) as value,
+               s.role_id,
+               s.property_id,
+               s.name,
+               s.display_name
+        from (select r.id as role_id,
+                     p.id as property_id,
+                     p.name,
+                     p.display_name
+              from s_role r,
+                   s_role_property p
+              where r.id in (:listId)) s
+        ]]>
+    </entry>
+    <entry key="LOAD_ALL_USER_PROPERTIES">
+        <![CDATA[
+        select id,
+               required,
+               name,
+               display_name
+        from s_user_property
+        ]]>
+    </entry>
+    <entry key="LOAD_USER_PROPERTY_BY_NAME">
+        <![CDATA[
+        select id,
+               required,
+               name,
+               display_name
+        from s_user_property
+        where name = :name
+        ]]>
+    </entry>
+    <entry key="LOAD_USER_PROPERTY_BY_DISPLAY_NAME">
+        <![CDATA[
+        select id,
+               required,
+               name,
+               display_name
+        from s_user_property
+        where display_name = :display_name
+        ]]>
+    </entry>
+    <entry key="INSERT_USER_PROPERTY">
+        <![CDATA[
+        INSERT INTO s_user_property (name,
+                                     required,
+                                     display_name,
+                                     created_at,
+                                     updated_at,
+                                     created_by,
+                                     updated_by)
+        VALUES (:name,
+                :required,
+                :display_name,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by)
+        ]]>
+    </entry>
+    <entry key="UPDATE_USER_PROPERTY_BY_ID">
+        <![CDATA[
+        update s_user_property
+        set name         = :name,
+            required     = :required,
+            display_name = :display_name,
+            updated_at   = :updated_at,
+            updated_by   = :updated_by
+        where id = :id
+        ]]>
+    </entry>
+    <entry key="DELETE_USER_PROPERTY_VALUES_BY_USER_PROPERTY_ID">
+        <![CDATA[
+        delete
+        from s_user_property_value
+        where property_id = :userPropertyId
+        ]]>
+    </entry>
+    <entry key="DELETE_USER_PROPERTY_BY_ID">
+        <![CDATA[
+        delete
+        from s_user_property
+        where id = :userPropertyId
+        ]]>
+    </entry>
+
+    <entry key="INSERT_USER_PROPERTY_VALUE">
+        <![CDATA[
+        INSERT INTO s_user_property_value (id,
+                                           user_id,
+                                           property_id,
+                                           value,
+                                           created_at,
+                                           updated_at,
+                                           created_by,
+                                           updated_by)
+        VALUES (:id,
+                :user_id,
+                :property_id,
+                :value,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by)
+        ]]>
+    </entry>
+    <entry key="UPDATE_USER_PROPERTY_VALUE_BY_ID">
+        <![CDATA[
+        update s_user_property_value
+        set value      = :value,
+            updated_at = :updated_at,
+            updated_by = :updated_by
+        where id = :id
+        ]]>
+    </entry>
+    <entry key="DELETE_USER_PROPERTY_VALUES_BY_IDS">
+        <![CDATA[
+        delete from s_user_property_value where id in (:listId)
+        ]]>
+    </entry>
+    <entry key="DELETE_USER_PROPERTY_VALUES_BY_USER_ID">
+        <![CDATA[
+        delete
+        from s_user_property_value
+        where user_id = :userId
+        ]]>
+    </entry>
+    <entry key="LOAD_USER_PROPERTY_VALUES_BY_USER_IDS">
+        <![CDATA[
+        select (select v.id
+                from s_user_property_value v
+                where s.user_id = v.user_id
+                  and s.property_id = v.property_id) as id,
+               (select v.value
+                from s_user_property_value v
+                where s.user_id = v.user_id
+                  and s.property_id = v.property_id) as value,
+               s.user_id,
+               s.property_id,
+               s.name,
+               s.display_name
+        from (select u.id as user_id,
+                     p.id as property_id,
+                     p.name,
+                     p.display_name
+              from s_user u,
+                   s_user_property p
+              where u.id in (:listId)) s
+        ]]>
+    </entry>
+
+    <entry key="SELECT_SECURITY_LABELS_BY_OBJECT">
+        <![CDATA[
+        SELECT l.id              AS labelId,
+               l.name            AS labelName,
+               l.display_name    AS labelDisplayName,
+               l.description     AS labelDescription,
+               la.id             AS labelAttributeId,
+               la.name           AS labelAttributeName,
+               la.value          AS labelAttributePath,
+               la.description    AS labelAttributeDescription,
+               lav.id            AS labelAttributeValueId,
+               lav.value         AS labelAttributeValueValue,
+               lav.s_label_group AS labelAttributeValueGroup
+        FROM %s AS so_sl, s_label_attribute_value lav, s_label_attribute AS la, s_label AS l
+        WHERE so_sl.s_object_id = :objectId AND so_sl.s_label_attribute_value_id = lav.id AND lav.s_label_attribute_id = la.id AND la.s_label_id = l.id
+        ]]>
+    </entry>
+
+    <entry key="DELETE_ALL_OBJECT_S_LABEL_ATTRIBUTES">
+        <![CDATA[
+        DELETE
+        FROM s_label_attribute_value
+        WHERE id IN (SELECT s_label_attribute_value_id FROM %s WHERE s_object_id = ?
+        )
+        ]]>
+    </entry>
+
+    <entry key="ADD_S_LABEL_ATTRIBUTE_TO_OBJECT">
+        <![CDATA[
+        WITH sla_id AS (
+            INSERT INTO s_label_attribute_value (value, s_label_attribute_id, s_label_group)
+                VALUES (:value,
+                        (SELECT sla.id
+                         FROM s_label_attribute sla
+                         WHERE sla.name = :attributeName
+                           AND sla.s_label_id = (SELECT id from s_label where name = :labelName)
+                        ),
+                        :labelGroup)
+                RETURNING id
+        )
+        INSERT
+        INTO %s
+        SELECT :id, *
+        FROM sla_id
+        ]]>
+    </entry>
+    <entry key="CLEAN_USERS_LABELS_HAVING_ROLE">
+        <![CDATA[
+        WITH users_ids AS (
+            SELECT u.id
+            FROM s_user AS u,
+                 s_user_s_role AS u_r,
+                 s_role AS r
+            WHERE u.id = u_r.s_users_id
+              AND u_r.s_roles_id = r.id
+              AND r.name = :roleName
+        )
+        DELETE
+        FROM s_user_s_label_attribute_value AS u_lav USING s_user AS u, s_label_attribute_value AS lav, s_label_attribute AS la, s_label AS l
+        WHERE u.id = u_lav.s_object_id
+          AND u_lav.s_label_attribute_value_id = lav.id
+          AND lav.s_label_attribute_id = la.id
+          AND la.s_label_id = l.id
+          AND u.id IN (SELECT * FROM users_ids)
+          AND l.id NOT IN (
+            SELECT DISTINCT r_l_.s_label_id
+            FROM s_user AS u_,
+                 s_user_s_role AS u_r_,
+                 s_role AS r_,
+                 s_role_s_label AS r_l_
+            WHERE u_.id = u_r_.s_users_id
+              AND u_r_.s_roles_id = r_.id
+              AND r_.id = r_l_.s_role_id
+              AND u_.id = u.id
+        )
+        ]]>
+    </entry>
+
+    <entry key="SELECT_USERS_WITH_PROPERTIES">
+        <![CDATA[
+        SELECT su.*, supv.value AS propertyValue, sup.name AS propertyName
+        FROM s_user su
+                 LEFT OUTER JOIN s_user_property_value supv ON su.id = supv.user_id
+                 LEFT OUTER JOIN s_user_property sup ON supv.property_id = sup.id
+        ]]>
+    </entry>
+    <entry key="SELECT_USERS_ENDPOINTS">
+        <![CDATA[
+        SELECT susas.s_user_id AS userId, sapis.name AS apiName
+        FROM s_user_s_apis susas
+                 JOIN s_apis sapis ON susas.s_api_id = sapis.id
+        ]]>
+    </entry>
+    <entry key="SELECT_USERS_ROLES">
+        <![CDATA[
+        SELECT susr.s_users_id AS userId, sr.name AS roleName
+        FROM s_user_s_role susr
+                 JOIN s_role sr ON susr.s_roles_id = sr.id
+        ]]>
+    </entry>
+    <entry key="DELETE_USERS_PASSWORDS">
+        <![CDATA[
+        DELETE
+        FROM s_password
+        WHERE s_user_id IN (SELECT id FROM s_user WHERE login IN (:logins))
+        ]]>
+    </entry>
+    <entry key="DELETE_USERS_PROPERTIES_VALUES">
+        <![CDATA[
+        DELETE
+        FROM s_user_property_value
+        WHERE user_id IN (SELECT id FROM s_user WHERE login IN (:logins))
+        ]]>
+    </entry>
+    <entry key="DELETE_USERS">
+        <![CDATA[
+        DELETE
+        FROM s_user
+        WHERE login IN (:logins)
+        ]]>
+    </entry>
+    <entry key="INSERT_USERS">
+        <![CDATA[
+        INSERT INTO s_user(login, email, first_name, last_name, active, admin, external, source, locale,
+                           email_notification)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ]]>
+    </entry>
+    <entry key="INSERT_USERS_PROPERTIES_VALUES">
+        <![CDATA[
+        INSERT INTO s_user_property_value(user_id, property_id, value, created_at, created_by)
+        SELECT u.id, p.id, :value, :createdAt, :createdBy
+        FROM s_user u,
+             s_user_property p
+        WHERE u.login = :login
+          AND p.name = :property
+        ]]>
+    </entry>
+    <entry key="INSERT_USERS_APIS">
+        <![CDATA[
+        INSERT INTO s_user_s_apis(s_user_id, s_api_id)
+        SELECT u.id, a.id
+        FROM s_user u,
+             s_apis a
+        WHERE u.login = :login
+          AND a.name = :name
+        ]]>
+    </entry>
+    <entry key="INSERT_USERS_ROLES">
+        <![CDATA[
+        INSERT INTO s_user_s_role(s_users_id, s_roles_id, created_at, created_by)
+        SELECT u.id, r.id, :createdAt, :createdBy
+        FROM s_user u,
+             s_role r
+        WHERE u.login = :login
+          AND r.name = :role
+        ]]>
+    </entry>
+    <entry key="FETCH_ALL_USERS_PASSWORDS">
+        <![CDATA[
+        SELECT sp.*, su.login, su.email, su.email_notification, su.locale, su.admin, su.id AS userId
+        FROM s_password sp
+                 INNER JOIN s_user su ON sp.s_user_id = su.id
+        WHERE sp.active = 'true'
+        ]]>
+    </entry>
+    <entry key="FETCH_LAST_USER_PASSWORDS">
+        <![CDATA[
+        SELECT sp.*, su.login, su.email, su.email_notification, su.locale, su.admin, su.id AS userId
+        FROM s_password sp
+                 INNER JOIN s_user su ON sp.s_user_id = su.id
+        WHERE sp.s_user_id = :S_USER_ID
+        ORDER BY created_at desc
+        LIMIT :rowsLimit
+        ]]>
+    </entry>
+    <entry key="INSERT_USERS_PASSWORDS">
+        <![CDATA[
+        INSERT INTO s_password(s_user_id, password_text, active)
+        SELECT id, :password, :active
+        FROM s_user
+        WHERE login = :login
+        ]]>
+    </entry>
+
+    <entry key="SELECT_ROLES_WITH_PROPERTIES">
+        <![CDATA[
+        SELECT sr.*, srpv.value AS propertyValue, srp.name AS propertyName
+        FROM s_role sr
+                 LEFT OUTER JOIN s_role_property_value srpv ON sr.id = srpv.role_id
+                 LEFT OUTER JOIN s_role_property srp ON srpv.property_id = srp.id
+        ]]>
+    </entry>
+    <entry key="SELECT_ROLES_LABELS">
+        <![CDATA[
+        SELECT srsl.s_role_id AS roleId, sl.id AS labelId, sl.name AS labelName
+        FROM s_role_s_label srsl,
+             s_label sl
+        WHERE srsl.s_label_id = sl.id
+        ]]>
+    </entry>
+    <entry key="SELECT_ROLES_RESOURCE_RIGHTS">
+        <![CDATA[
+        SELECT srsr.s_role_id AS roleId,
+               sres.name      AS resourceName,
+               sres.r_type    AS rType,
+               sres.category  AS category,
+               sr.name        AS rightName
+        FROM s_right_s_resource srsr,
+             s_resource AS sres,
+             s_right sr
+        WHERE srsr.s_resource_id = sres.id
+          AND srsr.s_right_id = sr.id
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLES_RIGHTS_BY_NAME">
+        <![CDATA[
+        DELETE
+        FROM s_right_s_resource
+        WHERE s_role_id IN (SELECT id FROM s_role WHERE name IN (:names))
+        ]]>
+    </entry>
+    <entry key="DELETE_USERS_ROLES_BY_ROLES_NAMES">
+        <![CDATA[
+        DELETE
+        FROM s_user_s_role
+        WHERE s_roles_id IN (SELECT id FROM s_role WHERE name IN (:names))
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLES_PROPERTIES_BY_ROLES_NAMES">
+        <![CDATA[
+        DELETE
+        FROM s_role_property_value
+        WHERE role_id IN (SELECT id FROM s_role WHERE name IN (:names))
+        ]]>
+    </entry>
+    <entry key="DELETE_ROLES_BY_NAME">
+        <![CDATA[
+        DELETE
+        FROM s_role
+        WHERE name IN (:names)
+        ]]>
+    </entry>
+
+
+    <entry key="SELECT_OBJECTS_LABELS_VALUES">
+        <![CDATA[
+        SELECT so_sl.s_object_id AS objectId,
+               l.id              AS labelId,
+               l.name            AS labelName,
+               l.display_name    AS labelDisplayName,
+               l.description     AS labelDescription,
+               la.id             AS labelAttributeId,
+               la.name           AS labelAttributeName,
+               la.value          AS labelAttributePath,
+               la.description    AS labelAttributeDescription,
+               lav.id            AS labelAttributeValueId,
+               lav.value         AS labelAttributeValue,
+               lav.s_label_group AS labelAttributeValueGroup
+        FROM %s AS so_sl JOIN s_label_attribute_value lav
+        ON so_sl.s_label_attribute_value_id = lav.id JOIN
+            s_label_attribute la ON lav.s_label_attribute_id = la.id JOIN s_label l ON la.s_label_id = l.id
+        ]]>
+    </entry>
+
+    <entry key="SELECT_ROLES_WITH_PROPERTIES_BY_ROLES_NAMES">
+        SELECT sr.*, srpv.value AS propertyValue, srp.name AS propertyName
+        FROM s_role sr
+                 LEFT OUTER JOIN s_role_property_value srpv ON sr.id = srpv.role_id
+                 LEFT OUTER JOIN s_role_property srp ON srpv.property_id = srp.id
+        WHERE sr.name IN (:roleNames)
+    </entry>
+
+    <entry key="SELECT_ROLES_WITH_PROPERTIES_BY_ROLES_NAMES_1">
+        SELECT sre.id,
+               sre.name,
+               sre.r_type,
+               sre.category,
+               sre.display_name,
+               srr.id AS link_id,
+               sr.*
+        FROM s_right sr
+                 INNER JOIN s_right_s_resource srr ON sr.id = srr.s_right_id
+                 INNER JOIN s_role r ON r.id = srr.s_role_id
+                 INNER JOIN s_resource sre ON srr.s_resource_id = sre.id
+        WHERE r.name in  (:roleNames)
+    </entry>
+
+    <entry key="SELECT_ROLE_RESOURCES_BY_ROLE_ID">
+        SELECT sre.id           AS resource_id,
+                sre.name         AS resource_name,
+                sre.display_name AS resource_display_name,
+                sre.r_type       AS resource_type,
+                sre.category     AS resource_category,
+
+                srr.id           AS resource_right_id,
+
+                sr.id            AS right_id,
+                sr.name          AS right_name,
+                sr.description   AS right_description
+         FROM s_right sr
+                  INNER JOIN s_right_s_resource srr ON sr.id = srr.s_right_id
+                  INNER JOIN s_resource sre ON srr.s_resource_id = sre.id
+         WHERE srr.s_role_id = ?
+    </entry>
+</properties>

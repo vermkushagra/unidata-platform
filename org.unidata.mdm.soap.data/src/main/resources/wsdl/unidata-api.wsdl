@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://api.mdm.unidata.org/wsdl/v1/"
+             xmlns:tdapi="http://api.mdm.unidata.org/v1/"
+             xmlns:tdwsdl="http://api.mdm.unidata.org/wsdl/v1/"
+             xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:xs="http://www.w3.org/2001/XMLSchema"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+    <types>
+        <xs:schema>
+            <xs:import namespace="http://api.mdm.unidata.org/v1/" schemaLocation="schemas/api/unidata-api-1.0.xsd"/>
+        </xs:schema>
+    </types>
+
+    <message name="UnidataMessageRequest"><part name="apiRequestBody" element="tdapi:apiRequestBody"/></message>
+    <message name="UnidataMessageResponse"><part name="apiResponseBody" element="tdapi:apiResponseBody"/></message>
+
+    <portType name="UnidataServicePortType">
+        <operation name="apiCall">
+            <input message="tdwsdl:UnidataMessageRequest"/>
+            <output message="tdwsdl:UnidataMessageResponse"/>
+        </operation>
+    </portType>
+
+    <binding name="UnidataServiceBinding" type="tdwsdl:UnidataServicePortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="apiCall">
+            <soap:operation soapAction="apiCall"/>
+            <input><soap:body use="literal"/></input>
+            <output><soap:body use="literal"/></output>
+        </operation>
+    </binding>
+
+    <service name="UnidataService">
+        <port name="UnidataServicePort" binding="tdwsdl:UnidataServiceBinding">
+            <soap:address location="http://localhost:8080/unidata/api/v5"/>
+        </port>
+    </service>
+</definitions>
