@@ -1,4 +1,4 @@
-#UniData Platform
+# UniData Platform
 
 UniData is a multipurpose data processing platform, especially targeting MDM. 
 Its open source part builds a foundation for various platform services. 
@@ -8,7 +8,7 @@ It is also scalable, allowing you to run it on several machines (application nod
 We use 
 - PostgreSQL for persisting data (11.x and above) 
 - Hazelcast (3.12) for distributed computations and caching support
-- Spring (4.2.0) for managing the application
+- Spring (5.2.x) for managing the application
 - Apache Tomcat (7.x) for running the application 
 - Apache Camel (2.23) for integration with customer messaging systems
 - Apache POI (3.17) for generation of OOXML output
@@ -165,7 +165,7 @@ Pipelines can be configured programmaticaly and then either used for direct call
 
 Pipelines can be saved using the __org.unidata.mdm.system.service.PipelineService.savePipeline(...)__ and then retrieved using the __org.unidata.mdm.system.service.PipelineService.getPipeline(...)__. Pipelines are executed via __org.unidata.mdm.system.service.ExecutionService.execute(...)__ calls, returning a subclass of __org.unidata.mdm.system.dto.PipelineExecutionResult__. Simplified, the pipeline segment types hierarchie can be shown like this:
 
-![Segments hierarchie simplified](file:docs/images/pipeline-2.png) 
+![Segments hierarchie simplified](https://gitlab.com/unidata-community/unidata-platform/raw/5.2-SNAPSHOT/docs/images/pipeline-2.png) 
 
 ## Environment setup (development)
 
