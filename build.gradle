@@ -4,6 +4,11 @@
  * This is a general purpose Gradle build.
  * Learn how to create Gradle builds at https://guides.gradle.org/creating-new-gradle-builds
  */
+plugins {
+    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'com.intershop.gradle.jaxb' version '3.0.4'
+}
+
 apply plugin: 'java'
 
 allprojects {
