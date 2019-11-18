@@ -43,6 +43,17 @@ public class SystemExceptionIds {
 
     public static final ExceptionId EX_MODULE_CANNOT_BE_UNINSTALLED = new ExceptionId("EX_MODULE_CANNOT_BE_UNINSTALLED", "app.module.cannot.be.uninstalled");
 
+    public static final ExceptionId EX_SYSTEM_CANNOT_INITIALIZE_NON_XA_FACTORY 
+		= new ExceptionId("EX_SYSTEM_CANNOT_INITIALIZE_NON_XA_FACTORY", "app.module.cannot.initialize.non.xa.factory");
+
+    public static final ExceptionId EX_SYSTEM_CANNOT_INITIALIZE_XA_FACTORY 
+		= new ExceptionId("EX_SYSTEM_CANNOT_INITIALIZE_XA_FACTORY", "app.module.cannot.initialize.xa.factory");
+    
+    public static final ExceptionId EX_SYSTEM_CANNOT_CREATE_NON_XA_DATASOURCE 
+    	= new ExceptionId("EX_SYSTEM_CANNOT_CREATE_NON_XA_DATASOURCE", "app.module.cannot.create.non.xa.datasource");
+    
+    public static final ExceptionId EX_SYSTEM_CANNOT_CREATE_XA_DATASOURCE 
+		= new ExceptionId("EX_SYSTEM_CANNOT_CREATE_XA_DATASOURCE", "app.module.cannot.create.xa.datasource");
 
     /**
      * Constructor.

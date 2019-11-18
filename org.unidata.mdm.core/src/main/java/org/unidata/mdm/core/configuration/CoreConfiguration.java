@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -16,19 +17,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.unidata.mdm.core.service.SecurityService;
 import org.unidata.mdm.core.service.impl.StandardSecurityInterceptionProvider;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
+import org.unidata.mdm.system.util.DataSourceUtils;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.JoinConfig;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-
+ 
 /**
  * @author Alexander Malyshev
  */
@@ -81,11 +82,10 @@ public class CoreConfiguration extends AbstractConfiguration {
         return Collections.emptyMap();
     }
 
-    @Bean
+    @Bean(name = "coreDataSource")
     public DataSource coreDataSource() {
-        JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
-        jndiDataSourceLookup.setResourceRef(true);
-        return jndiDataSourceLookup.getDataSource("module/org.unidata.mdm.core");
+    	Properties properties = getAllPropertiesWithPrefix(CoreConfigurationConstants.CORE_DATASOURCE_PROPERTIES_PREFIX, true);
+    	return DataSourceUtils.newPoolingNonXADataSource(properties);
     }
 
     @Bean("binary-data-sql")
@@ -133,7 +133,7 @@ public class CoreConfiguration extends AbstractConfiguration {
         );
     }
 
-    @Bean
+    @Bean(name = "coreTransactionManager")
     public PlatformTransactionManager platformTransactionManager() {
         return new bitronix.tm.integration.spring.PlatformTransactionManager();
     }
@@ -148,10 +148,6 @@ public class CoreConfiguration extends AbstractConfiguration {
     public ProviderManager authenticationManager(final AuthenticationProvider authenticationProvider) {
         return new ProviderManager(Collections.singletonList(authenticationProvider));
     }
-//    @Bean
-//    public UnidataConversionServiceFactoryBean unidataConversionServiceFactoryBean() {
-//        return new UnidataConversionServiceFactoryBean();
-//    }
 
     @Bean
     public MessageSource messageSource() {
@@ -161,11 +157,6 @@ public class CoreConfiguration extends AbstractConfiguration {
         source.addBasenames("classpath:messages");
 
         return source;
-    }
-
-    @Bean(name = "coreDataSource")
-    public DataSource dataSource() {
-        return getConfiguredApplicationContext().getEnvironment().getProperty("module/org.unidata.mdm.core", DataSource.class);
     }
 
     /**

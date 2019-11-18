@@ -66,7 +66,6 @@ public class DataStorageDAOImpl extends BaseStorageDAOImpl implements DataStorag
     /**
      * Constructor.
      */
-    // @Qualifier("unidataDataSource")
     @Autowired
     public DataStorageDAOImpl(
             @Qualifier("storageDataSource") DataSource dataSource,

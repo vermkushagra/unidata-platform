@@ -1,19 +1,17 @@
 package org.unidata.mdm.core.module;
 
+import static org.unidata.mdm.system.exception.SystemExceptionIds.EX_MODULE_CANNOT_BE_INSTALLED;
+import static org.unidata.mdm.system.exception.SystemExceptionIds.EX_MODULE_CANNOT_BE_UNINSTALLED;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
 import javax.sql.DataSource;
 
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.ILock;
-import nl.myndocs.database.migrator.database.Selector;
-import nl.myndocs.database.migrator.database.query.Database;
-import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +35,15 @@ import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
+import org.unidata.mdm.system.util.DataSourceUtils;
 
-import static org.unidata.mdm.system.exception.SystemExceptionIds.EX_MODULE_CANNOT_BE_INSTALLED;
-import static org.unidata.mdm.system.exception.SystemExceptionIds.EX_MODULE_CANNOT_BE_UNINSTALLED;
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.ILock;
+
+import nl.myndocs.database.migrator.database.Selector;
+import nl.myndocs.database.migrator.database.query.Database;
+import nl.myndocs.database.migrator.processor.Migrator;
 
 public class CoreModule implements Module {
 
@@ -236,6 +240,7 @@ public class CoreModule implements Module {
     public void stop() {
         LOGGER.info("Stopping...");
         Hazelcast.shutdownAll();
+        DataSourceUtils.shutdown(coreDataSource);
         LOGGER.info("Stopped.");
     }
 

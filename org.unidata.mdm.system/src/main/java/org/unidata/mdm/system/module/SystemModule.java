@@ -14,6 +14,7 @@ import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.migration.SystemMigrations;
 import org.unidata.mdm.system.type.module.Module;
+import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
@@ -29,6 +30,9 @@ public class SystemModule implements Module {
 
     @Autowired
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    private DataSource systemDataSource;
 
     /**
      * This module id.
@@ -65,10 +69,8 @@ public class SystemModule implements Module {
     public void install() {
         LOGGER.info("Install");
 
-        DataSource coreDataSource = (DataSource) applicationContext.getBean("systemDataSource");
         SpringContextAwareMigrationContext ctx = applicationContext.getBean(SpringContextAwareMigrationContext.class);
-
-        try (Connection connection = coreDataSource.getConnection()) {
+        try (Connection connection = systemDataSource.getConnection()) {
 
             Database database = new Selector().loadFromConnection(connection, SystemConfigurationConstants.UNIDATA_SYSTEM_SCHEMA_NAME);
             Migrator migrator = new Migrator(database, SystemConfigurationConstants.SYSTEM_MIGRATION_LOG_NAME);
@@ -92,6 +94,6 @@ public class SystemModule implements Module {
 
     @Override
     public void stop() {
-        // NO-OP
+        DataSourceUtils.shutdown(systemDataSource);
     }
 }

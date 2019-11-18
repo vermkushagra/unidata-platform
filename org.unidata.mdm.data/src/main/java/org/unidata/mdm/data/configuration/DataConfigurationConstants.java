@@ -1,11 +1,16 @@
 package org.unidata.mdm.data.configuration;
 
+import org.unidata.mdm.data.module.DataModule;
+
 /**
  * Various constants.
  * @author Mikhail Mikhailov on Nov 12, 2019
  */
 public final class DataConfigurationConstants {
-
+	/**
+     * Core data source properties prefix.
+     */
+    public static final String DATA_DATASOURCE_PROPERTIES_PREFIX = DataModule.MODULE_ID + ".datasource.";
     /**
      * Data storage schema name.
      */
@@ -18,6 +23,9 @@ public final class DataConfigurationConstants {
      * Data tables change log name.
      */
     public static final String DATA_LOG_NAME = "data_change_log";
+    /**
+     * Storage init lock name.
+     */
     public static final String STORAGE_LOCK_NAME = "DATA_STORAGE_LOCK";
 
     /**

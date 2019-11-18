@@ -25,6 +25,7 @@ import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.po.storage.DataNodePO;
 import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.util.DataSourceUtils;
 
 /**
  * @author Mikhail Mikhailov
@@ -263,7 +264,7 @@ public abstract class BaseStorageDAOImpl extends AbstractDaoImpl implements Base
         }
 
         public void shutdown() {
-            ClusterUtils.shutdown(this.dataSource);
+            DataSourceUtils.shutdown(this.dataSource);
         }
     }
 }

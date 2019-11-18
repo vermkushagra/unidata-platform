@@ -180,3 +180,181 @@ Pipelines can be saved using the __org.unidata.mdm.system.service.PipelineServic
 4. UniData uses gradle to build itself
     - Go to __org.unidata.mdm.war__ and build WAR (and its dependencies) with ./gradle clean war
     - Deploy the artifact to tomcat 7.x using your favorite method
+
+## System configuration
+
+Right now Unidata uses single configuration file, called __backend.properties__ (the name is predefined). Its location can be specified via JVM flags
+`-Dunidata.conf="<path>/unidata-conf"`. Its content can be the following:
+
+```properties
+# Versions - platform and SOAP
+unidata.api.version = 5.2
+unidata.platform.version = 5.2
+
+# This node id. Must be unique across cluster (TODO generate!).
+unidata.node.id = 87ba01ce01e0
+
+# Data dump target format - JAXB or PROTOSTUFF
+unidata.dump.target.format = PROTOSTUFF
+
+# Authentication/authorization
+# Token expiration time in seconds, default 30 minutes (1800)
+unidata.security.token.ttl=1800
+unidata.security.token.backup.count=1
+unidata.security.token.cleanup=0 0 * * * ?
+
+# Default locale
+unidata.default.locale = ru
+
+# Password expiration time in seconds, default 30 days
+unidata.security.password.expiration=2592000
+
+# Elasticsearch
+# Addresses of ES nodes, comma separated
+unidata.search.nodes.addresses = localhost:9300
+
+# Name of the cluster
+unidata.search.cluster.name = elasticsearch-mmi
+
+# Per index settings
+# Default for unspecified indexes (which are not entities, lookups or system)
+unidata.search.shards.number = 1
+unidata.search.replicas.number = 0
+
+# Primaries number
+unidata.search.entity.shards.number=1
+unidata.search.lookup.shards.number=1
+unidata.search.system.shards.number=1
+
+# Replicas number
+unidata.search.entity.replicas.number=0
+unidata.search.lookup.replicas.number=0
+unidata.search.system.replicas.number=0
+
+# Number of fields in a single index. 1000 is the default
+unidata.search.fields.limit = 10000
+
+# Index/type name is constructed from 'index prefix'_'storage id'_'entity name',
+# what allows to have several application/storage instances on the same ES cluster.
+unidata.search.index.prefix = default
+
+# Simon perf measurement
+unidata.simon.enabled=false
+
+# Global fixed validity range start / end.
+# Timeline boundaries of records will be of this period, if not overriden in entities.
+# Will be of -infinity to +infinity, if unspecified
+unidata.validity.period.start=1900-01-01T00:00:00.000
+unidata.validity.period.end=9999-12-31T23:59:59.999
+
+# Distributed cache (Haxelcast)
+unidata.cache.group=unidata
+unidata.cache.password=password
+unidata.cache.port=5701
+unidata.cache.port.autoincreament=false
+unidata.cache.multicast.enabled=false
+unidata.cache.multicast.group=224.2.2.3
+unidata.cache.multicast.port=54327
+unidata.cache.multicast.ttl=32
+unidata.cache.multicast.timeout=2
+unidata.cache.tcp-ip.enabled=false
+unidata.cache.tcp-ip.members=127.0.0.1
+
+# System
+# DB
+org.unidata.mdm.system.datasource.username=postgres
+org.unidata.mdm.system.datasource.password=postgres
+org.unidata.mdm.system.datasource.url=jdbc:postgresql://localhost:5432/unidata?currentSchema=org_unidata_mdm_system&ApplicationName=Unidata-System
+
+# Core
+# DB
+org.unidata.mdm.core.datasource.username=postgres
+org.unidata.mdm.core.datasource.password=postgres
+org.unidata.mdm.core.datasource.url=jdbc:postgresql://localhost:5432/unidata?currentSchema=org_unidata_mdm_core&reWriteBatchedInserts=true&ApplicationName=Unidata-Core
+org.unidata.mdm.core.datasource.driverClassName=org.postgresql.Driver
+org.unidata.mdm.core.datasource.initialSize=10
+org.unidata.mdm.core.datasource.maxActive=10
+org.unidata.mdm.core.datasource.maxIdle=10
+org.unidata.mdm.core.datasource.minIdle=10
+org.unidata.mdm.core.datasource.minEvictableIdleTimeMillis=60000
+org.unidata.mdm.core.datasource.timeBetweenEvictionRunsMillis=30000
+org.unidata.mdm.core.datasource.removeAbandoned=true
+org.unidata.mdm.core.datasource.removeAbandonedTimeout=360
+org.unidata.mdm.core.datasource.jdbcInterceptors=ResetAbandonedTimer
+org.unidata.mdm.core.datasource.logAbandoned=true
+org.unidata.mdm.core.datasource.suspectTimeout=60
+org.unidata.mdm.core.datasource.testOnBorrow=true
+org.unidata.mdm.core.datasource.validationQuery=SELECT 1
+org.unidata.mdm.core.datasource.validationInterval=30000
+org.unidata.mdm.core.datasource.type=javax.sql.DataSource
+
+# Replay timeout in millis
+# Event service
+org.unidata.mdm.core.event.replay.timeout=2000
+
+# Meta
+# DB
+org.unidata.mdm.meta.datasource.username=postgres
+org.unidata.mdm.meta.datasource.password=postgres
+org.unidata.mdm.meta.datasource.url=jdbc:postgresql://localhost:5432/unidata?currentSchema=org_unidata_mdm_meta&reWriteBatchedInserts=true&ApplicationName=Unidata-Meta
+org.unidata.mdm.meta.datasource.driverClassName=org.postgresql.Driver
+org.unidata.mdm.meta.datasource.initialSize=10
+org.unidata.mdm.meta.datasource.maxActive=10
+org.unidata.mdm.meta.datasource.maxIdle=10
+org.unidata.mdm.meta.datasource.minIdle=10
+org.unidata.mdm.meta.datasource.minEvictableIdleTimeMillis=60000
+org.unidata.mdm.meta.datasource.timeBetweenEvictionRunsMillis=30000
+org.unidata.mdm.meta.datasource.removeAbandoned=true
+org.unidata.mdm.meta.datasource.removeAbandonedTimeout=360
+org.unidata.mdm.meta.datasource.jdbcInterceptors=ResetAbandonedTimer
+org.unidata.mdm.meta.datasource.logAbandoned=true
+org.unidata.mdm.meta.datasource.suspectTimeout=60
+org.unidata.mdm.meta.datasource.testOnBorrow=true
+org.unidata.mdm.meta.datasource.validationQuery=SELECT 1
+org.unidata.mdm.meta.datasource.validationInterval=30000
+org.unidata.mdm.meta.datasource.type=javax.sql.DataSource
+
+# Data
+# TX XA related stuff.
+#unidata.data.tx.manager.logfile1=
+#unidata.data.tx.manager.logfile2=
+
+# temporary partitioning flags
+unidata.data.shards=32
+
+# Data nodes
+#unidata.data.nodes=\
+#0:node1:postgres@postgres:unidata@localhost:5433,\
+#1:node2:postgres@postgres:unidata@localhost:5432
+
+# 1 Node
+unidata.data.nodes=\
+0:node0:postgres@postgres:unidata@localhost:5432
+
+unidata.data.temp.init=true
+
+# Storage DB
+org.unidata.mdm.data.datasource.username=postgres
+org.unidata.mdm.data.datasource.password=postgres
+org.unidata.mdm.data.datasource.url=jdbc:postgresql://localhost:5432/unidata?currentSchema=org_unidata_mdm_data&reWriteBatchedInserts=true&ApplicationName=Unidata-Storage
+org.unidata.mdm.data.datasource.driverClassName=org.postgresql.Driver
+org.unidata.mdm.data.datasource.initialSize=1
+org.unidata.mdm.data.datasource.maxActive=3
+org.unidata.mdm.data.datasource.maxIdle=3
+org.unidata.mdm.data.datasource.minIdle=3
+org.unidata.mdm.data.datasource.minEvictableIdleTimeMillis=60000
+org.unidata.mdm.data.datasource.timeBetweenEvictionRunsMillis=30000
+org.unidata.mdm.data.datasource.removeAbandoned=true
+org.unidata.mdm.data.datasource.removeAbandonedTimeout=360
+org.unidata.mdm.data.datasource.jdbcInterceptors=ResetAbandonedTimer
+org.unidata.mdm.data.datasource.logAbandoned=true
+org.unidata.mdm.data.datasource.suspectTimeout=60
+org.unidata.mdm.data.datasource.testOnBorrow=true
+org.unidata.mdm.data.datasource.validationQuery=SELECT 1
+org.unidata.mdm.data.datasource.validationInterval=30000
+org.unidata.mdm.data.datasource.type=javax.sql.DataSource
+```
+
+Unidata uses slf4j and logback classic for logging. Thus, logback settings can be supplied via `-Dlogback.configurationFile="<path>/logback.xml"`.
+
+To give Hazelcast a hint about the logging subsystem `-Dhazelcast.logging.type=slf4j` can be used.

@@ -1,105 +1,98 @@
 package org.unidata.mdm.meta.configuration;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelMappingService;
 import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.service.AfterContextRefresh;
+import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.MessageUtils;
 
 /**
  * @author Alexander Malyshev
  */
 @Configuration
-public class MetaConfiguration implements ApplicationContextAware {
-    /**
-     * The spring app. context.
-     */
-    private static ApplicationContext applicationContext;
-    /**
+public class MetaConfiguration extends AbstractConfiguration {
+	/**
+	 * This id.
+	 */
+	private static final ConfigurationId ID = () -> "META_CONFIGURATION";
+	/**
      * {@link AfterContextRefresh} classes.
      */
-    private static Class<?> refreshOnStartupClasses[] = {
+    private static Class<?>[] refreshOnStartupClasses = {
             MetaMeasurementService.class,
             MetaModelService.class,
             MetaDraftService.class
     };
 
-    public static ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        // The usual trick.
-        MetaConfiguration.applicationContext = applicationContext;
+	protected ConfigurationId getId() {
+		return ID;
+	}
+    
+    public static ApplicationContext getApplicationContext() {
+        return CONFIGURED_CONTEXT_MAP.get(ID);
     }
     /**
      * Gets a bean.
-     * @param <T>
-     * @param name the name
-     * @param beanClass the bean class
-     * @return bean
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T getBean(String name, Class<T> beanClass) {
-
-        if (Objects.isNull(name) && Objects.isNull(beanClass)) {
-            return null;
-        }
-
-        if (Objects.isNull(beanClass)) {
-            return (T) applicationContext.getBean(name);
-        } else if (Objects.isNull(name)) {
-            return getBean(beanClass);
-        }
-
-        return applicationContext.getBean(name, beanClass);
-    }
-    /**
-     * Gets a bean.
+     *
      * @param <T>
      * @param beanClass the bean class
      * @return bean
      */
     public static <T> T getBean(Class<T> beanClass) {
-        return applicationContext.getBean(beanClass);
+        if (CONFIGURED_CONTEXT_MAP.containsKey(ID)) {
+            return CONFIGURED_CONTEXT_MAP.get(ID).getBean(beanClass);
+        }
+
+        return null;
     }
+
     /**
      * Gets beans of type.
+     *
      * @param <T>
      * @param beanClass the bean class
      * @return bean
      */
     public static <T> Map<String, T> getBeans(Class<T> beanClass) {
-        return applicationContext.getBeansOfType(beanClass);
+        if (CONFIGURED_CONTEXT_MAP.containsKey(ID)) {
+            return CONFIGURED_CONTEXT_MAP.get(ID).getBeansOfType(beanClass);
+        }
+
+        return Collections.emptyMap();
     }
 
-    @Bean
+    @Bean(name = "metaDataSource")
     public DataSource metaDataSource() {
-        JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
-        jndiDataSourceLookup.setResourceRef(true);
-        return jndiDataSourceLookup.getDataSource("module/org.unidata.mdm.meta");
+    	Properties properties = getAllPropertiesWithPrefix(MetaConfigurationConstants.META_DATASOURCE_PROPERTIES_PREFIX, true);
+    	return DataSourceUtils.newPoolingNonXADataSource(properties);
     }
 
+    @Bean(name = "metaTransactionManager")
+    public PlatformTransactionManager transactionManager(@Qualifier("metaDataSource") final DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
+    }
+    
     /**
      * use this way, not     @PropertySource(name = "securitySql", value = "classpath:db/security-sql.xml" )
      * for old functionality support (like @Qualifier("security-sql") final Properties sql)
@@ -150,7 +143,7 @@ public class MetaConfiguration implements ApplicationContextAware {
 
     private void ensureAfterContextRefresh() {
         for (Class<?> klass : refreshOnStartupClasses) {
-            AfterContextRefresh r = (AfterContextRefresh) applicationContext.getBean(klass);
+            AfterContextRefresh r = (AfterContextRefresh) getConfiguredApplicationContext().getBean(klass);
             r.afterContextRefresh();
         }
     }

@@ -5,15 +5,14 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import javax.annotation.Nullable;
+
 import javax.sql.DataSource;
 
-import nl.myndocs.database.migrator.database.Selector;
-import nl.myndocs.database.migrator.database.query.Database;
-import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
+import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
 import org.unidata.mdm.meta.migration.UninstallMetaSchemaMigrations;
@@ -28,18 +27,28 @@ import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
+import org.unidata.mdm.system.util.DataSourceUtils;
+
+import nl.myndocs.database.migrator.database.Selector;
+import nl.myndocs.database.migrator.database.query.Database;
+import nl.myndocs.database.migrator.processor.Migrator;
 
 public class MetaModule implements Module {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetaModule.class);
+    
+    public static final String MODULE_ID = "org.unidata.mdm.meta";
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
             new Dependency("org.unidata.mdm.core", "5.2")
     );
 
+    @Autowired
+    private DataSource metaDataSource;
+    
     @Override
     public String getId() {
-        return "org.unidata.mdm.meta";
+        return MODULE_ID;
     }
 
     @Override
@@ -113,6 +122,7 @@ public class MetaModule implements Module {
     public void stop() {
         LOGGER.info("Stopping...");
         MetaConfiguration.getBean(MetaConfiguration.class).stopImpl();
+        DataSourceUtils.shutdown(metaDataSource);
         LOGGER.info("Stopped.");
     }
 
@@ -153,10 +163,9 @@ public class MetaModule implements Module {
             return migrator;
         }
 
-        DataSource coreDataSource = MetaConfiguration.getBean("metaDataSource", DataSource.class);
-        Connection connection = coreDataSource.getConnection();
+        Connection connection = metaDataSource.getConnection();
         Database database = new Selector()
-                .loadFromConnection(connection, "org_unidata_mdm_meta");
+                .loadFromConnection(connection, MetaConfigurationConstants.META_SCHEMA_NAME);
 
         return new Migrator(database, "meta_change_log");
     }
