@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'com.intershop.gradle.jaxb' version '3.0.2'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'com.intershop.gradle.jaxb'
+    id 'io.spring.dependency-management'
 }
 
 apply from: '../gradle/dependencies.gradle'
