@@ -3,9 +3,11 @@ package org.unidata.mdm.core.dto;
 import org.apache.commons.collections4.MapUtils;
 import org.unidata.mdm.core.type.audit.AuditEvent;
 
+import javax.annotation.Nonnull;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author Alexander Malyshev
@@ -43,7 +45,7 @@ public class EnhancedAuditEvent implements AuditEvent {
             final String serverIp,
             final LocalDateTime when
     ) {
-        this.type = type;
+        this.type = Objects.requireNonNull(type);
         if (MapUtils.isNotEmpty(parameters)) {
             this.parameters.putAll(parameters);
         }
@@ -64,11 +66,13 @@ public class EnhancedAuditEvent implements AuditEvent {
         this(auditEvent.type(), auditEvent.parameters(), auditEvent.success(), user, clientIp, serverIp, when);
     }
 
+    @Nonnull
     @Override
     public String type() {
         return type;
     }
 
+    @Nonnull
     @Override
     public Map<String, String> parameters() {
         return parameters;
