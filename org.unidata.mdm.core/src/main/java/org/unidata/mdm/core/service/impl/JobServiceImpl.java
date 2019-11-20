@@ -157,7 +157,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
 
     /** The tx manager. */
     @Autowired
-    @Qualifier("transactionManager")
+    @Qualifier("coreTransactionManager")
     private PlatformTransactionManager txManager;
 
     private DefaultJobParameterProcessor defaultJobParameterProcessor = new DefaultJobParameterProcessor();
@@ -174,7 +174,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
     public void setOperations(Map<String, JobParameterProcessor> parameterProcessors) {
         this.parameterProcessors = parameterProcessors;
     }
-
+ 
     private static boolean isCronJob(JobPO job) {
         return StringUtils.hasText(job.getCronExpression());
     }

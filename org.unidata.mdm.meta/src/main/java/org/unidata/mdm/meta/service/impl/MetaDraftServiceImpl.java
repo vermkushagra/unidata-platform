@@ -101,7 +101,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 //    private ConfigurationServiceExt configurationService;
     /** The tx manager. */
     @Autowired
-    @Qualifier("platformTransactionManager")
+    @Qualifier("metaTransactionManager")
     private PlatformTransactionManager txManager;
 
     /** The validation component. */

@@ -22,7 +22,7 @@ public final class SystemConfigurationConstants {
     /**
      * Unidata system schema user property name.
      */
-    public static final String UNIDATA_SYSTEM_SCHEMA_USER = SystemModule.MODULE_ID + ".datasource.user";
+    public static final String UNIDATA_SYSTEM_SCHEMA_USERNAME = SystemModule.MODULE_ID + ".datasource.username";
     /**
      * Unidata system schema password property name.
      */

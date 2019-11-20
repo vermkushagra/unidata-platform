@@ -29,13 +29,6 @@ dependencyManagement {
             entry 'hazelcast-spring'
         }
 
-        dependencySet(group: 'org.glassfish.jaxb', version: '2.2.11') {
-            entry 'jaxb-xjc'
-            entry 'jaxb-core'
-            entry 'jaxb-runtime'
-            entry 'txwc2'
-        }
-
         dependencySet(group: 'com.sun.xml.bind', version: '2.2.11') {
             entry 'jaxb-xjc'
             entry 'jaxb-core'

@@ -2,6 +2,7 @@ package org.unidata.mdm.core.configuration;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.ListableJobLocator;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -37,7 +37,7 @@ import org.unidata.mdm.core.util.SpringConfigurationUtils;
 @Configuration
 public class JobConfiguration {
 
-    public static final String UNIDATA_BATCH_JOB_BATCH_TABLE_PREFIX = "unidata_batch_job.BATCH_";
+    public static final String UNIDATA_BATCH_JOB_BATCH_TABLE_PREFIX = "BATCH_";
 
     @Bean
     public MapFactoryBean jobParameterProcessorsMap() {
@@ -51,23 +51,16 @@ public class JobConfiguration {
     public ExecutionContextSerializer executionContextSerializer() {
         return new CustomJobExecutionContextSerializer();
     }
-
-    @Bean
-    public DataSource jobDataSource() {
-        JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
-        jndiDataSourceLookup.setResourceRef(true);
-        return jndiDataSourceLookup.getDataSource("jdbc/UniDataBatchJobDataSource");
-    }
-
+ 
     @Bean
     public CustomJobRepositoryFactoryBean jobRepositoryFactoryBean(
-            final DataSource jobDataSource,
-            final PlatformTransactionManager platformTransactionManager,
+            final DataSource coreDataSource,
+            final PlatformTransactionManager coreTransactionManager,
             final ExecutionContextSerializer executionContextSerializer
     ) {
         final CustomJobRepositoryFactoryBean customJobRepositoryFactoryBean = new CustomJobRepositoryFactoryBean();
-        customJobRepositoryFactoryBean.setDataSource(jobDataSource);
-        customJobRepositoryFactoryBean.setTransactionManager(platformTransactionManager);
+        customJobRepositoryFactoryBean.setDataSource(coreDataSource);
+        customJobRepositoryFactoryBean.setTransactionManager(coreTransactionManager);
         customJobRepositoryFactoryBean.setDatabaseType("postgres");
         customJobRepositoryFactoryBean.setTablePrefix(UNIDATA_BATCH_JOB_BATCH_TABLE_PREFIX);
         customJobRepositoryFactoryBean.setSerializer(executionContextSerializer);
@@ -100,13 +93,13 @@ public class JobConfiguration {
 
     @Bean
     public AbstractJobExplorerFactoryBean jobExplorerFactoryBean(
-            final DataSource jobDataSource,
-            final PlatformTransactionManager platformTransactionManager,
+            final DataSource coreDataSource,
+            final PlatformTransactionManager coreTransactionManager,
             final ExecutionContextSerializer executionContextSerializer
     ) {
         final CustomJobExplorerFactoryBean customJobExplorerFactoryBean = new CustomJobExplorerFactoryBean();
-        customJobExplorerFactoryBean.setDataSource(jobDataSource);
-        customJobExplorerFactoryBean.setTransactionManager(platformTransactionManager);
+        customJobExplorerFactoryBean.setDataSource(coreDataSource);
+        customJobExplorerFactoryBean.setTransactionManager(coreTransactionManager);
         customJobExplorerFactoryBean.setTablePrefix(UNIDATA_BATCH_JOB_BATCH_TABLE_PREFIX);
         customJobExplorerFactoryBean.setSerializer(executionContextSerializer);
         return customJobExplorerFactoryBean;

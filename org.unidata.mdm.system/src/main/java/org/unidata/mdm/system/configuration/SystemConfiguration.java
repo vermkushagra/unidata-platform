@@ -2,6 +2,7 @@ package org.unidata.mdm.system.configuration;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +79,13 @@ public class SystemConfiguration implements ApplicationContextAware {
 
         // Single connection data source
         String url = env.getProperty(SystemConfigurationConstants.UNIDATA_SYSTEM_URL);
-        String username = env.getProperty(SystemConfigurationConstants.UNIDATA_SYSTEM_SCHEMA_USER);
+        String username = env.getProperty(SystemConfigurationConstants.UNIDATA_SYSTEM_SCHEMA_USERNAME);
         String password = env.getProperty(SystemConfigurationConstants.UNIDATA_SYSTEM_SCHEMA_PASSWORD);
 
-        return new SingleConnectionDataSource(url, username, password, true);
+        SingleConnectionDataSource scds = new SingleConnectionDataSource(url, username, password, true);
+        scds.setDriverClassName("org.postgresql.Driver");
+        
+        return scds; 
     }
 
     @Bean("configuration-sql")

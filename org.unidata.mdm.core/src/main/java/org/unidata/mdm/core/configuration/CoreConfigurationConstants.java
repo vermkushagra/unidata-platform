@@ -11,6 +11,10 @@ public final class CoreConfigurationConstants {
      */
     public static final String CORE_DEFAULT_EVENT_REPLAY_TIMEOUT = CoreModule.MODULE_ID + ".event.replay.timeout";
     /**
+     * Core data source properties prefix.
+     */
+    public static final String CORE_DATASOURCE_PROPERTIES_PREFIX = CoreModule.MODULE_ID + ".datasource.";
+    /**
      * Constructor.
      */
     private CoreConfigurationConstants() {

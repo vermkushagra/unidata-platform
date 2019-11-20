@@ -3,6 +3,7 @@ package org.unidata.mdm.data.configuration;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
@@ -13,8 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
+import org.unidata.mdm.system.util.DataSourceUtils;
 
 /**
  * @author Alexander Malyshev
@@ -91,11 +92,10 @@ public class DataConfiguration extends AbstractConfiguration {
         return propertiesFactoryBean;
     }
 
-    @Bean
+    @Bean(name = "storageDataSource")
     public DataSource storageDataSource() {
-        JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
-        jndiDataSourceLookup.setResourceRef(true);
-        return jndiDataSourceLookup.getDataSource("module/org.unidata.mdm.data");
+    	Properties properties = getAllPropertiesWithPrefix(DataConfigurationConstants.DATA_DATASOURCE_PROPERTIES_PREFIX, true);
+    	return DataSourceUtils.newPoolingNonXADataSource(properties);
     }
 
     @Bean
