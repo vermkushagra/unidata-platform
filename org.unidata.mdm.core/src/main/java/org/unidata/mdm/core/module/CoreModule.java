@@ -32,6 +32,7 @@ import org.unidata.mdm.search.service.SearchService;
 import org.unidata.mdm.search.type.mapping.Mapping;
 import org.unidata.mdm.search.type.mapping.impl.BooleanMappingField;
 import org.unidata.mdm.search.type.mapping.impl.StringMappingField;
+import org.unidata.mdm.search.type.mapping.impl.TimestampMappingField;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
@@ -112,50 +113,24 @@ public class CoreModule implements Module {
      */
     private static final Mapping AUDIT_INDEX_MAPPING = new Mapping(AuditIndexType.AUDIT)
             .withFields(
-                    new StringMappingField(AuditHeaderField.ACTION.getName())
+                    new StringMappingField(AuditHeaderField.TYPE.getName())
+                            .withNonAnalyzable(true)
+                            .withIndexType(AuditIndexType.AUDIT),
+                    new StringMappingField(AuditHeaderField.PARAMETERS.getName())
+                            .withNonAnalyzable(true)
+                            .withIndexType(AuditIndexType.AUDIT),
+                    new BooleanMappingField(AuditHeaderField.SUCCESS.getName())
+                            .withIndexType(AuditIndexType.AUDIT),
+                    new StringMappingField(AuditHeaderField.USER.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
                     new StringMappingField(AuditHeaderField.CLIENT_IP.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.DATE.getName())
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.DETAILS.getName())
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.ENDPOINT.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.ENTITY.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.ETALON_ID.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.EXTERNAL_ID.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.OPERATION_ID.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.ORIGIN_ID.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
                     new StringMappingField(AuditHeaderField.SERVER_IP.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.SOURCE_SYSTEM.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.SUB_SYSTEM.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new BooleanMappingField(AuditHeaderField.SUCCESS.getName())
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.TASK_ID.getName())
-                            .withNonAnalyzable(true)
-                            .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.USER.getName())
-                            .withNonAnalyzable(true)
+                    new TimestampMappingField(AuditHeaderField.WHEN.getName())
                             .withIndexType(AuditIndexType.AUDIT)
             );
 

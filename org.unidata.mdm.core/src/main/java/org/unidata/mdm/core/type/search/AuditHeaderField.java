@@ -1,43 +1,20 @@
 package org.unidata.mdm.core.type.search;
 
-import org.unidata.mdm.core.type.audit.Event;
+import org.unidata.mdm.core.dto.EnhancedAuditEvent;
 import org.unidata.mdm.search.type.FieldType;
 import org.unidata.mdm.search.type.IndexField;
 import org.unidata.mdm.search.type.IndexType;
 
 public enum AuditHeaderField implements IndexField {
 
-    ETALON_ID(Event.ETALON_ID, FieldType.STRING),
+    TYPE(EnhancedAuditEvent.TYPE_FIELD, FieldType.STRING),
+    PARAMETERS(EnhancedAuditEvent.PARAMETERS_FIELD, FieldType.STRING),
+    SUCCESS(EnhancedAuditEvent.SUCCESS_FIELD, FieldType.BOOLEAN),
+    USER(EnhancedAuditEvent.USER_FIELD, FieldType.STRING),
+    CLIENT_IP(EnhancedAuditEvent.CLIENT_IP_FIELD, FieldType.STRING),
+    SERVER_IP(EnhancedAuditEvent.SERVER_IP_FIELD, FieldType.STRING),
+    WHEN(EnhancedAuditEvent.WHEN_FIELD, FieldType.TIMESTAMP);
 
-    ORIGIN_ID(Event.ORIGIN_ID, FieldType.STRING),
-
-    EXTERNAL_ID(Event.EXTERNAL_ID, FieldType.STRING),
-
-    OPERATION_ID(Event.OPERATION_ID, FieldType.STRING),
-
-    SERVER_IP(Event.SERVER_IP, FieldType.STRING),
-
-    CLIENT_IP(Event.CLIENT_IP, FieldType.STRING),
-
-    ENDPOINT(Event.ENDPOINT, FieldType.STRING),
-
-    DETAILS(Event.DETAILS, FieldType.STRING),
-
-    DATE(Event.DATE, FieldType.TIMESTAMP),
-
-    USER(Event.USER, FieldType.STRING),
-
-    ENTITY(Event.ENTITY, FieldType.STRING),
-
-    SUB_SYSTEM(Event.SUB_SYSTEM, FieldType.STRING),
-
-    ACTION(Event.ACTION, FieldType.STRING),
-
-    SOURCE_SYSTEM(Event.SOURCE_SYSTEM, FieldType.STRING),
-
-    SUCCESS(Event.SUCCESS, FieldType.BOOLEAN),
-
-    TASK_ID(Event.TASK_ID, FieldType.STRING);
     /**
      * The field name.
      */

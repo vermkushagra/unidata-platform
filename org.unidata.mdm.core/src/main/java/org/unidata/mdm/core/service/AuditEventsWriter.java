@@ -5,6 +5,7 @@ import javax.annotation.Nonnull;
 import org.unidata.mdm.core.type.audit.AuditAction;
 import org.unidata.mdm.system.service.AfterContextRefresh;
 
+@Deprecated
 public interface AuditEventsWriter extends AfterContextRefresh {
 
     //event creation also can be async
