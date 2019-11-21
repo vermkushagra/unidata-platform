@@ -101,6 +101,12 @@ public class RecordUpsertPersistenceExecutor extends Point<UpsertRequestContext>
     }
 
     private void applyChangeSet(UpsertRequestContext ctx) {
+
+        // Will be applied later in batched fashion.
+        if (ctx.isBatchOperation()) {
+            return;
+        }
+
         RecordUpsertChangeSet set = ctx.changeSet();
         recordChangeSetProcessor.apply(set);
     }
@@ -192,7 +198,7 @@ public class RecordUpsertPersistenceExecutor extends Point<UpsertRequestContext>
                 .record(ch.getValue())
                 .enrichment(true)
                 .etalonKey(keys.getEtalonKey())
-                .batchUpsert(ctx.isBatchUpsert())
+                .batchOperation(ctx.isBatchOperation())
                 .auditLevel(ctx.getAuditLevel())
                 .lastUpdate(ctx.getLastUpdate())
                 .build();

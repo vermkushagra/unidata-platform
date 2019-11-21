@@ -23,6 +23,7 @@ public class UpsertRelationRequestContext
         MutableValidityRangeContext,
         ApprovalStateSettingContext,
         UpsertIndicatorContext,
+        BatchAwareContext,
         UserExitExecutableContext,
         OperationTypeContext {
     /**
@@ -71,7 +72,7 @@ public class UpsertRelationRequestContext
         this.auditLevel = b.auditLevel;
 
         flags.set(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS, b.includeDraftVersions);
-        flags.set(DataContextFlags.FLAG_BATCH_UPSERT, b.batchUpsert);
+        flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
         flags.set(DataContextFlags.FLAG_EMPTY_STORAGE, b.emptyStorage);
         flags.set(DataContextFlags.FLAG_BYPASS_EXTENSION_POINTS, b.bypassExtensionPoints);
         flags.set(DataContextFlags.FLAG_SUPPRESS_WORKFLOW, b.suppressWorkflow);
@@ -136,13 +137,6 @@ public class UpsertRelationRequestContext
      */
     public boolean isIncludeDraftVersions() {
         return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS);
-    }
-
-    /**
-     * @return true, if this context is a part of a batch upsert
-     */
-    public boolean isBatchUpsert() {
-        return flags.get(DataContextFlags.FLAG_BATCH_UPSERT);
     }
 
     /**
@@ -225,7 +219,7 @@ public class UpsertRelationRequestContext
         /**
          * This context is participating in a batch upsert. Collect artifacts instead of upserting immediately.
          */
-        private boolean batchUpsert;
+        private boolean batchOperation;
         /**
          * This context is participating in initial load process. Skips relation key resolution.
          */
@@ -315,8 +309,8 @@ public class UpsertRelationRequestContext
          * @param batchUpsert the flag
          * @return self
          */
-        public UpsertRelationRequestContextBuilder batchUpsert(boolean batchUpsert) {
-            this.batchUpsert = batchUpsert;
+        public UpsertRelationRequestContextBuilder batchOperation(boolean batchUpsert) {
+            this.batchOperation = batchUpsert;
             return this;
         }
 

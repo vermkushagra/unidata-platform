@@ -63,7 +63,6 @@ public class SearchUtils {
      * Elastic min date
      */
     private static final Date ES_MIN_DATE = new DateTime(ES_MIN_FROM).toDate();
-
     /**
      * Elastic max date
      */
@@ -220,6 +219,24 @@ public class SearchUtils {
     }
 
     /**
+     * Colaesce from date.
+     * @param ts the time stamp
+     * @return timestamp
+     */
+    public static Date coalesceFrom(Date ts) {
+        return ts != null ? ts : ES_MIN_DATE;
+    }
+    /**
+     * Colaesce to date.
+     * @param ts the time stamp
+     * @return timestamp
+     */
+    public static Date coalesceTo(Date ts) {
+        return ts != null ? ts : ES_MAX_DATE;
+    }
+
+    /**
+     * FIXME Looks like unused! Check and remove.
      * Returns {@link Long#MIN_VALUE} if the input is null.
      *
      * @param from the from date
@@ -230,6 +247,7 @@ public class SearchUtils {
     }
 
     /**
+     * FIXME Looks like unused! Check and remove.
      * Returns {@link Long#MAX_VALUE} if the input is null.
      *
      * @param to the to date

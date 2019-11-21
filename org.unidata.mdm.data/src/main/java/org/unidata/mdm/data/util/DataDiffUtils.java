@@ -131,7 +131,8 @@ public class DataDiffUtils {
         if (prevMatch != null) {
             for (Attribute prev : prevMatch.getAllAttributes()) {
                 if (attrsDiff.get(CHANGED).containsKey(prev.getName())
-                        || attrsDiff.get(DELETED).containsKey(prev.getName())) {
+                 || attrsDiff.get(DELETED).containsKey(prev.getName())
+                 || previousValueOverridden(prev, oldRecord)) {
                     continue;
                 }
 
@@ -161,6 +162,21 @@ public class DataDiffUtils {
         }
 
         return new SimpleAttributesDiff(attrsDiff);
+    }
+
+    /**
+     * Check for previous value overridden, return true if overridden.
+     * This condition arises, for example, if a contributing enrichment overrides admin SS in resulting record.
+     */
+    private static boolean previousValueOverridden(Attribute prev, DataRecord oldRecord) {
+
+        Attribute oldAttribute = oldRecord.getAttribute(prev.getName());
+        if (oldAttribute == null || oldAttribute.getAttributeType() != prev.getAttributeType()) {
+            return false;
+        }
+
+        //not equals if previous value overridden, return true
+        return !oldAttribute.equals(prev);
     }
 
     private static Map<TypeOfChange, Map<String, Attribute>> createDiffTable(

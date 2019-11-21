@@ -101,7 +101,13 @@ public class SearchServiceImpl implements SearchService{
      */
     @Value("${" + SearchConfigurationConstants.SEARCH_SYSTEM_REPLICAS_NUMBER_PROPERTY + ":}")
     private String numberOfReplicasForSystem = "";
+    /**
+     * Delay for async audit operations.
+     */
+    @Value("${unidata.data.refresh.immediate:true}")
+    private boolean refreshImmediate;
 
+    // FIXME Kill this!
     private static final String FIELD_ETALON_ID = "$etalon_id";
 
     /**
@@ -674,5 +680,10 @@ public class SearchServiceImpl implements SearchService{
     @Override
     public String getNumberOfReplicasForSystem() {
         return numberOfReplicasForSystem;
+    }
+
+    @Override
+    public boolean isRefreshImmediate() {
+        return refreshImmediate;
     }
 }

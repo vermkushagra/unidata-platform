@@ -89,7 +89,7 @@ public class RecordUpsertIndexingExecutor extends Point<UpsertRequestContext> {
                     .delete(collectDeletes(ctx))
                     .index(collectUpdates(ctx))
                     .routing(keys.getEtalonKey().getId())
-                    .refresh(!ctx.isBatchUpsert() && refreshImmediate)
+                    .refresh(!ctx.isBatchOperation() && refreshImmediate)
                     .build();
 
             cs.setIndexRequestContext(irc);
@@ -136,10 +136,10 @@ public class RecordUpsertIndexingExecutor extends Point<UpsertRequestContext> {
             Collection<IndexingField> fields = new ArrayList<>(RecordHeaderField.values().length);
             fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_FROM.getName(), i.getValidFrom()));
             fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_TO.getName(), i.getValidTo()));
-            fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_CREATED_AT.getName(), etalon.getInfoSection().getUpdateDate()));
+            fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_CREATED_AT.getName(), etalon.getInfoSection().getCreateDate()));
 
             if (!isNew) {
-                fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_UPDATED_AT.getName(), etalon.getInfoSection().getCreateDate()));
+                fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_UPDATED_AT.getName(), etalon.getInfoSection().getUpdateDate()));
             }
 
             fields.add(IndexingField.of(EntityIndexType.RECORD, RecordHeaderField.FIELD_PENDING.getName(), isPending));

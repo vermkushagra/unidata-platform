@@ -80,6 +80,7 @@ public class ValidationResult {
      * @return the systemMessage
      */
     public String getSystemMessage() {
+
         String mainMessage = "";
         if (args != null && args.length > 0) {
             mainMessage = MessageFormatter.arrayFormat(systemMessage, args).getMessage();
@@ -88,7 +89,7 @@ public class ValidationResult {
         }
 
         if(!getNestedValidations().isEmpty()){
-            mainMessage=mainMessage+"Nested errors:[";
+            mainMessage = mainMessage + " Nested errors: [";
             return getNestedValidations().stream()
                                          .map(ValidationResult::getSystemMessage)
                                          .collect(Collectors.joining("\n\t", mainMessage, "]"));

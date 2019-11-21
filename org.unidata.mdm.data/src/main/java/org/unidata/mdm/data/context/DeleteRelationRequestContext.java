@@ -18,6 +18,7 @@ public class DeleteRelationRequestContext
         ReadWriteTimelineContext<OriginRelation>,
         ContainmentRelationContext<DeleteRequestContext>,
         MutableValidityRangeContext,
+        BatchAwareContext,
         ApprovalStateSettingContext  {
     /**
      * SVUID.
@@ -60,7 +61,7 @@ public class DeleteRelationRequestContext
         flags.set(DataContextFlags.FLAG_INACTIVATE_ETALON, b.inactivateEtalon);
         flags.set(DataContextFlags.FLAG_WORKFLOW_ACTION, b.workflowAction);
         flags.set(DataContextFlags.FLAG_SUPPRESS_AUDIT, b.suppressAudit);
-        flags.set(DataContextFlags.FLAG_BATCH_UPSERT, b.batchUpsert);
+        flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
     }
 
     /**
@@ -159,19 +160,11 @@ public class DeleteRelationRequestContext
         return flags.get(DataContextFlags.FLAG_INACTIVATE_WIPE);
     }
     /**
-     * @return true, if this context is a part of a batch upsert
-     */
-    public boolean isBatchUpsert() {
-        return flags.get(DataContextFlags.FLAG_BATCH_UPSERT);
-    }
-
-    /**
      * @return suppressAudit
      */
     public boolean isSuppressAudit() {
         return flags.get(DataContextFlags.FLAG_SUPPRESS_AUDIT);
     }
-
     /**
      * Gets builder.
      * @return builder
@@ -220,7 +213,7 @@ public class DeleteRelationRequestContext
         /**
          * This context is participating in a batch upsert. Collect artifacts instead of upserting immediately.
          */
-        private boolean batchUpsert;
+        private boolean batchOperation;
         /**
          * Force approval state.
          */
@@ -336,8 +329,8 @@ public class DeleteRelationRequestContext
          * @param batchUpsert the flag
          * @return self
          */
-        public DeleteRelationRequestContextBuilder batchUpsert(boolean batchUpsert) {
-            this.batchUpsert = batchUpsert;
+        public DeleteRelationRequestContextBuilder batchOperation(boolean batchUpsert) {
+            this.batchOperation = batchUpsert;
             return this;
         }
         /**

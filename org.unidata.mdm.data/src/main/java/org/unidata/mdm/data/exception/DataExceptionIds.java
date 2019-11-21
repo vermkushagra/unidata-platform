@@ -421,6 +421,16 @@ public final class DataExceptionIds {
     public static final ExceptionId EX_DATA_DELETE_NO_RIGHTS =
             new ExceptionId("EX_DATA_DELETE_NO_RIGHTS", "app.data.delete.noReadRights");
     /**
+     * An etalon record has incoming relations and cannot be deleted.
+     */
+    public static final ExceptionId EX_DATA_ETALON_HAS_INCOMING_RELATIONS =
+            new ExceptionId("EX_DATA_ETALON_HAS_INCOMING_RELATIONS", "app.data.consistency.etalon.has.incoming.relations");
+    /**
+     * An etalon record has incoming links.
+     */
+    public static final ExceptionId EX_DATA_ETALON_HAS_INCOMING_LINKS =
+            new ExceptionId("EX_DATA_ETALON_HAS_INCOMING_LINKS", "app.data.consistency.etalon.has.incoming.links");
+    /**
      * Constructor.
      */
     private DataExceptionIds() {

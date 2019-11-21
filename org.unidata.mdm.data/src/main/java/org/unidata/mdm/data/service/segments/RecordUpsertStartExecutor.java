@@ -112,7 +112,7 @@ public class RecordUpsertStartExecutor
         MeasurementPoint.start();
         try {
 
-            boolean batchInsertWithKeys = ctx.isBatchUpsert()
+            boolean batchInsertWithKeys = ctx.isBatchOperation()
                     && Objects.nonNull(ctx.keys())
                     && ctx.keys().getOriginKey().getRevision() == 0;
 
@@ -229,7 +229,7 @@ public class RecordUpsertStartExecutor
             ctx.setExternalId(externalId.toString());
 
             // 2.2 Batch insert with keys
-            if (ctx.isBatchUpsert() && Objects.nonNull(ctx.keys())) {
+            if (ctx.isBatchOperation() && Objects.nonNull(ctx.keys())) {
 
                 RecordKeys keys = RecordKeys.builder(ctx.keys())
                         .originKey(RecordOriginKey.builder(ctx.keys().getOriginKey())

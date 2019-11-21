@@ -14,12 +14,10 @@ import org.unidata.mdm.core.type.data.SimpleAttribute;
  * Abstract simple attribute value holder.
  */
 public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute implements SimpleAttribute<T> {
-
     /**
      * Value.
      */
     private T value;
-
     /**
      * Display value (title) for the contained data value.
      */
@@ -37,7 +35,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     protected AbstractSimpleAttribute(String name) {
         super(name);
     }
-
     /**
      * Constructor.
      * @param name
@@ -46,7 +43,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
         super(name);
         this.value = value;
     }
-
     /**
      * {@inheritDoc}
      */
@@ -54,7 +50,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     public T getValue() {
         return value;
     }
-
     /**
      * {@inheritDoc}
      */
@@ -62,7 +57,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     public void setValue(T value) {
         this.value = value;
     }
-
     /**
      * @return the displayValue
      */
@@ -70,7 +64,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     public String getDisplayValue() {
         return displayValue;
     }
-
     /**
      * @param displayValue the displayValue to set
      */
@@ -78,7 +71,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     public void setDisplayValue(String displayValue) {
         this.displayValue = displayValue;
     }
-
     /**
      * @see Object#hashCode()
      * TODO re-write this crap asap. Introduce solid value identity system instead.
@@ -87,9 +79,9 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
     public int hashCode() {
         return Objects.hash(getDataType(), Objects.toString(getValue()));
     }
-
     /**
      * @see Object#equals(Object)
+     * TODO re-write this crap asap. Introduce solid value identity system instead.
      */
     @Override
     public boolean equals(Object obj) {
@@ -110,10 +102,9 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
         if (getDataType() != other.getDataType()) {
             return false;
         }
-        Objects.toString(getValue());
+
         return Objects.equals(Objects.toString(getValue()), Objects.toString(other.getValue()));
     }
-
     /**
      * Creates
      * @param type
@@ -155,7 +146,6 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
 
         return null;
     }
-
     /**
      * Creates
      * @param type
@@ -197,7 +187,7 @@ public abstract class AbstractSimpleAttribute<T> extends AbstractAttribute imple
 
         return null;
     }
-
+    // FIXME: Remove method and its usage
     @SuppressWarnings("unchecked")
     @Override
     public <V> V narrow(NarrowType type) {

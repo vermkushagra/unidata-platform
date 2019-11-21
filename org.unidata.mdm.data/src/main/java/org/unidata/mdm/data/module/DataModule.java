@@ -25,9 +25,13 @@ import org.unidata.mdm.data.migrations.data.DataMigrations.DataMigrationContext;
 import org.unidata.mdm.data.migrations.meta.MetaMigrations;
 import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.service.DataStorageService;
+import org.unidata.mdm.data.service.segments.RecordDeleteDataConsistencyExecutor;
+import org.unidata.mdm.data.service.segments.RecordDeleteFinishExecutor;
+import org.unidata.mdm.data.service.segments.RecordDeleteIndexingExecutor;
 import org.unidata.mdm.data.service.segments.RecordDeletePeriodCheckExecutor;
+import org.unidata.mdm.data.service.segments.RecordDeletePersistenceExecutor;
 import org.unidata.mdm.data.service.segments.RecordDeleteSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeleteValidateExecutor;
+import org.unidata.mdm.data.service.segments.RecordDeleteStartExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetFinishExecutor;
@@ -93,7 +97,7 @@ public class DataModule implements Module {
         // Record get start executor
         RecordGetStartExecutor.SEGMENT_ID,
         // Record delete start executor
-        RecordDeleteValidateExecutor.SEGMENT_ID
+        RecordDeleteStartExecutor.SEGMENT_ID
     };
     /**
      * Point segment names.
@@ -133,7 +137,13 @@ public class DataModule implements Module {
         // Security check
         RecordDeleteSecurityExecutor.SEGMENT_ID,
         // Period check
-        RecordDeletePeriodCheckExecutor.SEGMENT_ID
+        RecordDeletePeriodCheckExecutor.SEGMENT_ID,
+        // Data (records and rels consistency check)
+        RecordDeleteDataConsistencyExecutor.SEGMENT_ID,
+        // Generates index updates.
+        RecordDeleteIndexingExecutor.SEGMENT_ID,
+        // Data delete persistence executor
+        RecordDeletePersistenceExecutor.SEGMENT_ID
     };
     /**
      * Finish segments.
@@ -142,7 +152,9 @@ public class DataModule implements Module {
         // Upsert result creator
         RecordUpsertFinishExecutor.SEGMENT_ID,
         // Get result creator
-        RecordGetFinishExecutor.SEGMENT_ID
+        RecordGetFinishExecutor.SEGMENT_ID,
+        // Delete result creator
+        RecordDeleteFinishExecutor.SEGMENT_ID
     };
     /**
      * Connector segments.

@@ -164,4 +164,9 @@ public interface SearchService {
      * @return the numberOfReplicasForSystem
      */
     String getNumberOfReplicasForSystem();
+    /**
+     * State of the system setting 'unidata.data.refresh.immediate'.
+     * @return true, if current system settings tells to refresh indexed records immediatly. False otherwise.
+     */
+    boolean isRefreshImmediate();
 }

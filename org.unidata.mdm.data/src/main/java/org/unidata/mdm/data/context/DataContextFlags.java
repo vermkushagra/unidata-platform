@@ -14,7 +14,7 @@ public final class DataContextFlags {
     /**
      * Batch upsert indicator.
      */
-    public static final int FLAG_BATCH_UPSERT = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
+    public static final int FLAG_BATCH_OPERATION = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     /**
      * Empty storage?
      */

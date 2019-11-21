@@ -36,7 +36,8 @@ public class UpsertRequestContext
         ReadWriteTimelineContext<OriginRecord>,
         UpsertIndicatorContext,
         OperationTypeContext,
-        AccessRightContext {
+        AccessRightContext,
+        BatchAwareContext {
 
     /**
      * Generated SVUID.
@@ -112,7 +113,7 @@ public class UpsertRequestContext
         flags.set(DataContextFlags.FLAG_SKIP_INDEX_DROP, b.skipIndexDrop);
         flags.set(DataContextFlags.FLAG_SKIP_MATCHING_PREPROCESSING, b.skipMatchingPreprocessing);
         flags.set(DataContextFlags.FLAG_SUPPRESS_AUDIT, b.suppressAudit);
-        flags.set(DataContextFlags.FLAG_BATCH_UPSERT, b.batchUpsert);
+        flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
         flags.set(DataContextFlags.FLAG_EMPTY_STORAGE, b.emptyStorage);
         flags.set(DataContextFlags.FLAG_SKIP_CONSISTENCY_CHECKS, b.skipConsistencyChecks);
         flags.set(DataContextFlags.FLAG_SKIP_MATCHING, b.skipMatching);
@@ -259,14 +260,6 @@ public class UpsertRequestContext
     public boolean isPeriodRestore() {
         return flags.get(DataContextFlags.FLAG_IS_PERIOD_RESTORE);
     }
-
-    /**
-     * @return true, if this context is a part of a batch upsert
-     */
-    public boolean isBatchUpsert() {
-        return flags.get(DataContextFlags.FLAG_BATCH_UPSERT);
-    }
-
     /**
      * @return true, if this context is a part of initial load process
      */
@@ -567,7 +560,7 @@ public class UpsertRequestContext
         /**
          * This context is participating in a batch upsert. Collect artifacts instead of upserting immediately.
          */
-        private boolean batchUpsert;
+        private boolean batchOperation;
         /**
          * This context is participating in initial load process. Skips relation key resolution.
          */
@@ -643,7 +636,7 @@ public class UpsertRequestContext
             this.mergeWithPreviousVersion = other.flags.get(DataContextFlags.FLAG_MERGE_WITH_PREVIOUS_VERSION);
             this.skipMatchingPreprocessing = other.flags.get(DataContextFlags.FLAG_SKIP_MATCHING_PREPROCESSING);
             this.suppressAudit = other.flags.get(DataContextFlags.FLAG_SUPPRESS_AUDIT);
-            this.batchUpsert = other.flags.get(DataContextFlags.FLAG_BATCH_UPSERT);
+            this.batchOperation = other.flags.get(DataContextFlags.FLAG_BATCH_OPERATION);
             this.emptyStorage = other.flags.get(DataContextFlags.FLAG_EMPTY_STORAGE);
             this.skipMatching = other.flags.get(DataContextFlags.FLAG_SKIP_MATCHING);
             this.suppressWorkflow = other.flags.get(DataContextFlags.FLAG_SUPPRESS_WORKFLOW);
@@ -737,8 +730,8 @@ public class UpsertRequestContext
          * @param batchUpsert the flag
          * @return self
          */
-        public UpsertRequestContextBuilder batchUpsert(boolean batchUpsert) {
-            this.batchUpsert = batchUpsert;
+        public UpsertRequestContextBuilder batchOperation(boolean batchUpsert) {
+            this.batchOperation = batchUpsert;
             return this;
         }
 

@@ -1398,7 +1398,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 // while some calculation threads are still busy working
 // @Modules Removed
 //                .returnEtalon(true)
-                .batchUpsert(bulkUpsert);
+                .batchOperation(bulkUpsert);
 
         for (int i = 0; requestUpsert.getRelations() != null
                 && i < requestUpsert.getRelations().getRelation().size(); i++) {
@@ -1753,7 +1753,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .entityName(entityName)
                     .originKey(originId)
                     .etalonKey(etalonId)
-                    .batchUpsert(bulkUpsert);
+                    .batchOperation(bulkUpsert);
 
             UpsertRelationRequestContext ctx = builder.build();
             ctx.setOperationId(commonSection.getOperationId());
@@ -1977,7 +1977,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .validFrom(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeFrom()) : null)
                         .validTo(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeTo()) : null)
                         .wipe(BooleanUtils.toBoolean(wipe))
-                        .batchUpsert(bulkUpsert)
+                        .batchOperation(bulkUpsert)
                         .build();
 
                 ctx.setOperationId(operationId);

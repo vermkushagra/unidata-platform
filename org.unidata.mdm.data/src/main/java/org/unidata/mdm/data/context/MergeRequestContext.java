@@ -15,7 +15,7 @@ import org.unidata.mdm.core.type.data.ApprovalState;
  */
 public class MergeRequestContext
     extends AbstractRecordIdentityContext
-    implements MergeCapableContext, ApprovalStateSettingContext {
+    implements MergeCapableContext, BatchAwareContext, ApprovalStateSettingContext {
 
     /**
      * Generated SVUID.
@@ -42,8 +42,6 @@ public class MergeRequestContext
      */
     private final short auditLevel;
 
-    private final boolean batchUpsert;
-
     private final boolean upRecordsToContext;
 
     private final Integer shardNumber;
@@ -66,13 +64,14 @@ public class MergeRequestContext
         this.manual = b.manual;
         this.approvalState = b.approvalState;
         this.auditLevel = b.auditLevel;
-        this.batchUpsert = b.batchUpsert;
         this.upRecordsToContext = b.upRecordsToContext;
         this.shardNumber = b.shardNumber;
         this.skipRelations = b.skipRelations;
         this.skipClassifiers = b.skipClassifiers;
         this.clearPreprocessing = b.clearPreprocessing;
         this.withTranstition = b.withTransition;
+
+        flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
     }
     /**
      * @return the duplicates
@@ -95,12 +94,6 @@ public class MergeRequestContext
         return manual;
     }
 
-    /**
-     * @return the batch upsert flag
-     */
-    public boolean isBatchUpsert() {
-        return batchUpsert;
-    }
     /**
      * @return the with transition flag
      */
@@ -189,7 +182,7 @@ public class MergeRequestContext
         /**
          * Batch upsert flag
          */
-        private boolean batchUpsert;
+        private boolean batchOperation;
 
         /**
          * Bypass extension points during merge.
@@ -257,8 +250,8 @@ public class MergeRequestContext
          * @param batchUpsert the batch upsert flag
          * @return self
          */
-        public MergeRequestContextBuilder batchUpsert(boolean batchUpsert) {
-            this.batchUpsert = batchUpsert;
+        public MergeRequestContextBuilder batchOperation(boolean batchUpsert) {
+            this.batchOperation = batchUpsert;
             return this;
         }
 

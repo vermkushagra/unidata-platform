@@ -181,6 +181,13 @@ public abstract class AbstractTimeline<C extends Calculable> implements Timeline
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<TimeInterval<C>> getAll() {
+        return Collections.unmodifiableList(intervals);
+    }
 
     @Override
     public boolean isFullCovered(Date from, Date to, boolean onlyActive) {

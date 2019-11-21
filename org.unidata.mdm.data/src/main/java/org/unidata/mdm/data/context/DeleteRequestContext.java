@@ -23,6 +23,7 @@ public class DeleteRequestContext
         ApprovalStateSettingContext,
         OperationTypeContext,
         AccessRightContext,
+        BatchAwareContext,
         ReadWriteTimelineContext<OriginRecord> {
 
     /**
@@ -68,7 +69,7 @@ public class DeleteRequestContext
         flags.set(DataContextFlags.FLAG_INACTIVATE_ETALON, b.inactivateEtalon);
         flags.set(DataContextFlags.FLAG_WORKFLOW_ACTION, b.workflowAction);
         flags.set(DataContextFlags.FLAG_SUPPRESS_AUDIT, b.suppressAudit);
-        flags.set(DataContextFlags.FLAG_BATCH_UPSERT, b.batchUpsert);
+        flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
     }
 
     @Override
@@ -173,13 +174,6 @@ public class DeleteRequestContext
     }
 
     /**
-     * @return true, if this context is a part of a batch upsert
-     */
-    public boolean isBatchUpsert() {
-        return flags.get(DataContextFlags.FLAG_BATCH_UPSERT);
-    }
-
-    /**
      * Force specific approval state upon upsert.
      * @return the approvalState
      */
@@ -259,7 +253,7 @@ public class DeleteRequestContext
         /**
          * This context is participating in a batch upsert. Collect artifacts instead of upserting immediately.
          */
-        private boolean batchUpsert;
+        private boolean batchOperation;
         /**
          * Constructor.
          */
@@ -372,8 +366,8 @@ public class DeleteRequestContext
          * @param batchUpsert the flag
          * @return self
          */
-        public DeleteRequestContextBuilder batchUpsert(boolean batchUpsert) {
-            this.batchUpsert = batchUpsert;
+        public DeleteRequestContextBuilder batchOperation(boolean batchUpsert) {
+            this.batchOperation = batchUpsert;
             return this;
         }
         /**

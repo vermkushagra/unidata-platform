@@ -85,7 +85,11 @@ public interface Timeline <C extends Calculable> extends Iterable<TimeInterval<C
      * @return sub segment
      */
     List<TimeInterval<C>> selectBy(Date from, Date to);
-
+    /**
+     * Gets all time intervals currently hold by this timeline.
+     * @return all intervals or empty list. The list is unmodifiable.
+     */
+    List<TimeInterval<C>> getAll();
     /**
      * Check that timeline full covers given boundary, without holes
      * @param from left boundary
