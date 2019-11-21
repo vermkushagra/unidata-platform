@@ -151,7 +151,7 @@ public final class Pipeline {
     }
     /**
      * Adds a connector with pipeline selection at runtime.
-     * @param c the connector
+     * @param f the finish segment
      * @return self
      */
     public Pipeline end(@Nonnull Finish<? extends PipelineExecutionContext, ? extends PipelineExecutionResult> f) {

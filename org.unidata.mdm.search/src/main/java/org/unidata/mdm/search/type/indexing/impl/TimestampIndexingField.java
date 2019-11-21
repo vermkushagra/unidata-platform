@@ -21,6 +21,6 @@ public class TimestampIndexingField extends AbstractValueIndexingField<LocalDate
      */
     @Override
     public FieldType getFieldType() {
-        return FieldType.TIME;
+        return FieldType.TIMESTAMP;
     }
 }

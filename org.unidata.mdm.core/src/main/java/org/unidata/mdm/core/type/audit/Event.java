@@ -19,6 +19,7 @@ import org.unidata.mdm.core.util.SecurityUtils;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
+@Deprecated
 public class Event {
 
     public static final String ETALON_ID = "etalonId";

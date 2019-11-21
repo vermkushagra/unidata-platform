@@ -187,7 +187,9 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
         final String moduleId = moduleInfo.getModule().getId();
         logger.info("Starting loading module {}", moduleId);
         if (moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.LOADED
-                || moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.FAILED) {
+                || moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.FAILED
+                || moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.INSTALLATION_FAILED
+                || moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.START_FAILED) {
             logger.info("Module {} was loaded early", moduleId);
             return;
         }

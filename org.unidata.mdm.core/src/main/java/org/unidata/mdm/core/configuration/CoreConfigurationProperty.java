@@ -318,10 +318,11 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
 
     UNIDATA_BALANCER_PROTOCOL_HEADER("unidata.balancer.protocol.header", "unidata.properties.group.balancer", ConfigurationPropertyType.STRING),
 
-    UNIDATA_AUDIT_DISABLED("unidata.audit.disabled", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
+//    UNIDATA_AUDIT_DISABLED("unidata.audit.disabled", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
+    UNIDATA_AUDIT_ENABLED(Constants.UNIDATA_AUDIT_ENABLED_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
     UNIDATA_AUDIT_READ_EVENTS("unidata.audit.read.events", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
     UNIDATA_AUDIT_STACKTRACE_DEPTH("unidata.audit.stacktrace.depth", "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
-    UNIDATA_AUDIT_WRITER_POOL_SIZE("unidata.audit.writer.pool.size", "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
+    UNIDATA_AUDIT_WRITER_POOL_SIZE(Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
     ;
     private final String key;
     private final String groupKey;
@@ -430,5 +431,11 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
 
     public static boolean exists(final String key) {
         return Arrays.stream(CoreConfigurationProperty.values()).anyMatch(property -> property.getKey().equals(key));
+    }
+
+    public static final class Constants {
+        private Constants() { }
+        public static final String UNIDATA_AUDIT_ENABLED_KEY = "unidata.audit.enabled";
+        public static final String UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY = "unidata.audit.writer.pool.size";
     }
 }

@@ -3,6 +3,7 @@ package org.unidata.mdm.core.type.audit;
 /**
  * Audit action
  */
+@Deprecated
 public interface AuditAction {
     /**
      * @param event - event for enriching

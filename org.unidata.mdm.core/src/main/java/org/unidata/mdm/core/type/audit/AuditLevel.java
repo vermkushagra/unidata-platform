@@ -4,6 +4,7 @@ package org.unidata.mdm.core.type.audit;
  * @author Mikhail Mikhailov
  * Audit level.
  */
+@Deprecated
 public final class AuditLevel {
     /**
      * Skip all events.

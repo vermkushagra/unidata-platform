@@ -478,6 +478,10 @@ public class CoreExceptionIds {
 
     public static final ExceptionId EX_EVENT_ALREADY_WAITING
         = new ExceptionId("EX_EVENT_ALREADY_WAITING", "app.event.is.waiting.yet");
+
+    public static final ExceptionId EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION =
+            new ExceptionId("EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION", "app.audit.parameters.json.serialization.error");
+
     /**
      * Constructor.
      */
