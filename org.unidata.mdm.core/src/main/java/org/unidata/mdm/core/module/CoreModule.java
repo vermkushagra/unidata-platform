@@ -125,7 +125,7 @@ public class CoreModule implements Module {
                             .withIndexType(AuditIndexType.AUDIT),
                     new BooleanMappingField(AuditHeaderField.SUCCESS.getName())
                             .withIndexType(AuditIndexType.AUDIT),
-                    new StringMappingField(AuditHeaderField.USER.getName())
+                    new StringMappingField(AuditHeaderField.LOGIN.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
                     new StringMappingField(AuditHeaderField.CLIENT_IP.getName())
@@ -134,7 +134,7 @@ public class CoreModule implements Module {
                     new StringMappingField(AuditHeaderField.SERVER_IP.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
-                    new TimestampMappingField(AuditHeaderField.WHEN.getName())
+                    new TimestampMappingField(AuditHeaderField.WHEN_HAPPENED.getName())
                             .withIndexType(AuditIndexType.AUDIT)
             );
 
@@ -162,7 +162,10 @@ public class CoreModule implements Module {
     public void uninstall() {
         LOGGER.info("Uninstall");
         try {
-            getMigrator().migrate(coreConfiguration.getBeanByClass(SpringContextAwareMigrationContext.class), UninstallCoreSchemaMigrations.migrations());
+            getMigrator().migrate(
+                    coreConfiguration.getBeanByClass(SpringContextAwareMigrationContext.class),
+                    UninstallCoreSchemaMigrations.migrations()
+            );
         } catch (SQLException e) {
             throw new PlatformFailureException(
                     "cannot uninstall core module",

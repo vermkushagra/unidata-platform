@@ -17,10 +17,10 @@ public class EnhancedAuditEvent implements AuditEvent {
     public static final String TYPE_FIELD = "type";
     public static final String PARAMETERS_FIELD = "parameters";
     public static final String SUCCESS_FIELD = "success";
-    public static final String USER_FIELD = "user";
+    public static final String LOGIN_FIELD = "login";
     public static final String CLIENT_IP_FIELD = "client_ip";
     public static final String SERVER_IP_FIELD = "server_ip";
-    public static final String WHEN_FIELD = "when";
+    public static final String WHEN_HAPPENED_FIELD = "when_happened";
 
     private final String type;
 
@@ -28,42 +28,42 @@ public class EnhancedAuditEvent implements AuditEvent {
 
     private final boolean success;
 
-    private final String user;
+    private final String login;
 
     private final String clientIp;
 
     private final String serverIp;
 
-    private final LocalDateTime when;
+    private final LocalDateTime whenwHappened;
 
     public EnhancedAuditEvent(
             final String type,
             final Map<String, String> parameters,
             final boolean success,
-            final String user,
+            final String login,
             final String clientIp,
             final String serverIp,
-            final LocalDateTime when
+            final LocalDateTime whenHappened
     ) {
         this.type = Objects.requireNonNull(type);
         if (MapUtils.isNotEmpty(parameters)) {
             this.parameters.putAll(parameters);
         }
         this.success = success;
-        this.user = user;
+        this.login = login;
         this.clientIp = clientIp;
         this.serverIp = serverIp;
-        this.when = when;
+        this.whenwHappened = whenHappened;
     }
 
     public EnhancedAuditEvent(
             final AuditEvent auditEvent,
-            final String user,
+            final String login,
             final String clientIp,
             final String serverIp,
-            final LocalDateTime when
+            final LocalDateTime whenwHappened
     ) {
-        this(auditEvent.type(), auditEvent.parameters(), auditEvent.success(), user, clientIp, serverIp, when);
+        this(auditEvent.type(), auditEvent.parameters(), auditEvent.success(), login, clientIp, serverIp, whenwHappened);
     }
 
     @Nonnull
@@ -83,8 +83,8 @@ public class EnhancedAuditEvent implements AuditEvent {
         return success;
     }
 
-    public String getUser() {
-        return user;
+    public String getLogin() {
+        return login;
     }
 
     public String getClientIp() {
@@ -95,7 +95,7 @@ public class EnhancedAuditEvent implements AuditEvent {
         return serverIp;
     }
 
-    public LocalDateTime getWhen() {
-        return when;
+    public LocalDateTime getWhenwHappened() {
+        return whenwHappened;
     }
 }

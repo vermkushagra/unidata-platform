@@ -10,10 +10,10 @@ public enum AuditHeaderField implements IndexField {
     TYPE(EnhancedAuditEvent.TYPE_FIELD, FieldType.STRING),
     PARAMETERS(EnhancedAuditEvent.PARAMETERS_FIELD, FieldType.STRING),
     SUCCESS(EnhancedAuditEvent.SUCCESS_FIELD, FieldType.BOOLEAN),
-    USER(EnhancedAuditEvent.USER_FIELD, FieldType.STRING),
+    LOGIN(EnhancedAuditEvent.LOGIN_FIELD, FieldType.STRING),
     CLIENT_IP(EnhancedAuditEvent.CLIENT_IP_FIELD, FieldType.STRING),
     SERVER_IP(EnhancedAuditEvent.SERVER_IP_FIELD, FieldType.STRING),
-    WHEN(EnhancedAuditEvent.WHEN_FIELD, FieldType.TIMESTAMP);
+    WHEN_HAPPENED(EnhancedAuditEvent.WHEN_HAPPENED_FIELD, FieldType.TIMESTAMP);
 
     /**
      * The field name.

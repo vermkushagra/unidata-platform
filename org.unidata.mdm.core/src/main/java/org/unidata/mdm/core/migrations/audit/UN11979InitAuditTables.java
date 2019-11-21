@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.migrations.core.audit;
+package org.unidata.mdm.core.migrations.audit;
 
 import nl.myndocs.database.migrator.MigrationScript;
 import nl.myndocs.database.migrator.definition.Column;
@@ -25,9 +25,10 @@ public class UN11979InitAuditTables implements MigrationScript {
                 .addColumn("type", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
                 .addColumn("parameters", Column.TYPE.TEXT)
                 .addColumn("success", Column.TYPE.BOOLEAN, cb -> cb.notNull(true))
-                .addColumn("user", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
-                .addColumn("client_id", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
+                .addColumn("login", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
+                .addColumn("client_ip", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
                 .addColumn("server_ip", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
-                .addColumn("when", Column.TYPE.TIMESTAMP, cb -> cb.notNull(true));
+                .addColumn("when_happened", Column.TYPE.TIMESTAMP, cb -> cb.notNull(true))
+                .save();
     }
 }

@@ -1,6 +1,8 @@
 package org.unidata.mdm.core.service.impl;
 
 import io.prometheus.client.Counter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
@@ -16,6 +18,7 @@ import org.unidata.mdm.search.service.SearchService;
 import org.unidata.mdm.search.type.indexing.Indexing;
 import org.unidata.mdm.search.type.indexing.IndexingField;
 
+import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +35,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class AuditServiceImpl implements AuditService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuditServiceImpl.class);
 
     private static final String AUDIT_EVENTS_TASKS_QUEUE_SIZE_METRIC_NAME = "unidata_audit_write_queue_size";
     private static final String AUDIT_EVENTS_TASKS_QUEUE_SIZE_METRIC_HELP_TEXT = "Size of audit event write queue";
@@ -123,32 +128,42 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private void write(EnhancedAuditEvent enhancedAuditEvent, String currentUserStorageId) {
-        auditDao.insert(enhancedAuditEvent);
+        try {
+            auditDao.insert(enhancedAuditEvent);
 
-        List<IndexingField> fields = new ArrayList<>();
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.TYPE_FIELD, enhancedAuditEvent.type()));
-        fields.add(IndexingField.ofStrings(
-                AuditIndexType.AUDIT,
-                EnhancedAuditEvent.PARAMETERS_FIELD,
-                toIndexStrings(enhancedAuditEvent.parameters())
-        ));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SUCCESS_FIELD, enhancedAuditEvent.success()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.USER_FIELD, enhancedAuditEvent.getUser()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.CLIENT_IP_FIELD, enhancedAuditEvent.getClientIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SERVER_IP_FIELD, enhancedAuditEvent.getServerIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.WHEN_FIELD, enhancedAuditEvent.getWhen()));
-        final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
-                .storageId(currentUserStorageId)
-                .entity(AuditIndexType.INDEX_NAME)
-                .index(new Indexing(AuditIndexType.AUDIT, null).withFields(fields))
-                .build();
-        searchService.process(indexRequestContext);
-        HANDLED_AUDIT_EVENTS.inc();
+            List<IndexingField> fields = new ArrayList<>();
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.TYPE_FIELD, enhancedAuditEvent.type()));
+            fields.add(IndexingField.ofStrings(
+                    AuditIndexType.AUDIT,
+                    EnhancedAuditEvent.PARAMETERS_FIELD,
+                    toIndexStrings(enhancedAuditEvent.parameters())
+            ));
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SUCCESS_FIELD, enhancedAuditEvent.success()));
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.LOGIN_FIELD, enhancedAuditEvent.getLogin()));
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.CLIENT_IP_FIELD, enhancedAuditEvent.getClientIp()));
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SERVER_IP_FIELD, enhancedAuditEvent.getServerIp()));
+            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.WHEN_HAPPENED_FIELD, enhancedAuditEvent.getWhenwHappened()));
+            final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
+                    .storageId(currentUserStorageId)
+                    .entity(AuditIndexType.INDEX_NAME)
+                    .index(new Indexing(AuditIndexType.AUDIT, null).withFields(fields))
+                    .build();
+            searchService.process(indexRequestContext);
+            HANDLED_AUDIT_EVENTS.inc();
+        }
+        catch (Exception e) {
+            logger.error("Error while write audit", e);
+        }
     }
 
     private Collection<String> toIndexStrings(Map<String, String> parameters) {
         return parameters.entrySet().stream()
                 .map(e -> String.format("%s%s%s", e.getKey(), FIELD_VALUE_DELIMITER, e.getValue()))
                 .collect(Collectors.toList());
+    }
+
+    @PreDestroy
+    public void destroy() {
+        executorService.shutdown();
     }
 }

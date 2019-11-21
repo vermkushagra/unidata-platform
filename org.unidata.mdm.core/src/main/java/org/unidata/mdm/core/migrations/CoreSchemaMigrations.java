@@ -1,7 +1,7 @@
 package org.unidata.mdm.core.migrations;
 
 import nl.myndocs.database.migrator.MigrationScript;
-import org.unidata.mdm.core.migrations.core.audit.UN11979InitAuditTables;
+import org.unidata.mdm.core.migrations.audit.UN11979InitAuditTables;
 import org.unidata.mdm.core.migrations.event.meta.UN12296InitializationEventCoreSchema;
 import org.unidata.mdm.core.migrations.job.meta.UN12296InitializationJobCoreSchema;
 import org.unidata.mdm.core.migrations.security.data.UN12296InsertSecurityDefaultData;
