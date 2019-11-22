@@ -1,13 +1,10 @@
 package org.unidata.mdm.core.service;
 
-import org.unidata.mdm.core.type.audit.AuditEvent;
-
-import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Alexander Malyshev
  */
 public interface AuditService {
-
-    void writeEvent(AuditEvent auditEvent);
+    void writeEvent(final String type, Map<String, Object> parameters);
 }
