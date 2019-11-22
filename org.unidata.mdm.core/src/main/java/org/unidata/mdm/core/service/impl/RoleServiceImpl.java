@@ -41,7 +41,8 @@ import org.unidata.mdm.core.type.security.SecuredResourceCategory;
 import org.unidata.mdm.core.type.security.SecuredResourceType;
 import org.unidata.mdm.core.type.security.SecurityLabel;
 import org.unidata.mdm.core.type.security.SecurityLabelAttribute;
-import org.unidata.mdm.core.util.CoreAuditUtils;
+import org.unidata.mdm.core.util.audit.AuditConstants;
+import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.system.exception.PlatformBusinessException;
@@ -87,6 +88,8 @@ public class RoleServiceImpl implements RoleServiceExt {
     private static final String VIOLATION_DISPLAY_NAME_LENGTH = "app.role.data.validationError.displayName.length";
     private static final String VIOLATION_ROLE_TYPE_EMPTY = "app.role.data.validationError.roleType.empty";
     private static final String VIOLATION_ROLE_TYPE_LENGTH = "app.role.data.validationError.roleType.length";
+    private static final String ROLE_AUDIT_EVENT_PARAMETER = "role";
+    private static final String LABLE_AUDIT_EVENT_PARAMETER = "lable";
 
     /**
      * The role dao impl.
@@ -149,9 +152,9 @@ public class RoleServiceImpl implements RoleServiceExt {
 			roleDAO.update(toUpdate.getName(), toUpdate, role.getSecurityLabels());
 
 			savePropertyValues(toUpdate.getId(), role.getProperties());
-			auditService.writeEvent(CoreAuditUtils.roleCreateSuccess(Maps.of("role", role.getName())));
+			auditService.writeEvent(SecurityAuditConstants.ROLE_CREATE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, role.getName()));
 		} catch (Exception e) {
-			auditService.writeEvent(CoreAuditUtils.roleCreateFail(Maps.of("role", role.getName()), e));
+			auditService.writeEvent(SecurityAuditConstants.ROLE_CREATE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, role.getName(), AuditConstants.EXCEPTION_FIELD, e));
 			throw e;
 		}
 	}
@@ -165,9 +168,9 @@ public class RoleServiceImpl implements RoleServiceExt {
 		try {
 			roleDAO.delete(roleName);
 			securityService.logoutByRoleName(roleName);
-			auditService.writeEvent(CoreAuditUtils.roleDeleteSuccess(Maps.of("role", roleName)));
+			auditService.writeEvent(SecurityAuditConstants.ROLE_DELETE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, roleName));
 		} catch (Exception e) {
-            auditService.writeEvent(CoreAuditUtils.roleDeleteFail(Maps.of("role", roleName), e));
+            auditService.writeEvent(SecurityAuditConstants.ROLE_DELETE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, roleName, AuditConstants.EXCEPTION_FIELD, e));
 			throw e;
 		}
 
@@ -201,16 +204,17 @@ public class RoleServiceImpl implements RoleServiceExt {
 			if(role.getSecurityLabels()!=null) {
 				role.getSecurityLabels().forEach(sl ->
                         auditService.writeEvent(
-                                CoreAuditUtils.roleLabelAttach(Maps.of("role", roleName, "label", sl.getName()))
+                                SecurityAuditConstants.ROLE_LABEL_ATTACH_EVENT_TYPE,
+                                Maps.of(ROLE_AUDIT_EVENT_PARAMETER, roleName, "label", sl.getName())
                         )
                 );
 			}
 
 			savePropertyValues(toUpdate.getId(), role.getProperties());
 			securityService.logoutByRoleName(roleName);
-			auditService.writeEvent(CoreAuditUtils.roleUpdateSuccess(Maps.of("role", roleName)));
+			auditService.writeEvent(SecurityAuditConstants.ROLE_UPDATE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, roleName));
 		} catch (Exception e) {
-            auditService.writeEvent(CoreAuditUtils.roleUpdateFail(Maps.of("role", roleName), e));
+            auditService.writeEvent(SecurityAuditConstants.ROLE_UPDATE_EVENT_TYPE, Maps.of(ROLE_AUDIT_EVENT_PARAMETER, roleName, AuditConstants.EXCEPTION_FIELD, e));
 			throw e;
 		}
 	}
@@ -453,9 +457,12 @@ public class RoleServiceImpl implements RoleServiceExt {
 	public void createLabel(SecurityLabel label) {
 		try {
 			roleDAO.createSecurityLabel(convertLabelDTOToPO(label));
-			auditService.writeEvent(CoreAuditUtils.labelCreateSuccess(Maps.of("lable", label.getName())));
+			auditService.writeEvent(SecurityAuditConstants.LABEL_CREATE_EVENT_TYPE, Maps.of(LABLE_AUDIT_EVENT_PARAMETER, label.getName()));
 		} catch (Exception e) {
-            auditService.writeEvent(CoreAuditUtils.labelCreateFail(Maps.of("lable", label.getName()), e));
+            auditService.writeEvent(
+                    SecurityAuditConstants.LABEL_CREATE_EVENT_TYPE,
+                    Maps.of(LABLE_AUDIT_EVENT_PARAMETER, label.getName(), AuditConstants.EXCEPTION_FIELD, e)
+            );
 			throw e;
 		}
 	}
@@ -525,9 +532,12 @@ public class RoleServiceImpl implements RoleServiceExt {
 	public void updateLabel(SecurityLabel label, String labelName) {
 		try {
 			roleDAO.updateSecurityLabelByName(labelName, convertLabelDTOToPO(label));
-            auditService.writeEvent(CoreAuditUtils.labelUpdateSuccess(Maps.of("lable", label.getName())));
+            auditService.writeEvent(SecurityAuditConstants.LABEL_UPDATE_EVENT_TYPE, Maps.of(LABLE_AUDIT_EVENT_PARAMETER, label.getName()));
 		} catch (Exception e) {
-            auditService.writeEvent(CoreAuditUtils.labelUpdateFail(Maps.of("lable", label.getName()), e));
+            auditService.writeEvent(
+                    SecurityAuditConstants.LABEL_UPDATE_EVENT_TYPE,
+                    Maps.of(LABLE_AUDIT_EVENT_PARAMETER, label.getName(), AuditConstants.EXCEPTION_FIELD, e)
+            );
 			throw e;
 		}
 	}
@@ -549,9 +559,9 @@ public class RoleServiceImpl implements RoleServiceExt {
 	public void deleteLabel(String labelName) {
 		try {
 			roleDAO.deleteSecurityLabelByName(labelName);
-			auditService.writeEvent(CoreAuditUtils.labelDeleteSuccess(Maps.of("label", labelName)));
+			auditService.writeEvent(SecurityAuditConstants.LABEL_DELETE_EVENT_TYPE, Maps.of(LABLE_AUDIT_EVENT_PARAMETER, labelName));
 		} catch (Exception e) {
-            auditService.writeEvent(CoreAuditUtils.labelDeleteFail(Maps.of("label", labelName), e));
+            auditService.writeEvent(SecurityAuditConstants.LABEL_DELETE_EVENT_TYPE, Maps.of("label", labelName, AuditConstants.EXCEPTION_FIELD, e));
 			throw e;
 		}
 	}

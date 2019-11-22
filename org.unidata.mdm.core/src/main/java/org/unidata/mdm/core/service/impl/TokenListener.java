@@ -2,12 +2,15 @@ package org.unidata.mdm.core.service.impl;
 
 import org.unidata.mdm.core.dao.UserDao;
 import org.unidata.mdm.core.service.AuditEventsWriter;
+import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.type.security.SecurityToken;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.map.listener.EntryEvictedListener;
 import com.hazelcast.map.listener.EntryExpiredListener;
 import com.hazelcast.map.listener.EntryRemovedListener;
+import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
+import org.unidata.mdm.core.util.Maps;
 // import com.unidata.mdm.backend.service.audit.AuditActions;
 // import com.unidata.mdm.backend.service.audit.AuditLocalizationConstants;
 
@@ -29,17 +32,19 @@ public class TokenListener implements
     /** The audit event writer. */
     private AuditEventsWriter auditEventsWriter;
 
+    private final AuditService auditService;
+
     /** The user dao. */
-    private UserDao userDao;
+    private final UserDao userDao;
 
     /**
      * Instantiates a new token listener.
      *
-     * @param auditEventsWriter the audit event writer
+     * @param auditService the audit service
      * @param userDao           the user dao
      */
-    public TokenListener(AuditEventsWriter auditEventsWriter, UserDao userDao) {
-        this.auditEventsWriter = auditEventsWriter;
+    public TokenListener(final AuditService auditService, final UserDao userDao) {
+        this.auditService = auditService;
         this.userDao = userDao;
     }
 
@@ -71,13 +76,12 @@ public class TokenListener implements
     @Override
     public void entryExpired(EntryEvent<String, SecurityToken> event) {
         // No need to delete token. It is already done above in entryEvicted()
-        /*
-        String userName = event.getOldValue().getUser().getLogin();
-        Map<AuthenticationSystemParameter, Object> params = new EnumMap<>(AuthenticationSystemParameter.class);
-        params.put(AuthenticationSystemParameter.PARAM_DETAILS,
-                MessageUtils.getMessage(AuditLocalizationConstants.LOGOUT_BY_TIMEOUT));
-        params.put(AuthenticationSystemParameter.PARAM_USER_NAME, userName);
-        auditEventsWriter.writeSuccessEvent(AuditActions.LOGOUT, params);
-        */
+        final String userName = event.getOldValue().getUser().getLogin();
+        auditService.writeEvent(
+                SecurityAuditConstants.LOGOUT_EVENT_TYPE,
+                Maps.of(
+                        "login", userName, "reason", ""/*MessageUtils.getMessage(AuditLocalizationConstants.LOGOUT_BY_TIMEOUT)*/
+                )
+        );
     }
 }

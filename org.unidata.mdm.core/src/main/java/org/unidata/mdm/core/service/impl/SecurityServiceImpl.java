@@ -1,7 +1,6 @@
 package org.unidata.mdm.core.service.impl;
 
 import static org.unidata.mdm.core.type.security.AuthenticationSystemParameter.PARAM_ENDPOINT;
-import static org.unidata.mdm.core.type.security.AuthenticationSystemParameter.PARAM_USER_NAME;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,6 +34,7 @@ import org.unidata.mdm.core.dao.UserDao;
 import org.unidata.mdm.core.dto.UserWithPasswordDTO;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.service.AuditEventsWriter;
+import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.service.PasswordPolicyService;
 import org.unidata.mdm.core.service.RoleService;
 import org.unidata.mdm.core.service.SecurityConfigurationService;
@@ -50,6 +50,9 @@ import org.unidata.mdm.core.type.security.User;
 import org.unidata.mdm.core.type.security.impl.BearerToken;
 import org.unidata.mdm.core.type.security.impl.SecurityDataSource;
 import org.unidata.mdm.core.type.security.impl.UserInfo;
+import org.unidata.mdm.core.util.audit.AuditConstants;
+import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
+import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.core.util.TransactionUtils;
 import org.unidata.mdm.system.exception.PlatformBusinessException;
@@ -74,6 +77,7 @@ public class SecurityServiceImpl implements SecurityServiceExt {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityServiceImpl.class);
+    private static final String LOGIN_AUDIT_EVENT_PARAMETER = "login";
     // ODO: Commented out in scope of UN-11834. Refactor this notification API!
     /*
     @Autowired
@@ -84,6 +88,10 @@ public class SecurityServiceImpl implements SecurityServiceExt {
      */
     @Autowired(required = false)// TODO: @Modules
     private AuditEventsWriter auditEventsWriter;
+
+    @Autowired
+    private AuditService auditService;
+
     /**
      * User service. Contains methods for user management.
      */
@@ -300,8 +308,8 @@ public class SecurityServiceImpl implements SecurityServiceExt {
 
             // 1. Load existing, if login was supplied
             UserWithPasswordDTO existing = null;
-            if (!Objects.isNull(params.get(PARAM_USER_NAME))) {
-                existing = userService.getUserByName(params.get(PARAM_USER_NAME).toString());
+            if (!Objects.isNull(params.get(AuthenticationSystemParameter.PARAM_USER_NAME))) {
+                existing = userService.getUserByName(params.get(AuthenticationSystemParameter.PARAM_USER_NAME).toString());
             }
 
             User result;
@@ -352,13 +360,17 @@ public class SecurityServiceImpl implements SecurityServiceExt {
             tokenCache.set(token.getToken(), token);
 
             params.put(AuthenticationSystemParameter.PARAM_USER_TOKEN, token.getToken());
+            // TODO Fix audit event
+            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, SecurityUtils.getCurrentUserName()));
             /*
-            auditEventsWriter.writeSuccessEvent(AuditActions.LOGIN, params);
             userNotificationService.onLogin(result, (String) params.get(AuthenticationSystemParameter.PARAM_USER_LOCALE));
             */
             return token;
         } catch (Exception e) {
-            // auditEventsWriter.writeUnsuccessfulEvent(AuditActions.LOGIN, e, params);
+            auditService.writeEvent(
+                    SecurityAuditConstants.LOGIN_EVENT_TYPE,
+                    Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, SecurityUtils.getCurrentUserName(), AuditConstants.EXCEPTION_FIELD, e)
+            );
             throw e;
         } finally {
             MeasurementPoint.stop();
@@ -562,7 +574,7 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean logout(String tokenString, Map<AuthenticationSystemParameter, Object> params) {
-
+        final String userName = (String) params.get(AuthenticationSystemParameter.PARAM_USER_NAME);
         params.put(AuthenticationSystemParameter.PARAM_USER_TOKEN, tokenString);
         try {
             SecurityToken token = tokenCache.get(tokenString);
@@ -570,15 +582,20 @@ public class SecurityServiceImpl implements SecurityServiceExt {
             if (token != null) {
 
                 tokenCache.delete(tokenString);
+                auditService.writeEvent(
+                        SecurityAuditConstants.LOGOUT_EVENT_TYPE, Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName)
+                );
                 /*
-                auditEventsWriter.writeSuccessEvent(AuditActions.LOGOUT, params);
                 userNotificationService.onLogout(token.getUser());
                 */
             }
 
             return isTokenValid;
         } catch (Exception e) {
-            // auditEventsWriter.writeUnsuccessfulEvent(AuditActions.LOGOUT, e, params);
+            auditService.writeEvent(
+                    SecurityAuditConstants.LOGOUT_EVENT_TYPE,
+                    Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName, AuditConstants.EXCEPTION_FIELD, e)
+            );
             throw e;
         }
     }
@@ -762,12 +779,13 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @PostConstruct
     public void afterContextRefresh() {
         this.tokenCache = cache.getMap(getMapName());
-        this.tokenCache.addEntryListener(new TokenListener(auditEventsWriter, userDao), true);
+        this.tokenCache.addEntryListener(new TokenListener(auditService, userDao), true);
     }
 
     /* (non-Javadoc)
      * @see com.unidata.mdm.backend.service.security.ISecurityService#logoutUserByName(java.lang.String)
      */
+    @Transactional
     @Override
     public void logoutUserByName(String userName) {
         Map<AuthenticationSystemParameter, Object> params = new EnumMap<>(AuthenticationSystemParameter.class);
