@@ -1,16 +1,14 @@
 package org.unidata.mdm.core.service.impl;
 
-import org.unidata.mdm.core.dao.UserDao;
-import org.unidata.mdm.core.service.AuditEventsWriter;
-import org.unidata.mdm.core.service.AuditService;
-import org.unidata.mdm.core.type.security.SecurityToken;
-
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.map.listener.EntryEvictedListener;
 import com.hazelcast.map.listener.EntryExpiredListener;
 import com.hazelcast.map.listener.EntryRemovedListener;
-import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
+import org.unidata.mdm.core.dao.UserDao;
+import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.type.security.SecurityToken;
 import org.unidata.mdm.core.util.Maps;
+import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
 // import com.unidata.mdm.backend.service.audit.AuditActions;
 // import com.unidata.mdm.backend.service.audit.AuditLocalizationConstants;
 
@@ -28,9 +26,6 @@ public class TokenListener implements
     EntryRemovedListener<String, SecurityToken>,
     EntryExpiredListener<String, SecurityToken>,
     EntryEvictedListener<String, SecurityToken> {
-
-    /** The audit event writer. */
-    private AuditEventsWriter auditEventsWriter;
 
     private final AuditService auditService;
 

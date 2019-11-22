@@ -33,7 +33,6 @@ import org.unidata.mdm.core.context.AuthenticationRequestContext;
 import org.unidata.mdm.core.dao.UserDao;
 import org.unidata.mdm.core.dto.UserWithPasswordDTO;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
-import org.unidata.mdm.core.service.AuditEventsWriter;
 import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.service.PasswordPolicyService;
 import org.unidata.mdm.core.service.RoleService;
@@ -83,11 +82,6 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @Autowired
     private UserNotificationService userNotificationService;
     */
-    /**
-     * Event writer
-     */
-    @Autowired(required = false)// TODO: @Modules
-    private AuditEventsWriter auditEventsWriter;
 
     @Autowired
     private AuditService auditService;
