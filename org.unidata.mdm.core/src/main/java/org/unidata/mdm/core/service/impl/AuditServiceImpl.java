@@ -1,14 +1,19 @@
 package org.unidata.mdm.core.service.impl;
 
 import io.prometheus.client.Counter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
+import org.unidata.mdm.core.context.AuditEventWriteContext;
 import org.unidata.mdm.core.dao.AuditDao;
 import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
 import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.service.AuditServiceStorageService;
 import org.unidata.mdm.core.type.audit.AuditEvent;
 import org.unidata.mdm.core.type.monitoring.collector.QueueSizeCollector;
 import org.unidata.mdm.core.type.search.AuditIndexType;
@@ -21,13 +26,21 @@ import org.unidata.mdm.search.type.indexing.IndexingField;
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -57,7 +70,6 @@ public class AuditServiceImpl implements AuditService {
             .help(HANDLED_AUDIT_EVENTS_HELP_TEXT)
             .create()
             .register();
-    private static final String FIELD_VALUE_DELIMITER = "=>>";
 
     // TODO Use dynamic configuration update
     private boolean auditEnabled;
@@ -68,20 +80,31 @@ public class AuditServiceImpl implements AuditService {
      */
     private final ExecutorService executorService;
 
-    private final SearchService searchService;
+    private final AuditEventBuildersRegistryService auditEventBuildersRegistryService;
 
-    private final AuditDao auditDao;
+    private final Map<String, AuditServiceStorageService> auditServiceStorageServices = new HashMap<>();
+
+    private final Set<String> enabledStorages = new CopyOnWriteArraySet<>();
 
     public AuditServiceImpl(
-            final SearchService searchService,
-            final AuditDao auditDao,
+            final AuditEventBuildersRegistryService auditEventBuildersRegistryService,
+            final List<AuditServiceStorageService> auditServiceStorageServices,
+            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY + "}") final String enabledStorages,
             @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_KEY + ":false}") final boolean auditEnabled,
             @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY + ":5}") final int poolSize
     ) {
-        this.searchService = searchService;
-        this.auditDao = auditDao;
+        this.auditEventBuildersRegistryService = auditEventBuildersRegistryService;
+        if (CollectionUtils.isNotEmpty(auditServiceStorageServices)) {
+            this.auditServiceStorageServices.putAll(
+                    auditServiceStorageServices.stream()
+                            .collect(Collectors.toMap(AuditServiceStorageService::id, Function.identity()))
+            );
+        }
         this.auditEnabled = auditEnabled;
         this.poolSize = poolSize;
+        if (StringUtils.isNoneBlank(enabledStorages)) {
+            this.enabledStorages.addAll(Arrays.asList(enabledStorages.split(",")));
+        }
         executorService = initWriterThreadPool();
     }
 
@@ -108,11 +131,18 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public void writeEvent(AuditEvent auditEvent) {
+    public void writeEvent(String eventType) {
+        writeEvent(eventType, Collections.emptyMap());
+    }
+
+    @Override
+    public void writeEvent(final String eventType, Map<String, Object> parameters) {
         if (!auditEnabled) {
             return;
         }
-        final EnhancedAuditEvent enhancedAuditEvent = enhance(auditEvent);
+        final EnhancedAuditEvent enhancedAuditEvent = enhance(
+                auditEventBuildersRegistryService.eventBuilder(eventType).apply(eventType, parameters)
+        );
         executorService.submit(() -> write(enhancedAuditEvent, SecurityUtils.getCurrentUserStorageId()));
         AUDIT_EVENTS_FOR_WRITE.inc();
     }
@@ -128,38 +158,21 @@ public class AuditServiceImpl implements AuditService {
     }
 
     private void write(EnhancedAuditEvent enhancedAuditEvent, String currentUserStorageId) {
-        try {
-            auditDao.insert(enhancedAuditEvent);
-
-            List<IndexingField> fields = new ArrayList<>();
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.TYPE_FIELD, enhancedAuditEvent.type()));
-            fields.add(IndexingField.ofStrings(
-                    AuditIndexType.AUDIT,
-                    EnhancedAuditEvent.PARAMETERS_FIELD,
-                    toIndexStrings(enhancedAuditEvent.parameters())
-            ));
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SUCCESS_FIELD, enhancedAuditEvent.success()));
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.LOGIN_FIELD, enhancedAuditEvent.getLogin()));
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.CLIENT_IP_FIELD, enhancedAuditEvent.getClientIp()));
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SERVER_IP_FIELD, enhancedAuditEvent.getServerIp()));
-            fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.WHEN_HAPPENED_FIELD, enhancedAuditEvent.getWhenwHappened()));
-            final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
-                    .storageId(currentUserStorageId)
-                    .entity(AuditIndexType.INDEX_NAME)
-                    .index(new Indexing(AuditIndexType.AUDIT, null).withFields(fields))
-                    .build();
-            searchService.process(indexRequestContext);
-            HANDLED_AUDIT_EVENTS.inc();
+        final AuditEventWriteContext context = AuditEventWriteContext.builder()
+                .enhancedAuditEvent(enhancedAuditEvent)
+                .currentUserStorageId(currentUserStorageId)
+                .build();
+        for (String storageId : enabledStorages) {
+            try {
+                if (auditServiceStorageServices.containsKey(storageId)) {
+                    auditServiceStorageServices.get(storageId).write(context);
+                }
+            }
+            catch (Exception e) {
+                logger.error("Error while write audit by " + storageId, e);
+            }
         }
-        catch (Exception e) {
-            logger.error("Error while write audit", e);
-        }
-    }
-
-    private Collection<String> toIndexStrings(Map<String, String> parameters) {
-        return parameters.entrySet().stream()
-                .map(e -> String.format("%s%s%s", e.getKey(), FIELD_VALUE_DELIMITER, e.getValue()))
-                .collect(Collectors.toList());
+        HANDLED_AUDIT_EVENTS.inc();
     }
 
     @PreDestroy

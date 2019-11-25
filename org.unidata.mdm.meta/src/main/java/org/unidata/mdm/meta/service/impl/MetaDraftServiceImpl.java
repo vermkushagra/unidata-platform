@@ -34,9 +34,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.unidata.mdm.core.service.AuditEventsWriter;
+import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.type.measurement.MeasurementUnit;
 import org.unidata.mdm.core.type.measurement.MeasurementValue;
+import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.meta.ArrayAttributeDef;
 import org.unidata.mdm.meta.ArrayValueType;
@@ -125,9 +126,8 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 //    @Autowired
 //    private RegistrationService registrationService;
 
-    /** The audit events writer. */
-    @Autowired(required = false)// TODO: @Modules
-    private AuditEventsWriter auditEventsWriter;
+    @Autowired
+    private AuditService auditService;
 
     @Autowired
     @Qualifier("asyncRareTaskExecutor")
@@ -178,6 +178,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 
     /** The eg to delete. */
     private ISet<String> egToDelete;
+
     /** The eg to delete. */
     private ISet<EntitiesGroupDef> entitiesGroup;
 
@@ -255,7 +256,8 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
             }
 
         }
-//        auditEventsWriter.writeSuccessEvent(AuditActions.META_DRAFT_APPLY);// TODO: @Modules
+
+        auditService.writeEvent("META_DRAFT_APPLY");
 
         executor.execute(this::afterModelUpsert);
     }
@@ -366,7 +368,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 .map(MeasurementValueXmlConverter::convert).collect(Collectors.toList());
         measurementValues.add(new MeasurementValues().withValue(measurementValue));
         metaDraftDao.delete(new MetaDraftPO());
-//        auditEventsWriter.writeSuccessEvent(AuditActions.META_DRAFT_REMOVE);// TODO: @Modules
+        auditService.writeEvent("META_DRAFT_REMOVE");
     }
 
     /**
@@ -714,7 +716,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
         if (ctx.hasSourceSystemsUpdate()) {
             ctx.getSourceSystemsUpdate().forEach(s -> ss.put(s.getName(), s));
         }
-//        auditEventsWriter.writeSuccessEvent(AuditActions.META_DRAFT_UPSERT, ctx);// TODO: @Modules
+        auditService.writeEvent("META_DRAFT_UPSERT", Maps.of("context", ctx));
         addVersion(true);
     }
 
@@ -785,7 +787,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
     @Override
     public List<EnumerationDataType> getEnumerationsList() {
 
-        return enums.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(enums.values());
     }
 
     /*
@@ -795,7 +797,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
      */
     @Override
     public List<EntityDef> getEntitiesList() {
-        return ents.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(ents.values());
     }
 
     /*
@@ -814,13 +816,13 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
         if (def == null) {
             return null;
         }
-        def.getComplexAttribute().stream().forEach(ca -> {
+        def.getComplexAttribute().forEach(ca -> {
             NestedEntityDef ne = nestedEntities.get(ca.getNestedEntityName());
             nes.add(ne);
             nestedParse(ne, nes);
         });
 
-        return new GetEntityDTO(ents.get(id), nes.stream().collect(Collectors.toList()), rels);
+        return new GetEntityDTO(ents.get(id), new ArrayList<>(nes), rels);
     }
 
     /**
@@ -849,7 +851,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
         if (ne == null) {
             return;
         }
-        ne.getComplexAttribute().stream().forEach(ca -> {
+        ne.getComplexAttribute().forEach(ca -> {
             NestedEntityDef nei = nestedEntities.get(ca.getNestedEntityName());
             nes.add(nei);
             nestedParse(nei, nes);
@@ -937,7 +939,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 enums.remove(s);
             });
         }
-//        auditEventsWriter.writeSuccessEvent(AuditActions.META_DRAFT_DELETE, ctx);// TODO: @Modules
+        auditService.writeEvent("META_DRAFT_DELETE", Maps.of("context", ctx));
     }
 
     /*
