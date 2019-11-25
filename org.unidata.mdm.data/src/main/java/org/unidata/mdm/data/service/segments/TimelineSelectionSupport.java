@@ -16,23 +16,25 @@ import org.unidata.mdm.data.context.ReadOnlyTimelineContext;
  */
 public interface TimelineSelectionSupport<C extends ReadOnlyTimelineContext<?>, R extends CalculationResult<?>> {
 
+    @SuppressWarnings("unchecked")
     default R getCurrentEtalonRecord(@Nonnull final C ctx) {
 
         Timeline<?> timeline = ctx.currentTimeline();
         TimeInterval<?> selected = timeline.selectAsOf(new Date());
         if (Objects.nonNull(selected)) {
-            return selected.getCalculationResult();
+            return (R) selected.getCalculationResult();
         }
 
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     default R getFirstNonNullCalculationResult(@Nonnull C ctx) {
 
         Timeline<?> timeline = ctx.currentTimeline();
         if (!timeline.isEmpty()) {
             for (TimeInterval<?> interval : timeline) {
-                R etalon = interval.getCalculationResult();
+                R etalon = (R) interval.getCalculationResult();
                 if (Objects.nonNull(etalon)) {
                     return etalon;
                 }
