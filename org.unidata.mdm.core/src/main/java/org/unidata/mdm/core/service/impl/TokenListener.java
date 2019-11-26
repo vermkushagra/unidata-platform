@@ -8,7 +8,7 @@ import org.unidata.mdm.core.dao.UserDao;
 import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.type.security.SecurityToken;
 import org.unidata.mdm.core.util.Maps;
-import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
+import org.unidata.mdm.core.audit.SecurityAuditConstants;
 // import com.unidata.mdm.backend.service.audit.AuditActions;
 // import com.unidata.mdm.backend.service.audit.AuditLocalizationConstants;
 

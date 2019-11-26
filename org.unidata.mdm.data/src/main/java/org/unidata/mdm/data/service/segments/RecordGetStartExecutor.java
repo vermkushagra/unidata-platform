@@ -69,7 +69,7 @@ public class RecordGetStartExecutor extends Start<GetRequestContext> implements 
 
         // 1. Check input
         if (!ctx.isValidRecordKey()) {
-            final String message = "Ivalid input. Request context is not capable for record identification.";
+            final String message = "Ivalid input. Request context is not capable for record identification. {}";
             LOGGER.warn(message, ctx);
             throw new DataProcessingException(message, DataExceptionIds.EX_DATA_GET_INVALID_INPUT, ctx);
         }

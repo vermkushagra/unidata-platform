@@ -23,6 +23,8 @@ import org.unidata.mdm.core.context.SaveLargeObjectRequestContext;
 import org.unidata.mdm.core.dto.LargeObjectDTO;
 import org.unidata.mdm.core.service.LargeObjectsServiceComponent;
 import org.unidata.mdm.core.type.timeline.Timeline;
+import org.unidata.mdm.data.audit.AuditDataFallback;
+import org.unidata.mdm.data.audit.AuditDataSegment;
 import org.unidata.mdm.data.context.DeleteRelationRequestContext;
 import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.DeleteRequestContext;
@@ -136,6 +138,9 @@ public class DataRecordsServiceImpl implements DataRecordsService {
 //    @Autowired
 //    private ConfigurationServiceExt configurationService;
 
+    @Autowired
+    private AuditDataFallback auditDataFallback;
+
     @Value("${unidata.search.index.refresh_interval:1000}")
     long rollBackDelay;
 
@@ -176,6 +181,8 @@ public class DataRecordsServiceImpl implements DataRecordsService {
                 .with(pipelineService.point(RecordGetSecurityExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordGetDiffExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordGetAttributesPostProcessingExecutor.SEGMENT_ID))
+                .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
+                .withFallback(pipelineService.fallback(AuditDataFallback.class))
                 .end(pipelineService.finish(RecordGetFinishExecutor.SEGMENT_ID));
 
         return executionService.execute(p, ctx);
@@ -519,6 +526,8 @@ public class DataRecordsServiceImpl implements DataRecordsService {
                 .with(pipelineService.point(RecordUpsertMergeTimelineExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertIndexingExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertPersistenceExecutor.SEGMENT_ID))
+                .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
+                .withFallback(pipelineService.fallback(AuditDataFallback.class))
                 .end(pipelineService.finish(RecordUpsertFinishExecutor.SEGMENT_ID));
 
         UpsertRecordDTO result = executionService.execute(p, ctx);

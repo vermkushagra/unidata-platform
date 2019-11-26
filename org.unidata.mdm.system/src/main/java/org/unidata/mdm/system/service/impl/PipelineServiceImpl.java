@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import org.unidata.mdm.system.service.ModuleService;
 import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
@@ -39,7 +41,10 @@ public class PipelineServiceImpl implements PipelineService {
 
     private final Map<String, Connector<? extends PipelineExecutionContext, ? extends PipelineExecutionResult>> connector = new HashMap<>();
 
+    private final Map<Class<?>, Fallback> fallback = new HashMap<>();
+
     private final Map<String, Finish<? extends PipelineExecutionContext, ? extends PipelineExecutionResult>> finish = new HashMap<>();
+
     /**
      * Module registry.
      */
@@ -75,6 +80,11 @@ public class PipelineServiceImpl implements PipelineService {
             if (CollectionUtils.isNotEmpty(connectorSegments)) {
                 segments.putAll(connectorSegments.stream().collect(Collectors.toMap(Object::getClass, Function.identity())));
                 connector.putAll(connectorSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
+            }
+
+            final Collection<Fallback> fallbacks = m.getFallbacks();
+            if (CollectionUtils.isNotEmpty(fallbacks)) {
+                fallback.putAll(fallbacks.stream().collect(Collectors.toMap(Object::getClass, Function.identity())));
             }
 
             Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> finishSegments = m.getFinishTypes();
@@ -162,6 +172,12 @@ public class PipelineServiceImpl implements PipelineService {
             String id) {
         return (Connector<C, R>) connector.get(id);
     }
+
+    @Override
+    public Fallback fallback(final Class<?> clazz) {
+        return fallback.get(clazz);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -1,6 +1,6 @@
 package org.unidata.mdm.core.dao;
 
-import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
 
 /**
  * Dao for audit
@@ -12,7 +12,7 @@ public interface AuditDao {
      * @param enhancedAuditEvent record for insert
      * @return true if success, else false
      */
-    boolean insert(EnhancedAuditEvent enhancedAuditEvent);
+    boolean insert(EnrichedAuditEvent enhancedAuditEvent);
 
     /**
      * Delete audit records for exceeded lifetime.

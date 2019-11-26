@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.util.audit;
+package org.unidata.mdm.core.audit;
 
 /**
  * @author Alexander Malyshev

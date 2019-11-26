@@ -1,5 +1,7 @@
 package org.unidata.mdm.system.type.pipeline;
 
+import javax.annotation.Nullable;
+
 /**
  * @author Mikhail Mikhailov
  * Segment (integration point)
@@ -13,6 +15,7 @@ public abstract class Segment {
      * Segment descripton.
      */
     private final String description;
+
     /**
      * Constructor.
      * @param id the ID
@@ -48,4 +51,13 @@ public abstract class Segment {
      * @return true, if supports, false otherwise
      */
     public abstract boolean supports(Start<?> start);
+
+    /**
+     * Gets the segment fallback function.
+     * @return fallback
+     */
+    @Nullable
+    public Fallback fallback() {
+        return null;
+    }
 }

@@ -15,6 +15,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
+import org.unidata.mdm.data.audit.AuditDataConstants;
+import org.unidata.mdm.data.audit.AuditDataFallback;
+import org.unidata.mdm.data.audit.AuditDataSegment;
+import org.unidata.mdm.data.audit.DataRecordDeleteAuditEventBuilder;
+import org.unidata.mdm.data.audit.DataRecordGetAuditEventBuilder;
+import org.unidata.mdm.data.audit.DataRecordUpsertAuditEventBuilder;
 import org.unidata.mdm.data.configuration.DataConfiguration;
 import org.unidata.mdm.data.configuration.DataConfigurationConstants;
 import org.unidata.mdm.data.convert.DataClusterConverter;
@@ -60,6 +67,7 @@ import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
@@ -143,7 +151,10 @@ public class DataModule implements Module {
         // Generates index updates.
         RecordDeleteIndexingExecutor.SEGMENT_ID,
         // Data delete persistence executor
-        RecordDeletePersistenceExecutor.SEGMENT_ID
+        RecordDeletePersistenceExecutor.SEGMENT_ID,
+
+        // Audit
+        AuditDataSegment.SEGMENT_ID
     };
     /**
      * Finish segments.
@@ -188,6 +199,13 @@ public class DataModule implements Module {
      */
     @Autowired
     private DataStorageDAO dataStorageDAO;
+
+    @Autowired
+    private AuditDataFallback auditDataFallback;
+
+    @Autowired
+    private AuditEventBuildersRegistryService auditEventBuildersRegistryService;
+
     /**
      * {@inheritDoc}
      */
@@ -330,7 +348,7 @@ public class DataModule implements Module {
             pointSegments.put(segment, configuration.getBeanByName(segment));
         }
 
-        // Finish
+        // Connector
         for (String segment : CONNECTOR_SEGMENTS) {
             connectorSegments.put(segment, configuration.getBeanByName(segment));
         }
@@ -339,6 +357,19 @@ public class DataModule implements Module {
         for (String segment : FINIFH_SEGMENTS) {
             finishSegments.put(segment, configuration.getBeanByName(segment));
         }
+
+        auditEventBuildersRegistryService.registerEventBuilder(
+                AuditDataConstants.RECORD_UPSERT_EVENT_TYPE,
+                DataRecordUpsertAuditEventBuilder.INSTANCE
+        );
+        auditEventBuildersRegistryService.registerEventBuilder(
+                AuditDataConstants.RECORD_GET_EVENT_TYPE,
+                DataRecordGetAuditEventBuilder.INSTANCE
+        );
+        auditEventBuildersRegistryService.registerEventBuilder(
+                AuditDataConstants.RECORD_DELETE_EVENT_TYPE,
+                DataRecordDeleteAuditEventBuilder.INSTANCE
+        );
 
         LOGGER.info("Started.");
     }
@@ -374,6 +405,11 @@ public class DataModule implements Module {
     @Override
     public Collection<Point<PipelineExecutionContext>> getPointTypes() {
         return pointSegments.values();
+    }
+
+    @Override
+    public Collection<Fallback> getFallbacks() {
+        return Collections.singleton(auditDataFallback);
     }
 
     /**

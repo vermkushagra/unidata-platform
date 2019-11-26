@@ -6,10 +6,13 @@ import javax.annotation.Nullable;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
+
+import java.util.function.BiConsumer;
 
 /**
  * The service, responsible for pipeline management.
@@ -44,6 +47,8 @@ public interface PipelineService extends AfterPlatformStartup {
     <C extends PipelineExecutionContext> Point<C> point(String id);
 
     <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Connector<C, R> connector(String id);
+
+    Fallback fallback(Class<?> clazz);
 
     <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Finish<C, R> finish(String id);
 }

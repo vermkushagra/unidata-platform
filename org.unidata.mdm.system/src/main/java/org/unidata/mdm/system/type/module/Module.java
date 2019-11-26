@@ -9,6 +9,7 @@ import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
@@ -102,6 +103,15 @@ public interface Module {
     default Collection<Connector<PipelineExecutionContext, PipelineExecutionResult>> getConnectorTypes() {
         return Collections.emptyList();
     }
+
+    /**
+     * Get the modules fallbacks
+     * @return collection of fallbacks
+     */
+    default Collection<Fallback> getFallbacks() {
+        return Collections.emptyList();
+    }
+
     /**
      * Gets the exported pipeline finish types. May be empty.
      * @return collection of pipeline finish types

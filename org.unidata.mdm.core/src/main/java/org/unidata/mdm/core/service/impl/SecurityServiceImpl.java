@@ -1,13 +1,12 @@
 package org.unidata.mdm.core.service.impl;
 
-import static org.unidata.mdm.core.type.security.AuthenticationSystemParameter.PARAM_ENDPOINT;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,8 +48,8 @@ import org.unidata.mdm.core.type.security.User;
 import org.unidata.mdm.core.type.security.impl.BearerToken;
 import org.unidata.mdm.core.type.security.impl.SecurityDataSource;
 import org.unidata.mdm.core.type.security.impl.UserInfo;
-import org.unidata.mdm.core.util.audit.AuditConstants;
-import org.unidata.mdm.core.util.audit.SecurityAuditConstants;
+import org.unidata.mdm.core.audit.AuditConstants;
+import org.unidata.mdm.core.audit.SecurityAuditConstants;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.core.util.TransactionUtils;
@@ -291,6 +290,12 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @Override
     public SecurityToken login(Map<AuthenticationSystemParameter, Object> params) {
 
+        final Map<String, Object> auditParams = new HashMap<>();
+        auditParams.put(LOGIN_AUDIT_EVENT_PARAMETER, params.get(AuthenticationSystemParameter.PARAM_USER_NAME));
+        auditParams.put(AuditConstants.CLIENT_IP_FIELD, params.get(AuthenticationSystemParameter.PARAM_CLIENT_IP));
+        auditParams.put(AuditConstants.SERVER_IP_FIELD, params.get(AuthenticationSystemParameter.PARAM_SERVER_IP));
+        auditParams.put(AuditConstants.ENDPOINT_FIELD, params.get(AuthenticationSystemParameter.PARAM_ENDPOINT));
+
         MeasurementPoint.start();
         try {
 
@@ -355,16 +360,14 @@ public class SecurityServiceImpl implements SecurityServiceExt {
 
             params.put(AuthenticationSystemParameter.PARAM_USER_TOKEN, token.getToken());
             // TODO Fix audit event
-            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, SecurityUtils.getCurrentUserName()));
+            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, auditParams);
             /*
             userNotificationService.onLogin(result, (String) params.get(AuthenticationSystemParameter.PARAM_USER_LOCALE));
             */
             return token;
         } catch (Exception e) {
-            auditService.writeEvent(
-                    SecurityAuditConstants.LOGIN_EVENT_TYPE,
-                    Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, SecurityUtils.getCurrentUserName(), AuditConstants.EXCEPTION_FIELD, e)
-            );
+            auditParams.put(AuditConstants.EXCEPTION_FIELD, e);
+            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, auditParams);
             throw e;
         } finally {
             MeasurementPoint.stop();
@@ -522,7 +525,7 @@ public class SecurityServiceImpl implements SecurityServiceExt {
 
         setTokenAuthority(token, user.getRoles(), user.getRights(), user.getLabels());
 
-        token.setEndpoint((EndpointType) params.get(PARAM_ENDPOINT));
+        token.setEndpoint((EndpointType) params.get(AuthenticationSystemParameter.PARAM_ENDPOINT));
 
         return token;
     }
