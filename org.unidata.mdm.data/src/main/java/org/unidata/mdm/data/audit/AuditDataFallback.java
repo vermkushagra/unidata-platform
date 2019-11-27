@@ -29,6 +29,4 @@ public class AuditDataFallback implements Fallback {
                 )
         );
     }
-
-
 }
