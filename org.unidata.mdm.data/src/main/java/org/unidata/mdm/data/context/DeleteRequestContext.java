@@ -7,9 +7,9 @@ import org.unidata.mdm.core.context.MutableValidityRangeContext;
 import org.unidata.mdm.core.type.audit.AuditLevel;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.RecordStatus;
+import org.unidata.mdm.data.service.segments.RecordDeleteStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
  * @author Mikhail Mikhailov
@@ -73,9 +73,8 @@ public class DeleteRequestContext
     }
 
     @Override
-    public Start<PipelineExecutionContext> getStartType() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getStartTypeId() {
+        return RecordDeleteStartExecutor.SEGMENT_ID;
     }
 
     /**

@@ -1,12 +1,12 @@
-package org.unidata.mdm.core.service.impl.event;
+package org.unidata.mdm.system.service.impl.event;
 
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-import org.unidata.mdm.core.exception.CoreExceptionIds;
-import org.unidata.mdm.core.type.event.Event;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.exception.SystemExceptionIds;
+import org.unidata.mdm.system.type.event.Event;
 
 /**
  * Simple replay counter.
@@ -38,12 +38,12 @@ public class ReplayTrap {
 
         if (Objects.isNull(event.getId())) {
             throw new PlatformFailureException("No valid id for event [{}].",
-                    CoreExceptionIds.EX_EVENT_NO_VALID_ID, event.getClass().getName());
+                    SystemExceptionIds.EX_EVENT_NO_VALID_ID, event.getClass().getName());
         }
 
         if (replays.containsKey(event.getId())) {
             throw new PlatformFailureException("Already waiting for event [{}].",
-                    CoreExceptionIds.EX_EVENT_ALREADY_WAITING, event.getId());
+                    SystemExceptionIds.EX_EVENT_ALREADY_WAITING, event.getId());
         }
 
         ReceiverWorker s = registry.info(event);

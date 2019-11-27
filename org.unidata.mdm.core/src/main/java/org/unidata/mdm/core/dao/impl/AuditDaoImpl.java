@@ -8,6 +8,7 @@ import org.unidata.mdm.core.dao.AuditDao;
 import org.unidata.mdm.core.dto.EnhancedAuditEvent;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.util.Maps;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 
 import javax.sql.DataSource;
@@ -18,7 +19,7 @@ import java.util.Properties;
  * @author Alexander Malyshev
  */
 @Repository
-public class AuditDaoImpl extends AbstractDaoImpl implements AuditDao {
+public class AuditDaoImpl extends BaseDAOImpl implements AuditDao {
 
     private final ObjectMapper objectMapper;
 

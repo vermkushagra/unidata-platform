@@ -31,7 +31,6 @@ import org.unidata.mdm.data.type.data.impl.OriginRecordImpl;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.timeline.RecordTimeInterval;
 import org.unidata.mdm.system.service.PlatformConfiguration;
-import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
@@ -171,7 +170,7 @@ public class RecordDeleteStartExecutor extends Start<DeleteRequestContext> {
      * {@inheritDoc}
      */
     @Override
-    public Pipeline select(DeleteRequestContext ctx) {
+    public String subject(DeleteRequestContext ctx) {
         // TODO Auto-generated method stub
         return null;
     }

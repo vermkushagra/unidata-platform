@@ -56,6 +56,7 @@ import org.unidata.mdm.data.dto.TimelineDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
 import org.unidata.mdm.data.dto.UpsertRelationDTO;
 import org.unidata.mdm.data.dto.UpsertRelationsDTO;
+import org.unidata.mdm.data.service.DataRecordsService;
 import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetFinishExecutor;
@@ -73,7 +74,9 @@ import org.unidata.mdm.data.service.segments.RecordUpsertResolveCodePointersExec
 import org.unidata.mdm.data.service.segments.RecordUpsertSecurityExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertValidateExecutor;
-import org.unidata.mdm.data.service.DataRecordsService;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.system.service.ExecutionService;
@@ -508,6 +511,9 @@ public class DataRecordsServiceImpl implements DataRecordsService {
 
         // Data
         // FIXME Temporary, for testing
+        Pipeline l = Pipeline.start(pipelineService.start(RelationUpsertStartExecutor.SEGMENT_ID))
+                .end(pipelineService.finish(RelationUpsertFinishExecutor.SEGMENT_ID));
+
         Pipeline p = Pipeline.start(pipelineService.start(RecordUpsertStartExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertValidateExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertSecurityExecutor.SEGMENT_ID))
@@ -519,6 +525,7 @@ public class DataRecordsServiceImpl implements DataRecordsService {
                 .with(pipelineService.point(RecordUpsertMergeTimelineExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertIndexingExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordUpsertPersistenceExecutor.SEGMENT_ID))
+                .with(pipelineService.connector(RelationsUpsertConnectorExecutor.SEGMENT_ID), l)
                 .end(pipelineService.finish(RecordUpsertFinishExecutor.SEGMENT_ID));
 
         UpsertRecordDTO result = executionService.execute(p, ctx);

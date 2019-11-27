@@ -23,7 +23,6 @@ import org.unidata.mdm.core.migrations.UninstallCoreSchemaMigrations;
 import org.unidata.mdm.core.type.search.AuditHeaderField;
 import org.unidata.mdm.core.type.search.AuditIndexType;
 import org.unidata.mdm.core.util.CoreServiceUtils;
-import org.unidata.mdm.core.util.JsonUtils;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.search.context.MappingRequestContext;
 import org.unidata.mdm.search.service.SearchService;
@@ -37,6 +36,7 @@ import org.unidata.mdm.system.type.configuration.ApplicationConfigurationPropert
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
+import org.unidata.mdm.system.util.JsonUtils;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;

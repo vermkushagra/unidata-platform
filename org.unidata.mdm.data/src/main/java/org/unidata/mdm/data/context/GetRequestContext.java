@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.unidata.mdm.core.type.audit.AuditLevel;
+import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
  * @author Mikhail Mikhailov
@@ -92,9 +92,8 @@ public class GetRequestContext
      * {@inheritDoc}
      */
     @Override
-    public Start<PipelineExecutionContext> getStartType() {
-        // TODO Auto-generated method stub. REMOVE THIS METHOD FROM THE INTERFACE.
-        return null;
+    public String getStartTypeId() {
+        return RecordGetStartExecutor.SEGMENT_ID;
     }
 
     /**

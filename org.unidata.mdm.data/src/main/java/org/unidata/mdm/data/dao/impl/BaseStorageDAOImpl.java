@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.unidata.mdm.core.dao.impl.AbstractDaoImpl;
 import org.unidata.mdm.core.type.keys.ExternalId;
 import org.unidata.mdm.data.configuration.DataConfigurationConstants;
 import org.unidata.mdm.data.dao.BaseStorageDAO;
@@ -24,6 +23,7 @@ import org.unidata.mdm.data.exception.DataExceptionIds;
 import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.po.storage.DataNodePO;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.util.DataSourceUtils;
 
@@ -31,7 +31,7 @@ import org.unidata.mdm.system.util.DataSourceUtils;
  * @author Mikhail Mikhailov
  * Base DAO for data storage operations.
  */
-public abstract class BaseStorageDAOImpl extends AbstractDaoImpl implements BaseStorageDAO {
+public abstract class BaseStorageDAOImpl extends BaseDAOImpl implements BaseStorageDAO {
     /**
      * Nodes.
      */

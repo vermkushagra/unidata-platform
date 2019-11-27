@@ -10,7 +10,6 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.unidata.mdm.core.dao.impl.AbstractDaoImpl;
 import org.unidata.mdm.meta.dao.MetaModelDao;
 import org.unidata.mdm.meta.dao.rm.MetaModelRowMapper;
 import org.unidata.mdm.meta.dao.rm.MetaStorageRowMapper;
@@ -18,13 +17,14 @@ import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.po.MetaModelPO;
 import org.unidata.mdm.meta.po.MetaStoragePO;
 import org.unidata.mdm.meta.type.ModelType;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 
 /**
  * @author Michael Yashin. Created on 26.05.2015.
  */
 @Repository
-public class MetaModelDaoImpl extends AbstractDaoImpl implements MetaModelDao {
+public class MetaModelDaoImpl extends BaseDAOImpl implements MetaModelDao {
     /**
      * Constructor.
      *

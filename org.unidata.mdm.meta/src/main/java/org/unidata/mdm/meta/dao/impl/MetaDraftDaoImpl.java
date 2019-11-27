@@ -10,16 +10,16 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.unidata.mdm.core.dao.impl.AbstractDaoImpl;
 import org.unidata.mdm.meta.dao.MetaDraftDao;
 import org.unidata.mdm.meta.dao.rm.MetaDraftRowMapper;
 import org.unidata.mdm.meta.po.MetaDraftPO;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 
 /**
  * The Class MetaDraftDaoImpl.
  */
 @Repository
-public class MetaDraftDaoImpl extends AbstractDaoImpl implements MetaDraftDao {
+public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 
 	/** The create sql. */
 	private String CREATE_SQL;

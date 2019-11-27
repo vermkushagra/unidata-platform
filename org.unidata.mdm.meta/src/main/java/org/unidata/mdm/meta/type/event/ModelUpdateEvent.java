@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.unidata.mdm.core.type.event.AbstractLocalEvent;
 import org.unidata.mdm.meta.AbstractEntityDef;
 import org.unidata.mdm.meta.EnumerationDataType;
 import org.unidata.mdm.meta.SourceSystemDef;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext.ModelUpsertType;
+import org.unidata.mdm.system.type.event.AbstractLocalEvent;
 import org.unidata.mdm.system.util.IdUtils;
 
 /**

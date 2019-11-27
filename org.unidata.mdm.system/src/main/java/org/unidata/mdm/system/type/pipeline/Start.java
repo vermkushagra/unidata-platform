@@ -50,12 +50,10 @@ public abstract class Start<C extends PipelineExecutionContext> extends Segment 
      */
     public abstract void start(@Nonnull C ctx);
     /**
-     * FIXME Refactor! This approach won't work for pipeline selection.
-     *
-     * Selects a pre-configured or default pipeline for the supplied context.
+     * Selects execution subject for the supplied context, if possible.
      * @param ctx the context to use
-     * @return pipeline instance or null
+     * @return execution subject or null
      */
     @Nullable
-    public abstract Pipeline select(C ctx);
+    public abstract String subject(C ctx);
 }

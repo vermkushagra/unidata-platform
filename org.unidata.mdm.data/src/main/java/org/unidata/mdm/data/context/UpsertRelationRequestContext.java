@@ -9,6 +9,7 @@ import org.unidata.mdm.core.type.audit.AuditLevel;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.DataRecord;
 import org.unidata.mdm.core.type.keys.ReferenceAliasKey;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRelation;
 
 /**
@@ -76,6 +77,14 @@ public class UpsertRelationRequestContext
         flags.set(DataContextFlags.FLAG_EMPTY_STORAGE, b.emptyStorage);
         flags.set(DataContextFlags.FLAG_BYPASS_EXTENSION_POINTS, b.bypassExtensionPoints);
         flags.set(DataContextFlags.FLAG_SUPPRESS_WORKFLOW, b.suppressWorkflow);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        return RelationUpsertStartExecutor.SEGMENT_ID;
     }
 
     /**

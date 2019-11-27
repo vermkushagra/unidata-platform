@@ -1,6 +1,6 @@
 package org.unidata.mdm.meta.type.event;
 
-import org.unidata.mdm.core.type.event.AbstractForeignEvent;
+import org.unidata.mdm.system.type.event.AbstractForeignEvent;
 
 /**
  * This event is sent when other nodes have to notified that they have to reload model.

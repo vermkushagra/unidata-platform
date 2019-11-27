@@ -16,8 +16,9 @@ import org.unidata.mdm.core.po.security.LabelAttributeValuePO;
 import org.unidata.mdm.core.po.security.LabelPO;
 import org.unidata.mdm.core.type.security.SecurityLabel;
 import org.unidata.mdm.core.type.security.SecurityLabelAttribute;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 
-public class SecurityLabelDaoImpl extends AbstractDaoImpl implements SecurityLabelDao {
+public class SecurityLabelDaoImpl extends BaseDAOImpl implements SecurityLabelDao {
 
     private final String selectSecurityLabelsByObject;
     private final String deleteAllObjectSecurityLabelsAttributes;

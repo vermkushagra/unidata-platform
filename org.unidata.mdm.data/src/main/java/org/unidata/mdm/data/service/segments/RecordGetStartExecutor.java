@@ -16,9 +16,6 @@ import org.unidata.mdm.data.module.DataModule;
 import org.unidata.mdm.data.service.impl.CommonRecordsComponent;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.keys.RecordKeys;
-import org.unidata.mdm.system.exception.PlatformFailureException;
-import org.unidata.mdm.system.service.PipelineService;
-import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
@@ -45,11 +42,6 @@ public class RecordGetStartExecutor extends Start<GetRequestContext> implements 
      */
     public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".record.get.start.description";
     /**
-     * The pipeline service.
-     */
-    @Autowired
-    private PipelineService pipelineService;
-    /**
      * Constructor.
      */
     public RecordGetStartExecutor() {
@@ -61,21 +53,41 @@ public class RecordGetStartExecutor extends Start<GetRequestContext> implements 
     @Override
     public void start(GetRequestContext ctx) {
 
-        // Keys already supplied. Load interval and exit.
-        if (Objects.nonNull(ctx.keys())) {
+        // 1. Already processed by .subject
+        if (Objects.nonNull(ctx.keys()) && Objects.nonNull(ctx.currentTimeline())) {
+            return;
+        }
+
+        // 2. Keys already supplied, but the TL is still to be loaded. Load interval and exit.
+        if (Objects.nonNull(ctx.keys()) && Objects.isNull(ctx.currentTimeline())) {
             ensureTimeline(ctx);
             return;
         }
 
-        // 1. Check input
+        // 3. Check input
         if (!ctx.isValidRecordKey()) {
             final String message = "Ivalid input. Request context is not capable for record identification.";
             LOGGER.warn(message, ctx);
             throw new DataProcessingException(message, DataExceptionIds.EX_DATA_GET_INVALID_INPUT, ctx);
         }
 
-        // 2. Identify
-        RecordKeys keys = ensureTimeline(ctx);
+        // 4. Identify and load interval
+        ensureTimeline(ctx);
+    }
+
+    /**
+     * Both - validate and loading the timeline
+     * @param ctx
+     * @return
+     */
+    private RecordKeys ensureTimeline(GetRequestContext ctx) {
+
+        // 1. Load interval view.
+        Timeline<OriginRecord> timeline = commonRecordsComponent.loadInterval(GetRecordIntervalRequestContext.builder(ctx)
+                .fetchData(true)
+                .build());
+
+        RecordKeys keys = timeline.getKeys();
         if (keys == null) {
             final String message = "Record not found by supplied keys etalon id: [{}], origin id [{}], external id [{}], source system [{}], name [{}]";
             LOGGER.warn(message, ctx.getEtalonKey(), ctx.getOriginKey(), ctx.getExternalId(), ctx.getSourceSystem(), ctx.getEntityName());
@@ -89,17 +101,9 @@ public class RecordGetStartExecutor extends Start<GetRequestContext> implements 
                     DataExceptionIds.EX_ENTITY_NAME_AND_ETALON_ID_MISMATCH,
                     ctx.getEtalonKey(), ctx.getEntityName(), keys.getEntityName());
         }
-    }
-
-    private RecordKeys ensureTimeline(GetRequestContext ctx) {
-
-        // 1. Load interval view.
-        Timeline<OriginRecord> timeline = commonRecordsComponent.loadInterval(GetRecordIntervalRequestContext.builder(ctx)
-                .fetchData(true)
-                .build());
 
         ctx.currentTimeline(timeline);
-        ctx.keys(timeline.getKeys());
+        ctx.keys(keys);
 
         // 3. Return and fail, if keys are null
         return timeline.getKeys();
@@ -109,30 +113,21 @@ public class RecordGetStartExecutor extends Start<GetRequestContext> implements 
      * {@inheritDoc}
      */
     @Override
-    public Pipeline select(GetRequestContext ctx) {
-
-        Pipeline result = null;
+    public String subject(GetRequestContext ctx) {
 
         // 1. Check for entity name, being present.
         String entityName = selectEntityName(ctx);
         if (Objects.nonNull(entityName)) {
-            result = pipelineService.getPipeline(entityName);
+            return entityName;
         // 2. Do resolve (load keys and timeline), if entity name is not present.
         } else {
             RecordKeys keys = ensureTimeline(ctx);
             if (Objects.nonNull(keys)) {
                 entityName = keys.getEntityName();
-                result = pipelineService.getPipeline(keys.getEntityName());
+                return entityName;
             }
         }
 
-        // 3. Throw, if nothing works, because this indicates invalid input
-        if (Objects.isNull(result)) {
-            final String message = "No configured pipeline for entity name '{}'.";
-            LOGGER.warn(message, entityName);
-            throw new PlatformFailureException(message, DataExceptionIds.EX_DATA_GET_RECORD_NO_SELECTABLE_PIPELINE, entityName);
-        }
-
-        return result;
+        return null;
     }
 }

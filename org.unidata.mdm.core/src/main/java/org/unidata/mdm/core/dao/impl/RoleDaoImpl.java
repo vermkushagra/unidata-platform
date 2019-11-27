@@ -54,13 +54,14 @@ import org.unidata.mdm.core.po.security.RolePropertyValuePO.FieldColumns;
 import org.unidata.mdm.core.type.security.SecuredResourceCategory;
 import org.unidata.mdm.core.type.security.SecurityLabel;
 import org.unidata.mdm.core.util.SecurityUtils;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
  * The Class RoleDAO.
  */
 @Repository
-public class RoleDaoImpl extends AbstractDaoImpl implements RoleDao {
+public class RoleDaoImpl extends BaseDAOImpl implements RoleDao {
 
     private static final String CONNECTION_TABLE = "s_role_s_label_attribute_value";
     private static final ResultSetExtractor<Map<Integer, RolePO>> ROLES_WITH_PROPERTIES_RESULT_EXTRACTOR = rs -> {

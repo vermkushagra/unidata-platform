@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.type.event;
+package org.unidata.mdm.system.type.event;
 
 /**
  * Named 'receiver' just to reduce autocomplete suggestions.

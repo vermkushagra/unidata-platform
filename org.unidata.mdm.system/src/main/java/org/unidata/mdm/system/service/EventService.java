@@ -1,7 +1,7 @@
-package org.unidata.mdm.core.service;
+package org.unidata.mdm.system.service;
 
-import org.unidata.mdm.core.type.event.Event;
-import org.unidata.mdm.core.type.event.EventReceiver;
+import org.unidata.mdm.system.type.event.Event;
+import org.unidata.mdm.system.type.event.EventReceiver;
 /**
  * The platform event service - simple wrapper around two HZ topics.
  */

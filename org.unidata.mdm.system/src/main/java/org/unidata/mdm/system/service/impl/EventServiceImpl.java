@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.service.impl;
+package org.unidata.mdm.system.service.impl;
 
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -8,14 +8,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
-import org.unidata.mdm.core.service.EventService;
-import org.unidata.mdm.core.service.impl.event.ReceiverRegistry;
-import org.unidata.mdm.core.service.impl.event.ReplayTrap;
-import org.unidata.mdm.core.service.impl.event.SystemReplayEvent;
-import org.unidata.mdm.core.type.event.AbstractEvent;
-import org.unidata.mdm.core.type.event.Event;
-import org.unidata.mdm.core.type.event.EventReceiver;
+import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
+import org.unidata.mdm.system.service.EventService;
+import org.unidata.mdm.system.service.impl.event.ReceiverRegistry;
+import org.unidata.mdm.system.service.impl.event.ReplayTrap;
+import org.unidata.mdm.system.service.impl.event.SystemReplayEvent;
+import org.unidata.mdm.system.type.event.AbstractEvent;
+import org.unidata.mdm.system.type.event.Event;
+import org.unidata.mdm.system.type.event.EventReceiver;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.ITopic;
@@ -24,9 +24,9 @@ import com.hazelcast.core.MessageListener;
 import com.hazelcast.topic.impl.reliable.ReliableMessageListenerAdapter;
 
 @Service
-public class HazelcastEventService implements EventService {
+public class EventServiceImpl implements EventService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HazelcastEventService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventServiceImpl.class);
 
     private static final String OUT_TOPIC_NAME = EventService.class.getName() + "#OUT";
 
@@ -40,10 +40,10 @@ public class HazelcastEventService implements EventService {
 
     private final ReplayTrap trap;
 
-    @Value("${" + CoreConfigurationConstants.CORE_DEFAULT_EVENT_REPLAY_TIMEOUT + ":1000}")
+    @Value("${" + SystemConfigurationConstants.SYSTEM_DEFAULT_EVENT_REPLAY_TIMEOUT + ":1000}")
     private long defaultReplayTimeout;
 
-    public HazelcastEventService(final HazelcastInstance hazelcastInstance) {
+    public EventServiceImpl(final HazelcastInstance hazelcastInstance) {
         super();
         this.outTopic = hazelcastInstance.getTopic(OUT_TOPIC_NAME);
         this.inTopic = hazelcastInstance.getTopic(IN_TOPIC_NAME);

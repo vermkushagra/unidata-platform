@@ -9,6 +9,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.exception.PipelineException;
@@ -20,9 +22,13 @@ import org.unidata.mdm.system.exception.SystemExceptionIds;
  */
 public final class Pipeline {
     /**
-     * The id, either supplied or generated.
+     * The start segment id.
      */
-    private final String id;
+    private final String startId;
+    /**
+     * The subject id. May be null/empty string.
+     */
+    private final String subjectId;
     /**
      * The description, either supplied or generated.
      */
@@ -41,20 +47,28 @@ public final class Pipeline {
     private boolean finished;
     /**
      * Constructor.
-     * @param id the id, either supplied or generated.
-     * @param description, either supplied or generated.
+     * @param startId the start segment id.
+     * @param subjectId the subject id. May be null/blank.
+     * @param description the description.
      */
-    private Pipeline(String id, String description) {
+    private Pipeline(String startId, String subjectId, String description) {
         super();
-        this.id = id;
+        this.startId = startId;
+        this.subjectId = subjectId;
         this.description = description;
     }
     /**
      * Gets pipeline ID. Must be unique accross the system.
      * @return ID
      */
-    public String getId() {
-        return id;
+    public String getStartId() {
+        return startId;
+    }
+    /**
+     * @return the subjectId
+     */
+    public String getSubjectId() {
+        return subjectId;
     }
     /**
      * Gets type description.
@@ -170,22 +184,37 @@ public final class Pipeline {
         }
     }
     /**
-     * Starts an anonymous pipeline from starting point.
+     * Starts a pipeline from starting point with no subject.
+     * Description will be taken from the starting point.
      * @param s the starting point
      * @return a pipeline instance
      */
     public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s) {
-        Objects.requireNonNull(s, "Start segment is null");
-        return start(s, s.getId(), s.getDescription());
+        return start(s, null, null);
     }
     /**
-     * Starts a named pipeline from starting point, using id and description.
+     * Starts a pipeline from starting point and subject.
+     * Description will be taken from the starting point.
      * @param s the starting point
+     * @param subjectId the subject id, on which this pipeline overrides the default one
      * @return a pipeline instance
      */
-    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s, String id, String description) {
+    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s, String subjectId) {
+        return start(s, subjectId, null);
+    }
+    /**
+     * Starts a named pipeline from starting point, using subject and description.
+     * @param s the starting point
+     * @param subjectId the subject id, on which this pipeline overrides the default one
+     * @param description the description
+     * @return a pipeline instance
+     */
+    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s, String subjectId, String description) {
         Objects.requireNonNull(s, "Start segment is null");
-        Pipeline p = new Pipeline(id, description);
+        Pipeline p = new Pipeline(
+                s.getId(),
+                StringUtils.isBlank(subjectId) ? SystemConfigurationConstants.NON_SUBJECT : subjectId,
+                StringUtils.isBlank(description) ? s.getDescription() : description);
         p.segments.add(s);
         return p;
     }

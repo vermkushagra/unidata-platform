@@ -57,6 +57,7 @@ import org.unidata.mdm.core.po.security.UserPropertyValuePO.FieldColumns;
 import org.unidata.mdm.core.type.security.SecurityLabel;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 import org.unidata.mdm.system.util.IdUtils;
@@ -65,7 +66,7 @@ import org.unidata.mdm.system.util.IdUtils;
  * The Class UserDAOImpl.
  */
 @Repository
-public class UserDaoImpl extends AbstractDaoImpl implements UserDao {
+public class UserDaoImpl extends BaseDAOImpl implements UserDao {
 
     private static final String CONNECTION_TABLE = "s_user_s_label_attribute_value";
 

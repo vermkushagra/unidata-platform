@@ -31,9 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.unidata.mdm.core.service.EventService;
-import org.unidata.mdm.core.type.event.Event;
-import org.unidata.mdm.core.type.event.EventReceiver;
 import org.unidata.mdm.core.type.model.AttributeModelElement;
 import org.unidata.mdm.core.type.model.EntityModelElement;
 import org.unidata.mdm.core.type.model.IdentityModelElement;
@@ -98,6 +95,9 @@ import org.unidata.mdm.meta.util.ModelCacheUtils;
 import org.unidata.mdm.meta.util.ModelContextUtils;
 import org.unidata.mdm.meta.util.ModelUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.service.EventService;
+import org.unidata.mdm.system.type.event.Event;
+import org.unidata.mdm.system.type.event.EventReceiver;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 import org.unidata.mdm.system.util.AbstractJaxbUtils;
 
@@ -1382,8 +1382,8 @@ public abstract class BaseMetaModelService implements MetaModelService, EventRec
                 addCachedSourceSystemMaps();
 
                 // UN-6722
-                model.getEntities().forEach(entityDef -> mappingService.updateEntityMapping(storageId, true, entityDef, model.getNestedEntities()));
-                model.getLookupEntities().forEach(entityDef -> mappingService.updateLookupMapping(storageId, true, entityDef));
+                model.getEntities().forEach(entityDef -> mappingService.updateEntityMapping(storageId, false, entityDef, model.getNestedEntities()));
+                model.getLookupEntities().forEach(entityDef -> mappingService.updateLookupMapping(storageId, false, entityDef));
                 model.getRelations().forEach(relationDef -> mappingService.updateRelationMapping(storageId, null, relationDef));
             }
 

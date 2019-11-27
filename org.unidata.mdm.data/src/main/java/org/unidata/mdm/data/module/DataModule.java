@@ -49,6 +49,9 @@ import org.unidata.mdm.data.service.segments.RecordUpsertResolveCodePointersExec
 import org.unidata.mdm.data.service.segments.RecordUpsertSecurityExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertValidateExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.storage.DataCluster;
 import org.unidata.mdm.data.util.DataDiffUtils;
 import org.unidata.mdm.data.util.RecordFactoryUtils;
@@ -92,12 +95,17 @@ public class DataModule implements Module {
      * Start segment names.
      */
     private static final String[] START_SEGMENTS = {
+        // Record
         // Record upsert start executor
         RecordUpsertStartExecutor.SEGMENT_ID,
         // Record get start executor
         RecordGetStartExecutor.SEGMENT_ID,
         // Record delete start executor
-        RecordDeleteStartExecutor.SEGMENT_ID
+        RecordDeleteStartExecutor.SEGMENT_ID,
+
+        // Relation
+        // Start
+        RelationUpsertStartExecutor.SEGMENT_ID
     };
     /**
      * Point segment names.
@@ -149,18 +157,24 @@ public class DataModule implements Module {
      * Finish segments.
      */
     private static final String[] FINIFH_SEGMENTS = {
+        // Record
         // Upsert result creator
         RecordUpsertFinishExecutor.SEGMENT_ID,
         // Get result creator
         RecordGetFinishExecutor.SEGMENT_ID,
         // Delete result creator
-        RecordDeleteFinishExecutor.SEGMENT_ID
+        RecordDeleteFinishExecutor.SEGMENT_ID,
+
+        // Relation
+        // Upsert finish
+        RelationUpsertFinishExecutor.SEGMENT_ID
     };
     /**
      * Connector segments.
      */
     private static final String[] CONNECTOR_SEGMENTS = {
-
+        // Upsert relations connector
+        RelationsUpsertConnectorExecutor.SEGMENT_ID
     };
     /**
      * Local start segments.

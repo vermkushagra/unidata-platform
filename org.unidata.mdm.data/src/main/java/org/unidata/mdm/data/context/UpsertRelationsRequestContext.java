@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.unidata.mdm.core.context.ValidityRangeContext;
+import org.unidata.mdm.system.context.RequestFragmentContext;
+import org.unidata.mdm.system.context.RequestFragmentId;
 
 /**
  * @author Mikhail Mikhailov
@@ -14,7 +16,12 @@ import org.unidata.mdm.core.context.ValidityRangeContext;
  */
 public class UpsertRelationsRequestContext
     extends AbstractRelationsFromRequestContext<UpsertRelationRequestContext>
-    implements ValidityRangeContext {
+    implements ValidityRangeContext, RequestFragmentContext<UpsertRelationsRequestContext> {
+    /**
+     * This fragment ID.
+     */
+    public static final RequestFragmentId<UpsertRelationsRequestContext> FRAGMENT_ID
+        = new RequestFragmentId<>("<UPSERT_RELATIONS_FRAGMENT>", null);
     /**
      * Generated SVUID.
      */
@@ -121,6 +128,11 @@ public class UpsertRelationsRequestContext
      */
     public boolean isOverride() {
         return override;
+    }
+
+    @Override
+    public RequestFragmentId<UpsertRelationsRequestContext> getFragmentId() {
+        return FRAGMENT_ID;
     }
 
     /**

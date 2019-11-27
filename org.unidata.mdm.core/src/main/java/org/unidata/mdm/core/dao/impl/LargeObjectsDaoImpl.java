@@ -37,6 +37,7 @@ import org.unidata.mdm.core.po.CharacterLargeObjectPO;
 import org.unidata.mdm.core.po.LargeObjectPO;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.dao.LargeObjectsDao;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 
 /**
@@ -44,7 +45,7 @@ import org.unidata.mdm.system.exception.PlatformFailureException;
  * DAO for large objects implementation.
  */
 @Repository
-public class LargeObjectsDaoImpl extends AbstractDaoImpl implements LargeObjectsDao {
+public class LargeObjectsDaoImpl extends BaseDAOImpl implements LargeObjectsDao {
     /**
      * Logger.
      */

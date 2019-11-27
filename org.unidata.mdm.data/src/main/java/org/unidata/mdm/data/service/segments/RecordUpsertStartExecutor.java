@@ -48,10 +48,7 @@ import org.unidata.mdm.meta.LookupEntityDef;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.type.info.impl.EntityInfoHolder;
 import org.unidata.mdm.meta.type.info.impl.LookupInfoHolder;
-import org.unidata.mdm.system.exception.PlatformFailureException;
-import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.service.PlatformConfiguration;
-import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 import org.unidata.mdm.system.util.IdUtils;
@@ -86,11 +83,6 @@ public class RecordUpsertStartExecutor
      */
     @Autowired
     private MetaModelService metaModelService;
-    /**
-     * Pipeline service
-     */
-    @Autowired
-    private PipelineService pipelineService;
     /**
      * PC.
      */
@@ -132,7 +124,9 @@ public class RecordUpsertStartExecutor
                 } else {
 
                     // 1.2 Identify record and load TL, if possible
-                    current = ensureCurrentTimeline(ctx);
+                    ensureTimeline(ctx);
+
+                    current = ctx.currentTimeline();
                     keys = current.getKeys();
                 }
 
@@ -346,16 +340,18 @@ public class RecordUpsertStartExecutor
         }
     }
 
-    private Timeline<OriginRecord> ensureCurrentTimeline(UpsertRequestContext uCtx) {
+    private void ensureTimeline(UpsertRequestContext uCtx) {
 
         MeasurementPoint.start();
         try {
 
-            GetRecordTimelineRequestContext tCtx = GetRecordTimelineRequestContext.builder(uCtx)
-                        .fetchData(true)
-                        .build();
+            Timeline<OriginRecord> current = commonRecordsComponent.loadTimeline(GetRecordTimelineRequestContext.builder(uCtx)
+                    .fetchData(true)
+                    .build());
 
-            return commonRecordsComponent.loadTimeline(tCtx);
+            uCtx.currentTimeline(current);
+            uCtx.keys(current.getKeys());
+
         } finally {
             MeasurementPoint.stop();
         }
@@ -478,35 +474,22 @@ public class RecordUpsertStartExecutor
      * {@inheritDoc}
      */
     @Override
-    public Pipeline select(UpsertRequestContext ctx) {
-
-        Pipeline result = null;
+    public String subject(UpsertRequestContext ctx) {
 
         // 1. Check for entity name, being present.
         String entityName = selectEntityName(ctx);
         if (Objects.nonNull(entityName)) {
-            result = pipelineService.getPipeline(entityName);
+            return entityName;
         // 2. Do resolve (load keys and timeline), if entity name is not present.
         } else {
             // 2.1 This is either etalon id/origin id update or invalid request
-            Timeline<OriginRecord> current = ensureCurrentTimeline(ctx);
-            if (Objects.nonNull(current.getKeys())) {
-
-                entityName = current.<RecordKeys>getKeys().getEntityName();
-                result = pipelineService.getPipeline(current.<RecordKeys>getKeys().getEntityName());
-
-                ctx.currentTimeline(current);
-                ctx.keys(current.getKeys());
+            ensureTimeline(ctx);
+            RecordKeys keys = ctx.keys();
+            if (Objects.nonNull(keys)) {
+                return keys.getEntityName();
             }
         }
 
-        // 3. Throw, if nothing works, because this indicates invalid input
-        if (Objects.isNull(result)) {
-            final String message = "No configured pipeline for entity name '{}'.";
-            LOGGER.warn(message, entityName);
-            throw new PlatformFailureException(message, DataExceptionIds.EX_DATA_UPSERT_RECORD_NO_SELECTABLE_PIPELINE, entityName);
-        }
-
-        return result;
+        return null;
     }
 }

@@ -9,18 +9,17 @@ import java.util.List;
 import org.unidata.mdm.core.dto.ResourceSpecificRightDTO;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.RecordStatus;
-import org.unidata.mdm.data.context.ReadWriteTimelineContext;
-import org.unidata.mdm.data.dto.RelationDTO;
 import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.data.UpsertAction;
 import org.unidata.mdm.data.type.keys.RelationKeys;
+import org.unidata.mdm.system.dto.PipelineExecutionResult;
 
 /**
  * @author Mikhail Mikhailov
  * Upsert relation DTO.
  */
-public class UpsertRelationDTO implements RelationDTO, EtalonRelationDTO {
+public class UpsertRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineExecutionResult {
     /**
      * Relation keys.
      */

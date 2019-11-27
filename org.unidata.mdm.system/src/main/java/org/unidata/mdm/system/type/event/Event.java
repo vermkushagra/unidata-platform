@@ -1,10 +1,10 @@
-package org.unidata.mdm.core.type.event;
+package org.unidata.mdm.system.type.event;
 
 import java.io.Serializable;
 
 public interface Event extends Serializable {
     /**
-     * This migth be useful for listeners / subscribers, that do not filetr on the event type.
+     * This might be useful for listeners / subscribers, that do not filetr on the event type.
      * @return type name
      */
     String getTypeName();

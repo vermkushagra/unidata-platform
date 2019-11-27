@@ -1,11 +1,11 @@
-package org.unidata.mdm.core.service.impl.event;
+package org.unidata.mdm.system.service.impl.event;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.unidata.mdm.core.type.event.Event;
-import org.unidata.mdm.core.type.event.EventReceiver;
+import org.unidata.mdm.system.type.event.Event;
+import org.unidata.mdm.system.type.event.EventReceiver;
 
 import com.hazelcast.core.HazelcastInstance;
 

@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
@@ -25,11 +24,6 @@ import org.unidata.mdm.core.service.impl.StandardSecurityInterceptionProvider;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
 
-import com.hazelcast.config.Config;
-import com.hazelcast.config.JoinConfig;
-import com.hazelcast.core.Hazelcast;
-import com.hazelcast.core.HazelcastInstance;
- 
 /**
  * @author Alexander Malyshev
  */
@@ -110,29 +104,6 @@ public class CoreConfiguration extends AbstractConfiguration {
         return propertiesFactoryBean;
     }
 
-    @Bean
-    public HazelcastInstance hazelcastInstance(
-            @Value("${unidata.cache.port:5701}") final int port,
-            @Value("${unidata.cache.tcp-ip.enabled:false}") final boolean tpcIpEnabled,
-            @Value("${unidata.cache.multicast.enabled:false}") final boolean multicastEnabled
-    ) {
-        final Config unidataHzConfig = new Config()
-                .setInstanceName("unidata");
-        final JoinConfig join = unidataHzConfig.getNetworkConfig()
-                .setPort(port)
-                .setPortAutoIncrement(false)
-                .getJoin();
-        join.getTcpIpConfig()
-                .setEnabled(tpcIpEnabled);
-        join.getMulticastConfig()
-                .setEnabled(multicastEnabled);
-        join.getAwsConfig()
-                .setEnabled(false);
-        return Hazelcast.getOrCreateHazelcastInstance(
-                unidataHzConfig
-        );
-    }
-
     @Bean(name = "coreTransactionManager")
     public PlatformTransactionManager platformTransactionManager() {
         return new bitronix.tm.integration.spring.PlatformTransactionManager();
@@ -142,7 +113,6 @@ public class CoreConfiguration extends AbstractConfiguration {
     public StandardSecurityInterceptionProvider standardSecurityInterceptionProvider(final SecurityService securityService) {
         return new StandardSecurityInterceptionProvider(securityService);
     }
-
 
     @Bean
     public ProviderManager authenticationManager(final AuthenticationProvider authenticationProvider) {

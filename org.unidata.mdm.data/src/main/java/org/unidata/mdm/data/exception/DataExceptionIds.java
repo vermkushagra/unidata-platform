@@ -341,16 +341,6 @@ public final class DataExceptionIds {
     public static final ExceptionId EX_DATA_UPSERT_NOT_ACCEPTED_HAS_PENDING_RECORD =
             new ExceptionId("EX_DATA_UPSERT_NOT_ACCEPTED_HAS_PENDING_RECORD", "app.data.upsert.hasPendingVersions");
     /**
-     * No configured pipeline for entity name.
-     */
-    public static final ExceptionId EX_DATA_UPSERT_RECORD_NO_SELECTABLE_PIPELINE =
-            new ExceptionId("EX_DATA_UPSERT_RECORD_NO_SELECTABLE_PIPELINE", "app.data.upsert.record.no.selectable.pipeline");
-    /**
-     * No configured pipeline for entity name.
-     */
-    public static final ExceptionId EX_DATA_GET_RECORD_NO_SELECTABLE_PIPELINE =
-            new ExceptionId("EX_DATA_GET_RECORD_NO_SELECTABLE_PIPELINE", "app.data.get.record.no.selectable.pipeline");
-    /**
      * Incorrect validity range input.
      */
     public static final ExceptionId EX_DATA_VALIDITY_PERIOD_INCORRECT =

@@ -14,12 +14,12 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-import org.unidata.mdm.core.util.JsonUtils;
 import org.unidata.mdm.data.dao.DataStorageDAO;
 import org.unidata.mdm.data.dao.rm.DataClusterRowMapper;
 import org.unidata.mdm.data.dao.rm.DataNodeRowMapper;
 import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.po.storage.DataNodePO;
+import org.unidata.mdm.system.util.JsonUtils;
 
 /**
  * @author Mikhail Mikhailov

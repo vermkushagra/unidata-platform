@@ -65,6 +65,15 @@ public class DeleteRelationRequestContext
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
      * @return the validFrom
      */
     @Override

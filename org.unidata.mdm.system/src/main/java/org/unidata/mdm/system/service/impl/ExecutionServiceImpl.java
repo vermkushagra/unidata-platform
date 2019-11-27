@@ -4,6 +4,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.dto.CompositeResult;
@@ -13,6 +14,7 @@ import org.unidata.mdm.system.dto.ResultFragmentId;
 import org.unidata.mdm.system.exception.PipelineException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.ExecutionService;
+import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
@@ -25,6 +27,11 @@ import org.unidata.mdm.system.type.pipeline.Start;
  */
 @Service
 public class ExecutionServiceImpl implements ExecutionService {
+    /**
+     * Pipeline servivce.
+     */
+    @Autowired
+    private PipelineService pipelineService;
     /**
      * Constructor.
      */
@@ -41,9 +48,30 @@ public class ExecutionServiceImpl implements ExecutionService {
             return null;
         }
 
-        @SuppressWarnings("unchecked")
-        Start<C> s = (Start<C>) ctx.getStartType();
-        Pipeline p = s.select(ctx);
+        String id = ctx.getStartTypeId();
+        Start<C> s = pipelineService.start(id);
+        if (Objects.isNull(s)) {
+            throw new PipelineException("Pipeline start type [{}] not found.",
+                    SystemExceptionIds.EX_PIPELINE_START_TYPE_NOT_FOUND,
+                    id);
+        }
+
+        String subject = s.subject(ctx);
+
+        Pipeline p = null;
+        if (Objects.nonNull(subject)) {
+            p = pipelineService.getByIdAndSubject(id, subject);
+        }
+
+        if (Objects.isNull(p)) {
+            p = pipelineService.getById(id);
+        }
+
+        if (Objects.isNull(p)) {
+            throw new PipelineException("Pipeline not found by id [{}], subject [{}].",
+                    SystemExceptionIds.EX_PIPELINE_NOT_FOUND_BY_ID_AND_SUBJECT,
+                    id, subject);
+        }
 
         return execute(p, ctx);
     }

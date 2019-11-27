@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.type.event;
+package org.unidata.mdm.system.type.event;
 
 /**
  * Type of broadcasting.

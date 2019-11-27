@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.util;
+package org.unidata.mdm.system.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.unidata.mdm.core.configuration.CoreConfiguration;
+import org.unidata.mdm.system.configuration.SystemConfiguration;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,7 +26,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JsonUtils {
 
     public static final String DEFAULT_OBJECT_MAPPER_BEAN_NAME = "objectMapper";
-
     /**
      * The logger.
      */
@@ -41,13 +40,12 @@ public class JsonUtils {
     private JsonUtils() {
         super();
     }
-
     /**
      * Convenient init method.
      */
     public static void init() {
         try {
-            objectMapper = CoreConfiguration.getBean(ObjectMapper.class); // From WAR spring configuration.
+            objectMapper = SystemConfiguration.getBean(ObjectMapper.class); // From WAR spring configuration.
         } catch (Exception exc) {
             LOGGER.warn("Platform configuration bean GET. Exception caught.", exc);
         }

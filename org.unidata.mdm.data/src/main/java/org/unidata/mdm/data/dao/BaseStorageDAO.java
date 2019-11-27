@@ -2,9 +2,9 @@ package org.unidata.mdm.data.dao;
 
 import java.util.UUID;
 
-import org.unidata.mdm.core.dao.BaseDao;
 import org.unidata.mdm.core.type.keys.ExternalId;
 import org.unidata.mdm.data.dao.impl.BaseStorageDAOImpl.DataNodeEntry;
+import org.unidata.mdm.system.dao.BaseDao;
 
 /**
  * @author Mikhail Mikhailov

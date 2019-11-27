@@ -18,13 +18,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.unidata.mdm.core.dao.impl.AbstractDaoImpl;
 import org.unidata.mdm.meta.dao.MeasurementDao;
 import org.unidata.mdm.meta.po.MeasurementUnitPO;
 import org.unidata.mdm.meta.po.MeasurementValuePO;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 
 @Repository
-public class MeasurementDaoImpl extends AbstractDaoImpl implements MeasurementDao {
+public class MeasurementDaoImpl extends BaseDAOImpl implements MeasurementDao {
 
     private final String INSERT_VALUE;
     private final String UPDATE_VALUE;

@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.dao;
+package org.unidata.mdm.system.dao;
 
 import java.sql.Connection;
 

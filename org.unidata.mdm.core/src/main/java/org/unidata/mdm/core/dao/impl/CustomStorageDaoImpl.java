@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.unidata.mdm.core.dao.CustomStorageDao;
 import org.unidata.mdm.core.dao.rm.CustomSettingsObjectRowMapper;
 import org.unidata.mdm.core.po.CustomStorageRecordPO;
+import org.unidata.mdm.system.dao.impl.BaseDAOImpl;
 
 import javax.annotation.Nonnull;
 import javax.sql.DataSource;
@@ -19,7 +20,7 @@ import java.util.Properties;
  * @author Dmitry Kopin on 25.08.2017.
  */
 @Repository
-public class CustomStorageDaoImpl extends AbstractDaoImpl implements CustomStorageDao {
+public class CustomStorageDaoImpl extends BaseDAOImpl implements CustomStorageDao {
 
     private final String upsertRecord;
 

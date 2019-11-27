@@ -1,6 +1,6 @@
-package org.unidata.mdm.core.service.impl.event;
+package org.unidata.mdm.system.service.impl.event;
 
-import org.unidata.mdm.core.type.event.AbstractMulticastEvent;
+import org.unidata.mdm.system.type.event.AbstractMulticastEvent;
 
 /**
  * @author Mikhail Mikhailov on Oct 29, 2019

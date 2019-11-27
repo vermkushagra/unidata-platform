@@ -28,3 +28,6 @@ out
 /org.unidata.mdm.soap.data/build/
 /org.unidata.mdm.soap.data/out/
 /org.unidata.mdm.soap.data/src/main/generated/
+/.classpath
+/.project
+/.settings/

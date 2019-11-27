@@ -7,8 +7,6 @@ import org.unidata.mdm.system.exception.ExceptionId;
  * Exception IDs for this module.
  */
 public class CoreExceptionIds {
-
-
     /**
      * Interval type does not support unlock.
      */
@@ -109,11 +107,6 @@ public class CoreExceptionIds {
      */
     public static final ExceptionId EX_DATA_ATTRIBUTE_PUT_NOT_COMPLEX
             = new ExceptionId("EX_DATA_ATTRIBUTE_PUT_NOT_COMPLEX", "app.data.attribute.put.not.complex");
-    /**
-     * Undefined error occurs.
-     */
-    public static final ExceptionId EX_SYSTEM_CONNECTION_GET
-            = new ExceptionId("EX_SYSTEM_CONNECTION_GET", "app.system.connection.get");
     /**
      * Append to bulk set failed.
      */
@@ -472,12 +465,6 @@ public class CoreExceptionIds {
      */
     public static final ExceptionId EX_JOB_PARAMETER_EXTRACT_ERROR
             = new ExceptionId("EX_JOB_PARAMETER_EXTRACT_ERROR", "app.job.parameter.extractError");
-
-    public static final ExceptionId EX_EVENT_NO_VALID_ID
-        = new ExceptionId("EX_EVENT_NO_VALID_ID", "app.event.invalid.id");
-
-    public static final ExceptionId EX_EVENT_ALREADY_WAITING
-        = new ExceptionId("EX_EVENT_ALREADY_WAITING", "app.event.is.waiting.yet");
 
     public static final ExceptionId EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION =
             new ExceptionId("EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION", "app.audit.parameters.json.serialization.error");

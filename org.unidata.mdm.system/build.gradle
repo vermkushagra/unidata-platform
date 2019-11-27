@@ -28,12 +28,14 @@ dependencies {
     implementation 'commons-beanutils:commons-beanutils:1.9.2'
     
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.2.0'
-
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    
+    implementation 'com.hazelcast:hazelcast:3.12'
+    
     implementation 'io.projectreactor:reactor-core'
 
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
-    implementation 'org.threeten:threeten-extra:1.4'
 
     implementation 'org.slf4j:slf4j-api:1.7.26'
     

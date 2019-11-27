@@ -17,9 +17,8 @@ import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.DataRecord;
 import org.unidata.mdm.core.type.data.RecordStatus;
 import org.unidata.mdm.core.type.keys.ExternalId;
+import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
  * @author Mikhail Mikhailov
@@ -28,7 +27,6 @@ import org.unidata.mdm.system.type.pipeline.Start;
 public class UpsertRequestContext
     extends AbstractRecordIdentityContext
     implements
-        PipelineExecutionContext,
         ExternalIdResettingContext,
         MutableValidityRangeContext,
         ApprovalStateSettingContext,
@@ -169,9 +167,8 @@ public class UpsertRequestContext
      * {@inheritDoc}
      */
     @Override
-    public Start<PipelineExecutionContext> getStartType() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getStartTypeId() {
+        return RecordUpsertStartExecutor.SEGMENT_ID;
     }
 
     /**

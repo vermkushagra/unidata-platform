@@ -8,9 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.unidata.mdm.data.po.storage.DataNodePO;
 import org.unidata.mdm.data.type.storage.PoolSetting;
+import org.unidata.mdm.system.util.JsonUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.unidata.mdm.core.util.JsonUtils;
 
 /**
  * @author Mikhail Mikhailov
