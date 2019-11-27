@@ -420,6 +420,10 @@ public final class DataExceptionIds {
      */
     public static final ExceptionId EX_DATA_ETALON_HAS_INCOMING_LINKS =
             new ExceptionId("EX_DATA_ETALON_HAS_INCOMING_LINKS", "app.data.consistency.etalon.has.incoming.links");
+
+    public static final ExceptionId EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT =
+            new ExceptionId("EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT", "app.data.audit.unknow.pipeline.execution.context");
+
     /**
      * Constructor.
      */

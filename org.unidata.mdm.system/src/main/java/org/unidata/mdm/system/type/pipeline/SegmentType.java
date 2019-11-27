@@ -21,5 +21,10 @@ public enum SegmentType {
     /**
      * The finalizer type, preparing the pipeline's result.
      */
-    FINISH;
+    FINISH,
+    /**
+     * Marks an action, executed only if the pipeline fails.
+     * Fallbacks are executed on the order of submission to pipeline.
+     */
+    FALLBACK;
 }

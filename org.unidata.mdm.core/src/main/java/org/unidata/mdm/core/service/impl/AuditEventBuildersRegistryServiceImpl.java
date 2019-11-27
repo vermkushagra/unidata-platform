@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import org.unidata.mdm.core.dto.ImmutableAuditEvent;
 import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
 import org.unidata.mdm.core.type.audit.AuditEvent;
-import org.unidata.mdm.core.util.audit.AuditConstants;
-import org.unidata.mdm.core.util.audit.AuditUtils;
+import org.unidata.mdm.core.audit.AuditConstants;
+import org.unidata.mdm.core.audit.AuditUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

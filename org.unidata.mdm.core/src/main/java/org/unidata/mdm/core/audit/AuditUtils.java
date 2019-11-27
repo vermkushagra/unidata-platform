@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.util.audit;
+package org.unidata.mdm.core.audit;
 
 import org.unidata.mdm.core.dto.ImmutableAuditEvent;
 import org.unidata.mdm.core.type.audit.AuditEvent;

@@ -94,6 +94,11 @@ public class SystemExceptionIds {
      */
     public static final ExceptionId EX_PIPELINE_HAS_NO_START_OR_FINISH_OR_BOTH
         = new ExceptionId("EX_PIPELINE_HAS_NO_START_OR_FINISH_OR_BOTH", "app.pipeline.has.no.start.or.finish.or.both");
+    /**
+     * Pipeline execution failed.
+     */
+    public static final ExceptionId EX_PIPELINE_EXECUTION_FAILED
+        = new ExceptionId("EX_PIPELINE_EXECUTION_FAILED", "app.pipeline.execution.failed");
 
     public static final ExceptionId EX_EVENT_NO_VALID_ID
         = new ExceptionId("EX_EVENT_NO_VALID_ID", "app.event.invalid.id");

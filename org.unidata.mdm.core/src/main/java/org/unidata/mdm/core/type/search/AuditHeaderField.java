@@ -1,19 +1,19 @@
 package org.unidata.mdm.core.type.search;
 
-import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
 import org.unidata.mdm.search.type.FieldType;
 import org.unidata.mdm.search.type.IndexField;
 import org.unidata.mdm.search.type.IndexType;
 
 public enum AuditHeaderField implements IndexField {
 
-    TYPE(EnhancedAuditEvent.TYPE_FIELD, FieldType.STRING),
-    PARAMETERS(EnhancedAuditEvent.PARAMETERS_FIELD, FieldType.STRING),
-    SUCCESS(EnhancedAuditEvent.SUCCESS_FIELD, FieldType.BOOLEAN),
-    LOGIN(EnhancedAuditEvent.LOGIN_FIELD, FieldType.STRING),
-    CLIENT_IP(EnhancedAuditEvent.CLIENT_IP_FIELD, FieldType.STRING),
-    SERVER_IP(EnhancedAuditEvent.SERVER_IP_FIELD, FieldType.STRING),
-    WHEN_HAPPENED(EnhancedAuditEvent.WHEN_HAPPENED_FIELD, FieldType.TIMESTAMP);
+    TYPE(EnrichedAuditEvent.TYPE_FIELD, FieldType.STRING),
+    PARAMETERS(EnrichedAuditEvent.PARAMETERS_FIELD, FieldType.STRING),
+    SUCCESS(EnrichedAuditEvent.SUCCESS_FIELD, FieldType.BOOLEAN),
+    LOGIN(EnrichedAuditEvent.LOGIN_FIELD, FieldType.STRING),
+    CLIENT_IP(EnrichedAuditEvent.CLIENT_IP_FIELD, FieldType.STRING),
+    SERVER_IP(EnrichedAuditEvent.SERVER_IP_FIELD, FieldType.STRING),
+    WHEN_HAPPENED(EnrichedAuditEvent.WHEN_HAPPENED_FIELD, FieldType.TIMESTAMP);
 
     /**
      * The field name.

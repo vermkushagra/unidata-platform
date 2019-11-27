@@ -5,6 +5,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +38,10 @@ public final class Pipeline {
      * Collected segments.
      */
     private final List<Segment> segments = new ArrayList<>();
+    /**
+     * Fallbacks.
+     */
+    private final List<Segment> fallbacks = new ArrayList<>();
     /**
      * Connected non-default specific pipelines.
      */
@@ -83,6 +88,16 @@ public final class Pipeline {
      */
     public List<Segment> getSegments() {
         return segments;
+    }
+    /**
+     * Gets the pipeline fallback functions.
+     * @return fallbacks
+     */
+    @SuppressWarnings("unchecked")
+    public<C extends PipelineExecutionContext> List<Fallback<C>> getFallbacks() {
+        return fallbacks.stream()
+                .map(f -> (Fallback<C>) f)
+                .collect(Collectors.toList());
     }
     /**
      * Gets the starting point.
@@ -163,6 +178,17 @@ public final class Pipeline {
         connected.put(c, p);
         return this;
     }
+
+    /**
+     * Add a fallback function to pipeline.
+     * @param fallback the fallback function
+     * @return self
+     */
+    public Pipeline fallback(@Nonnull Fallback<? extends PipelineExecutionContext> fallback) {
+        fallbacks.add(fallback);
+        return this;
+    }
+
     /**
      * Adds a connector with pipeline selection at runtime.
      * @param f the finish segment

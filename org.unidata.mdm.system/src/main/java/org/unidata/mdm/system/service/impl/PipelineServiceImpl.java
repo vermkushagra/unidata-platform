@@ -40,6 +40,7 @@ import org.unidata.mdm.system.type.event.impl.PipelineUpdate;
 import org.unidata.mdm.system.type.event.impl.PipelineUpdate.PipelineUpdateType;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
@@ -114,6 +115,11 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
             Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> finishSegments = m.getFinishTypes();
             if (CollectionUtils.isNotEmpty(finishSegments)) {
                 segments.putAll(finishSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
+            }
+
+            Collection<Fallback<PipelineExecutionContext>> fallbackSegments = m.getFallbacks();
+            if (CollectionUtils.isNotEmpty(fallbackSegments)) {
+                segments.putAll(fallbackSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
         }
 
@@ -310,6 +316,15 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      * {@inheritDoc}
      */
     @Override
+    public Collection<Segment> getFallbackSegments() {
+        return segments.values().stream()
+                .filter(s -> s.getType() == SegmentType.FALLBACK)
+                .collect(Collectors.toList());
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Collection<Segment> getSegmentsForStart(String id) {
 
         Segment s = segments.get(id);
@@ -420,6 +435,21 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
 
         return null;
     }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C extends PipelineExecutionContext> Fallback<C> fallback(String id) {
+
+        Segment s = segments.get(id);
+        if (Objects.nonNull(s) && s.getType() == SegmentType.FALLBACK) {
+            return (Fallback<C>) s;
+        }
+
+        return null;
+    }
+
     /**
      * {@inheritDoc}
      */

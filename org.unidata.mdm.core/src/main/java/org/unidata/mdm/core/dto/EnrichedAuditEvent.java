@@ -12,7 +12,7 @@ import java.util.Objects;
 /**
  * @author Alexander Malyshev
  */
-public class EnhancedAuditEvent implements AuditEvent {
+public class EnrichedAuditEvent implements AuditEvent {
 
     public static final String TYPE_FIELD = "type";
     public static final String PARAMETERS_FIELD = "parameters";
@@ -34,15 +34,18 @@ public class EnhancedAuditEvent implements AuditEvent {
 
     private final String serverIp;
 
+    private final String endpoint;
+
     private final LocalDateTime whenwHappened;
 
-    public EnhancedAuditEvent(
+    public EnrichedAuditEvent(
             final String type,
             final Map<String, String> parameters,
             final boolean success,
             final String login,
             final String clientIp,
             final String serverIp,
+            final String endpoint,
             final LocalDateTime whenHappened
     ) {
         this.type = Objects.requireNonNull(type);
@@ -53,17 +56,19 @@ public class EnhancedAuditEvent implements AuditEvent {
         this.login = login;
         this.clientIp = clientIp;
         this.serverIp = serverIp;
+        this.endpoint = endpoint;
         this.whenwHappened = whenHappened;
     }
 
-    public EnhancedAuditEvent(
+    public EnrichedAuditEvent(
             final AuditEvent auditEvent,
             final String login,
             final String clientIp,
             final String serverIp,
+            final String endpoint,
             final LocalDateTime whenwHappened
     ) {
-        this(auditEvent.type(), auditEvent.parameters(), auditEvent.success(), login, clientIp, serverIp, whenwHappened);
+        this(auditEvent.type(), auditEvent.parameters(), auditEvent.success(), login, clientIp, serverIp, endpoint, whenwHappened);
     }
 
     @Nonnull

@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
@@ -76,6 +77,11 @@ public interface PipelineService extends AfterPlatformStartup {
      */
     Collection<Segment> getFinishSegments();
     /**
+     * Gets all fallback segments, registered on the system.
+     * @return collectionf of fallback segments
+     */
+    Collection<Segment> getFallbackSegments();
+    /**
      * Gets segments for the given start ID.
      * @param id the start segment ID
      * @return collection of segments
@@ -105,6 +111,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @param id the id
      * @return start segment or null
      */
+    @Nullable
     <C extends PipelineExecutionContext> Start<C> start(String id);
     /**
      * Get segment specifically as a point segment by id.
@@ -112,6 +119,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @param id the id
      * @return point segment or null
      */
+    @Nullable
     <C extends PipelineExecutionContext> Point<C> point(String id);
     /**
      * Get segment specifically as a connector segment by id.
@@ -120,6 +128,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @param id the id
      * @return connector segment or null
      */
+    @Nullable
     <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Connector<C, R> connector(String id);
     /**
      * Get segment specifically as a finish segment by id.
@@ -128,5 +137,15 @@ public interface PipelineService extends AfterPlatformStartup {
      * @param id the id
      * @return finish segment or null
      */
+    @Nullable
     <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Finish<C, R> finish(String id);
+    /**
+     * Gets a fallback segment by id.
+     * @param <C> The input type
+     * @param <T> The throwable type
+     * @param id Segment id
+     * @return fallback segment or null
+     */
+    @Nullable
+    <C extends PipelineExecutionContext> Fallback<C> fallback(String id);
 }

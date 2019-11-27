@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.unidata.mdm.system.exception.PipelineException;
@@ -12,6 +14,7 @@ import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.serialization.json.PipelineJS;
 import org.unidata.mdm.system.serialization.json.SegmentJS;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
@@ -59,7 +62,7 @@ public class PipelinesConverter {
         result.setStartId(p.getStartId());
         result.setSubjectId(p.getSubjectId());
         result.setDescription(p.getDescription());
-        result.setSegments(toSegments(p.getSegments()));
+        result.setSegments(toSegments(Stream.concat(p.getSegments().stream(), p.getFallbacks().stream()).collect(Collectors.toList())));
 
         return result;
     }
@@ -124,6 +127,8 @@ public class PipelinesConverter {
                 p.with((Point<?>) segment);
             } else if (segment.getType() == SegmentType.CONNECTOR) {
                 p.with((Connector<?, ?>) segment);
+            } else if (segment.getType() == SegmentType.FALLBACK) {
+                p.fallback((Fallback<?>) segment);
             }
         }
 

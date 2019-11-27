@@ -2,7 +2,7 @@ package org.unidata.mdm.core.service.impl;
 
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.core.context.AuditEventWriteContext;
-import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
 import org.unidata.mdm.core.service.AuditServiceStorageService;
 import org.unidata.mdm.core.type.search.AuditIndexType;
 import org.unidata.mdm.search.context.IndexRequestContext;
@@ -37,19 +37,19 @@ public class ESAuditServiceStorageService implements AuditServiceStorageService 
 
     @Override
     public void write(AuditEventWriteContext auditEventWriteContext) {
-        final EnhancedAuditEvent enhancedAuditEvent = auditEventWriteContext.getEnhancedAuditEvent();
+        final EnrichedAuditEvent enricheedAuditEvent = auditEventWriteContext.getEnhancedAuditEvent();
         List<IndexingField> fields = new ArrayList<>();
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.TYPE_FIELD, enhancedAuditEvent.type()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.TYPE_FIELD, enricheedAuditEvent.type()));
         fields.add(IndexingField.ofStrings(
                 AuditIndexType.AUDIT,
-                EnhancedAuditEvent.PARAMETERS_FIELD,
-                toIndexStrings(enhancedAuditEvent.parameters())
+                EnrichedAuditEvent.PARAMETERS_FIELD,
+                toIndexStrings(enricheedAuditEvent.parameters())
         ));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SUCCESS_FIELD, enhancedAuditEvent.success()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.LOGIN_FIELD, enhancedAuditEvent.getLogin()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.CLIENT_IP_FIELD, enhancedAuditEvent.getClientIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.SERVER_IP_FIELD, enhancedAuditEvent.getServerIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnhancedAuditEvent.WHEN_HAPPENED_FIELD, enhancedAuditEvent.getWhenwHappened()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SUCCESS_FIELD, enricheedAuditEvent.success()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.LOGIN_FIELD, enricheedAuditEvent.getLogin()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.CLIENT_IP_FIELD, enricheedAuditEvent.getClientIp()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SERVER_IP_FIELD, enricheedAuditEvent.getServerIp()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.WHEN_HAPPENED_FIELD, enricheedAuditEvent.getWhenwHappened()));
         final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
                 .storageId(auditEventWriteContext.getCurrentUserStorageId())
                 .entity(AuditIndexType.INDEX_NAME)

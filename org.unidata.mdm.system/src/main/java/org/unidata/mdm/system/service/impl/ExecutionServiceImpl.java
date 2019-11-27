@@ -1,9 +1,13 @@
 package org.unidata.mdm.system.service.impl;
 
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
@@ -16,6 +20,7 @@ import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.pipeline.Connector;
+import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
 import org.unidata.mdm.system.type.pipeline.Point;
@@ -27,6 +32,8 @@ import org.unidata.mdm.system.type.pipeline.Start;
  */
 @Service
 public class ExecutionServiceImpl implements ExecutionService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionServiceImpl.class);
     /**
      * Pipeline servivce.
      */
@@ -75,6 +82,7 @@ public class ExecutionServiceImpl implements ExecutionService {
 
         return execute(p, ctx);
     }
+
     /**
      * {@inheritDoc}
      */
@@ -93,38 +101,46 @@ public class ExecutionServiceImpl implements ExecutionService {
         R result = null;
         Map<ResultFragmentId<?>, ResultFragment<?>> collected = null;
         boolean resultIsComposite = CompositeResult.class.isAssignableFrom(p.getFinish().getOutputTypeClass());
+        final List<Fallback<C>> fallbacks = new ArrayList<>(p.getFallbacks());
         for (int i = 0; i < p.getSegments().size(); i++) {
 
             Segment s = p.getSegments().get(i);
-            switch (s.getType()) {
-            case START:
-                execStart(s, ctx);
-                break;
-            case POINT:
-                execPoint(s, ctx);
-                break;
-            case CONNECTOR:
+            try {
+                switch (s.getType()) {
+                    case START:
+                        execStart(s, ctx);
+                        break;
+                    case POINT:
+                        execPoint(s, ctx);
+                        break;
+                    case CONNECTOR:
 
-                PipelineExecutionResult intermediate = execConnector(s, ctx, p);
+                        PipelineExecutionResult intermediate = execConnector(s, ctx, p);
 
-                // The pipeline is not supposed to return composite result
-                // or returned is null. Break.
-                if (!resultIsComposite || intermediate == null || !ResultFragment.class.isAssignableFrom(intermediate.getClass())) {
-                    break;
+                        // The pipeline is not supposed to return composite result
+                        // or returned is null. Break.
+                        if (!resultIsComposite || intermediate == null || !ResultFragment.class.isAssignableFrom(intermediate.getClass())) {
+                            break;
+                        }
+
+                        if (Objects.isNull(collected)) {
+                            collected = new IdentityHashMap<>();
+                        }
+
+                        ResultFragment<?> fragment = (ResultFragment<?>) intermediate;
+                        collected.put(fragment.getFragmentId(), fragment);
+                        break;
+                    case FINISH:
+                        result = execFinish(s, ctx);
+                        break;
+                    default:
+                        break;
                 }
-
-                if (Objects.isNull(collected)) {
-                    collected = new IdentityHashMap<>();
-                }
-
-                ResultFragment<?> fragment = (ResultFragment<?>) intermediate;
-                collected.put(fragment.getFragmentId(), fragment);
-                break;
-            case FINISH:
-                result = execFinish(s, ctx);
-                break;
-            default:
-                break;
+            }
+            catch (Exception e) {
+                executeFallbacks(ctx, e, fallbacks);
+                throw new PipelineException("Execution of the pipeline [{} / {}] failed.", e,
+                        SystemExceptionIds.EX_PIPELINE_EXECUTION_FAILED, p.getStartId(), p.getSubjectId());
             }
         }
 
@@ -135,6 +151,7 @@ public class ExecutionServiceImpl implements ExecutionService {
 
         return result;
     }
+
     /**
      * Executes start segment.
      * @param <C> the context type
@@ -186,5 +203,20 @@ public class ExecutionServiceImpl implements ExecutionService {
     @SuppressWarnings("unchecked")
     private <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execFinish(Segment s, C ctx) {
         return ((Finish<C, R>) s).finish(ctx);
+    }
+
+    private<C extends PipelineExecutionContext> void executeFallbacks(
+            final C c,
+            final Throwable t,
+            final List<Fallback<C>> fallbacks
+    ) {
+        fallbacks.forEach(fb -> {
+            try {
+                fb.accept(c, t);
+            }
+            catch (Exception e) {
+                LOGGER.error("Error while executin fallback", e);
+            }
+        });
     }
 }

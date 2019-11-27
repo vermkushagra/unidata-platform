@@ -1,13 +1,13 @@
 package org.unidata.mdm.core.context;
 
-import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
 
 /**
  * @author Alexander Malyshev
  */
 public class AuditEventWriteContext {
 
-    private final EnhancedAuditEvent enhancedAuditEvent;
+    private final EnrichedAuditEvent enhancedAuditEvent;
 
     private final String currentUserStorageId;
 
@@ -16,7 +16,7 @@ public class AuditEventWriteContext {
         currentUserStorageId = builder.currentUserStorageId;
     }
 
-    public EnhancedAuditEvent getEnhancedAuditEvent() {
+    public EnrichedAuditEvent getEnhancedAuditEvent() {
         return enhancedAuditEvent;
     }
 
@@ -29,11 +29,11 @@ public class AuditEventWriteContext {
     }
 
     public static class AuditEventWriteContextBuilder {
-        private EnhancedAuditEvent enhancedAuditEvent;
+        private EnrichedAuditEvent enhancedAuditEvent;
 
         private String currentUserStorageId;
 
-        public AuditEventWriteContextBuilder enhancedAuditEvent(final EnhancedAuditEvent enhancedAuditEvent) {
+        public AuditEventWriteContextBuilder enhancedAuditEvent(final EnrichedAuditEvent enhancedAuditEvent) {
             this.enhancedAuditEvent = enhancedAuditEvent;
             return this;
         }

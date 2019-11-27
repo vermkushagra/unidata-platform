@@ -7,39 +7,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.unidata.mdm.core.audit.AuditConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
 import org.unidata.mdm.core.context.AuditEventWriteContext;
-import org.unidata.mdm.core.dao.AuditDao;
-import org.unidata.mdm.core.dto.EnhancedAuditEvent;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
 import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
 import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.service.AuditServiceStorageService;
 import org.unidata.mdm.core.type.audit.AuditEvent;
 import org.unidata.mdm.core.type.monitoring.collector.QueueSizeCollector;
-import org.unidata.mdm.core.type.search.AuditIndexType;
+import org.unidata.mdm.core.type.security.SecurityToken;
 import org.unidata.mdm.core.util.SecurityUtils;
-import org.unidata.mdm.search.context.IndexRequestContext;
-import org.unidata.mdm.search.service.SearchService;
-import org.unidata.mdm.search.type.indexing.Indexing;
-import org.unidata.mdm.search.type.indexing.IndexingField;
 
 import javax.annotation.PreDestroy;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -70,6 +62,7 @@ public class AuditServiceImpl implements AuditService {
             .help(HANDLED_AUDIT_EVENTS_HELP_TEXT)
             .create()
             .register();
+    private static final String UNKNOWN = "unknown";
 
     // TODO Use dynamic configuration update
     private boolean auditEnabled;
@@ -140,26 +133,55 @@ public class AuditServiceImpl implements AuditService {
         if (!auditEnabled) {
             return;
         }
-        final EnhancedAuditEvent enhancedAuditEvent = enhance(
+        final EnrichedAuditEvent enrichedAuditEvent = enrich(
                 auditEventBuildersRegistryService.eventBuilder(eventType).apply(eventType, parameters)
         );
-        executorService.submit(() -> write(enhancedAuditEvent, SecurityUtils.getCurrentUserStorageId()));
+        executorService.submit(() -> write(enrichedAuditEvent, SecurityUtils.getCurrentUserStorageId()));
         AUDIT_EVENTS_FOR_WRITE.inc();
     }
 
-    private EnhancedAuditEvent enhance(AuditEvent auditEvent) {
-        return new EnhancedAuditEvent(
+    private EnrichedAuditEvent enrich(AuditEvent auditEvent) {
+        final SecurityToken securityTokenForCurrentUser = SecurityUtils.getSecurityTokenForCurrentUser();
+        return new EnrichedAuditEvent(
                 auditEvent,
-                SecurityUtils.getCurrentUserName(),
-                "",
-                "",
+                login(securityTokenForCurrentUser, auditEvent.parameters()),
+                clientIp(securityTokenForCurrentUser, auditEvent.parameters()),
+                serverIp(securityTokenForCurrentUser, auditEvent.parameters()),
+                endpoint(securityTokenForCurrentUser, auditEvent.parameters()),
                 LocalDateTime.now()
         );
     }
 
-    private void write(EnhancedAuditEvent enhancedAuditEvent, String currentUserStorageId) {
+    private String login(SecurityToken securityTokenForCurrentUser, Map<String, String> parameters) {
+        return securityTokenForCurrentUser != null ?
+                securityTokenForCurrentUser.getUser().getLogin() :
+                parameters.getOrDefault("login", SecurityUtils.getCurrentUserName());
+    }
+
+    private String clientIp(SecurityToken securityTokenForCurrentUser, Map<String, String> parameters) {
+        if (securityTokenForCurrentUser != null && securityTokenForCurrentUser.getUserIp() != null) {
+            return securityTokenForCurrentUser.getUserIp();
+        }
+        return parameters.getOrDefault(AuditConstants.CLIENT_IP_FIELD, UNKNOWN);
+    }
+
+    private String serverIp(SecurityToken securityTokenForCurrentUser, Map<String, String> parameters) {
+        if (securityTokenForCurrentUser != null && securityTokenForCurrentUser.getServerIp() != null) {
+            return securityTokenForCurrentUser.getServerIp();
+        }
+        return parameters.getOrDefault(AuditConstants.SERVER_IP_FIELD, UNKNOWN);
+    }
+
+    private String endpoint(SecurityToken securityTokenForCurrentUser, Map<String, String> parameters) {
+        if (securityTokenForCurrentUser != null && securityTokenForCurrentUser.getEndpoint() != null) {
+            return securityTokenForCurrentUser.getEndpoint().name();
+        }
+        return parameters.getOrDefault(AuditConstants.ENDPOINT_FIELD, UNKNOWN);
+    }
+
+    private void write(EnrichedAuditEvent enrichedAuditEvent, String currentUserStorageId) {
         final AuditEventWriteContext context = AuditEventWriteContext.builder()
-                .enhancedAuditEvent(enhancedAuditEvent)
+                .enhancedAuditEvent(enrichedAuditEvent)
                 .currentUserStorageId(currentUserStorageId)
                 .build();
         for (String storageId : enabledStorages) {

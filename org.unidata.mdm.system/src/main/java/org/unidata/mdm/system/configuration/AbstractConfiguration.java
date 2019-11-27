@@ -99,22 +99,22 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
      * @return properties
      */
     public Properties getAllPropertiesWithPrefix(String prefix, boolean strip) {
-    	
-    	final Properties result = new Properties();
-    	ConfigurableEnvironment ce = (ConfigurableEnvironment) getConfiguredApplicationContext().getEnvironment();
-    	
-    	ce.getPropertySources().forEach(ps -> {
-    		if (ps instanceof CompositePropertySource) {
+
+        final Properties result = new Properties();
+        ConfigurableEnvironment ce = (ConfigurableEnvironment) getConfiguredApplicationContext().getEnvironment();
+
+        ce.getPropertySources().forEach(ps -> {
+            if (ps instanceof CompositePropertySource) {
     			CompositePropertySource cps = (CompositePropertySource) ps;
     			processPropertySources(prefix, strip, cps.getPropertySources(), result, ce);
     		} else if (ps instanceof EnumerablePropertySource) {
     			processEnumerablePropertySource(prefix, strip, (EnumerablePropertySource<?>) ps, result, ce);
     		}
     	});
-    	
+
     	return result;
     }
-    
+
     private void processPropertySources(String prefix, boolean strip, Collection<PropertySource<?>> sources, Properties result, ConfigurableEnvironment ce) {
     	sources.forEach(ps -> {
     		if (ps instanceof CompositePropertySource) {
@@ -125,21 +125,21 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
     		}
     	});
     }
-    
+
     private void processEnumerablePropertySource(String prefix, boolean strip, EnumerablePropertySource<?> eps, Properties result, ConfigurableEnvironment ce) {
-    	
+
     	for (String propName : eps.getPropertyNames()) {
-    		
+
     		if (!propName.startsWith(prefix)) {
     			continue;
     		}
-    		
-    		// Resolve it once again via environment properly, 
+
+    		// Resolve it once again via environment properly,
     		// so that place holders are also processed
-    		result.setProperty(strip ? StringUtils.substringAfter(propName, prefix) : propName, ce.getProperty(propName)); 
+    		result.setProperty(strip ? StringUtils.substringAfter(propName, prefix) : propName, ce.getProperty(propName));
     	}
     }
-    
+
     /**
      * Gets the id.
      * @return id
