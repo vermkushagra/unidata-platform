@@ -251,11 +251,32 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
     UNIDATA_BALANCER_PROTOCOL_HEADER("unidata.balancer.protocol.header", "unidata.properties.group.balancer", ConfigurationPropertyType.STRING),
 
     // AUDIT
-    UNIDATA_AUDIT_ENABLED(Constants.UNIDATA_AUDIT_ENABLED_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
+    UNIDATA_AUDIT_ENABLED(
+            Constants.UNIDATA_AUDIT_ENABLED_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.BOOLEAN,
+            false,
+            true,
+            false
+    ),
     UNIDATA_AUDIT_READ_EVENTS("unidata.audit.read.events", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
     UNIDATA_AUDIT_STACKTRACE_DEPTH("unidata.audit.stacktrace.depth", "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
-    UNIDATA_AUDIT_WRITER_POOL_SIZE(Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
-    UNIDATA_AUDIT_ENABLED_STORAGES(Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
+    UNIDATA_AUDIT_WRITER_POOL_SIZE(
+            Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.INTEGER,
+            5,
+            true,
+            false
+    ),
+    UNIDATA_AUDIT_ENABLED_STORAGES(
+            Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.STRING,
+            "es,db",
+            true,
+            false
+    ),
     ;
     private final String key;
     private final String groupKey;

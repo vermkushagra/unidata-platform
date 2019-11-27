@@ -53,8 +53,6 @@ public class RuntimePropertiesServiceImpl implements RuntimePropertiesService {
 
     private List<ConfigurationUpdatesByUserConsumer> configurationUpdatesByUserConsumers;
 
-    private Map<ConfigurationUpdatesConsumer, Disposable> subscribedUpdateConsumers = new HashMap<>();
-
     private final AtomicBoolean init = new AtomicBoolean(false);
 
     @Autowired
@@ -122,10 +120,7 @@ public class RuntimePropertiesServiceImpl implements RuntimePropertiesService {
 
     @Override
     public void subscribeToConfigurationUpdates(ConfigurationUpdatesConsumer configurationUpdatesConsumer) {
-        subscribedUpdateConsumers.computeIfAbsent(
-                configurationUpdatesConsumer,
-                c -> c.subscribe(configurationCacheService.updates())
-        );
+        configurationUpdatesConsumer.subscribe(configurationCacheService.updates());
     }
 
     @Override

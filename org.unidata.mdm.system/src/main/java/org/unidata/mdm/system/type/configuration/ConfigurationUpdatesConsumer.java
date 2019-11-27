@@ -8,5 +8,5 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 
 public interface ConfigurationUpdatesConsumer {
-    Disposable subscribe(final Flux<Map<String, Optional<? extends Serializable>>> updates);
+    void subscribe(final Flux<Map<String, Optional<? extends Serializable>>> updates);
 }
