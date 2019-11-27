@@ -82,8 +82,8 @@ public class AuditServiceImpl implements AuditService {
     public AuditServiceImpl(
             final AuditEventBuildersRegistryService auditEventBuildersRegistryService,
             final List<AuditServiceStorageService> auditServiceStorageServices,
-            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY + "}") final String enabledStorages,
             @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_KEY + ":false}") final boolean auditEnabled,
+            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY + "}") final String enabledStorages,
             @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY + ":5}") final int poolSize
     ) {
         this.auditEventBuildersRegistryService = auditEventBuildersRegistryService;
