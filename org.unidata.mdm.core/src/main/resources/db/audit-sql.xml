@@ -3,8 +3,8 @@
 <properties>
     <entry key="INSERT_AUDIT_EVENT">
         <![CDATA[
-        insert into audit_event(type, parameters, success, login, client_ip, server_ip, when_happened)
-        values(:type, :parameters, :success, :login, :client_ip, :server_ip, :when_happened)
+        insert into audit_event(type, parameters, success, login, client_ip, server_ip, endpoint, when_happened)
+        values(:type, :parameters, :success, :login, :client_ip, :server_ip, :endpoint, :when_happened)
         ]]>
     </entry>
     <entry key="deleteOldAuditEvents">

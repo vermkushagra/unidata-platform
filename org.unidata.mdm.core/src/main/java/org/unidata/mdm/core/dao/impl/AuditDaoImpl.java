@@ -46,6 +46,7 @@ public class AuditDaoImpl extends AbstractDaoImpl implements AuditDao {
                             EnrichedAuditEvent.LOGIN_FIELD, enhancedAuditEvent.getLogin(),
                             EnrichedAuditEvent.CLIENT_IP_FIELD, enhancedAuditEvent.getClientIp(),
                             EnrichedAuditEvent.SERVER_IP_FIELD, enhancedAuditEvent.getServerIp(),
+                            EnrichedAuditEvent.ENDPOINT_FIELD, enhancedAuditEvent.getEndpoint(),
                             EnrichedAuditEvent.WHEN_HAPPENED_FIELD, enhancedAuditEvent.getWhenwHappened()
                     )
             ) > 0;
