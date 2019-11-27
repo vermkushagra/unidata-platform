@@ -28,6 +28,7 @@ public class UN11979InitAuditTables implements MigrationScript {
                 .addColumn("login", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
                 .addColumn("client_ip", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
                 .addColumn("server_ip", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(255))
+                .addColumn("endpoint", Column.TYPE.VARCHAR, cb -> cb.notNull(true).size(32))
                 .addColumn("when_happened", Column.TYPE.TIMESTAMP, cb -> cb.notNull(true))
                 .save();
     }

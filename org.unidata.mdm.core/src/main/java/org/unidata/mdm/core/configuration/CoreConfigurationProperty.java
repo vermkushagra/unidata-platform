@@ -108,74 +108,6 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
     UNIDATA_SECURITY_TOKEN_TTL("unidata.security.token.ttl", "unidata.properties.group.security", ConfigurationPropertyType.STRING),
     UNIDATA_SECURITY_TOKEN_CLEANUP("unidata.security.token.cleanup", "unidata.properties.group.security", ConfigurationPropertyType.STRING),
 
-    // Elasticsearch
-    UNIDATA_SEARCH_NODES_ADDRESSES("unidata.search.nodes.addresses", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.STRING),
-    UNIDATA_SEARCH_CLUSTER_NAME("unidata.search.cluster.name", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.STRING),
-    UNIDATA_SEARCH_INDEX_PREFIX("unidata.search.index.prefix", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.STRING),
-    UNIDATA_SEARCH_DEFAULT_SHARDS_NUMBER("unidata.search.shards.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_REPLICAS_NUMBER("unidata.search.replicas.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_ENTITY_SHARDS_NUMBER("unidata.search.entity.shards.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_ENTITY_REPLICAS_NUMBER("unidata.search.entity.replicas.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_LOOKUP_SHARDS_NUMBER("unidata.search.lookup.shards.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_LOOKUP_REPLICAS_NUMBER("unidata.search.lookup.replicas.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_SYSTEM_SHARDS_NUMBER("unidata.search.system.shards.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_SYSTEM_REPLICAS_NUMBER("unidata.search.system.replicas.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_MATCHING_SHARDS_NUMBER("unidata.search.matching.shards.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DEFAULT_MATCHING_REPLICAS_NUMBER("unidata.search.matching.replicas.number", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-
-
-    UNIDATA_SEARCH_INDEX_RELATIONS_STRAIGHT("unidata.search.index.relations.straight", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.BOOLEAN),
-    UNIDATA_SEARCH_DEFAULT_MIN_SCORE("unidata.search.default.min.score", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_TOTAL_COUNT_LIMIT(
-            "unidata.search.total.count.limit",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.INTEGER,
-            200000,
-            false,
-            true
-    ),
-    UNIDATA_SEARCH_INDEX_REFRESH_INTERVAL(
-            "unidata.search.index.refresh_interval",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.INTEGER,
-            1000,
-            false,
-            true
-    ),
-
-    UNIDATA_SEARCH_FUZZINESS("unidata.search.fuzziness", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.STRING),
-    UNIDATA_SEARCH_FUZZINESS_PREFIX_LENGTH("unidata.search.fuzziness.prefix.length", "unidata.properties.group.elasticsearch", ConfigurationPropertyType.INTEGER),
-    UNIDATA_SEARCH_DISPLAY_DATE_FORMAT("unidata.search.display.date.format",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.STRING,
-            "dd.MM.yyyy",
-            true,
-            false
-    ),
-    UNIDATA_SEARCH_DISPLAY_TIME_FORMAT("unidata.search.display.time.format",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.STRING,
-            "HH:mm:ss",
-            true,
-            false
-    ),
-    UNIDATA_SEARCH_DISPLAY_TIMESTAMP_FORMAT(
-            "unidata.search.display.timestamp.format",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.STRING,
-            "dd.MM.yyyy HH:mm:ss",
-            true,
-            false
-    ),
-    UNIDATA_ELASTIC_ADMIN_ACTION_TIMEOUT(
-            "unidata.elastic.admin.action.timeout",
-            "unidata.properties.group.elasticsearch",
-            ConfigurationPropertyType.INTEGER,
-            5000,
-            true,
-            true
-    ),
-
     // Simon perf measurement
     UNIDATA_SIMON_ENABLED(
             "unidata.simon.enabled",
@@ -319,12 +251,32 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
     UNIDATA_BALANCER_PROTOCOL_HEADER("unidata.balancer.protocol.header", "unidata.properties.group.balancer", ConfigurationPropertyType.STRING),
 
     // AUDIT
-//    UNIDATA_AUDIT_DISABLED("unidata.audit.disabled", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
-    UNIDATA_AUDIT_ENABLED(Constants.UNIDATA_AUDIT_ENABLED_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
+    UNIDATA_AUDIT_ENABLED(
+            Constants.UNIDATA_AUDIT_ENABLED_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.BOOLEAN,
+            false,
+            true,
+            false
+    ),
     UNIDATA_AUDIT_READ_EVENTS("unidata.audit.read.events", "unidata.properties.group.audit", ConfigurationPropertyType.BOOLEAN),
     UNIDATA_AUDIT_STACKTRACE_DEPTH("unidata.audit.stacktrace.depth", "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
-    UNIDATA_AUDIT_WRITER_POOL_SIZE(Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.INTEGER),
-    UNIDATA_AUDIT_ENABLED_STORAGES(Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY, "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
+    UNIDATA_AUDIT_WRITER_POOL_SIZE(
+            Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.INTEGER,
+            5,
+            true,
+            false
+    ),
+    UNIDATA_AUDIT_ENABLED_STORAGES(
+            Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY,
+            "unidata.properties.group.audit",
+            ConfigurationPropertyType.STRING,
+            "es,db",
+            true,
+            false
+    ),
     ;
     private final String key;
     private final String groupKey;

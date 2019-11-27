@@ -134,6 +134,9 @@ public class CoreModule implements Module {
                     new StringMappingField(AuditHeaderField.SERVER_IP.getName())
                             .withNonAnalyzable(true)
                             .withIndexType(AuditIndexType.AUDIT),
+                    new StringMappingField(AuditHeaderField.ENDPOINT.getName())
+                            .withNonAnalyzable(true)
+                            .withIndexType(AuditIndexType.AUDIT),
                     new TimestampMappingField(AuditHeaderField.WHEN_HAPPENED.getName())
                             .withIndexType(AuditIndexType.AUDIT)
             );

@@ -76,9 +76,9 @@ public class AsyncRareTaskExecutor implements AsyncExecutor, ConfigurationUpdate
     }
 
     @Override
-    public Disposable subscribe(Flux<Map<String, Optional<? extends Serializable>>> updates) {
+    public void subscribe(Flux<Map<String, Optional<? extends Serializable>>> updates) {
         final String poolSizeKey = CoreConfigurationProperty.ASYNC_RARE_TASKS_EXECUTOR_THREADS_POOL_SIZE.getKey();
-        return updates
+        updates
                 .filter(values ->
                         values.containsKey(poolSizeKey) && values.get(poolSizeKey).isPresent()
                 )

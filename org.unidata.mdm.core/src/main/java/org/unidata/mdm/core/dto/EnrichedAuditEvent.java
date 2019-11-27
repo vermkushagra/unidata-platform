@@ -20,6 +20,7 @@ public class EnrichedAuditEvent implements AuditEvent {
     public static final String LOGIN_FIELD = "login";
     public static final String CLIENT_IP_FIELD = "client_ip";
     public static final String SERVER_IP_FIELD = "server_ip";
+    public static final String ENDPOINT_FIELD = "endpoint";
     public static final String WHEN_HAPPENED_FIELD = "when_happened";
 
     private final String type;
@@ -98,6 +99,10 @@ public class EnrichedAuditEvent implements AuditEvent {
 
     public String getServerIp() {
         return serverIp;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
     }
 
     public LocalDateTime getWhenwHappened() {

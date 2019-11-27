@@ -13,6 +13,7 @@ public enum AuditHeaderField implements IndexField {
     LOGIN(EnrichedAuditEvent.LOGIN_FIELD, FieldType.STRING),
     CLIENT_IP(EnrichedAuditEvent.CLIENT_IP_FIELD, FieldType.STRING),
     SERVER_IP(EnrichedAuditEvent.SERVER_IP_FIELD, FieldType.STRING),
+    ENDPOINT(EnrichedAuditEvent.ENDPOINT_FIELD, FieldType.STRING),
     WHEN_HAPPENED(EnrichedAuditEvent.WHEN_HAPPENED_FIELD, FieldType.TIMESTAMP);
 
     /**

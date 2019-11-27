@@ -49,6 +49,7 @@ public class ESAuditServiceStorageService implements AuditServiceStorageService 
         fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.LOGIN_FIELD, enricheedAuditEvent.getLogin()));
         fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.CLIENT_IP_FIELD, enricheedAuditEvent.getClientIp()));
         fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SERVER_IP_FIELD, enricheedAuditEvent.getServerIp()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.ENDPOINT_FIELD, enricheedAuditEvent.getEndpoint()));
         fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.WHEN_HAPPENED_FIELD, enricheedAuditEvent.getWhenwHappened()));
         final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
                 .storageId(auditEventWriteContext.getCurrentUserStorageId())

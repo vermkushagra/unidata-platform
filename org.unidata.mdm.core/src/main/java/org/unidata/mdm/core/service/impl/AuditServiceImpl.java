@@ -2,7 +2,6 @@ package org.unidata.mdm.core.service.impl;
 
 import io.prometheus.client.Counter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,17 +17,20 @@ import org.unidata.mdm.core.type.audit.AuditEvent;
 import org.unidata.mdm.core.type.monitoring.collector.QueueSizeCollector;
 import org.unidata.mdm.core.type.security.SecurityToken;
 import org.unidata.mdm.core.util.SecurityUtils;
+import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
+import reactor.core.publisher.Flux;
 
 import javax.annotation.PreDestroy;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -39,7 +41,7 @@ import java.util.stream.Collectors;
  * @author Alexander Malyshev
  */
 @Service
-public class AuditServiceImpl implements AuditService {
+public class AuditServiceImpl implements AuditService, ConfigurationUpdatesConsumer {
 
     private static final Logger logger = LoggerFactory.getLogger(AuditServiceImpl.class);
 
@@ -62,16 +64,16 @@ public class AuditServiceImpl implements AuditService {
             .help(HANDLED_AUDIT_EVENTS_HELP_TEXT)
             .create()
             .register();
-    private static final String UNKNOWN = "unknown";
 
-    // TODO Use dynamic configuration update
-    private boolean auditEnabled;
-    private int poolSize;
+    private static final String UNKNOWN = "unknown";
+    private static final String VALUES_DELIMETER = ",";
+
+    private volatile boolean auditEnabled = (Boolean) CoreConfigurationProperty.UNIDATA_AUDIT_ENABLED.getDefaultValue().get();
 
     /**
      * Audit Write Executor
      */
-    private final ExecutorService executorService;
+    private final ThreadPoolExecutor executorService;
 
     private final AuditEventBuildersRegistryService auditEventBuildersRegistryService;
 
@@ -81,10 +83,7 @@ public class AuditServiceImpl implements AuditService {
 
     public AuditServiceImpl(
             final AuditEventBuildersRegistryService auditEventBuildersRegistryService,
-            final List<AuditServiceStorageService> auditServiceStorageServices,
-            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_STORAGES_KEY + "}") final String enabledStorages,
-            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_ENABLED_KEY + ":false}") final boolean auditEnabled,
-            @Value("${" + CoreConfigurationProperty.Constants.UNIDATA_AUDIT_WRITER_POOL_SIZE_KEY + ":5}") final int poolSize
+            final List<AuditServiceStorageService> auditServiceStorageServices
     ) {
         this.auditEventBuildersRegistryService = auditEventBuildersRegistryService;
         if (CollectionUtils.isNotEmpty(auditServiceStorageServices)) {
@@ -93,15 +92,14 @@ public class AuditServiceImpl implements AuditService {
                             .collect(Collectors.toMap(AuditServiceStorageService::id, Function.identity()))
             );
         }
-        this.auditEnabled = auditEnabled;
-        this.poolSize = poolSize;
-        if (StringUtils.isNoneBlank(enabledStorages)) {
-            this.enabledStorages.addAll(Arrays.asList(enabledStorages.split(",")));
-        }
+        this.enabledStorages.addAll(Arrays.asList(
+                ((String) CoreConfigurationProperty.UNIDATA_AUDIT_WRITER_POOL_SIZE.getDefaultValue().get()).split(VALUES_DELIMETER)
+        ));
         executorService = initWriterThreadPool();
     }
 
-    private ExecutorService initWriterThreadPool() {
+    private ThreadPoolExecutor initWriterThreadPool() {
+        final int poolSize = (Integer) CoreConfigurationProperty.UNIDATA_AUDIT_WRITER_POOL_SIZE.getDefaultValue().get();
         final LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
         QueueSizeCollector.createAndRegister(
                 workQueue,
@@ -200,5 +198,33 @@ public class AuditServiceImpl implements AuditService {
     @PreDestroy
     public void destroy() {
         executorService.shutdown();
+    }
+
+    @Override
+    public void subscribe(Flux<Map<String, Optional<? extends Serializable>>> updates) {
+        final String auditEnabledKey = CoreConfigurationProperty.UNIDATA_AUDIT_ENABLED.getKey();
+        final String writePoolSizeKey = CoreConfigurationProperty.UNIDATA_AUDIT_WRITER_POOL_SIZE.getKey();
+        final String enabledStoragesKey = CoreConfigurationProperty.UNIDATA_AUDIT_ENABLED_STORAGES.getKey();
+
+        updates
+                .filter(p -> p.containsKey(auditEnabledKey) && p.get(auditEnabledKey).isPresent())
+                .map(p -> (Boolean) p.get(auditEnabledKey).get())
+                .subscribe(v -> auditEnabled = v);
+
+        updates
+                .filter(p -> p.containsKey(writePoolSizeKey) && p.get(writePoolSizeKey).isPresent())
+                .map(p -> (Integer) p.get(writePoolSizeKey).get())
+                .subscribe(v -> {
+                    executorService.setCorePoolSize(v);
+                    executorService.setMaximumPoolSize(v);
+                });
+
+        updates
+                .filter(p -> p.containsKey(enabledStoragesKey) && p.get(enabledStoragesKey).isPresent())
+                .map(p -> (String) p.get(enabledStoragesKey).get())
+                .subscribe(v -> {
+                    enabledStorages.clear();
+                    enabledStorages.addAll(Arrays.asList(v.split(VALUES_DELIMETER)));
+                });
     }
 }
