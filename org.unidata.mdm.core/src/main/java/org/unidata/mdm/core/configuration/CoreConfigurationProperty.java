@@ -18,85 +18,6 @@ import org.unidata.mdm.system.type.configuration.ValueValidators;
 
 public enum CoreConfigurationProperty implements ApplicationConfigurationProperty {
 
-    // Unidata matching configuration
-    UNIDATA_MATCHING_SEARCH_PAGE_SIZE(
-            "unidata.matching.search.page.size",
-            "unidata.properties.group.matching",
-            ConfigurationPropertyType.INTEGER,
-            20,
-            true,
-            false
-    ),
-
-    UNIDATA_MATCHING_MAX_CLUSTER_SIZE(
-            "unidata.matching.max.cluster.size",
-            "unidata.properties.group.matching",
-            ConfigurationPropertyType.INTEGER,
-            50,
-            true,
-            false
-    ),
-
-    // ---------- JMS ----------
-    UNIDATA_NOTIFICATION_ENABLED(
-            "unidata.notification.enabled",
-            "unidata.notification.group",
-            ConfigurationPropertyType.BOOLEAN,
-            false,
-            true,
-            false
-    ),
-    UNIDATA_NOTIFICATION_DB_BATCH_SIZE(
-            "unidata.notification.db.batch.size",
-            "unidata.notification.group",
-            ConfigurationPropertyType.INTEGER,
-            10000,
-            true,
-            false
-    ),
-    UNIDATA_NOTIFICATION_ADD_EXTERNAL_ID_TO_ATTRIBUTES(
-            "unidata.notification.add.external.id.to.attributes",
-            "unidata.notification.group",
-            ConfigurationPropertyType.BOOLEAN,
-            false,
-            true,
-            false
-    ),
-
-    //
-    UNIDATA_DATA_AUTOMERGE_ENABLED(
-            "unidata.data.automerge.enable",
-            "unidata.properties.group.data",
-            ConfigurationPropertyType.BOOLEAN,
-            false,
-            true,
-            false
-    ),
-    UNIDATA_DATA_USE_DEPRECATED_USEREXITS(
-            "unidata.data.use.deprecated.userexits",
-            "unidata.properties.group.data",
-            ConfigurationPropertyType.BOOLEAN,
-            false,
-            true,
-            true
-    ),
-    UNIDATA_DATA_REFRESH_IMMEDIATE(
-            "unidata.data.refresh.immediate",
-            "unidata.properties.group.data",
-            ConfigurationPropertyType.BOOLEAN,
-            true,
-            false,
-            true
-    ),
-    UNIDATA_DATA_ROLLBACK_THREAD_COUNT(
-            "unidata.data.rollback.thread.count",
-            "unidata.properties.group.data",
-            ConfigurationPropertyType.INTEGER,
-            1,
-            false,
-            true
-    ),
-
     // Version
     UNIDATA_API_VERSION("unidata.api.version", "unidata.properties.group.version", ConfigurationPropertyType.STRING),
     UNIDATA_PLATFORM_VERSION("unidata.platform.version", "unidata.properties.group.version", ConfigurationPropertyType.STRING),
@@ -140,91 +61,6 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
     UNIDATA_CACHE_MULTICAST_TIMEOUT("unidata.cache.multicast.timeout", "unidata.properties.group.distributed.cache", ConfigurationPropertyType.INTEGER),
     UNIDATA_CACHE_TCP_IP_ENABLED("unidata.cache.tcp-ip.enabled", "unidata.properties.group.distributed.cache", ConfigurationPropertyType.BOOLEAN),
     UNIDATA_CACHE_TCP_IP_MEMBERS("unidata.cache.tcp-ip.members", "unidata.properties.group.distributed.cache", ConfigurationPropertyType.STRING),
-
-    // Job parameters
-    UNIDATA_JOB_TRIGGER_START_TIMEOUT("unidata.job.trigger.start.timeout", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_THREAD_POOL_SIZE("unidata.job.thread.pool.size", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_QUEUE_SIZE("unidata.job.queue.size", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_REINDEX_DATA_THREAD_COUNT("unidata.job.reindex_data.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_REINDEX_DATA_PARTITION_THREAD_COUNT("unidata.job.reindex_data.partition.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_REINDEX_DATA_COMMIT_INTERVAL("unidata.job.reindex_data.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_IMPORT_DATA_THREAD_COUNT("unidata.job.import_data.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_IMPORT_DATA_COMMIT_INTERVAL("unidata.job.import_data.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_EXPORT_DATA_THREAD_COUNT("unidata.job.export_data.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_EXPORT_DATA_COMMIT_INTERVAL("unidata.job.export_data.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_MODIFY_DATA_THREAD_COUNT("unidata.job.batch_modify_data.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_MODIFY_DATA_COMMIT_INTERVAL("unidata.job.batch_modify_data.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_MODIFY_DATA_AUDIT_LEVEL("unidata.job.batch_modify_data.audit_level", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_DELETE_DATA_THREAD_COUNT("unidata.job.delete_records_job.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_DELETE_DATA_COMMIT_INTERVAL("unidata.job.delete_records_job.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_DELETE_DATA_AUDIT_LEVEL("unidata.job.delete_records_job.audit_level", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_DELETE_RELATIONS_THREAD_COUNT("unidata.job.delete_relations_job.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_DELETE_RELATIONS_COMMIT_INTERVAL("unidata.job.delete_relations_job.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_DELETE_RELATIONS_AUDIT_LEVEL("unidata.job.delete_relations_job.audit_level", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_RESTORE_RECORDS_THREAD_COUNT("unidata.job.restore_records_job.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_RESTORE_RECORDS_COMMIT_INTERVAL("unidata.job.restore_records_job.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_RESTORE_RECORDS_AUDIT_LEVEL("unidata.job.restore_records_job.audit_level", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_RESTORE_PERIODS_THREAD_COUNT("unidata.job.restore_record_periods_job.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_RESTORE_PERIODS_COMMIT_INTERVAL("unidata.job.restore_record_periods_job.commit_interval", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_RESTORE_PERIODS_AUDIT_LEVEL("unidata.job.restore_record_periods_job.audit_level", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-
-    UNIDATA_JOB_MATCHING_THREAD_COUNT("unidata.job.matching.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    UNIDATA_JOB_DUPLICATE_THREAD_COUNT("unidata.job.duplicate_job.thread_count", "unidata.properties.group.job", ConfigurationPropertyType.INTEGER),
-    // Notification background job.
-    NOTIFICATION_JOB_DISABLE("notification.job.disable", "unidata.properties.group.notification.job", ConfigurationPropertyType.BOOLEAN),
-    NOTIFICATION_JOB_EXECUTION_TIME("notification.job.execution.time", "unidata.properties.group.notification.job", ConfigurationPropertyType.STRING),
-    NOTIFICATION_JOB_ATTEMPT_COUNT("notification.job.attempt.count", "unidata.properties.group.notification.job", ConfigurationPropertyType.INTEGER),
-
-    // Clean old notification background job.
-    CLEAN_NOTIFICATION_JOB_DISABLE("clean.notification.job.disable", "unidata.properties.group.clean.notification.job", ConfigurationPropertyType.BOOLEAN),
-    CLEAN_NOTIFICATION_JOB_LIFETIME_MINUTES("clean.notification.job.lifetime.minutes", "unidata.properties.group.clean.notification.job", ConfigurationPropertyType.INTEGER),
-    CLEAN_NOTIFICATION_JOB_EXECUTION_TIME("clean.notification.job.execution.time", "unidata.properties.group.clean.notification.job", ConfigurationPropertyType.STRING),
-
-    // Clean unused binary data background job.
-    CLEAN_UNUSED_BINARY_JOB_DISABLE("clean.unused.binary.job.disable", "unidata.properties.group.clean.unused.binary.job", ConfigurationPropertyType.BOOLEAN),
-    CLEAN_UNUSED_BINARY_JOB_LIFETIME_MINUTES("clean.unused.binary.job.lifetime.minutes", "unidata.properties.group.clean.unused.binary.job", ConfigurationPropertyType.INTEGER),
-    CLEAN_UNUSED_BINARY_JOB_EXECUTION_TIME("clean.unused.binary.job.execution.time", "unidata.properties.group.clean.unused.binary.job", ConfigurationPropertyType.STRING),
-
-    // Calculate statistic background job.
-    CALCULATE_STATISTIC_JOB_DISABLE("calculate.statistic.job.disable", "unidata.properties.group.calculate.statistic.job", ConfigurationPropertyType.BOOLEAN),
-    CALCULATE_STATISTIC_JOB_EXECUTION_TIME("calculate.statistic.job.execution.time", "unidata.properties.group.calculate.statistic.job", ConfigurationPropertyType.STRING),
-
-    // Invalid classification data clean job
-    INVALID_CLASSIFICATION_DATA_CLEAN_JOB_DISABLE("invalid.classification.data.clean.job.enabled", "unidata.properties.group.invalid.classification.data.clean.job", ConfigurationPropertyType.BOOLEAN),
-    INVALID_CLASSIFICATION_DATA_CLEAN_EXECUTION_TIME("invalid.classification.data.clean.job.execution.time", "unidata.properties.group.invalid.classification.data.clean.job", ConfigurationPropertyType.STRING),
-
-    // Clean unused binary data background job.
-    CLEAN_OLD_AUDIT_DATA_JOB_DISABLE("clean.old.audit.data.job.disable", "unidata.properties.group.clean.old.audit.data.job", ConfigurationPropertyType.BOOLEAN),
-    CLEAN_OLD_AUDIT_DATA_JOB_LIFETIME_MINUTES("clean.old.audit.data.job.lifetime.minutes", "unidata.properties.group.clean.old.audit.data.job", ConfigurationPropertyType.INTEGER),
-    CLEAN_OLD_AUDIT_DATA_JOB_EXECUTION_TIME("clean.old.audit.data.job.execution.time", "unidata.properties.group.clean.old.audit.data.job", ConfigurationPropertyType.STRING),
-
-    // Clean raw unused binary data background job.
-    CLEAN_OLD_AUDIT_RAW_DATA_JOB_DISABLE("clean.old.audit.raw.data.job.disable", "unidata.properties.group.clean.old.audit.raw.data.job", ConfigurationPropertyType.BOOLEAN),
-    CLEAN_OLD_AUDIT_RAW_DATA_JOB_LIFETIME_MINUTES("clean.old.audit.raw.data.job.lifetime.minutes", "unidata.properties.group.clean.old.audit.raw.data.job", ConfigurationPropertyType.INTEGER),
-    CLEAN_OLD_AUDIT_RAW_DATA_JOB_EXECUTION_TIME("clean.old.audit.raw.data.job.execution.time", "unidata.properties.group.clean.old.audit.raw.data.job", ConfigurationPropertyType.STRING),
-
-    // Activiti
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_HOST("unidata.activiti.task.mailServerHost", "unidata.properties.group.activiti", ConfigurationPropertyType.STRING),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_PORT("unidata.activiti.task.mailServerPort", "unidata.properties.group.activiti", ConfigurationPropertyType.INTEGER),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_USE_SSL("unidata.activiti.task.mailServerUseSSL", "unidata.properties.group.activiti", ConfigurationPropertyType.BOOLEAN),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_USE_TLS("unidata.activiti.task.mailServerUseTLS", "unidata.properties.group.activiti", ConfigurationPropertyType.BOOLEAN),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_DEFAULT_FROM("unidata.activiti.task.mailServerDefaultFrom", "unidata.properties.group.activiti", ConfigurationPropertyType.STRING),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_USERNAME("unidata.activiti.task.mailServerUsername", "unidata.properties.group.activiti", ConfigurationPropertyType.STRING),
-    UNIDATA_ACTIVITI_TASK_MAIL_SERVER_PASSWORD("unidata.activiti.task.mailServerPassword", "unidata.properties.group.activiti", ConfigurationPropertyType.STRING),
-    UNIDATA_ACTIVITI_TASK_JOB_EXECUTOR_ACTIVATE("unidata.activiti.task.jobExecutorActivate", "unidata.properties.group.activiti", ConfigurationPropertyType.BOOLEAN),
-    UNIDATA_ACTIVITI_TASK_ASYNC_EXECUTOR_ACTIVATE("unidata.activiti.task.asyncExecutorActivate", "unidata.properties.group.activiti", ConfigurationPropertyType.BOOLEAN),
-
-    // Unidata audit configuration
-    UNIDATA_AUDIT_EMBEDDED_URL("unidata.audit.embedded.url", "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
-    UNIDATA_AUDIT_EMBEDDED_USERNAME("unidata.audit.embedded.username", "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
-    UNIDATA_AUDIT_EMBEDDED_PASSWORD("unidata.audit.embedded.password", "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
-    UNIDATA_AUDIT_EMBEDDED_MOD("unidata.audit.embedded.mode", "unidata.properties.group.audit", ConfigurationPropertyType.STRING),
 
     // Default node id
     UNIDATA_NODE_ID("unidata.node.id", "unidata.properties.group.node.id", ConfigurationPropertyType.STRING),
@@ -278,6 +114,7 @@ public enum CoreConfigurationProperty implements ApplicationConfigurationPropert
             false
     ),
     ;
+
     private final String key;
     private final String groupKey;
     private final ConfigurationPropertyType propertyType;

@@ -1,7 +1,5 @@
 package org.unidata.mdm.system.type.configuration;
 
-import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
-
 import java.io.Serializable;
 
 public class ConfigurationProperty<T extends Serializable> {

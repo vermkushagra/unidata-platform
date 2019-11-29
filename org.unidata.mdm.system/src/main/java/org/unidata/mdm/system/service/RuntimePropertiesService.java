@@ -1,5 +1,6 @@
 package org.unidata.mdm.system.service;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -14,13 +15,11 @@ public interface RuntimePropertiesService {
 
     void subscribeToConfigurationUpdates(ConfigurationUpdatesConsumer configurationUpdatesConsumer);
 
-    Collection<ConfigurationProperty> availableProperties();
+    <T extends Serializable> Collection<ConfigurationProperty<T>> availableProperties();
 
-    Collection<ConfigurationProperty> getPropertiesByGroup(String groupName);
+    <T extends Serializable> Collection<ConfigurationProperty<T>> getPropertiesByGroup(String groupName);
 
-    Optional<ConfigurationProperty> property(String name);
+    <T extends Serializable> Optional<ConfigurationProperty<T>> property(String name);
 
     Collection<String> updatePropertiesValues(Map<String, String> properties);
-
-
 }
