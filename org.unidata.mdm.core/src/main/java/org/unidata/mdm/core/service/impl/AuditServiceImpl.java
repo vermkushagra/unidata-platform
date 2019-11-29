@@ -4,7 +4,6 @@ import io.prometheus.client.Counter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.core.audit.AuditConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
