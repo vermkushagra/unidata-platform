@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.unidata.mdm.core.util.CoreServiceUtils;
+import org.unidata.mdm.core.util.DateUtils;
 import org.unidata.mdm.meta.AbstractEntityDef;
 import org.unidata.mdm.meta.DateGranularityMode;
 import org.unidata.mdm.meta.PeriodBoundaryDef;
@@ -42,9 +43,6 @@ public class ValidityPeriodUtils {
      */
     private static final FastDateFormat DEFAULT_TIMESTAMP_NO_OFFSET
         = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss.SSS");
-
-    private static final DateTimeFormatter DEFAULT_FORMATTER_NO_OFFSET
-        = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     /**
      * Globally defined validity period start.
@@ -140,7 +138,7 @@ public class ValidityPeriodUtils {
         try {
             LocalDateTime ldt = StringUtils.isBlank(validityPeriodBoundaryAsString)
                     ? null
-                    : LocalDateTime.parse(validityPeriodBoundaryAsString, DEFAULT_FORMATTER_NO_OFFSET);
+                    : LocalDateTime.parse(validityPeriodBoundaryAsString, DateUtils.DEFAULT_FORMATTER_NO_OFFSET);
             if (ldt != null) {
                 return ConvertUtils.localDateTime2Date(ldt);
             }
@@ -152,31 +150,6 @@ public class ValidityPeriodUtils {
         return null;
     }
 
-
-	/**
-	 * Parses string representation of date according to date format from
-	 * {@see DEFAULT_TIMESTAMP_NO_OFFSET}.
-	 *
-	 * @param dateAsString
-	 *            string representation of date.
-	 * @return parsed date.
-	 */
-	public static Date parse(String dateAsString) {
-
-		Date result = null;
-		try {
-			LocalDateTime ldt = StringUtils.isBlank(dateAsString)
-                    ? null
-                    : LocalDateTime.parse(dateAsString, DEFAULT_FORMATTER_NO_OFFSET);
-            if (ldt != null) {
-                result = ConvertUtils.localDateTime2Date(ldt);
-            }
-		} catch (DateTimeParseException e) {
-			throw new PlatformFailureException("Incorrect date format found, unable to parse date string!",
-					MetaExceptionIds.EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE, dateAsString);
-		}
-		return result;
-	}
 	/**
 	 * Converts date to string representation
 	 * {@see DEFAULT_TIMESTAMP_NO_OFFSET}.

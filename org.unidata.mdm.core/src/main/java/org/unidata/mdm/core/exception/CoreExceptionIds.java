@@ -470,6 +470,12 @@ public class CoreExceptionIds {
             new ExceptionId("EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION", "app.audit.parameters.json.serialization.error");
 
     /**
+     * Cannot parse date string. Incorrect date format.
+     */
+    public static final ExceptionId EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE
+            = new ExceptionId("EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE", "app.data.cannotParseDate");
+
+    /**
      * Constructor.
      */
     private CoreExceptionIds() {
