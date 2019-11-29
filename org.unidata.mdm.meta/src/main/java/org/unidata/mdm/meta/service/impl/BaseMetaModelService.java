@@ -441,7 +441,7 @@ public abstract class BaseMetaModelService implements MetaModelService, EventRec
      * @param attributeInfoHolders the attribute info holders
      * @return the references
      */
-    private List<NestedEntityDef> getReferences(Collection<AttributeModelElement> attributeInfoHolders) {
+    protected List<NestedEntityDef> getReferences(Collection<AttributeModelElement> attributeInfoHolders) {
         List<NestedEntityDef> refs = new ArrayList<>();
         for (AttributeModelElement holder : attributeInfoHolders) {
             if (!holder.isComplex()) {

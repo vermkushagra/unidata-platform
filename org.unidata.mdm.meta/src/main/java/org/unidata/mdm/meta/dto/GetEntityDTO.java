@@ -11,7 +11,6 @@ import org.unidata.mdm.meta.RelationDef;
  * Entity metadata container.
  */
 public class GetEntityDTO {
-
     /**
      * Entity.
      */
@@ -24,7 +23,6 @@ public class GetEntityDTO {
      * Relations.
      */
     private final List<RelationDef> relations;
-
     /**
      * Constructor.
      */
@@ -40,14 +38,12 @@ public class GetEntityDTO {
     public EntityDef getEntity() {
         return entity;
     }
-
     /**
      * @return the refs
      */
     public List<NestedEntityDef> getRefs() {
         return refs;
     }
-
     /**
      * @return the relations
      */

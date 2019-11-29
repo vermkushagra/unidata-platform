@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,11 +37,17 @@ import org.unidata.mdm.meta.EntitiesGroupDef;
 import org.unidata.mdm.meta.EntityDef;
 import org.unidata.mdm.meta.LookupEntityDef;
 import org.unidata.mdm.meta.NestedEntityDef;
+import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
+import org.unidata.mdm.meta.context.GetModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
 import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
+import org.unidata.mdm.meta.dto.GetModelLookupDTO;
+import org.unidata.mdm.meta.dto.GetModelDTO;
+import org.unidata.mdm.meta.dto.GetModelRelationDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
+import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaModelValidationComponent;
 import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
 import org.unidata.mdm.meta.util.ModelUtils;
@@ -48,7 +55,11 @@ import org.unidata.mdm.system.exception.PlatformFailureException;
 
 @Service("metaModelService")
 public class SecureMetaModelService extends BaseMetaModelService  {
-
+    /**
+     * The MDS.
+     */
+    @Autowired
+    private MetaDraftService metaDraftService;
     /**
      * Logger.
      */
@@ -71,7 +82,158 @@ public class SecureMetaModelService extends BaseMetaModelService  {
      */
     @Autowired
     private RoleServiceExt roleServiceExt;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public GetModelDTO getModel(GetModelRequestContext ctx) {
 
+        GetModelDTO result = new GetModelDTO();
+
+        processEntities(ctx, result);
+        processLookups(ctx, result);
+        processRelations(ctx, result);
+        processEnumerations(ctx, result);
+        processSourceSystems(ctx, result);
+        processMeasuredValues(ctx, result);
+        processEntityGroups(ctx, result);
+
+        return result;
+    }
+
+    private void processEntities(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllEntities() && CollectionUtils.isEmpty(ctx.getEntityIds())) {
+            return;
+        }
+
+        List<GetEntityDTO> entities;
+        if (ctx.isAllEntities()) {
+            entities = ctx.isDraft()
+                ? metaDraftService.getEntitiesList().stream()
+                        .map(entity -> {
+                            if (ctx.isReduced()) {
+                                return new GetEntityDTO(entity, null, null);
+                            }
+
+                            return metaDraftService.getEntityById(entity.getName());
+                        })
+                        .collect(Collectors.toList())
+                : getEntitiesList().stream()
+                        .map(entity -> {
+                            if (ctx.isReduced()) {
+                                return new GetEntityDTO(entity, null, null);
+                            }
+
+                            return getEntityById(entity.getName());
+                        })
+                        .collect(Collectors.toList());
+        } else {
+            entities = ctx.getEntityIds().stream()
+                    .map(name -> {
+
+                        if (ctx.isReduced()) {
+                            EntityDef entity = ctx.isDraft()
+                                    ? metaDraftService.getEntityByIdNoDeps(name)
+                                    : getEntityByIdNoDeps(name);
+                            return Objects.isNull(entity) ? null : new GetEntityDTO(entity, null, null);
+                        }
+
+                        return ctx.isDraft() ?  metaDraftService.getEntityById(name) : getEntityById(name);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setEntities(entities);
+    }
+
+    private void processLookups(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllLookups() && CollectionUtils.isEmpty(ctx.getLookupIds())) {
+            return;
+        }
+
+        List<GetModelLookupDTO> entities;
+        if (ctx.isAllEntities()) {
+            entities = ctx.isDraft()
+                ? metaDraftService.getLookupEntitiesList().stream().map(GetModelLookupDTO::new).collect(Collectors.toList())
+                : getLookupEntitiesList().stream().map(GetModelLookupDTO::new).collect(Collectors.toList());
+        } else {
+            entities = ctx.getLookupIds().stream()
+                    .map(name -> {
+
+                        LookupEntityDef lookup = ctx.isDraft()
+                                ? metaDraftService.getLookupEntityById(name)
+                                : getLookupEntityById(name);
+
+                        return Objects.isNull(lookup) ? null : new GetModelLookupDTO(lookup);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setLookups(entities);
+    }
+
+    private void processRelations(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllRelations() && CollectionUtils.isEmpty(ctx.getRelationIds())) {
+            return;
+        }
+
+        List<GetModelRelationDTO> relations;
+        if (ctx.isAllEntities()) {
+            relations = ctx.isDraft()
+                ? metaDraftService.getRelationsList().stream().map(GetModelRelationDTO::new).collect(Collectors.toList())
+                : getRelationsList().stream().map(GetModelRelationDTO::new).collect(Collectors.toList());
+        } else {
+            relations = ctx.getRelationIds().stream()
+                    .map(name -> {
+
+                        RelationDef relation;
+                        if (ctx.isDraft()) {
+                            relation = metaDraftService.getRelationById(name);
+                        } else {
+                            relation = getRelationById(name);
+                        }
+
+                        return Objects.nonNull(relation) ? new GetModelRelationDTO(relation) : null;
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setRelations(relations);
+    }
+
+    private void processEnumerations(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllEnumerations() && CollectionUtils.isEmpty(ctx.getEnumerationIds())) {
+            return;
+        }
+    }
+
+    private void processSourceSystems(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllSourceSystems() && CollectionUtils.isEmpty(ctx.getSourceSystemIds())) {
+            return;
+        }
+    }
+
+    private void processMeasuredValues(GetModelRequestContext ctx, GetModelDTO dto) {
+
+    }
+
+    private void processEntityGroups(GetModelRequestContext ctx, GetModelDTO dto) {
+
+        if (!ctx.isAllEntityGroups() && CollectionUtils.isEmpty(ctx.getEntityGroupIds())) {
+            return;
+        }
+    }
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteModel(DeleteModelRequestContext ctx) {
@@ -80,7 +242,9 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         super.deleteModel(ctx);
 //        throw new RuntimeException("vk");
     }
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void upsertModel(UpdateModelRequestContext ctx) {

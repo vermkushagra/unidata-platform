@@ -46,6 +46,6 @@ public class RecordDeleteFinishExecutor extends Finish<DeleteRequestContext, Del
      */
     @Override
     public boolean supports(Start<?> start) {
-        return false;
+        return DeleteRequestContext.class.isAssignableFrom(start.getInputTypeClass());
     }
 }

@@ -16,6 +16,7 @@ import org.unidata.mdm.system.migration.SystemMigrations;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
+import org.unidata.mdm.system.util.PipelineUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
@@ -30,7 +31,7 @@ public class SystemModule implements Module {
 
     @Autowired
     private ApplicationContext applicationContext;
-    
+
     @Autowired
     private DataSource systemDataSource;
 
@@ -90,6 +91,7 @@ public class SystemModule implements Module {
     @Override
     public void start() {
         IdUtils.init();
+        PipelineUtils.init();
     }
 
     @Override

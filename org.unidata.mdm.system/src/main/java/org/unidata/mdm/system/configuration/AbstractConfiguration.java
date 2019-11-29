@@ -1,12 +1,18 @@
 package org.unidata.mdm.system.configuration;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,6 +59,7 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
      * @return bean or null
      */
     @SuppressWarnings("unchecked")
+    @Nullable
     public <T> T getBeanByName(String name) {
         ApplicationContext context = CONFIGURED_CONTEXT_MAP.get(getId());
         if (Objects.nonNull(context)) {
@@ -61,6 +68,37 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
 
         return null;
     }
+
+    /**
+     * Gets named beans/components.
+     *
+     * @param <T> the bean type
+     * @param names the bean names
+     * @return bean or empty collection
+     */
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    public <T> Collection<T> getBeansByNames(String... names) {
+
+        ApplicationContext context = CONFIGURED_CONTEXT_MAP.get(getId());
+        if (Objects.nonNull(context) && ArrayUtils.isNotEmpty(names)) {
+
+            List<T> result = new ArrayList<>(names.length);
+            for (int i = 0; i < names.length; i++) {
+
+                if (Objects.isNull(names[i])) {
+                    continue;
+                }
+
+                T val = (T) context.getBean(names[i]);
+                result.add(val);
+            }
+
+            return result;
+        }
+
+        return Collections.emptyList();
+    }
     /**
      * Gets a bean.
      *
@@ -68,6 +106,7 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
      * @param beanClass the bean class
      * @return bean
      */
+    @Nullable
     public <T> T getBeanByClass(Class<T> beanClass) {
         ApplicationContext context = CONFIGURED_CONTEXT_MAP.get(getId());
         if (Objects.nonNull(context)) {
@@ -76,7 +115,6 @@ public abstract class AbstractConfiguration implements ApplicationContextAware {
 
         return null;
     }
-
     /**
      * Gets beans of type.
      *

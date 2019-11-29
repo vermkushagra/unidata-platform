@@ -17,12 +17,7 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.unidata.mdm.meta.service.MetaDraftService;
-import org.unidata.mdm.meta.service.MetaMeasurementService;
-import org.unidata.mdm.meta.service.MetaModelMappingService;
-import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
-import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.MessageUtils;
 
@@ -35,20 +30,12 @@ public class MetaConfiguration extends AbstractConfiguration {
 	 * This id.
 	 */
 	private static final ConfigurationId ID = () -> "META_CONFIGURATION";
-	/**
-     * {@link AfterContextRefresh} classes.
-     */
-    private static Class<?>[] refreshOnStartupClasses = {
-            MetaMeasurementService.class,
-            MetaModelService.class,
-            MetaDraftService.class
-    };
 
     @Override
 	protected ConfigurationId getId() {
 		return ID;
 	}
-    
+
     public static ApplicationContext getApplicationContext() {
         return CONFIGURED_CONTEXT_MAP.get(ID);
     }
@@ -92,7 +79,7 @@ public class MetaConfiguration extends AbstractConfiguration {
     public PlatformTransactionManager transactionManager(@Qualifier("metaDataSource") final DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
-    
+
     /**
      * use this way, not     @PropertySource(name = "securitySql", value = "classpath:db/security-sql.xml" )
      * for old functionality support (like @Qualifier("security-sql") final Properties sql)
@@ -129,27 +116,6 @@ public class MetaConfiguration extends AbstractConfiguration {
         source.addBasenames("classpath:messages");
 
         return source;
-    }
-
-    public void startImpl() {
-
-        ensureMetaModelIndex();
-        ensureAfterContextRefresh();
-    }
-
-    public void stopImpl() {
-        // NOP so far
-    }
-
-    private void ensureAfterContextRefresh() {
-        for (Class<?> klass : refreshOnStartupClasses) {
-            AfterContextRefresh r = (AfterContextRefresh) getConfiguredApplicationContext().getBean(klass);
-            r.afterContextRefresh();
-        }
-    }
-
-    private void ensureMetaModelIndex() {
-        getBean(MetaModelMappingService.class).ensureMetaModelIndex();
     }
 
     @Bean

@@ -25,10 +25,12 @@ import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.SourceSystemDef;
 import org.unidata.mdm.meta.VersionedObjectDef;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
+import org.unidata.mdm.meta.context.GetModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
 import org.unidata.mdm.meta.dto.GetEntitiesByRelationSideDTO;
 import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
+import org.unidata.mdm.meta.dto.GetModelDTO;
 import org.unidata.mdm.meta.service.impl.facades.AbstractModelElementFacade;
 import org.unidata.mdm.meta.type.RelationSide;
 import org.unidata.mdm.system.service.AfterContextRefresh;
@@ -37,6 +39,25 @@ import org.unidata.mdm.system.service.AfterContextRefresh;
  * The Interface MetaModelService.
  */
 public interface MetaModelService extends AfterContextRefresh {
+    /**
+     * Upsert model.
+     *
+     * @param ctx
+     *            the ctx
+     */
+    void upsertModel(UpdateModelRequestContext ctx);
+    /**
+     * Delete model.
+     *
+     * @param ctx
+     *            the ctx
+     */
+    void deleteModel(DeleteModelRequestContext ctx);
+    /**
+     * Gets the model.
+     * @param ctx the context
+     */
+    GetModelDTO getModel(GetModelRequestContext ctx);
     /**
      * Exports meta model.
      *
@@ -321,22 +342,6 @@ public interface MetaModelService extends AfterContextRefresh {
      * @return source system
      */
     SourceSystemDef getSourceSystemById(String id);
-
-    /**
-     * Upsert model.
-     *
-     * @param ctx
-     *            the ctx
-     */
-    void upsertModel(UpdateModelRequestContext ctx);
-
-    /**
-     * Delete model.
-     *
-     * @param ctx
-     *            the ctx
-     */
-    void deleteModel(DeleteModelRequestContext ctx);
 
     /**
      * Get relations for the specified entity.

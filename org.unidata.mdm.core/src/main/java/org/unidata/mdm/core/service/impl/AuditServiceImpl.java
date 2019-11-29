@@ -1,26 +1,5 @@
 package org.unidata.mdm.core.service.impl;
 
-import io.prometheus.client.Counter;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.unidata.mdm.core.audit.AuditConstants;
-import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
-import org.unidata.mdm.core.context.AuditEventWriteContext;
-import org.unidata.mdm.core.dto.EnrichedAuditEvent;
-import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
-import org.unidata.mdm.core.service.AuditService;
-import org.unidata.mdm.core.service.AuditServiceStorageService;
-import org.unidata.mdm.core.type.audit.AuditEvent;
-import org.unidata.mdm.core.type.monitoring.collector.QueueSizeCollector;
-import org.unidata.mdm.core.type.security.SecurityToken;
-import org.unidata.mdm.core.util.SecurityUtils;
-import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
-import reactor.core.publisher.Flux;
-
-import javax.annotation.PreDestroy;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -36,6 +15,28 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.annotation.PreDestroy;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.unidata.mdm.core.audit.AuditConstants;
+import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
+import org.unidata.mdm.core.context.AuditEventWriteContext;
+import org.unidata.mdm.core.dto.EnrichedAuditEvent;
+import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
+import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.service.AuditServiceStorageService;
+import org.unidata.mdm.core.type.audit.AuditEvent;
+import org.unidata.mdm.core.type.monitoring.collector.QueueSizeCollector;
+import org.unidata.mdm.core.type.security.SecurityToken;
+import org.unidata.mdm.core.util.SecurityUtils;
+import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
+
+import io.prometheus.client.Counter;
+import reactor.core.publisher.Flux;
 
 /**
  * @author Alexander Malyshev
@@ -93,7 +94,7 @@ public class AuditServiceImpl implements AuditService, ConfigurationUpdatesConsu
             );
         }
         this.enabledStorages.addAll(Arrays.asList(
-                ((String) CoreConfigurationProperty.UNIDATA_AUDIT_WRITER_POOL_SIZE.getDefaultValue().get()).split(VALUES_DELIMETER)
+                ((String) CoreConfigurationProperty.UNIDATA_AUDIT_ENABLED_STORAGES.getDefaultValue().get()).split(VALUES_DELIMETER)
         ));
         executorService = initWriterThreadPool();
     }

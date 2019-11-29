@@ -92,7 +92,9 @@ public class DataModule extends AbstractModule {
     /**
      * Start segment names.
      */
-    private static final String[] START_SEGMENTS = {
+    private static final String[] SEGMENTS = {
+
+        // 1. Start
         // Record
         // Record upsert start executor
         RecordUpsertStartExecutor.SEGMENT_ID,
@@ -103,12 +105,9 @@ public class DataModule extends AbstractModule {
 
         // Relation
         // Start
-        RelationUpsertStartExecutor.SEGMENT_ID
-    };
-    /**
-     * Point segment names.
-     */
-    private static final String[] POINT_SEGMENTS = {
+        RelationUpsertStartExecutor.SEGMENT_ID,
+
+        // 2. Points
         // Upsert record
         // Validate
         RecordUpsertValidateExecutor.SEGMENT_ID,
@@ -152,12 +151,17 @@ public class DataModule extends AbstractModule {
         RecordDeletePersistenceExecutor.SEGMENT_ID,
 
         // Audit
-        AuditDataSegment.SEGMENT_ID
-    };
-    /**
-     * Finish segments.
-     */
-    private static final String[] FINIFH_SEGMENTS = {
+        AuditDataSegment.SEGMENT_ID,
+
+        // 3. Connectors
+        // Upsert relations connector
+        RelationsUpsertConnectorExecutor.SEGMENT_ID,
+
+        // 4. Fallbacks
+        // Audit data fallback
+        AuditDataFallback.SEGMENT_ID,
+
+        // 5. Finish
         // Record
         // Upsert result creator
         RecordUpsertFinishExecutor.SEGMENT_ID,
@@ -169,20 +173,6 @@ public class DataModule extends AbstractModule {
         // Relation
         // Upsert finish
         RelationUpsertFinishExecutor.SEGMENT_ID
-    };
-    /**
-     * Connector segments.
-     */
-    private static final String[] CONNECTOR_SEGMENTS = {
-        // Upsert relations connector
-        RelationsUpsertConnectorExecutor.SEGMENT_ID
-    };
-    /**
-     * Fallback segments.
-     */
-    private static final String[] FALLBACK_SEGMENTS = {
-        // Audit data fallback
-        AuditDataFallback.SEGMENT_ID
     };
     /**
      * This configuration.
@@ -329,31 +319,8 @@ public class DataModule extends AbstractModule {
             r.afterContextRefresh();
         }
 
-        // 3. Points
-        // Start
-        for (String segment : START_SEGMENTS) {
-            starts.put(segment, configuration.getBeanByName(segment));
-        }
-
-        // Point
-        for (String segment : POINT_SEGMENTS) {
-            points.put(segment, configuration.getBeanByName(segment));
-        }
-
-        // Connector
-        for (String segment : CONNECTOR_SEGMENTS) {
-            connectors.put(segment, configuration.getBeanByName(segment));
-        }
-
-        // Finish
-        for (String segment : FINIFH_SEGMENTS) {
-            finishes.put(segment, configuration.getBeanByName(segment));
-        }
-
-        // Fallback
-        for (String segment : FALLBACK_SEGMENTS) {
-            fallbacks.put(segment, configuration.getBeanByName(segment));
-        }
+        // 3. Add segments
+        addSegments(configuration.getBeansByNames(SEGMENTS));
 
         auditEventBuildersRegistryService.registerEventBuilder(
                 AuditDataConstants.RECORD_UPSERT_EVENT_TYPE,

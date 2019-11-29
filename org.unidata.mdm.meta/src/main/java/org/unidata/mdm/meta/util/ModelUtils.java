@@ -14,11 +14,11 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.ApplicationContext;
 import org.unidata.mdm.core.type.data.SimpleAttribute;
 import org.unidata.mdm.core.type.model.AttributeModelElement;
 import org.unidata.mdm.meta.AbstractAttributeDef;
@@ -39,6 +39,7 @@ import org.unidata.mdm.meta.NestedEntityDef;
 import org.unidata.mdm.meta.SimpleAttributeDef;
 import org.unidata.mdm.meta.SimpleAttributesHolderEntityDef;
 import org.unidata.mdm.meta.SourceSystemDef;
+import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.type.info.impl.AttributeInfoHolder;
 import org.unidata.mdm.system.util.MessageUtils;
 
@@ -82,8 +83,8 @@ public class ModelUtils {
     private static MessageUtils messageUtils;
 
 
-    public static void init(ApplicationContext applicationContext){
-        messageUtils = applicationContext.getBean(MessageUtils.class);
+    public static void init() {
+        messageUtils = MetaConfiguration.getBean(MessageUtils.class);
     }
 
     private static Integer getOrder(AbstractAttributeDef attr)  {

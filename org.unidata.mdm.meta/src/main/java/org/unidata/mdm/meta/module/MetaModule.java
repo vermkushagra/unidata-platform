@@ -16,36 +16,60 @@ import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
 import org.unidata.mdm.meta.migration.UninstallMetaSchemaMigrations;
+import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaMeasurementService;
+import org.unidata.mdm.meta.service.MetaModelMappingService;
+import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.meta.service.segments.ModelGetFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
 import org.unidata.mdm.meta.util.ModelUtils;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
+import org.unidata.mdm.system.service.AfterContextRefresh;
+import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
-import org.unidata.mdm.system.type.module.Module;
-import org.unidata.mdm.system.type.pipeline.Connector;
-import org.unidata.mdm.system.type.pipeline.Finish;
-import org.unidata.mdm.system.type.pipeline.Point;
-import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.util.DataSourceUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
 import nl.myndocs.database.migrator.processor.Migrator;
 
-public class MetaModule implements Module {
+public class MetaModule extends AbstractModule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MetaModule.class);
-    
+
     public static final String MODULE_ID = "org.unidata.mdm.meta";
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
             new Dependency("org.unidata.mdm.core", "5.2")
     );
 
+    /**
+     * {@link AfterContextRefresh} classes.
+     */
+    private static final Class<?>[] REFRESH_ON_STARTUP_CLASSES = {
+            MetaMeasurementService.class,
+            MetaModelService.class,
+            MetaDraftService.class
+    };
+
+    private static final String[] SEGMENTS = {
+            // 1. Start segments
+            ModelGetStartExecutor.SEGMENT_ID,
+
+            // 5. Finish segments
+            ModelGetFinishExecutor.SEGMENT_ID
+    };
+
     @Autowired
     private DataSource metaDataSource;
-    
+
+    @Autowired
+    private MetaModelMappingService metaModelMappingService;
+
+    @Autowired
+    private MetaConfiguration configuration;
+
     @Override
     public String getId() {
         return MODULE_ID;
@@ -73,16 +97,15 @@ public class MetaModule implements Module {
 
     private Migrator migrator;
 
-
     @Override
     public void install() {
         LOGGER.info("Install");
 
-        ModelUtils.init(MetaConfiguration.getApplicationContext());
+        ModelUtils.init();
 
         try {
             getMigrator().migrate(
-                    MetaConfiguration.getBean(MetaMigrationContext.class),
+                    configuration.getBeanByClass(MetaMigrationContext.class),
                     InstallMetaSchemaMigrations.migrations());
         } catch (SQLException e) {
             throw new PlatformFailureException(
@@ -99,7 +122,7 @@ public class MetaModule implements Module {
         LOGGER.info("Uninstall");
         try {
             getMigrator().migrate(
-                    MetaConfiguration.getBean(MetaMigrationContext.class),
+                    configuration.getBeanByClass(MetaMigrationContext.class),
                     UninstallMetaSchemaMigrations.migrations());
         } catch (SQLException e) {
             throw new PlatformFailureException(
@@ -113,49 +136,32 @@ public class MetaModule implements Module {
     @Override
     public void start() {
         LOGGER.info("Starting...");
-        ModelUtils.init(MetaConfiguration.getApplicationContext());
-        MetaConfiguration.getBean(MetaConfiguration.class).startImpl();
+
+        // Utils and indexes
+        ModelUtils.init();
+
+        // Call after context refresh
+        for (Class<?> klass : REFRESH_ON_STARTUP_CLASSES) {
+            AfterContextRefresh r = (AfterContextRefresh) configuration.getConfiguredApplicationContext().getBean(klass);
+            r.afterContextRefresh();
+        }
+
+        // Ensure, service indexes created
+        metaModelMappingService.ensureMetaModelIndex();
+
+        // Publish segments
+        addSegments(configuration.getBeansByNames(SEGMENTS));
+
         LOGGER.info("Started.");
     }
 
     @Override
     public void stop() {
         LOGGER.info("Stopping...");
-        MetaConfiguration.getBean(MetaConfiguration.class).stopImpl();
+
         DataSourceUtils.shutdown(metaDataSource);
+
         LOGGER.info("Stopped.");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Start<PipelineExecutionContext>> getStartTypes() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> getFinishTypes() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Point<PipelineExecutionContext>> getPointTypes() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Collection<Connector<PipelineExecutionContext, PipelineExecutionResult>> getConnectorTypes() {
-        return Collections.emptyList();
     }
 
     private Migrator getMigrator() throws SQLException {
