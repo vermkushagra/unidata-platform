@@ -1,10 +1,6 @@
 package org.unidata.mdm.core.service.impl;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -66,20 +62,20 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
         final String data = runtimePropertiesService.availableProperties().stream()
                 .collect(Collectors.groupingBy(p -> p.getProperty().getGroupKey()))
                 .entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getKey))
+                .sorted(Map.Entry.comparingByKey())
                 .map(this::generateGroupString)
                 .collect(Collectors.joining("\n"));
         sendExportDataToUser(data, SecurityUtils.getCurrentUserName());
     }
 
-    private String generateGroupString(Map.Entry<String, List<ConfigurationProperty>> e) {
+    private String generateGroupString(Map.Entry<String, List<ConfigurationProperty<Serializable>>> e) {
         return "# " + e.getKey() + "\n" + e.getValue().stream()
                 .sorted(Comparator.comparing(p -> p.getProperty().getKey()))
                 .map(this::generatePropertyString)
                 .collect(Collectors.joining("\n"));
     }
 
-    private String generatePropertyString(ConfigurationProperty p) {
+    private String generatePropertyString(ConfigurationProperty<Serializable> p) {
         return "## " + messageUtils.getMessage(p.getProperty().getKey()) + "\n"
                 + p.getProperty().getKey() + "="
                 + (p.getValue() == null ? RuntimePropertiesServiceImpl.NULL_VALUE_PLACE_HOLDER : p.getValue());

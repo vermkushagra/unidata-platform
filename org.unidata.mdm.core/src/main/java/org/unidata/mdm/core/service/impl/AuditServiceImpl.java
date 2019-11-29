@@ -92,7 +92,7 @@ public class AuditServiceImpl implements AuditService, ConfigurationUpdatesConsu
             );
         }
         this.enabledStorages.addAll(Arrays.asList(
-                ((String) CoreConfigurationProperty.UNIDATA_AUDIT_WRITER_POOL_SIZE.getDefaultValue().get()).split(VALUES_DELIMETER)
+                ((String) CoreConfigurationProperty.UNIDATA_AUDIT_ENABLED_STORAGES.getDefaultValue().get()).split(VALUES_DELIMETER)
         ));
         executorService = initWriterThreadPool();
     }
