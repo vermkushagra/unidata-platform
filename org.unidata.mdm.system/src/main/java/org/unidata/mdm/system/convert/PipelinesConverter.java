@@ -108,17 +108,8 @@ public class PipelinesConverter {
 
         // Gather segments
         List<Segment> gathered = fromSegments(js.getSegments());
-        if (gathered.size() < 2) {
-            throw new PipelineException("Invalid number of segments. A pipeline must contain at least 2 points of type 'start' and 'finish'.",
-                    SystemExceptionIds.EX_PIPELINE_INVALID_NUMBER_OF_SEGMENTS);
-        } else if (gathered.get(0).getType() != SegmentType.START
-                || gathered.get(gathered.size() - 1).getType() != SegmentType.FINISH) {
-            throw new PipelineException("Invalid pipeline layout. A pipeline must start with a point of type 'start' and end with a point of type 'finish'.",
-                    SystemExceptionIds.EX_PIPELINE_HAS_NO_START_OR_FINISH_OR_BOTH);
-        }
-
         Start<?> s = (Start<?>) gathered.get(0);
-        Finish<?, ?> f = (Finish<?, ?>) gathered.get(gathered.size() - 1);
+        Finish<?, ?> f = null;
 
         Pipeline p = Pipeline.start(s, js.getSubjectId(), js.getDescription());
         for (int i = 1; i < (gathered.size() - 1); i++) {
@@ -129,6 +120,8 @@ public class PipelinesConverter {
                 p.with((Connector<?, ?>) segment);
             } else if (segment.getType() == SegmentType.FALLBACK) {
                 p.fallback((Fallback<?>) segment);
+            } else if (segment.getType() == SegmentType.FINISH) {
+                f = (Finish<?, ?>) segment;
             }
         }
 

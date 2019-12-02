@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,8 +17,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.unidata.mdm.core.dto.SecuredResourceDTO;
 import org.unidata.mdm.core.service.SecurityService;
 import org.unidata.mdm.core.service.impl.RoleServiceExt;
+import org.unidata.mdm.core.type.measurement.MeasurementValue;
 import org.unidata.mdm.core.type.model.AttributeModelElement;
 import org.unidata.mdm.core.type.security.Right;
 import org.unidata.mdm.core.type.security.SecuredResourceCategory;
@@ -35,19 +37,25 @@ import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.meta.AbstractEntityDef;
 import org.unidata.mdm.meta.EntitiesGroupDef;
 import org.unidata.mdm.meta.EntityDef;
+import org.unidata.mdm.meta.EnumerationDataType;
 import org.unidata.mdm.meta.LookupEntityDef;
 import org.unidata.mdm.meta.NestedEntityDef;
 import org.unidata.mdm.meta.RelationDef;
+import org.unidata.mdm.meta.SourceSystemDef;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
 import org.unidata.mdm.meta.context.GetModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
 import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
-import org.unidata.mdm.meta.dto.GetModelLookupDTO;
 import org.unidata.mdm.meta.dto.GetModelDTO;
+import org.unidata.mdm.meta.dto.GetModelEnumerationDTO;
+import org.unidata.mdm.meta.dto.GetModelLookupDTO;
+import org.unidata.mdm.meta.dto.GetModelMeasurementValueDTO;
 import org.unidata.mdm.meta.dto.GetModelRelationDTO;
+import org.unidata.mdm.meta.dto.GetModelSourceSystemDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelValidationComponent;
 import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
 import org.unidata.mdm.meta.util.ModelUtils;
@@ -63,7 +71,7 @@ public class SecureMetaModelService extends BaseMetaModelService  {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseMetaModelService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecureMetaModelService.class);
 
     /**
      * Security service.
@@ -82,6 +90,11 @@ public class SecureMetaModelService extends BaseMetaModelService  {
      */
     @Autowired
     private RoleServiceExt roleServiceExt;
+    /**
+     * Measured values service.
+     */
+    @Autowired
+    private MetaMeasurementService metaMeasurementService;
     /**
      * {@inheritDoc}
      */
@@ -212,6 +225,28 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         if (!ctx.isAllEnumerations() && CollectionUtils.isEmpty(ctx.getEnumerationIds())) {
             return;
         }
+
+        List<GetModelEnumerationDTO> enumerations;
+        if (ctx.isAllEnumerations()) {
+            enumerations = ctx.isDraft()
+                    ? metaDraftService.getEnumerationsList().stream().map(GetModelEnumerationDTO::new).collect(Collectors.toList())
+                    : getEnumerationsList().stream().map(GetModelEnumerationDTO::new).collect(Collectors.toList());
+        } else {
+            enumerations = ctx.getEnumerationIds().stream()
+                    .map(name -> {
+
+                        EnumerationDataType type = ctx.isDraft() ? metaDraftService.getEnumerationById(name) : getEnumerationById(name);
+                        if (Objects.isNull(type)) {
+                            return null;
+                        }
+
+                        return new GetModelEnumerationDTO(type);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setEnumerations(enumerations);
     }
 
     private void processSourceSystems(GetModelRequestContext ctx, GetModelDTO dto) {
@@ -219,10 +254,57 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         if (!ctx.isAllSourceSystems() && CollectionUtils.isEmpty(ctx.getSourceSystemIds())) {
             return;
         }
+
+        List<GetModelSourceSystemDTO> sourceSystems;
+        if (ctx.isAllSourceSystems()) {
+            sourceSystems = ctx.isDraft()
+                    ? metaDraftService.getSourceSystemsList().stream().map(GetModelSourceSystemDTO::new).collect(Collectors.toList())
+                    : getSourceSystemsList().stream().map(GetModelSourceSystemDTO::new).collect(Collectors.toList());
+        } else {
+            sourceSystems = ctx.getSourceSystemIds().stream()
+                    .map(name -> {
+
+                        SourceSystemDef sourceSystem = ctx.isDraft() ? metaDraftService.getSourceSystemById(name) : getSourceSystemById(name);
+                        if (Objects.isNull(sourceSystem)) {
+                            return null;
+                        }
+
+                        return new GetModelSourceSystemDTO(sourceSystem);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setSourceSystems(sourceSystems);
     }
 
     private void processMeasuredValues(GetModelRequestContext ctx, GetModelDTO dto) {
 
+        if (!ctx.isAllMeasuredValues() && CollectionUtils.isEmpty(ctx.getMeasuredValueIds())) {
+            return;
+        }
+
+        List<GetModelMeasurementValueDTO> measurementValues;
+        if (ctx.isAllSourceSystems()) {
+            measurementValues = ctx.isDraft()
+                    ? metaDraftService.getAllValues().stream().map(GetModelMeasurementValueDTO::new).collect(Collectors.toList())
+                    : metaMeasurementService.getAllValues().stream().map(GetModelMeasurementValueDTO::new).collect(Collectors.toList());
+        } else {
+            measurementValues = ctx.getMeasuredValueIds().stream()
+                    .map(name -> {
+
+                        MeasurementValue val = ctx.isDraft() ? metaDraftService.getValueById(name) : metaMeasurementService.getValueById(name);
+                        if (Objects.isNull(val)) {
+                            return null;
+                        }
+
+                        return new GetModelMeasurementValueDTO(val);
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+        }
+
+        dto.setMeasurementValues(measurementValues);
     }
 
     private void processEntityGroups(GetModelRequestContext ctx, GetModelDTO dto) {
@@ -230,6 +312,30 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         if (!ctx.isAllEntityGroups() && CollectionUtils.isEmpty(ctx.getEntityGroupIds())) {
             return;
         }
+
+        GetEntitiesGroupsDTO groups = ctx.isDraft() ? metaDraftService.getEntitiesGroups() : getEntitiesGroups();
+        if (Objects.isNull(groups) || groups.getGroups().isEmpty()) {
+            return;
+        }
+
+        if (CollectionUtils.isNotEmpty(ctx.getEntityGroupIds())) {
+
+            Iterator<Entry<String, EntitiesGroupDef>> p = groups.getGroups().entrySet().iterator();
+            while (p.hasNext()) {
+
+                Entry<String, EntitiesGroupDef> entry = p.next();
+                if (!ctx.getEntityGroupIds().contains(entry.getKey())) {
+                    p.remove();
+                    groups.getNested().remove(entry.getValue());
+                }
+            }
+        }
+
+        if (MapUtils.isEmpty(groups.getGroups())) {
+            return;
+        }
+
+        dto.setEntityGroups(groups);
     }
     /**
      * {@inheritDoc}
@@ -364,8 +470,7 @@ public class SecureMetaModelService extends BaseMetaModelService  {
                         .collect(Collectors.toList());
 
             defs.put(entitiesGroupWrapper.getWrapperId(), entitiesGroupWrapper.getEntitiesGroupDef());
-            nested.put(entitiesGroupWrapper.getEntitiesGroupDef(),
-                    new ImmutablePair<>(entities, lookupEntities));
+            nested.put(entitiesGroupWrapper.getEntitiesGroupDef(), Pair.of(entities, lookupEntities));
         }
 
         return new GetEntitiesGroupsDTO(defs, nested);

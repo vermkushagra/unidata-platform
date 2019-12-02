@@ -24,6 +24,22 @@ public class GetModelDTO extends AbstractCompositeResult implements PipelineExec
      */
     private List<GetModelRelationDTO> relations;
     /**
+     * Enumerations.
+     */
+    private List<GetModelEnumerationDTO> enumerations;
+    /**
+     * Source systems.
+     */
+    private List<GetModelSourceSystemDTO> sourceSystems;
+    /**
+     * MMVs.
+     */
+    private List<GetModelMeasurementValueDTO> measurementValues;
+    /**
+     * EGR.
+     */
+    private GetEntitiesGroupsDTO entityGroups;
+    /**
      * Constructor.
      */
     public GetModelDTO() {
@@ -64,5 +80,53 @@ public class GetModelDTO extends AbstractCompositeResult implements PipelineExec
      */
     public void setRelations(List<GetModelRelationDTO> relations) {
         this.relations = relations;
+    }
+    /**
+     * @return the enumerations
+     */
+    public List<GetModelEnumerationDTO> getEnumerations() {
+        return Objects.isNull(enumerations) ? Collections.emptyList() : enumerations;
+    }
+    /**
+     * @param enumerations the enumerations to set
+     */
+    public void setEnumerations(List<GetModelEnumerationDTO> enumerations) {
+        this.enumerations = enumerations;
+    }
+    /**
+     * @return the sourceSystems
+     */
+    public List<GetModelSourceSystemDTO> getSourceSystems() {
+        return Objects.isNull(sourceSystems) ? Collections.emptyList() : sourceSystems;
+    }
+    /**
+     * @param sourceSystems the sourceSystems to set
+     */
+    public void setSourceSystems(List<GetModelSourceSystemDTO> sourceSystems) {
+        this.sourceSystems = sourceSystems;
+    }
+    /**
+     * @return the measurementValues
+     */
+    public List<GetModelMeasurementValueDTO> getMeasurementValues() {
+        return Objects.isNull(measurementValues) ? Collections.emptyList() : measurementValues;
+    }
+    /**
+     * @param measurementValues the measurementValues to set
+     */
+    public void setMeasurementValues(List<GetModelMeasurementValueDTO> measurementValues) {
+        this.measurementValues = measurementValues;
+    }
+    /**
+     * @return the entityGroups
+     */
+    public GetEntitiesGroupsDTO getEntityGroups() {
+        return entityGroups;
+    }
+    /**
+     * @param entityGroups the entityGroups to set
+     */
+    public void setEntityGroups(GetEntitiesGroupsDTO entityGroups) {
+        this.entityGroups = entityGroups;
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.data.context.UpsertRelationRequestContext;
@@ -82,16 +83,18 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineExecutio
         UpsertRelationsDTO result = new UpsertRelationsDTO();
         for (Entry<String, List<UpsertRelationRequestContext>> entry : payload.getRelations().entrySet()) {
 
+            if (CollectionUtils.isEmpty(entry.getValue())) {
+                continue;
+            }
+
             RelationStateDTO state = new RelationStateDTO();
-            List<UpsertRelationDTO> collected = new ArrayList<>();
+            List<UpsertRelationDTO> collected = new ArrayList<>(entry.getValue().size());
             for (UpsertRelationRequestContext uCtx : entry.getValue()) {
 
                 UpsertRelationDTO interim = executionService.execute(p, uCtx);
-                if (Objects.isNull(interim)) {
-                    continue;
+                if (Objects.nonNull(interim)) {
+                    collected.add(interim);
                 }
-
-                collected.add(interim);
             }
 
             result.getRelations().put(state, collected);
