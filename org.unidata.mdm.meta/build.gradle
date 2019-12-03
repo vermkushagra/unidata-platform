@@ -60,6 +60,8 @@ dependencies {
     xjc 'net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8'
     xjc 'org.jvnet.jaxb2_commons:jaxb2-basics-annotate:1.1.0'
 
+    compileOnly 'javax:javaee-api:7.0'
+
     testCompile 'org.junit.jupiter:junit-jupiter-api'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine'
 }
