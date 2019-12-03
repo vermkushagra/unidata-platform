@@ -209,11 +209,7 @@ public final class MetaExceptionIds {
      */
     public static final ExceptionId EX_META_TO_CONTAINMENT_ENTITY_NOT_FOUND_UPDATE
         = new ExceptionId("EX_META_TO_CONTAINMENT_ENTITY_NOT_FOUND_UPDATE", "app.meta.to.containment.entity.not.found.update");
-    /**
-     * Cannot parse date string. Incorrect date format.
-     */
-    public static final ExceptionId EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE
-        = new ExceptionId("EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE", "app.data.cannotParseDate");
+
     /**
      * The 'to' side containment entity '{}' of the relation '{}' not found in model.
      */
