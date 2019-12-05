@@ -424,6 +424,9 @@ public final class DataExceptionIds {
     public static final ExceptionId EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT =
             new ExceptionId("EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT", "app.data.audit.unknow.pipeline.execution.context");
 
+    public static final ExceptionId EX_DATA_PIPELINE_LOADING_ERROR =
+            new ExceptionId("EX_DATA_PIPELINE_LOADING_ERROR", "app.data.pipeline.loading.error");
+
     /**
      * Constructor.
      */

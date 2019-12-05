@@ -1,6 +1,7 @@
 package org.unidata.mdm.system.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
@@ -80,7 +81,7 @@ public class JsonUtils {
     }
     /**
      * Reads a value from a string.
-     * @param json the JASON string.
+     * @param json the JSON string.
      * @param ref the target ref
      * @return object or null
      */
@@ -99,9 +100,54 @@ public class JsonUtils {
 
         return null;
     }
+
     /**
      * Reads a value from a file.
-     * @param json the JASON file.
+     * @param json the JSON FileInputStream.
+     * @param klass the target class
+     * @return object or null
+     */
+    public static<T> T read(FileInputStream json, Class<T> klass) {
+        if (Objects.nonNull(json)) {
+            try {
+                return objectMapper.readValue(json, klass);
+            } catch (JsonParseException e) {
+                LOGGER.warn("Caught a 'JsonParseException' while reading file ref value.", e);
+            } catch (JsonMappingException e) {
+                LOGGER.warn("Caught a 'JsonMappingException' while reading file ref value.", e);
+            } catch (IOException e) {
+                LOGGER.warn("Caught a 'IOException' while reading file ref value.", e);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Reads a value from a file.
+     * @param json the JSON file.
+     * @param klass the target class
+     * @return object or null
+     */
+    public static<T> T read(File json, Class<T> klass) {
+        if (Objects.nonNull(json) && json.exists()) {
+            try {
+                return objectMapper.readValue(json, klass);
+            } catch (JsonParseException e) {
+                LOGGER.warn("Caught a 'JsonParseException' while reading file ref value.", e);
+            } catch (JsonMappingException e) {
+                LOGGER.warn("Caught a 'JsonMappingException' while reading file ref value.", e);
+            } catch (IOException e) {
+                LOGGER.warn("Caught a 'IOException' while reading file ref value.", e);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Reads a value from a file.
+     * @param json the JSON file.
      * @param ref the target ref
      * @return object or null
      */
@@ -120,6 +166,29 @@ public class JsonUtils {
 
         return null;
     }
+
+    /**
+     * Reads a value from a file.
+     * @param json the JASON file.
+     * @param ref the target ref
+     * @return object or null
+     */
+    public static<T> T read(FileInputStream json, TypeReference<T> ref) {
+        if (Objects.nonNull(json)) {
+            try {
+                return objectMapper.readValue(json, ref);
+            } catch (JsonParseException e) {
+                LOGGER.warn("Caught a 'JsonParseException' while reading file ref value.", e);
+            } catch (JsonMappingException e) {
+                LOGGER.warn("Caught a 'JsonMappingException' while reading file ref value.", e);
+            } catch (IOException e) {
+                LOGGER.warn("Caught a 'IOException' while reading file ref value.", e);
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Writes a value as string.
      * @param value the value to write.

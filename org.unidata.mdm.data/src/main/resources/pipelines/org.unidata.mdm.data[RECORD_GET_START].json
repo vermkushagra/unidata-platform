@@ -1,0 +1,27 @@
+{
+  "startId": "org.unidata.mdm.data[RECORD_GET_START]",
+  "subjectId": "",
+  "description": "org.unidata.mdm.data.record.get.start.description",
+  "segments": [
+    {
+      "segmentType": "START",
+      "id": "org.unidata.mdm.data[RECORD_GET_START]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_GET_SECURITY]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_GET_DIFF]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_GET_POSTPROCESS]"
+    },
+    {
+      "segmentType": "FINISH",
+      "id": "org.unidata.mdm.data[RECORD_GET_FINISH]"
+    }
+  ]
+}

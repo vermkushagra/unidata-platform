@@ -1,0 +1,43 @@
+{
+  "startId": "org.unidata.mdm.data[RECORD_UPSERT_START]",
+  "subjectId": "",
+  "description": "org.unidata.mdm.data.record.upsert.start.description",
+  "segments": [
+    {
+      "segmentType": "START",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_START]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_VALIDATE_POINT]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_ACCESS]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_PERIOD_CHECK]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_MODBOX_INIT]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_MERGE_TIMELINE]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_INDEXING]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_PERSISTENCE]"
+    },
+    {
+      "segmentType": "FINISH",
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_FINISH]"
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 package org.unidata.mdm.system.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.Map;
 
@@ -148,4 +152,8 @@ public interface PipelineService extends AfterPlatformStartup {
      */
     @Nullable
     <C extends PipelineExecutionContext> Fallback<C> fallback(String id);
+
+    void load(String startId, String subject, InputStream fileInputStream) throws IOException;
+
+    void load(String startId, String subject, File file) throws IOException;
 }
