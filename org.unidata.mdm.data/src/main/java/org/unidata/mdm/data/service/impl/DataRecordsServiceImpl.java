@@ -518,26 +518,27 @@ public class DataRecordsServiceImpl implements DataRecordsService {
 
         // Data
         // FIXME Temporary, for testing
-        Pipeline l = Pipeline.start(pipelineService.start(RelationUpsertStartExecutor.SEGMENT_ID))
-                .end(pipelineService.finish(RelationUpsertFinishExecutor.SEGMENT_ID));
+//        Pipeline l = Pipeline.start(pipelineService.start(RelationUpsertStartExecutor.SEGMENT_ID))
+//                .end(pipelineService.finish(RelationUpsertFinishExecutor.SEGMENT_ID));
+//
+//        Pipeline p = Pipeline.start(pipelineService.start(RecordUpsertStartExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertValidateExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertSecurityExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertPeriodCheckExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertResolveCodePointersExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertMeasuredAttributesExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertModboxExecutor.SEGMENT_ID)) // <- Modbox create
+//                .with(pipelineService.point(RecordUpsertLobSubmitExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertMergeTimelineExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertIndexingExecutor.SEGMENT_ID))
+//                .with(pipelineService.point(RecordUpsertPersistenceExecutor.SEGMENT_ID))
+//                .with(pipelineService.connector(RelationsUpsertConnectorExecutor.SEGMENT_ID), l)
+//                .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
+//                .fallback(pipelineService.fallback(AuditDataFallback.SEGMENT_ID))
+//                .end(pipelineService.finish(RecordUpsertFinishExecutor.SEGMENT_ID));
+        final Pipeline pipeline = pipelineService.getById(RecordUpsertStartExecutor.SEGMENT_ID);
 
-        Pipeline p = Pipeline.start(pipelineService.start(RecordUpsertStartExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertValidateExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertSecurityExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertPeriodCheckExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertResolveCodePointersExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertMeasuredAttributesExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertModboxExecutor.SEGMENT_ID)) // <- Modbox create
-                .with(pipelineService.point(RecordUpsertLobSubmitExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertMergeTimelineExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertIndexingExecutor.SEGMENT_ID))
-                .with(pipelineService.point(RecordUpsertPersistenceExecutor.SEGMENT_ID))
-                .with(pipelineService.connector(RelationsUpsertConnectorExecutor.SEGMENT_ID), l)
-                .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
-                .fallback(pipelineService.fallback(AuditDataFallback.SEGMENT_ID))
-                .end(pipelineService.finish(RecordUpsertFinishExecutor.SEGMENT_ID));
-
-        UpsertRecordDTO result = executionService.execute(p, ctx);
+        UpsertRecordDTO result = executionService.execute(pipeline, ctx);
         return result;
     }
 

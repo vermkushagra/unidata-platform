@@ -55,7 +55,6 @@ public class RuntimePropertiesServiceImpl implements RuntimePropertiesService {
 
     private final AtomicBoolean init = new AtomicBoolean(false);
 
-    @Autowired
     public RuntimePropertiesServiceImpl(
             final ConfigurationCacheService configurationCacheService,
             final List<ConfigurationUpdatesProducer> configurationUpdatesProducers,
@@ -76,7 +75,7 @@ public class RuntimePropertiesServiceImpl implements RuntimePropertiesService {
         if (!CollectionUtils.isEmpty(configurationUpdatesProducers)) {
             configurationUpdatesStreams.addAll(
                     configurationUpdatesProducers.stream()
-                            .map(ConfigurationUpdatesProducer::updates)
+                            .map(p -> p.updates(configurationProperties))
                             .collect(Collectors.toList())
             );
         }

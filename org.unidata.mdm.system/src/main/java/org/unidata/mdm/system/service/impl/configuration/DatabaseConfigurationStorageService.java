@@ -1,27 +1,27 @@
-package org.unidata.mdm.core.service.impl;
-
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+package org.unidata.mdm.system.service.impl.configuration;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.unidata.mdm.system.util.ReactiveUtils;
 import org.unidata.mdm.system.dao.ConfigurationDAO;
+import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesByUserConsumer;
 import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesProducer;
-import org.unidata.mdm.core.util.ReactiveUtils;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
-@Order(value = 2)
+@Order(2)
 public class DatabaseConfigurationStorageService
         implements ConfigurationUpdatesProducer, ConfigurationUpdatesByUserConsumer {
 
@@ -29,7 +29,6 @@ public class DatabaseConfigurationStorageService
 
     private final ConfigurationDAO configurationDAO;
 
-    @Autowired
     public DatabaseConfigurationStorageService(final ConfigurationDAO configurationDAO) {
         this.configurationDAO = configurationDAO;
     }
@@ -57,7 +56,9 @@ public class DatabaseConfigurationStorageService
     }
 
     @Override
-    public Publisher<Map<String, Optional<? extends Serializable>>> updates() {
+    public Publisher<Map<String, Optional<? extends Serializable>>> updates(
+            final Collection<ApplicationConfigurationProperty> configurationProperties
+    ) {
         return Mono.create(sink -> {
             final Map<String, Optional<? extends Serializable>> availableProperties = availableProperties();
             if (LOGGER.isDebugEnabled()) {

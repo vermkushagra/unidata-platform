@@ -1,11 +1,12 @@
 package org.unidata.mdm.system.type.configuration;
 
+import org.reactivestreams.Publisher;
+
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
-import org.reactivestreams.Publisher;
-
 public interface ConfigurationUpdatesProducer {
-    Publisher<Map<String, Optional<? extends Serializable>>> updates();
+    Publisher<Map<String, Optional<? extends Serializable>>> updates(Collection<ApplicationConfigurationProperty> configurationProperties);
 }
