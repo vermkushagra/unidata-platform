@@ -1,19 +1,20 @@
-/**
- *
- */
 package org.unidata.mdm.meta.context;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.context.StorageSpecificContext;
 
 /**
  * @author Mikhail Mikhailov
  */
-public class DeleteModelRequestContext extends CommonRequestContext implements StorageSpecificContext, Serializable {
+public class DeleteModelRequestContext
+        extends CommonRequestContext
+        implements MayHaveDraft, PipelineExecutionContext, StorageSpecificContext, Serializable {
 
     /**
      * SVUID.
@@ -67,7 +68,16 @@ public class DeleteModelRequestContext extends CommonRequestContext implements S
         this.relationIds = b.relationIds;
         this.storageId = b.storageId;
         this.nestedEntitiesIds = b.nestedEntitiesIds;
+
+        setFlag(MetaContextFlags.FLAG_DRAFT, b.draft);
     }
+
+
+    @Override
+    public String getStartTypeId() {
+        return ModelDeleteStartExecutor.SEGMENT_ID;
+    }
+
 
     /**
      * @return the entitiesIds
@@ -158,6 +168,10 @@ public class DeleteModelRequestContext extends CommonRequestContext implements S
         return nestedEntitiesIds != null && !nestedEntitiesIds.isEmpty();
     }
 
+    public boolean isDraft() {
+        return getFlag(MetaContextFlags.FLAG_DRAFT);
+    }
+
     /**
      * @author Mikhail Mikhailov
      *         Builder class.
@@ -198,6 +212,10 @@ public class DeleteModelRequestContext extends CommonRequestContext implements S
          * Storage ID to apply the updates to.
          */
         private String storageId;
+        /**
+         * Draft.
+         */
+        private boolean draft;
 
         /**
          * Constructor.
@@ -279,6 +297,10 @@ public class DeleteModelRequestContext extends CommonRequestContext implements S
             return this;
         }
 
+        public DeleteModelRequestContextBuilder draft(boolean draft) {
+            this.draft = draft;
+            return this;
+        }
         /**
          * Builder method.
          *
@@ -288,5 +310,7 @@ public class DeleteModelRequestContext extends CommonRequestContext implements S
         public DeleteModelRequestContext build() {
             return new DeleteModelRequestContext(this);
         }
+
+
     }
 }

@@ -103,40 +103,41 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
 			Holder<SessionTokenDef> security
 	) throws Fault {
 
-	    MeasurementPoint.init(MeasurementContextName.MEASURE_SOAP_DELETE_MODEL_ELEMENT);
+        MeasurementPoint.init(MeasurementContextName.MEASURE_SOAP_DELETE_MODEL_ELEMENT);
         MeasurementPoint.start();
         try {
 
             validateRequest(security);
-    		DeleteElementResponse response = new DeleteElementResponse();
-    		response.setElementName(request.getElementName());
-    		response.setElementType(request.getElementType());
+            DeleteElementResponse response = new DeleteElementResponse();
+            response.setElementName(request.getElementName());
+            response.setElementType(request.getElementType());
 
-    		DeleteModelRequestContext.DeleteModelRequestContextBuilder builder = new DeleteModelRequestContext.DeleteModelRequestContextBuilder();
-    		switch (request.getElementType()) {
-    		case ENTITY:
-    			builder.entitiesIds(Collections.singletonList(request.getElementName()));
-    			break;
-    		case LOOKUP:
-    			builder.lookupEntitiesIds(Collections.singletonList(request.getElementName()));
-    			break;
-    		case NESTED_ENTITY:
-    			builder.nestedEntiesIds(Collections.singletonList(request.getElementName()));
-    			break;
-    		case RELATION:
-    			builder.relationIds(Collections.singletonList(request.getElementName()));
-    			break;
-    		default:
-    			break;
-    		}
-    		DeleteModelRequestContext ctx = builder.build();
-    		if(info.value.isDraft()) {
-    			draftService.remove(ctx);
-    		}else {
-    			metamodelService.deleteModel(ctx);
-    		}
+            DeleteModelRequestContext.DeleteModelRequestContextBuilder builder =
+                    new DeleteModelRequestContext.DeleteModelRequestContextBuilder();
 
-    		return response;
+            switch (request.getElementType()) {
+                case ENTITY:
+                    builder.entitiesIds(Collections.singletonList(request.getElementName()));
+                    break;
+                case LOOKUP:
+                    builder.lookupEntitiesIds(Collections.singletonList(request.getElementName()));
+                    break;
+                case NESTED_ENTITY:
+                    builder.nestedEntiesIds(Collections.singletonList(request.getElementName()));
+                    break;
+                case RELATION:
+                    builder.relationIds(Collections.singletonList(request.getElementName()));
+                    break;
+                default:
+                    break;
+            }
+            builder.draft(info.value.isDraft());
+
+            DeleteModelRequestContext ctx = builder.build();
+
+            metamodelService.deleteModel(ctx);
+
+            return response;
         } finally {
             MeasurementPoint.stop();
         }
@@ -208,7 +209,7 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
     		GetElementResponse response = new GetElementResponse();
     		switch (request.getElementType()) {
     		case ENTITY:
-    			EntityDef entity = null;
+    			EntityDef entity;
     			if(info.value.isDraft()) {
     				entity = draftService.getEntityByIdNoDeps(request.getElementName());
     			}else {
@@ -299,11 +300,11 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
     			builder.nestedEntityUpdate(Collections
     					.singletonList(ToInternal.convert(request.getNestedEntity())));
     		}
-    		if(info.value.isDraft()) {
-    			draftService.update(builder.build());
-    		}else {
-    			metamodelService.upsertModel(builder.build());
-    		}
+
+    		builder.draft(info.value.isDraft());
+
+			metamodelService.upsertModel(builder.build());
+
     		UpsertElementResponse response = new UpsertElementResponse();
     		response.setEntity(request.getEntity());
     		response.setLookupEntity(request.getLookupEntity());
