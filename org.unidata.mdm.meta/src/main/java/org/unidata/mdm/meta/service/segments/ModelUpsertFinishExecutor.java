@@ -3,7 +3,7 @@ package org.unidata.mdm.meta.service.segments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
-import org.unidata.mdm.system.dto.NullResultDto;
+import org.unidata.mdm.system.dto.VoidResultDto;
 import org.unidata.mdm.meta.module.MetaModule;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.system.type.pipeline.Finish;
@@ -14,7 +14,7 @@ import org.unidata.mdm.system.type.pipeline.Start;
  * @since  06.12.2019
  */
 @Component(ModelUpsertFinishExecutor.SEGMENT_ID)
-public class ModelUpsertFinishExecutor extends Finish<UpdateModelRequestContext, NullResultDto> {
+public class ModelUpsertFinishExecutor extends Finish<UpdateModelRequestContext, VoidResultDto> {
     /**
      * This segment ID.
      */
@@ -32,15 +32,15 @@ public class ModelUpsertFinishExecutor extends Finish<UpdateModelRequestContext,
      * Constructor.
      */
     public ModelUpsertFinishExecutor() {
-        super(SEGMENT_ID, SEGMENT_DESCRIPTION, NullResultDto.class);
+        super(SEGMENT_ID, SEGMENT_DESCRIPTION, VoidResultDto.class);
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public NullResultDto finish(UpdateModelRequestContext ctx) {
+    public VoidResultDto finish(UpdateModelRequestContext ctx) {
         metaModelService.upsertModel(ctx);
-        return NullResultDto.getInstance();
+        return VoidResultDto.getInstance();
     }
     /**
      * {@inheritDoc}

@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
+import org.unidata.mdm.core.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
-import org.unidata.mdm.system.context.CommonRequestContext;
 import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.context.StorageSpecificContext;
 
@@ -13,7 +13,7 @@ import org.unidata.mdm.system.context.StorageSpecificContext;
  * @author Mikhail Mikhailov
  */
 public class DeleteModelRequestContext
-        extends CommonRequestContext
+        extends AbstractCompositeRequestContext
         implements MayHaveDraft, PipelineExecutionContext, StorageSpecificContext, Serializable {
 
     /**
@@ -176,7 +176,7 @@ public class DeleteModelRequestContext
      * @author Mikhail Mikhailov
      *         Builder class.
      */
-    public static class DeleteModelRequestContextBuilder extends CommonRequestContextBuilder<DeleteModelRequestContextBuilder> {
+    public static class DeleteModelRequestContextBuilder extends AbstractCompositeRequestContextBuilder<DeleteModelRequestContextBuilder> {
 
         /**
          * Entity IDs to delete..

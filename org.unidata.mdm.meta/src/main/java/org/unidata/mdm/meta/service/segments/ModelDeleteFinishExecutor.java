@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext;
-import org.unidata.mdm.system.dto.NullResultDto;
+import org.unidata.mdm.system.dto.VoidResultDto;
 import org.unidata.mdm.meta.module.MetaModule;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.system.type.pipeline.Finish;
@@ -15,7 +15,7 @@ import org.unidata.mdm.system.type.pipeline.Start;
  * @since  06.12.2019
  */
 @Component(ModelDeleteFinishExecutor.SEGMENT_ID)
-public class ModelDeleteFinishExecutor extends Finish<DeleteModelRequestContext, NullResultDto> {
+public class ModelDeleteFinishExecutor extends Finish<DeleteModelRequestContext, VoidResultDto> {
     /**
      * This segment ID.
      */
@@ -33,15 +33,15 @@ public class ModelDeleteFinishExecutor extends Finish<DeleteModelRequestContext,
      * Constructor.
      */
     public ModelDeleteFinishExecutor() {
-        super(SEGMENT_ID, SEGMENT_DESCRIPTION, NullResultDto.class);
+        super(SEGMENT_ID, SEGMENT_DESCRIPTION, VoidResultDto.class);
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public NullResultDto finish(DeleteModelRequestContext ctx) {
+    public VoidResultDto finish(DeleteModelRequestContext ctx) {
         metaModelService.deleteModel(ctx);
-        return NullResultDto.getInstance();
+        return VoidResultDto.getInstance();
     }
     /**
      * {@inheritDoc}
