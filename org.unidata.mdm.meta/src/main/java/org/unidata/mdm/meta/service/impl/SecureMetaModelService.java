@@ -122,43 +122,55 @@ public class SecureMetaModelService extends BaseMetaModelService  {
 
         List<GetEntityDTO> entities;
         if (ctx.isAllEntities()) {
-            entities = ctx.isDraft()
-                ? metaDraftService.getEntitiesList().stream()
-                        .map(entity -> {
-                            if (ctx.isReduced()) {
-                                return new GetEntityDTO(entity, null, null);
-                            }
-
-                            return metaDraftService.getEntityById(entity.getName());
-                        })
-                        .collect(Collectors.toList())
-                : getEntitiesList().stream()
-                        .map(entity -> {
-                            if (ctx.isReduced()) {
-                                return new GetEntityDTO(entity, null, null);
-                            }
-
-                            return getEntityById(entity.getName());
-                        })
-                        .collect(Collectors.toList());
+            entities = getAllEntitiesDto(ctx);
         } else {
-            entities = ctx.getEntityIds().stream()
-                    .map(name -> {
-
-                        if (ctx.isReduced()) {
-                            EntityDef entity = ctx.isDraft()
-                                    ? metaDraftService.getEntityByIdNoDeps(name)
-                                    : getEntityByIdNoDeps(name);
-                            return Objects.isNull(entity) ? null : new GetEntityDTO(entity, null, null);
-                        }
-
-                        return ctx.isDraft() ?  metaDraftService.getEntityById(name) : getEntityById(name);
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            entities = getEntitiesDtoFiltredByEntityIds(ctx);
         }
 
         dto.setEntities(entities);
+    }
+
+    private List<GetEntityDTO> getEntitiesDtoFiltredByEntityIds(GetModelRequestContext ctx) {
+        List<GetEntityDTO> entities;
+        entities = ctx.getEntityIds().stream()
+                .map(name -> {
+
+                    if (ctx.isReduced()) {
+                        EntityDef entity = ctx.isDraft()
+                                ? metaDraftService.getEntityByIdNoDeps(name)
+                                : getEntityByIdNoDeps(name);
+                        return Objects.isNull(entity) ? null : new GetEntityDTO(entity, null, null);
+                    }
+
+                    return ctx.isDraft() ?  metaDraftService.getEntityById(name) : getEntityById(name);
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return entities;
+    }
+
+    private List<GetEntityDTO> getAllEntitiesDto(GetModelRequestContext ctx) {
+        List<GetEntityDTO> entities;
+        entities = ctx.isDraft()
+            ? metaDraftService.getEntitiesList().stream()
+                    .map(entity -> {
+                        if (ctx.isReduced()) {
+                            return new GetEntityDTO(entity, null, null);
+                        }
+
+                        return metaDraftService.getEntityById(entity.getName());
+                    })
+                    .collect(Collectors.toList())
+            : getEntitiesList().stream()
+                    .map(entity -> {
+                        if (ctx.isReduced()) {
+                            return new GetEntityDTO(entity, null, null);
+                        }
+
+                        return getEntityById(entity.getName());
+                    })
+                    .collect(Collectors.toList());
+        return entities;
     }
 
     private void processLookups(GetModelRequestContext ctx, GetModelDTO dto) {
@@ -343,6 +355,10 @@ public class SecureMetaModelService extends BaseMetaModelService  {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteModel(DeleteModelRequestContext ctx) {
+        if (ctx.isDraft()) {
+            metaDraftService.remove(ctx);
+            return;
+        }
         roleServiceExt.deleteResources(ctx.getLookupEntitiesIds());
         roleServiceExt.deleteResources(ctx.getEntitiesIds());
         super.deleteModel(ctx);
@@ -354,6 +370,13 @@ public class SecureMetaModelService extends BaseMetaModelService  {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void upsertModel(UpdateModelRequestContext ctx) {
+
+        if (ctx.isDraft()){
+            metaDraftService.update(ctx);
+            return;
+        }
+
+
         if (ctx.getUpsertType() == UpdateModelRequestContext.ModelUpsertType.ADDITION) {
             mergeGroups(ctx);
         }
@@ -365,8 +388,11 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         }
 
         for(EntityDef entityDef : ctx.getEntityUpdate()){
-            Map<String, AttributeModelElement> oldAttributes = new HashMap<>(getAttributesInfoMap(entityDef.getName()));
+            String name = entityDef.getName();
+            Map<String, AttributeModelElement> oldAttributes = new HashMap<>(getAttributesInfoMap(name));
+
             Map<String, AttributeModelElement> newAttributes = ModelUtils.createAttributesMap(entityDef, ctx.getNestedEntityUpdate());
+
             oldAttributes.entrySet().removeIf(
                     oldAttr -> newAttributes.keySet()
                             .stream()
@@ -376,8 +402,11 @@ public class SecureMetaModelService extends BaseMetaModelService  {
         }
 
         for(LookupEntityDef lookupEntityDef : ctx.getLookupEntityUpdate()){
-            Map<String, AttributeModelElement> oldAttributes = new HashMap<>(getAttributesInfoMap(lookupEntityDef.getName()));
+            String name = lookupEntityDef.getName();
+            Map<String, AttributeModelElement> oldAttributes = new HashMap<>(getAttributesInfoMap(name));
+
             Map<String, AttributeModelElement> newAttributes = ModelUtils.createAttributesMap(lookupEntityDef, Collections.emptyList());
+
             oldAttributes.entrySet().removeIf(
                     oldAttr -> newAttributes.keySet()
                             .stream()

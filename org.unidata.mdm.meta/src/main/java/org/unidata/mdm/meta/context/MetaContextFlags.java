@@ -47,6 +47,14 @@ public class MetaContextFlags {
      */
     public static final int FLAG_ALL_MEASURED_VALUES = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     /**
+     * Do not remove elements
+     */
+    public static final int FLAG_SKIP_REMOVE_ELEMENTS = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
+    /**
+     * Is direct update.
+     */
+    public static final int FLAG_DIRECT = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
+    /**
      * Constructor.
      */
     private MetaContextFlags() {

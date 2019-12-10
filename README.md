@@ -1,6 +1,10 @@
-# UniData Platform
+# Unidata Platform
 
-UniData is a multipurpose data processing platform, especially targeting MDM. 
+Unidata is a multipurpose data processing platform, especially targeting MDM & DQ. Recently it has made a decision to go open-source. 
+Unidata platform consists of a large number of modules and components, which cannot be instantly published to the community, because of legal aspects and other obligations.
+However we understand importance of beging informed, so we have prepared a community [roadmap](https://gitlab.com/unidata-community/unidata-platform/wikis/Unidata-CE-Modules-Roadmap) that gives an idea on the major milestones.
+
+
 Its open source part builds a foundation for various platform services. 
 Due to modular nature of the platform it allows wide variety of customizations (for instance, deployment sets can be variadic according to customer needs or different sets of operations on incoming data can be configured). 
 It is also scalable, allowing you to run it on several machines (application nodes) in a cluster.
@@ -47,7 +51,7 @@ Currently, our open source part consists of the following modules:
 ## Notes
 ### Modules 
 
-UniData runs on a simple module system. New functionality can be added to the platform by implementing a new module. A module is a piece of code, packaged into a jar file and implementing the interface __org.unidata.mdm.system.type.module.Module__. Also, a module has to have a special entry in its __MANIFEST.MF__ file, denoting the implementing class, like the following: 
+Unidata runs on a simple module system. New functionality can be added to the platform by implementing a new module. A module is a piece of code, packaged into a jar file and implementing the interface __org.unidata.mdm.system.type.module.Module__. Also, a module has to have a special entry in its __MANIFEST.MF__ file, denoting the implementing class, like the following: 
 
 `Unidata-Module-Class: org.unidata.mdm.data.module.DataModule` 
 
@@ -177,7 +181,7 @@ Pipelines can be saved using the __org.unidata.mdm.system.service.PipelineServic
     - Install russian/english morphology plugin, if you're going to index and search, using this feature:
 	$ bin/elasticsearch-plugin install http://dl.bintray.com/content/imotov/elasticsearch-plugins/org/elasticsearch/elasticsearch-analysis-morphology/5.6.7/elasticsearch-analysis-morphology-5.6.7.zip
 3. Install Apache Tomcat 7.x using your favorite method
-4. UniData uses gradle to build itself
+4. Unidata uses gradle to build itself
     - Go to __org.unidata.mdm.war__ and build WAR (and its dependencies) with ./gradle clean war
     - Deploy the artifact to tomcat 7.x using your favorite method
 

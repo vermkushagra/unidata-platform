@@ -1,0 +1,35 @@
+{
+  "startId": "org.unidata.mdm.data[RECORD_DELETE_START]",
+  "subjectId": "",
+  "description": "org.unidata.mdm.data.record.delete.start.description",
+  "segments": [
+    {
+      "segmentType": "START",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_START]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_SECURITY_CHECK]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_PERIOD_CHECK]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_CONSISTENCY_CHECK]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_INDEXING]"
+    },
+    {
+      "segmentType": "POINT",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_PERSISTENCE]"
+    },
+    {
+      "segmentType": "FINISH",
+      "id": "org.unidata.mdm.data[RECORD_DELETE_FINISH]"
+    }
+  ]
+}

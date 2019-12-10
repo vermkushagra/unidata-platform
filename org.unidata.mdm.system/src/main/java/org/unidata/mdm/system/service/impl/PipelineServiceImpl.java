@@ -1,5 +1,11 @@
 package org.unidata.mdm.system.service.impl;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,7 +22,9 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +75,9 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      * Registered segments.
      */
     private final ConcurrentMap<String, Segment> segments = new ConcurrentHashMap<>();
+
+    private final TypeReference<PipelinePO> pipelinePOTypeReference = new TypeReference<PipelinePO>() {};
+
     /**
      * ES instance.
      */
@@ -82,6 +93,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @Autowired
     private PipelinesDAO pipelinesDAO;
+
     /**
      * Constructor.
      */
@@ -491,6 +503,24 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
                         : pu.getSubjectId());
         }
     }
+
+    @Override
+    public void load(final String startId, final String subject, final InputStream inputStream) throws IOException {
+        final String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        final PipelinePO pipelinePO = new PipelinePO();
+        pipelinePO.setStartId(startId);
+        pipelinePO.setSubject(subject);
+        pipelinePO.setContent(content);
+        pipelinesDAO.save(pipelinePO);
+    }
+
+    @Override
+    public void load(final String startId, final String subject, final File file) throws IOException {
+        try (final FileInputStream fileInputStream = new FileInputStream(file)) {
+            load(startId, subject, fileInputStream);
+        }
+    }
+
     /**
      * Pipelines for a particular subject.
      * @author Mikhail Mikhailov on Nov 22, 2019

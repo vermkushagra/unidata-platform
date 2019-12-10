@@ -20,8 +20,12 @@ import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelMappingService;
 import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.meta.service.segments.ModelDeleteFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
+import org.unidata.mdm.meta.service.segments.ModelUpsertFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelUpsertStartExecutor;
 import org.unidata.mdm.meta.util.ModelUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
@@ -58,7 +62,15 @@ public class MetaModule extends AbstractModule {
             ModelGetStartExecutor.SEGMENT_ID,
 
             // 5. Finish segments
-            ModelGetFinishExecutor.SEGMENT_ID
+            ModelGetFinishExecutor.SEGMENT_ID,
+
+            ModelUpsertStartExecutor.SEGMENT_ID,
+
+            ModelUpsertFinishExecutor.SEGMENT_ID,
+
+            ModelDeleteStartExecutor.SEGMENT_ID,
+
+            ModelDeleteFinishExecutor.SEGMENT_ID,
     };
 
     @Autowired

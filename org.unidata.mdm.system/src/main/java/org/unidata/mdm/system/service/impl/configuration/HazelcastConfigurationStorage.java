@@ -1,6 +1,7 @@
-package org.unidata.mdm.core.service.impl;
+package org.unidata.mdm.system.service.impl.configuration;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -10,12 +11,12 @@ import java.util.stream.Collectors;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesByUserConsumer;
 import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesProducer;
-import org.unidata.mdm.core.util.ReactiveUtils;
+import org.unidata.mdm.system.util.ReactiveUtils;
 
 import com.hazelcast.core.EntryEvent;
 import com.hazelcast.core.HazelcastInstance;
@@ -25,9 +26,9 @@ import reactor.core.publisher.DirectProcessor;
 import reactor.core.publisher.Flux;
 
 @Service
-@Order(value = 3)
+@Order(3)
 public class HazelcastConfigurationStorage
-        implements ConfigurationUpdatesByUserConsumer, ConfigurationUpdatesProducer {
+        implements ConfigurationUpdatesProducer, ConfigurationUpdatesByUserConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HazelcastConfigurationStorage.class);
 
@@ -37,7 +38,6 @@ public class HazelcastConfigurationStorage
 
     private final DirectProcessor<Map<String, Optional<? extends Serializable>>> processor = DirectProcessor.create();
 
-    @Autowired
     public HazelcastConfigurationStorage(HazelcastInstance hazelcastInstance) {
         this.hazelcastInstance = hazelcastInstance;
         hazelcastInstance.getMap(CONFIGURATION_MAP_NAME).addEntryListener(
@@ -77,7 +77,9 @@ public class HazelcastConfigurationStorage
     }
 
     @Override
-    public Publisher<Map<String, Optional<? extends Serializable>>> updates() {
+    public Publisher<Map<String, Optional<? extends Serializable>>> updates(
+            final Collection<ApplicationConfigurationProperty> configurationProperties
+    ) {
         return processor;
     }
 }

@@ -1,4 +1,4 @@
-package org.unidata.mdm.core.util;
+package org.unidata.mdm.system.util;
 
 import java.util.function.Consumer;
 

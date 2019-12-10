@@ -1,5 +1,6 @@
 package org.unidata.mdm.data.module;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.util.Collection;
 import java.util.Collections;
@@ -83,6 +84,7 @@ import org.unidata.mdm.data.util.RecordFactoryUtils;
 import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.service.AfterContextRefresh;
+import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
 
@@ -240,6 +242,13 @@ public class DataModule extends AbstractModule {
         // Delete finish
         RelationDeleteFinishExecutor.SEGMENT_ID
     };
+
+    private static final String[] PIPELINES = {
+            "org.unidata.mdm.data[RECORD_UPSERT_START]",
+            "org.unidata.mdm.data[RECORD_GET_START]",
+            "org.unidata.mdm.data[RECORD_DELETE_START]"
+    };
+
     /**
      * This configuration.
      */
@@ -253,6 +262,9 @@ public class DataModule extends AbstractModule {
 
     @Autowired
     private AuditEventBuildersRegistryService auditEventBuildersRegistryService;
+
+    @Autowired
+    private PipelineService pipelineService;
 
     /**
      * {@inheritDoc}
@@ -353,8 +365,26 @@ public class DataModule extends AbstractModule {
                         DataExceptionIds.EX_DATA_STORAGE_MIGRATE_DATA_FAILED, ctx.getNode().getNumber());
             }
         }
-    }
 
+        for (String pipeline : PIPELINES) {
+            try {
+                pipelineService.load(
+                        pipeline,
+                        "",
+                        Thread.currentThread()
+                                .getContextClassLoader()
+                                .getResourceAsStream("pipelines/" + pipeline + ".json")
+                );
+            } catch (IOException e) {
+                throw new PlatformFailureException(
+                        "Error while loading pipeline" + pipeline,
+                        e,
+                        DataExceptionIds.EX_DATA_PIPELINE_LOADING_ERROR,
+                        pipeline
+                );
+            }
+        }
+    }
 
     @Override
     public void uninstall() {

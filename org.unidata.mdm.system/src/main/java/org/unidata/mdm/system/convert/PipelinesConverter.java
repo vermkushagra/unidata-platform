@@ -112,7 +112,7 @@ public class PipelinesConverter {
         Finish<?, ?> f = null;
 
         Pipeline p = Pipeline.start(s, js.getSubjectId(), js.getDescription());
-        for (int i = 1; i < (gathered.size() - 1); i++) {
+        for (int i = 1; i < gathered.size(); i++) {
             Segment segment = gathered.get(i);
             if (segment.getType() == SegmentType.POINT) {
                 p.with((Point<?>) segment);

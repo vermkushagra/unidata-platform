@@ -25,6 +25,7 @@ dependencies {
 
     implementation 'org.apache.commons:commons-lang3:3.9'
     implementation 'org.apache.commons:commons-collections4:4.3'
+    implementation 'commons-io:commons-io:2.6'
     implementation 'commons-beanutils:commons-beanutils:1.9.2'
     
     implementation 'com.fasterxml.uuid:java-uuid-generator:3.2.0'
@@ -35,6 +36,7 @@ dependencies {
     
     implementation 'io.projectreactor:reactor-core'
 
+    implementation 'com.google.guava:guava:27.0.1-jre'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     implementation 'org.slf4j:slf4j-api:1.7.26'
@@ -49,7 +51,8 @@ dependencies {
     
     implementation 'org.threeten:threeten-extra:1.4'
 
-    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+//    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
+    compileOnly 'javax:javaee-api:7.0'
 
     testCompile 'org.junit.jupiter:junit-jupiter-api'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine'
