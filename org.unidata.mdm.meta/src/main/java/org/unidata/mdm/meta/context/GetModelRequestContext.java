@@ -11,7 +11,9 @@ import org.unidata.mdm.system.context.PipelineExecutionContext;
 /**
  * @author Mikhail Mikhailov on Nov 28, 2019
  */
-public class GetModelRequestContext extends AbstractCompositeRequestContext implements PipelineExecutionContext {
+public class GetModelRequestContext
+        extends AbstractCompositeRequestContext
+        implements PipelineExecutionContext, MayHaveDraft {
     /**
      * GSVUID.
      */

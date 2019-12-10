@@ -20,13 +20,17 @@ import org.unidata.mdm.meta.NestedEntityDef;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.SimpleAttributeDef;
 import org.unidata.mdm.meta.SourceSystemDef;
+import org.unidata.mdm.meta.service.segments.ModelUpsertStartExecutor;
+import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.context.StorageSpecificContext;
 
 /**
  * @author Mikhail Mikhailov
  *         Container for meta model updates.
  */
-public class UpdateModelRequestContext extends AbstractCompositeRequestContext implements StorageSpecificContext, Serializable {
+public class UpdateModelRequestContext
+        extends AbstractCompositeRequestContext
+        implements MayHaveDraft, PipelineExecutionContext, StorageSpecificContext, Serializable {
     /**
      * Generated SVUID.
      */
@@ -68,12 +72,6 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
      */
     private final ModelUpsertType upsertType;
 
-    private final boolean skipRemoveElements;
-    /**
-     * direct update?
-     */
-    private final boolean direct;
-
     /**
      * Constructor.
      */
@@ -88,8 +86,15 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
         this.storageId = b.storageId;
         this.upsertType = b.upsertType;
         this.entitiesGroupsUpdate = b.entitiesGroupsUpdate;
-        this.skipRemoveElements = b.skipRemoveElements;
-        this.direct = b.direct;
+
+        setFlag(MetaContextFlags.FLAG_DRAFT, b.draft);
+        setFlag(MetaContextFlags.FLAG_SKIP_REMOVE_ELEMENTS, b.skipRemoveElements);
+        setFlag(MetaContextFlags.FLAG_DIRECT, b.direct);
+    }
+
+    @Override
+    public String getStartTypeId() {
+        return ModelUpsertStartExecutor.SEGMENT_ID;
     }
 
     /**
@@ -157,7 +162,7 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
     }
 
     public boolean isSkipRemoveElements() {
-        return skipRemoveElements;
+        return getFlag(MetaContextFlags.FLAG_SKIP_REMOVE_ELEMENTS);
     }
 
     /**
@@ -223,7 +228,11 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
      * @return true if so false otherwise
      */
     public boolean isDirect() {
-    	return direct;
+        return getFlag(MetaContextFlags.FLAG_DIRECT);
+    }
+
+    public boolean isDraft() {
+        return getFlag(MetaContextFlags.FLAG_DRAFT);
     }
 
     /**
@@ -266,6 +275,8 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
         getSourceSystemsUpdate().stream().map(SourceSystemDef::getName).collect(toCollection(() -> allNames));
         return allNames;
     }
+
+
 
     public enum ModelUpsertType {
         /**
@@ -330,6 +341,10 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
          * Direct update?
          */
         private boolean direct;
+        /**
+         * is draft version
+         */
+        private boolean draft;
 
         /**
          * Constructor.
@@ -437,6 +452,11 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
             return this;
         }
 
+        public UpdateModelRequestContextBuilder draft(boolean draft) {
+            this.draft = draft;
+            return this;
+        }
+
         /**
          * Builder method.
          *
@@ -446,5 +466,7 @@ public class UpdateModelRequestContext extends AbstractCompositeRequestContext i
         public UpdateModelRequestContext build() {
             return new UpdateModelRequestContext(this);
         }
+
+
     }
 }
