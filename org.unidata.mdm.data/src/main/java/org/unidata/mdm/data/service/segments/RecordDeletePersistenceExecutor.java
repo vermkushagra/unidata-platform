@@ -126,11 +126,11 @@ public class RecordDeletePersistenceExecutor extends Point<DeleteRequestContext>
             set.getWipeRecordKeys().add(po);
         } else if (ctx.isInactivateOrigin()) {
             // 1. Turn off requested origin
-            set.getOriginRecordUpdatePOs().add(RecordFactoryUtils.createOriginRecordPO(ctx, keys, RecordStatus.INACTIVE));
+            set.getOriginRecordUpdatePOs().add(RecordFactoryUtils.createRecordOriginPO(ctx, keys, RecordStatus.INACTIVE));
 
             // 2. Turn off the whole record, if the origin was the only active one
             if (commonRecordsComponent.allOriginsAlreadyInactive(keys)) {
-                RecordEtalonPO etalon = RecordFactoryUtils.createEtalonRecordPO(ctx, keys, RecordStatus.INACTIVE);
+                RecordEtalonPO etalon = RecordFactoryUtils.createRecordEtalonPO(ctx, keys, RecordStatus.INACTIVE);
                 set.setEtalonRecordUpdatePO(etalon);
             }
         } else {

@@ -2,15 +2,15 @@ package org.unidata.mdm.data.dto;
 
 import java.util.List;
 
-import org.unidata.mdm.data.dto.RelationDTO;
 import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RelationKeys;
+import org.unidata.mdm.system.dto.PipelineExecutionResult;
 
 /**
  * @author Mikhail Mikhailov
  * Delete relation DTO.
  */
-public class DeleteRelationDTO implements RelationDTO {
+public class DeleteRelationDTO implements RelationDTO, PipelineExecutionResult {
     /**
      * The keys.
      */

@@ -3,7 +3,10 @@ package org.unidata.mdm.data.type.apply.batch;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.type.pipeline.Pipeline;
 
 /**
  * @author Mikhail Mikhailov
@@ -41,4 +44,10 @@ public interface BatchSetAccumulator<T extends CommonRequestContext> {
      * @return flag 'abourtOnFailure'
      */
     boolean isAbortOnFailure();
+    /**
+     * Gets a pipeline, possibly supplied for this batch set.
+     * @return pipeline or null
+     */
+    @Nullable
+    Pipeline pipeline();
 }

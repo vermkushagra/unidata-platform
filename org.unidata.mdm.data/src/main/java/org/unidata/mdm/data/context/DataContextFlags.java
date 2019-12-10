@@ -8,10 +8,6 @@ import org.unidata.mdm.system.context.CommonRequestContext;
  */
 public final class DataContextFlags {
     /**
-     * What to do with draft versions.
-     */
-    public static final int FLAG_INCLUDE_DRAFT_VERSIONS = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
-    /**
      * Batch upsert indicator.
      */
     public static final int FLAG_BATCH_OPERATION = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
@@ -31,6 +27,10 @@ public final class DataContextFlags {
      * Enrichment hint.
      */
     public static final int FLAG_IS_ENRICHMENT = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
+    /**
+     * Context setup hint.
+     */
+    public static final int FLAG_IS_SETUP = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     /**
      * Skip DQ hint.
      */
@@ -91,6 +91,10 @@ public final class DataContextFlags {
     public static final int FLAG_FETCH_KEYS = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     public static final int FLAG_FETCH_DATA_FOR_PERIOD = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     public static final int FLAG_FETCH_TIMELINE_BY_TO_SIDE = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
+    /**
+     * Fetch all relations for the given record etalon id.
+     */
+    public static final int FLAG_FETCH_ALL_RELATIONS = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     public static final int FLAG_INCLUDE_MERGED = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     public static final int FLAG_INCLUDE_INACTIVE = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();
     public static final int FLAG_INCLUDE_DRAFTS = CommonRequestContext.FLAG_ID_PROVIDER.getAndIncrement();

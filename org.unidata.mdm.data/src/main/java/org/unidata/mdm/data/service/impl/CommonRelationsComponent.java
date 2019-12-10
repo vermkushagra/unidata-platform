@@ -15,6 +15,8 @@ import java.util.UUID;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nonnull;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.unidata.mdm.core.type.calculables.CalculableHolder;
+import org.unidata.mdm.core.type.change.ChangeSet;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.DataShift;
 import org.unidata.mdm.core.type.data.RecordStatus;
@@ -37,6 +40,8 @@ import org.unidata.mdm.data.context.AbstractRelationToRequestContext;
 import org.unidata.mdm.data.context.AbstractRelationsFromRequestContext;
 import org.unidata.mdm.data.context.GetRelationTimelineRequestContext;
 import org.unidata.mdm.data.context.GetRelationsTimelineRequestContext;
+import org.unidata.mdm.data.context.ReadOnlyTimelineContext;
+import org.unidata.mdm.data.context.ReadWriteTimelineContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.RelationIdentityContext;
 import org.unidata.mdm.data.context.UpsertRelationRequestContext;
@@ -47,6 +52,8 @@ import org.unidata.mdm.data.po.data.RelationTimelinePO;
 import org.unidata.mdm.data.po.keys.RecordOriginKeyPO;
 import org.unidata.mdm.data.po.keys.RelationKeysPO;
 import org.unidata.mdm.data.po.keys.RelationOriginKeyPO;
+import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSet;
+import org.unidata.mdm.data.type.apply.batch.impl.RelationUpsertBatchSet;
 import org.unidata.mdm.data.type.calculables.impl.RelationRecordHolder;
 import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.EtalonRelationInfoSection;
@@ -78,7 +85,7 @@ public class CommonRelationsComponent {
      * Common functionality.
      */
     @Autowired
-    private CommonRecordsComponent commonComponent;
+    private CommonRecordsComponent commonRecordsComponent;
     /**
      * Relations vistory DAO.
      */
@@ -99,192 +106,12 @@ public class CommonRelationsComponent {
      * The composer.
      */
     @Autowired
-    private RelationComposerComponent composerComponent;
+    private RelationComposerComponent relationComposerComponent;
     /**
      * Constructor.
      */
     public CommonRelationsComponent() {
         super();
-    }
-
-    /**
-     * Identifies side, using cached keys.
-     * @param ctx the context
-     * @return keys
-     */
-    public RecordKeys identifySide(RecordIdentityContext ctx) {
-
-        MeasurementPoint.start();
-        try {
-
-            RecordKeys side = commonComponent.identify(ctx);
-            if (side != null) {
-                ctx.keys(side);
-            }
-
-            return side;
-        } finally {
-            MeasurementPoint.stop();
-        }
-    }
-
-    /**
-     * Identify by relation keys.
-     * @param ctx the context
-     * @return keys
-     */
-    public RelationKeys identify(RelationIdentityContext ctx) {
-        MeasurementPoint.start();
-        try {
-
-            RelationKeys keys = null;
-            if (ctx.isRelationLsnKey()) {
-                RelationKeysPO po = relationsDao.loadKeysByLSN(ctx.getShard(), ctx.getLsn());
-                keys = composerComponent.toRelationKeys(po, lsnKeyPredicate());
-            }
-
-            if (keys == null && ctx.isRelationEtalonKey()) {
-                RelationKeysPO po = relationsDao.loadKeysByEtalonId(UUID.fromString(ctx.getRelationEtalonKey()));
-                keys = composerComponent.toRelationKeys(po, etalonKeyPredicate());
-            }
-
-            if (Objects.nonNull(keys)) {
-                ctx.relationKeys(keys);
-            }
-
-            return keys;
-        } finally {
-            MeasurementPoint.stop();
-        }
-    }
-    /**
-     * Resolves keys by sides.
-     * @param name relation name
-     * @param from the from side
-     * @param to the to side
-     * @return keys or null
-     */
-    public RelationKeys identify(String name, AbstractRelationsFromRequestContext<?> from, AbstractRelationToRequestContext to) {
-        MeasurementPoint.start();
-        try {
-
-            if (from == null || to == null) {
-                return null;
-            }
-
-            RelationKeys keys = null;
-            if (to.isValidRelationKey()) {
-                keys = identify(to);
-            }
-
-            if (keys == null && from.isEtalonRecordKey() && to.isEtalonRecordKey()) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsEtalonIds(UUID.fromString(from.getEtalonKey()), UUID.fromString(to.getEtalonKey()), name);
-                keys = composerComponent.toRelationKeys(po, etalonKeysPredicate());
-            } else if (keys == null && (from.isLsnKey() && to.isLsnKey())) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsLSNs(from.getShard(), from.getLsn(), to.getShard(), to.getLsn(), name);
-                keys = composerComponent.toRelationKeys(po, lsnKeysPredicate());
-            } else if (keys == null && (from.isOriginExternalId() && to.isOriginExternalId())) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsExternalIds(from.getExternalIdAsObject(), to.getExternalIdAsObject(), name);
-                keys = composerComponent.toRelationKeys(po, externalIdsPredicate(
-                        from.getExternalId(), from.getSourceSystem(),
-                        to.getExternalId(), to.getSourceSystem()));
-            }
-
-            if (Objects.nonNull(keys)) {
-                to.relationKeys(keys);
-            }
-
-            return keys;
-        } finally {
-            MeasurementPoint.stop();
-        }
-    }
-    /**
-     * Identify relation by sides keys
-     * @param name relation name
-     * @param from the from side
-     * @param to the to side
-     * @return relation keys
-     */
-    public RelationKeys identify(String name, RecordKeys from, RecordKeys to) {
-        MeasurementPoint.start();
-        try {
-
-            if (from == null || to == null) {
-                return null;
-            }
-
-            RelationKeys keys = null;
-            if ((from.getEtalonKey() != null && from.getEtalonKey().getId() != null)
-             && (to.getEtalonKey() != null && to.getEtalonKey().getId() != null)) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsEtalonIds(UUID.fromString(from.getEtalonKey().getId()), UUID.fromString(to.getEtalonKey().getId()), name);
-                keys = composerComponent.toRelationKeys(po, etalonKeysPredicate());
-            } else if (
-                (from.getEtalonKey() != null && from.getEtalonKey().getLsn() != null)
-             && (to.getEtalonKey() != null && to.getEtalonKey().getLsn() != null)) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsLSNs(
-                        from.getShard(), from.getEtalonKey().getLsn(),
-                        to.getShard(), to.getEtalonKey().getLsn(),
-                        name);
-                keys = composerComponent.toRelationKeys(po, lsnKeysPredicate());
-            } else if (
-                (from.getOriginKey() != null && StringUtils.isNoneBlank(
-                     from.getOriginKey().getExternalId(),
-                     from.getOriginKey().getEntityName(),
-                     from.getOriginKey().getSourceSystem()))
-             && (to.getOriginKey() != null) && StringUtils.isNoneBlank(
-                     to.getOriginKey().getExternalId(),
-                     to.getOriginKey().getEntityName(),
-                     to.getOriginKey().getSourceSystem())) {
-                RelationKeysPO po = relationsDao.loadKeysByRecordsExternalIds(
-                        from.getOriginKey().toExternalId(), to.getOriginKey().toExternalId(), name);
-                keys = composerComponent.toRelationKeys(po, externalIdsPredicate(
-                        from.getOriginKey().getExternalId(), from.getOriginKey().getSourceSystem(),
-                        to.getOriginKey().getExternalId(), to.getOriginKey().getSourceSystem()));
-            }
-
-            return keys;
-        } finally {
-            MeasurementPoint.stop();
-        }
-    }
-
-    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> etalonKeyPredicate() {
-        return (po, okpo) -> StringUtils.equals(okpo.getSourceSystem(), metaModelService.getAdminSourceSystem().getName())
-               && okpo.getInitialOwner().equals(UUID.fromString(po.getId())) && !okpo.isEnrichment();
-    }
-
-    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> lsnKeyPredicate() {
-        return etalonKeyPredicate();
-    }
-
-    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> etalonKeysPredicate() {
-        return etalonKeyPredicate();
-            }
-
-    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> lsnKeysPredicate() {
-        return etalonKeyPredicate();
-            }
-
-    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> externalIdsPredicate(
-            String fromExternalId, String fromSourceSystem,
-            String toExternalId, String toSourceSystem) {
-        return (po, okpo) -> {
-
-            RecordOriginKeyPO from = Objects.isNull(po.getFromKeys())
-                    ? null
-                    : po.getFromKeys().findByExternalId(fromExternalId, fromSourceSystem);
-
-            RecordOriginKeyPO to = Objects.isNull(po.getToKeys())
-                    ? null
-                    : po.getToKeys().findByExternalId(toExternalId, toSourceSystem);
-
-            if (Objects.nonNull(from) && Objects.nonNull(to)) {
-                return from.getId().equals(okpo.getFromKey()) && to.getId().equals(okpo.getToKey());
-        }
-
-            return false;
-        };
     }
 
     public RelationKeys ensureKeys(RelationIdentityContext ctx) {
@@ -367,6 +194,230 @@ public class CommonRelationsComponent {
         return keys;
     }
 
+    @SuppressWarnings("unchecked")
+    public Timeline<OriginRelation> ensureAndGetRelationTimeline(AbstractRelationToRequestContext ctx) {
+
+        Timeline<OriginRelation> t = null;
+        if (ctx instanceof ReadOnlyTimelineContext) {
+
+            t = ((ReadOnlyTimelineContext<OriginRelation>) ctx).currentTimeline();
+            if (Objects.nonNull(t)) {
+                return t;
+            }
+        }
+
+        if (ctx.isValidRelationKey()) {
+
+            t = loadTimeline(GetRelationTimelineRequestContext.builder()
+                    .relationEtalonKey(ctx.getRelationEtalonKey())
+                    .relationLsn(ctx.getLsnAsObject())
+                    .build());
+        } else {
+
+            RelationKeys keys = ensureAndGetRelationKeys(ctx);
+            if (Objects.nonNull(keys)) {
+                t = loadTimeline(GetRelationTimelineRequestContext.builder()
+                        .relationEtalonKey(keys.getEtalonKey().getId())
+                        .relationLsn(keys.getEtalonKey().getLsn())
+                        .relationShard(keys.getShard())
+                        .build());
+            }
+        }
+
+        if (Objects.nonNull(t)) {
+
+            if (ctx instanceof ReadOnlyTimelineContext) {
+                ((ReadOnlyTimelineContext<OriginRelation>) ctx).currentTimeline(t);
+            }
+
+            if (Objects.isNull(ctx.relationKeys())) {
+                ctx.relationKeys(t.getKeys());
+            }
+        }
+
+        return t;
+    }
+
+    /**
+     * Identify by relation keys.
+     * @param ctx the context
+     * @return keys
+     */
+    public RelationKeys identify(RelationIdentityContext ctx) {
+        MeasurementPoint.start();
+        try {
+
+            RelationKeys keys = null;
+            if (ctx.isRelationLsnKey()) {
+                RelationKeysPO po = relationsDao.loadKeysByLSN(ctx.getShard(), ctx.getLsn());
+                keys = relationComposerComponent.toRelationKeys(po, lsnKeyPredicate());
+            }
+
+            if (keys == null && ctx.isRelationEtalonKey()) {
+                RelationKeysPO po = relationsDao.loadKeysByEtalonId(UUID.fromString(ctx.getRelationEtalonKey()));
+                keys = relationComposerComponent.toRelationKeys(po, etalonKeyPredicate());
+            }
+
+            if (Objects.nonNull(keys)) {
+                ctx.relationKeys(keys);
+            }
+
+            return keys;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+    /**
+     * Resolves keys by sides.
+     * @param name relation name
+     * @param from the from side
+     * @param to the to side
+     * @return keys or null
+     */
+    public RelationKeys identify(String name, AbstractRelationsFromRequestContext<?> from, AbstractRelationToRequestContext to) {
+        MeasurementPoint.start();
+        try {
+
+            if (from == null || to == null) {
+                return null;
+            }
+
+            RelationKeys keys = null;
+            if (to.isValidRelationKey()) {
+                keys = identify(to);
+            }
+
+            if (keys == null && from.isEtalonRecordKey() && to.isEtalonRecordKey()) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsEtalonIds(UUID.fromString(from.getEtalonKey()), UUID.fromString(to.getEtalonKey()), name);
+                keys = relationComposerComponent.toRelationKeys(po, etalonKeysPredicate());
+            } else if (keys == null && (from.isLsnKey() && to.isLsnKey())) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsLSNs(from.getShard(), from.getLsn(), to.getShard(), to.getLsn(), name);
+                keys = relationComposerComponent.toRelationKeys(po, lsnKeysPredicate());
+            } else if (keys == null && (from.isOriginExternalId() && to.isOriginExternalId())) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsExternalIds(from.getExternalIdAsObject(), to.getExternalIdAsObject(), name);
+                keys = relationComposerComponent.toRelationKeys(po, externalIdsPredicate(
+                        from.getExternalId(), from.getSourceSystem(),
+                        to.getExternalId(), to.getSourceSystem()));
+            }
+
+            if (Objects.nonNull(keys)) {
+                to.relationKeys(keys);
+            }
+
+            return keys;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+    /**
+     * Identify relation by sides keys
+     * @param name relation name
+     * @param from the from side
+     * @param to the to side
+     * @return relation keys
+     */
+    public RelationKeys identify(String name, RecordKeys from, RecordKeys to) {
+        MeasurementPoint.start();
+        try {
+
+            if (from == null || to == null) {
+                return null;
+            }
+
+            RelationKeys keys = null;
+            if ((from.getEtalonKey() != null && from.getEtalonKey().getId() != null)
+             && (to.getEtalonKey() != null && to.getEtalonKey().getId() != null)) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsEtalonIds(UUID.fromString(from.getEtalonKey().getId()), UUID.fromString(to.getEtalonKey().getId()), name);
+                keys = relationComposerComponent.toRelationKeys(po, etalonKeysPredicate());
+            } else if (
+                (from.getEtalonKey() != null && from.getEtalonKey().getLsn() != null)
+             && (to.getEtalonKey() != null && to.getEtalonKey().getLsn() != null)) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsLSNs(
+                        from.getShard(), from.getEtalonKey().getLsn(),
+                        to.getShard(), to.getEtalonKey().getLsn(),
+                        name);
+                keys = relationComposerComponent.toRelationKeys(po, lsnKeysPredicate());
+            } else if (
+                (from.getOriginKey() != null && StringUtils.isNoneBlank(
+                     from.getOriginKey().getExternalId(),
+                     from.getOriginKey().getEntityName(),
+                     from.getOriginKey().getSourceSystem()))
+             && (to.getOriginKey() != null) && StringUtils.isNoneBlank(
+                     to.getOriginKey().getExternalId(),
+                     to.getOriginKey().getEntityName(),
+                     to.getOriginKey().getSourceSystem())) {
+                RelationKeysPO po = relationsDao.loadKeysByRecordsExternalIds(
+                        from.getOriginKey().toExternalId(), to.getOriginKey().toExternalId(), name);
+                keys = relationComposerComponent.toRelationKeys(po, externalIdsPredicate(
+                        from.getOriginKey().getExternalId(), from.getOriginKey().getSourceSystem(),
+                        to.getOriginKey().getExternalId(), to.getOriginKey().getSourceSystem()));
+            }
+
+            return keys;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    /**
+     * Identifies side, using cached keys.
+     * @param ctx the context
+     * @return keys
+     */
+    private RecordKeys identifySide(RecordIdentityContext ctx) {
+
+        MeasurementPoint.start();
+        try {
+
+            RecordKeys side = commonRecordsComponent.identify(ctx);
+            if (side != null) {
+                ctx.keys(side);
+            }
+
+            return side;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> etalonKeyPredicate() {
+        return (po, okpo) -> StringUtils.equals(okpo.getSourceSystem(), metaModelService.getAdminSourceSystem().getName())
+               && okpo.getInitialOwner().equals(UUID.fromString(po.getId())) && !okpo.isEnrichment();
+    }
+
+    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> lsnKeyPredicate() {
+        return etalonKeyPredicate();
+    }
+
+    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> etalonKeysPredicate() {
+        return etalonKeyPredicate();
+            }
+
+    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> lsnKeysPredicate() {
+        return etalonKeyPredicate();
+            }
+
+    public BiPredicate<RelationKeysPO, RelationOriginKeyPO> externalIdsPredicate(
+            String fromExternalId, String fromSourceSystem,
+            String toExternalId, String toSourceSystem) {
+        return (po, okpo) -> {
+
+            RecordOriginKeyPO from = Objects.isNull(po.getFromKeys())
+                    ? null
+                    : po.getFromKeys().findByExternalId(fromExternalId, fromSourceSystem);
+
+            RecordOriginKeyPO to = Objects.isNull(po.getToKeys())
+                    ? null
+                    : po.getToKeys().findByExternalId(toExternalId, toSourceSystem);
+
+            if (Objects.nonNull(from) && Objects.nonNull(to)) {
+                return from.getId().equals(okpo.getFromKey()) && to.getId().equals(okpo.getToKey());
+        }
+
+            return false;
+        };
+    }
+
     /**
      * Loads timeline respective to given side.
      * @param ctx the context
@@ -382,7 +433,7 @@ public class CommonRelationsComponent {
             if (ctx.isEtalonRecordKey()) {
                 recordEtalonId = ctx.getEtalonKey();
             } else {
-                RecordKeys recordKeys = commonComponent.ensureKeys(ctx);
+                RecordKeys recordKeys = commonRecordsComponent.ensureKeys(ctx);
                 recordEtalonId = recordKeys.getEtalonKey().getId();
             }
 
@@ -410,8 +461,8 @@ public class CommonRelationsComponent {
                     continue;
                 }
 
-                RelationKeys keys = composerComponent.toRelationKeys(po.getKeys(), etalonKeyPredicate());
-                Timeline<OriginRelation> timeline = composerComponent.toRelationTimeline(keys, po.getVistory());
+                RelationKeys keys = relationComposerComponent.toRelationKeys(po.getKeys(), etalonKeyPredicate());
+                Timeline<OriginRelation> timeline = relationComposerComponent.toRelationTimeline(keys, po.getVistory());
 
                 // 4.1. Possibly reduce TL by given boundaries.
                 // Maybe a separate, more efficient request will be written later on.
@@ -430,11 +481,11 @@ public class CommonRelationsComponent {
 
                         List<CalculableHolder<OriginRelation>> versions = ti.toList();
 
-                        ti.setActive(composerComponent.isActive(versions));
-                        ti.setPending(composerComponent.isPending(versions));
+                        ti.setActive(relationComposerComponent.isActive(versions));
+                        ti.setPending(relationComposerComponent.isPending(versions));
 
                         if (ctx.isFetchData()) {
-                            ti.setCalculationResult(composerComponent.toEtalon(rk, versions,
+                            ti.setCalculationResult(relationComposerComponent.toEtalon(rk, versions,
                                     ti.getValidFrom(), ti.getValidTo(), true, false));
                         }
                     });
@@ -513,17 +564,17 @@ public class CommonRelationsComponent {
             } else if (ctx.isRelationLsnKey()) {
                 po = relationsDao.loadTimeline(ctx.getLsnAsObject(), true, ctx.isFetchData(), includeDrafts);
                 if (Objects.nonNull(po)) {
-                    keys = composerComponent.toRelationKeys(po.getKeys(), lsnKeyPredicate());
+                    keys = relationComposerComponent.toRelationKeys(po.getKeys(), lsnKeyPredicate());
                 }
             } else if (ctx.isRelationEtalonKey()) {
                 po = relationsDao.loadTimeline(UUID.fromString(ctx.getRelationEtalonKey()), true, ctx.isFetchData(), includeDrafts);
                 if (Objects.nonNull(po)) {
-                    keys = composerComponent.toRelationKeys(po.getKeys(), etalonKeyPredicate());
+                    keys = relationComposerComponent.toRelationKeys(po.getKeys(), etalonKeyPredicate());
                 }
             }
 
             // 4. Translate to internal
-            Timeline<OriginRelation> timeline = composerComponent.toRelationTimeline(keys, po == null ? null : po.getVistory());
+            Timeline<OriginRelation> timeline = relationComposerComponent.toRelationTimeline(keys, po == null ? null : po.getVistory());
 
             // 4.1. Possibly reduce TL by given boundaries.
             // Maybe a separate, more efficient request will be written later on.
@@ -540,11 +591,85 @@ public class CommonRelationsComponent {
 
                     List<CalculableHolder<OriginRelation>> calculables = ti.toList();
 
-                    ti.setActive(composerComponent.isActive(calculables));
-                    ti.setPending(composerComponent.isPending(calculables));
+                    ti.setActive(relationComposerComponent.isActive(calculables));
+                    ti.setPending(relationComposerComponent.isPending(calculables));
 
                     if (ctx.isFetchData()) {
-                        ti.setCalculationResult(composerComponent.toEtalon(rk, calculables,
+                        ti.setCalculationResult(relationComposerComponent.toEtalon(rk, calculables,
+                                ti.getValidFrom(), ti.getValidTo(), true, false));
+                    }
+                });
+            }
+
+            return timeline;
+
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    public Timeline<OriginRelation> loadInterval(GetRelationTimelineRequestContext ctx) {
+
+        MeasurementPoint.start();
+        try {
+
+            RelationTimelinePO po = null;
+
+            // 1. Ensure keys
+            RelationKeys keys = ctx.relationKeys();
+            boolean includeDrafts = ctx.isIncludeDrafts() || SecurityUtils.isAdminUser();
+
+            // 3. Load Interval
+            if (Objects.nonNull(keys)) {
+                // Fetch with keys always, otherwise CONTAINMENTs cannot be build
+                if (Objects.nonNull(ctx.getForOperationId())) {
+                    po = relationsDao.loadRelationVersions(UUID.fromString(keys.getEtalonKey().getId()), ctx.getForDate(), ctx.getForOperationId(), includeDrafts);
+                } else {
+                    po = relationsDao.loadRelationVersions(UUID.fromString(keys.getEtalonKey().getId()), ctx.getForDate(), includeDrafts);
+                }
+            } else if (ctx.isRelationLsnKey()) {
+
+                if (Objects.nonNull(ctx.getForOperationId())) {
+                    po = relationsDao.loadRelationVersions(ctx.getLsnAsObject(), ctx.getForDate(), ctx.getForOperationId(), includeDrafts);
+                } else {
+                    po = relationsDao.loadRelationVersions(ctx.getLsnAsObject(), ctx.getForDate(), includeDrafts);
+                }
+
+                if (Objects.nonNull(po)) {
+                    keys = relationComposerComponent.toRelationKeys(po.getKeys(), lsnKeyPredicate());
+                }
+            } else if (ctx.isRelationEtalonKey()) {
+
+                if (Objects.nonNull(ctx.getForOperationId())) {
+                    po = relationsDao.loadRelationVersions(UUID.fromString(ctx.getRelationEtalonKey()), ctx.getForDate(), ctx.getForOperationId(), includeDrafts);
+                } else {
+                    po = relationsDao.loadRelationVersions(UUID.fromString(ctx.getRelationEtalonKey()), ctx.getForDate(), includeDrafts);
+                }
+
+                if (Objects.nonNull(po)) {
+                    keys = relationComposerComponent.toRelationKeys(po.getKeys(), etalonKeyPredicate());
+                }
+            }
+
+            // 4. Translate to internal
+            Timeline<OriginRelation> timeline = relationComposerComponent.toRelationTimeline(keys, po == null ? null : po.getVistory());
+
+            // 4.1 Reduce TL by given boundaries.
+            // Maybe a separate, more efficient request will be written later on.
+            timeline = timeline.reduceAsOf(ctx.getForDate());
+
+            // 4.2 Calc suff, if not disabled
+            RelationKeys rk = timeline.getKeys();
+            if (!ctx.isSkipCalculations()) {
+                timeline.forEach(ti -> {
+
+                    List<CalculableHolder<OriginRelation>> calculables = ti.toList();
+
+                    ti.setActive(relationComposerComponent.isActive(calculables));
+                    ti.setPending(relationComposerComponent.isPending(calculables));
+
+                    if (ctx.isFetchData()) {
+                        ti.setCalculationResult(relationComposerComponent.toEtalon(rk, calculables,
                                 ti.getValidFrom(), ti.getValidTo(), true, false));
                     }
                 });
@@ -572,7 +697,7 @@ public class CommonRelationsComponent {
 
         Timeline<OriginRelation> timeline = loadTimeline(ctx);
         for (TimeInterval<OriginRelation> period : timeline) {
-            if (composerComponent.isActive(period.toList())) {
+            if (relationComposerComponent.isActive(period.toList())) {
                 return true;
             }
         }
@@ -600,6 +725,44 @@ public class CommonRelationsComponent {
         throw new NotImplementedException("Deactivate relations by name is not implemented! A job must be written for that.");
     }
 
+    @SuppressWarnings("rawtypes")
+    public List<Timeline<OriginRelation>> loadOrReuseCachedTimelines(@Nonnull RelationIdentityContext ctx) {
+
+        if (ctx.relationType() != RelationType.REFERENCES) {
+            return Collections.emptyList();
+        }
+
+        RelationKeys keys = ctx.relationKeys();
+
+        // ReferenceRelationContext
+        List<Timeline<OriginRelation>> result = null;
+        if (ctx instanceof ReadWriteTimelineContext) {
+
+            ChangeSet set = ((ReadWriteTimelineContext) ctx).changeSet();
+            if (set instanceof RelationUpsertBatchSet) {
+                result = ((RelationUpsertBatchSet) set)
+                        .findCachedReferenceTimelines(keys.getEtalonKey().getFrom().getId(), keys.getRelationName());
+            } else if (set instanceof RelationDeleteBatchSet) {
+                result = ((RelationDeleteBatchSet) set)
+                        .findCachedReferenceTimelines(keys.getEtalonKey().getFrom().getId(), keys.getRelationName());
+            }
+        }
+
+        if (Objects.nonNull(result)) {
+            return result;
+        }
+
+        // Check references for overlapping. Only one reference of a type is allowed for a period
+        GetRelationsTimelineRequestContext siblings = GetRelationsTimelineRequestContext.builder()
+                .fetchData(true)
+                .etalonKey(keys.getEtalonKey().getFrom().getId())
+                .relationNames(keys.getRelationName())
+                .build();
+
+        result = loadTimelines(siblings).get(keys.getRelationName());
+        return result == null ? Collections.emptyList() : result;
+    }
+
     public List<Timeline<OriginRelation>> buildVirtualTimelinesForReferences(List<Timeline<OriginRelation>> real) {
 
         // Collect
@@ -615,7 +778,7 @@ public class CommonRelationsComponent {
         for (TimeInterval<OriginRelation> ti : virtual) {
 
             List<CalculableHolder<OriginRelation>> calculables = ti.toList();
-            OriginRelation current = composerComponent.toBVR(calculables, true, false);
+            OriginRelation current = relationComposerComponent.toBVR(calculables, true, false);
             if (Objects.isNull(current)) {
                 last = null;
                 continue;

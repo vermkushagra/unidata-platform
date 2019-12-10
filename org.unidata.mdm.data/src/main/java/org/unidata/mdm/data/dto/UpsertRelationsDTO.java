@@ -21,12 +21,10 @@ public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, Resu
      */
     public static final ResultFragmentId<UpsertRelationsDTO> ID
         = new ResultFragmentId<>("UPSERT_RELATIONS_RESULT", UpsertRelationsDTO::new);
-
     /**
      * Relations upsert result.
      */
     private final Map<RelationStateDTO, List<UpsertRelationDTO>> relations;
-
     /**
      * Constructor.
      */

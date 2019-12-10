@@ -19,7 +19,10 @@ public class DeleteRelationRequestContext
         ContainmentRelationContext<DeleteRequestContext>,
         MutableValidityRangeContext,
         BatchAwareContext,
-        ApprovalStateSettingContext  {
+        ApprovalStateSettingContext,
+        AccessRightContext,
+        SetupAwareContext,
+        ReferenceRelationContext {
     /**
      * SVUID.
      */

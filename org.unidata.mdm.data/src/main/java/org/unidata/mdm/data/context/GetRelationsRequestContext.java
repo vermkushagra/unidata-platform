@@ -10,17 +10,27 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
+import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.context.RequestFragmentContext;
+import org.unidata.mdm.system.context.RequestFragmentId;
 
 /**
  * @author Mikhail Mikhailov
  * Gets relations of the left side record, denoted by fields for relation name 'name'.
  */
 public class GetRelationsRequestContext
-    extends AbstractRelationsFromRequestContext<GetRelationRequestContext> {
+    extends AbstractRelationsFromRequestContext<GetRelationRequestContext>
+    implements RequestFragmentContext<GetRelationsRequestContext>, PipelineExecutionContext {
     /**
      * SVUID.
      */
     private static final long serialVersionUID = -8833494823028426839L;
+    /**
+     * This context fragment id.
+     */
+    public static final RequestFragmentId<GetRelationsRequestContext> FRAGMENT_ID
+        = new RequestFragmentId<>("GET_RELATIONS_REQUEST", () -> GetRelationsRequestContext.builder().build());
     /**
      * The relations to upsert.
      */
@@ -58,8 +68,25 @@ public class GetRelationsRequestContext
         this.forLastUpdate = b.forLastUpdate;
 
         flags.set(DataContextFlags.FLAG_INCLUDE_DRAFTS, b.includeDrafts);
+        flags.set(DataContextFlags.FLAG_INCLUDE_INACTIVE, b.includeInactive);
+        flags.set(DataContextFlags.FLAG_INCLUDE_MERGED, b.includeMerged);
         flags.set(DataContextFlags.FLAG_FETCH_TIMELINE_DATA, b.fetchTimelineData);
         flags.set(DataContextFlags.FLAG_REDUCE_REFERENCE_RELATIONS, b.reduceReferences);
+        flags.set(DataContextFlags.FLAG_FETCH_ALL_RELATIONS, b.fetchAllRelations);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        return RelationGetStartExecutor.SEGMENT_ID;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RequestFragmentId<GetRelationsRequestContext> getFragmentId() {
+        return FRAGMENT_ID;
     }
 
     /**
@@ -96,14 +123,24 @@ public class GetRelationsRequestContext
     public Pair<Date, Date> getForDatesFrame() {
         return forDatesFrame;
     }
-
     /**
      * @return the forOperationId
      */
     public String getForOperationId() {
         return forOperationId;
     }
-
+    /**
+     * @return the inactive elements
+     */
+    public boolean isIncludeInactive() {
+        return flags.get(DataContextFlags.FLAG_INCLUDE_INACTIVE);
+    }
+    /**
+     * @return the merged elements
+     */
+    public boolean isIncludeMerged() {
+        return flags.get(DataContextFlags.FLAG_INCLUDE_MERGED);
+    }
     /**
      * @return the unpublishedState
      */
@@ -116,14 +153,18 @@ public class GetRelationsRequestContext
     public boolean isFetchTimelineData() {
         return flags.get(DataContextFlags.FLAG_FETCH_TIMELINE_DATA);
     }
-
+    /**
+     * @return the fetchAllRelations
+     */
+    public boolean isFetchAllRelations() {
+        return flags.get(DataContextFlags.FLAG_FETCH_ALL_RELATIONS);
+    }
     /**
      * @return the reduce references
      */
     public boolean isReduceReferences() {
         return flags.get(DataContextFlags.FLAG_REDUCE_REFERENCE_RELATIONS);
     }
-
     /**
      * Gets new builder.
      * @return builder
@@ -167,9 +208,21 @@ public class GetRelationsRequestContext
          */
         private boolean includeDrafts;
         /**
+         * Include inactive relations flag.
+         */
+        private boolean includeInactive;
+        /**
+         * Include merged relations flag.
+         */
+        private boolean includeMerged;
+        /**
          * Return timeline with data.
          */
         private boolean fetchTimelineData;
+        /**
+         * Fetch all relations available for the given etalon id.
+         */
+        private boolean fetchAllRelations;
         /**
          * Reduce reference timeline
          */
@@ -249,13 +302,33 @@ public class GetRelationsRequestContext
             return this;
         }
         /**
+         * Request inactive additionally. Show inactive rels.
+         */
+        public GetRelationsRequestContextBuilder includeInactive(boolean includeInactive) {
+            this.includeInactive = includeInactive;
+            return this;
+        }
+        /**
+         * Request merged additionally. Show merged rels.
+         */
+        public GetRelationsRequestContextBuilder includeMerged(boolean includeMerged) {
+            this.includeMerged = includeMerged;
+            return this;
+        }
+        /**
          * @param fetchTimelineData the fetchTimelineData to set
          */
         public GetRelationsRequestContextBuilder fetchTimelineData(boolean fetchTimelineData) {
             this.fetchTimelineData = fetchTimelineData;
             return this;
         }
-
+        /**
+         * @param fetchAllRelations the fetchAllRelations to set
+         */
+        public GetRelationsRequestContextBuilder fetchAllRelations(boolean fetchAllRelations) {
+            this.fetchAllRelations = fetchAllRelations;
+            return this;
+        }
         /**
          * @param reduceReferences the reduceReferences to set
          */

@@ -25,39 +25,24 @@ import org.unidata.mdm.core.service.LargeObjectsServiceComponent;
 import org.unidata.mdm.core.type.timeline.Timeline;
 import org.unidata.mdm.data.audit.AuditDataFallback;
 import org.unidata.mdm.data.audit.AuditDataSegment;
-import org.unidata.mdm.data.context.DeleteRelationRequestContext;
-import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetMultipleRequestContext;
 import org.unidata.mdm.data.context.GetRecordTimelineRequestContext;
-import org.unidata.mdm.data.context.GetRelationRequestContext;
-import org.unidata.mdm.data.context.GetRelationsDigestRequestContext;
-import org.unidata.mdm.data.context.GetRelationsRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
 import org.unidata.mdm.data.context.JoinRequestContext;
 import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.SplitRecordRequestContext;
-import org.unidata.mdm.data.context.UpsertRelationRequestContext;
-import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
 import org.unidata.mdm.data.dto.BulkUpsertResultDTO;
 import org.unidata.mdm.data.dto.DeleteRecordDTO;
-import org.unidata.mdm.data.dto.DeleteRelationDTO;
-import org.unidata.mdm.data.dto.DeleteRelationsDTO;
 import org.unidata.mdm.data.dto.EtalonRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordsDTO;
-import org.unidata.mdm.data.dto.GetRelationDTO;
-import org.unidata.mdm.data.dto.GetRelationsDTO;
 import org.unidata.mdm.data.dto.KeysJoinDTO;
 import org.unidata.mdm.data.dto.MergeRecordsDTO;
-import org.unidata.mdm.data.dto.RelationDigestDTO;
 import org.unidata.mdm.data.dto.SplitRecordsDTO;
-import org.unidata.mdm.data.dto.TimelineDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
-import org.unidata.mdm.data.dto.UpsertRelationDTO;
-import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.service.DataRecordsService;
 import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
 import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
@@ -389,62 +374,6 @@ public class DataRecordsServiceImpl implements DataRecordsService {
         return commonRecordsComponent.loadTimeline(ctx);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public List<TimelineDTO> getRelationsTimeline(GetRelationsRequestContext ctx) {
-        return null;//relationsComponent.getRelationsTimelineDTO(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public TimelineDTO getRelationTimeline(GetRelationRequestContext ctx) {
-        return null;//relationsComponent.getRelationTimelineDTO(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RelationDigestDTO loadRelatedEtalonIdsForDigest(GetRelationsDigestRequestContext ctx) {
-        return null;//relationsComponent.loadRelatedEtalonIdsForDigest(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public GetRelationDTO getRelation(GetRelationRequestContext ctx) {
-        return null;//relationsComponent.getRelation(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public GetRelationsDTO getRelations(GetRelationsRequestContext ctx) {
-        return null;//relationsComponent.getRelations(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UpsertRelationDTO upsertRelation(UpsertRelationRequestContext ctx) {
-        return null;//relationsComponent.upsertRelation(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public UpsertRelationsDTO upsertRelations(UpsertRelationsRequestContext ctx) {
-        return null;//relationsComponent.upsertRelations(ctx);// TODO: @Modules
-    }
-
     // TODO: @Modules
 //    /**
 //     * {@inheritDoc}
@@ -751,22 +680,6 @@ public class DataRecordsServiceImpl implements DataRecordsService {
     @Transactional
     public BulkUpsertResultDTO bulkUpsertRecords(@Nonnull List<UpsertRequestContext> recordUpsertCtxs) {
         return bulkUpsertRecords(recordUpsertCtxs, true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DeleteRelationDTO deleteRelation(DeleteRelationRequestContext ctx) {
-        return null;//relationsComponent.deleteRelation(ctx);// TODO: @Modules
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DeleteRelationsDTO deleteRelations(DeleteRelationsRequestContext ctx) {
-        return null;//relationsComponent.deleteRelations(ctx);// TODO: @Modules
     }
 
     /**

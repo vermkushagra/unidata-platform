@@ -18,7 +18,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -124,6 +123,7 @@ import org.unidata.mdm.data.dto.UpsertRecordDTO;
 import org.unidata.mdm.data.dto.UpsertRelationDTO;
 import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.service.DataRecordsService;
+import org.unidata.mdm.data.service.DataRelationsService;
 import org.unidata.mdm.data.v1.ComplexAttribute;
 import org.unidata.mdm.data.v1.EntityRelations;
 import org.unidata.mdm.data.v1.EtalonKey;
@@ -204,6 +204,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      */
     @Autowired
     private DataRecordsService dataRecordsService;
+    /**
+     * Data relation service facade.
+     */
+    @Autowired
+    private DataRelationsService dataRelationsService;
     /**
      * Model service.
      */
@@ -1048,7 +1053,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
 
             dCtx.setOperationId(request.getCommon().getOperationId());
 
-            DeleteRelationsDTO result = dataRecordsService.deleteRelations(dCtx);
+            DeleteRelationsDTO result = dataRelationsService.deleteRelations(dCtx);
 
             ResponseRelationsSoftDelete softDelete = JaxbUtils.getApiObjectFactory().createResponseRelationsSoftDelete();
             response.withResponseRelationsSoftDelete(softDelete);
@@ -1148,7 +1153,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             response.withResponseRelationsUpsert(upsert);
 
             if (rCtx != null) {
-                UpsertRelationsDTO relationsResult = dataRecordsService.upsertRelations(rCtx);
+                UpsertRelationsDTO relationsResult = dataRelationsService.upsertRelations(rCtx);
                 for (Entry<RelationStateDTO, List<UpsertRelationDTO>> e
                         : relationsResult.getRelations().entrySet()) {
                     upsertedRelationsCount += e.getValue().size();
@@ -1196,7 +1201,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
         try {
 
             RequestRelationsGet get = request.getRequestRelationsGet();
-            GetRelationsRequestContext ctx = new GetRelationsRequestContext.GetRelationsRequestContextBuilder()
+            GetRelationsRequestContext ctx = GetRelationsRequestContext.builder()
                     .etalonKey(DumpUtils.from(get.getEtalonKey()))
                     .originKey(DumpUtils.from(get.getOriginKey()))
                     .forDate(JaxbUtils.xmlGregorianCalendarToDate(get.getAsOf()))
@@ -1206,7 +1211,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .build();
             ctx.setOperationId(request.getCommon().getOperationId());
 
-            GetRelationsDTO result = dataRecordsService.getRelations(ctx);
+            GetRelationsDTO result = dataRelationsService.getRelations(ctx);
 
             ResponseRelationsGet getResponse = JaxbUtils.getApiObjectFactory().createResponseRelationsGet();
             response.withResponseRelationsGet(getResponse);

@@ -68,8 +68,6 @@ public class RecordUpsertSecurityExecutor extends Point<UpsertRequestContext>
                 throw new PlatformSecurityException(message,
                         DataExceptionIds.EX_DATA_UPSERT_UPDATE_NO_RIGHTS, SecurityUtils.getCurrentUserName(), entityName);
             }
-// @Modules
-//            putWorkflowAssignments(ctx, StorageId.DATA_UPSERT_WF_ASSIGNMENTS, entityName, WorkflowProcessType.RECORD_EDIT);
 
             // New record
             if (keys == null) {

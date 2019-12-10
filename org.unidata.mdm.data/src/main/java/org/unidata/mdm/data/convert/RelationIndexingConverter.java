@@ -1,6 +1,5 @@
 package org.unidata.mdm.data.convert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,13 +12,12 @@ import org.unidata.mdm.core.util.PeriodIdUtils;
 import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.EtalonRelationInfoSection;
 import org.unidata.mdm.data.type.data.RelationType;
+import org.unidata.mdm.data.type.keys.RelationKeys;
 import org.unidata.mdm.meta.type.search.EntityIndexType;
 import org.unidata.mdm.meta.type.search.RelationFromIndexId;
 import org.unidata.mdm.meta.type.search.RelationHeaderField;
 import org.unidata.mdm.search.type.indexing.Indexing;
 import org.unidata.mdm.search.type.indexing.IndexingField;
-import org.unidata.mdm.search.util.SearchUtils;
-import org.unidata.mdm.system.util.ConvertUtils;
 
 /**
  * @author Mikhail Mikhailov on Oct 12, 2019
@@ -34,7 +32,7 @@ public final class RelationIndexingConverter extends AbstractIndexingConverter {
         super();
     }
 
-    public static List<Indexing> convert(Collection<EtalonRelation> relations) {
+    public static List<Indexing> convert(RelationKeys keys, Collection<EtalonRelation> relations) {
 
         if (CollectionUtils.isEmpty(relations)) {
             return Collections.emptyList();
@@ -47,11 +45,6 @@ public final class RelationIndexingConverter extends AbstractIndexingConverter {
             List<IndexingField> fields = new ArrayList<>(RelationHeaderField.values().length + relation.getSize());
 
             // 1. Common
-            final LocalDateTime vf = ConvertUtils.date2LocalDateTime(infoSection.getValidFrom());
-            final LocalDateTime vt = ConvertUtils.date2LocalDateTime(infoSection.getValidTo());
-            final LocalDateTime ua = ConvertUtils.date2LocalDateTime(infoSection.getUpdateDate());
-            final LocalDateTime ca = ConvertUtils.date2LocalDateTime(infoSection.getCreateDate());
-
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.REL_NAME.getName(), infoSection.getRelationName()));
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.REL_TYPE.getName(), infoSection.getRelationType().name()));
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_ETALON_ID.getName(), infoSection.getRelationEtalonKey()));
@@ -59,14 +52,15 @@ public final class RelationIndexingConverter extends AbstractIndexingConverter {
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_TO_ETALON_ID.getName(), infoSection.getToEtalonKey().getId()));
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_PERIOD_ID.getName(), PeriodIdUtils.periodIdFromDate(infoSection.getValidTo())));
             fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_PENDING.getName(), infoSection.getApproval() == ApprovalState.PENDING));
-            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_DELETED.getName(), infoSection.getStatus() == RecordStatus.INACTIVE));
+            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_DELETED.getName(), keys.getEtalonKey().getStatus() == RecordStatus.INACTIVE));
+            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_INACTIVE.getName(), infoSection.getStatus() == RecordStatus.INACTIVE));
 
-            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_FROM.getName(), vf, lts -> lts == null ? SearchUtils.ES_MIN_FROM : ConvertUtils.localDateTime2UTCAndFormat(lts)));
-            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_TO.getName(), vt, lts -> lts == null ? SearchUtils.ES_MAX_TO : ConvertUtils.localDateTime2UTCAndFormat(lts)));
-            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_CREATED_AT.getName(), ca, ConvertUtils::localDateTime2UTCAndFormat));
+            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_FROM.getName(), infoSection.getValidFrom()));
+            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_TO.getName(), infoSection.getValidTo()));
+            fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_CREATED_AT.getName(), infoSection.getCreateDate()));
 
             if (infoSection.getUpdateDate() != null) {
-                fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_UPDATED_AT.getName(), ua, ConvertUtils::localDateTime2UTCAndFormat));
+                fields.add(IndexingField.of(EntityIndexType.RELATION, RelationHeaderField.FIELD_UPDATED_AT.getName(), infoSection.getUpdateDate()));
             }
 
             // 1.1. save relation attributes data

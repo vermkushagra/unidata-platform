@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.unidata.mdm.core.context.ValidityRangeContext;
+import org.unidata.mdm.system.context.RequestFragmentContext;
+import org.unidata.mdm.system.context.RequestFragmentId;
 
 /**
  * @author Mikhail Mikhailov
@@ -14,11 +16,16 @@ import org.unidata.mdm.core.context.ValidityRangeContext;
  */
 public class DeleteRelationsRequestContext
     extends AbstractRelationsFromRequestContext<DeleteRelationRequestContext>
-    implements ValidityRangeContext {
+    implements ValidityRangeContext, RequestFragmentContext<DeleteRelationsRequestContext> {
     /**
      * Generated SVUID.
      */
     private static final long serialVersionUID = -6383509762622013682L;
+    /**
+     * This context fragment id.
+     */
+    public static final RequestFragmentId<DeleteRelationsRequestContext> FRAGMENT_ID
+        = new RequestFragmentId<>("DELETE_RELATIONS_REQUEST", () -> DeleteRelationsRequestContext.builder().build());
     /**
      * The relations to upsert.
      */
@@ -60,6 +67,14 @@ public class DeleteRelationsRequestContext
         this.validFrom = b.validFrom;
         this.validTo = b.validTo;
         this.cleanAll = b.cleanAll;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RequestFragmentId<DeleteRelationsRequestContext> getFragmentId() {
+        return FRAGMENT_ID;
     }
 
     @Override

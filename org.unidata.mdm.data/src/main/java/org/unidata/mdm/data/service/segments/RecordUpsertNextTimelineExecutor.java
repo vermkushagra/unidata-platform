@@ -50,7 +50,6 @@ public class RecordUpsertNextTimelineExecutor extends Point<UpsertRequestContext
      */
     public RecordUpsertNextTimelineExecutor() {
         super(SEGMENT_ID, SEGMENT_DESCRIPTION);
-        // TODO Auto-generated constructor stub
     }
 
     /**

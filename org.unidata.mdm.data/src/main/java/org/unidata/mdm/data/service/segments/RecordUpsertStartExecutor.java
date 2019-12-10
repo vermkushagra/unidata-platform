@@ -375,7 +375,7 @@ public class RecordUpsertStartExecutor
 
         if (!hasEtalonRecord) {
 
-            RecordEtalonPO etalon = RecordFactoryUtils.createEtalonRecordPO(ctx, keys, RecordStatus.ACTIVE);
+            RecordEtalonPO etalon = RecordFactoryUtils.createRecordEtalonPO(ctx, keys, RecordStatus.ACTIVE);
             keys = RecordKeys.builder()
                 .etalonKey(RecordEtalonKey.builder()
                         .id(etalon.getId())
@@ -396,7 +396,7 @@ public class RecordUpsertStartExecutor
 
         if (!hasOriginRecord) {
 
-            RecordOriginPO record = RecordFactoryUtils.createOriginRecordPO(ctx, keys, RecordStatus.ACTIVE);
+            RecordOriginPO record = RecordFactoryUtils.createRecordOriginPO(ctx, keys, RecordStatus.ACTIVE);
             RecordExternalKeysPO recordEk = new RecordExternalKeysPO();
             recordEk.setExternalId(record.getExternalId(), record.getName(), record.getSourceSystem());
             recordEk.setEtalonId(UUID.fromString(record.getEtalonId()));
@@ -421,7 +421,7 @@ public class RecordUpsertStartExecutor
 
                 sysCtx.timestamp(ts);
 
-                system = RecordFactoryUtils.createOriginRecordPO(sysCtx, sysKeys, RecordStatus.ACTIVE);
+                system = RecordFactoryUtils.createRecordOriginPO(sysCtx, sysKeys, RecordStatus.ACTIVE);
 
                 systemEk = new RecordExternalKeysPO();
                 systemEk.setExternalId(system.getExternalId(), system.getName(), system.getSourceSystem());

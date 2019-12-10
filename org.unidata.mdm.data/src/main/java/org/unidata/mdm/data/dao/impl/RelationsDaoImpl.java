@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 import javax.sql.DataSource;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,7 +115,8 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
         PUT_RELATION_VERSION_JAXB_SQL("putRelationVersionJaxbSQL", true),
         PUT_RELATION_VERSION_PROTOSTUFF_SQL("putRelationVersionProtostuffSQL", true),
         CHECK_EXIST_BY_RELNAME_SQL("checkExistByRelNameSQL", true),
-        LOAD_RELATION_VERSIONS_SQL("loadRelationVersionsSQL", true),
+        LOAD_RELATION_VERSIONS_BY_ETALON_ID_SQL("loadRelationVersionsByEtalonIdSQL", true),
+        LOAD_RELATION_VERSIONS_BY_LSN_SQL("loadRelationVersionsByLSNSQL", true),
         LOAD_ETALON_RELATIONS_BY_IDS_SQL("loadEtalonRelationsByIdsSQL", true),
         INSERT_ORIGIN_RELATION_SQL("insertOriginRelationSQL", true),
         UPDATE_ORIGIN_RELATION_SQL("updateOriginRelationSQL", true),
@@ -214,7 +216,7 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
         }
     }
 
-    private List<UUID> loadSysIdsByFromSpec(UUID from, List<String> names) {
+    private Map<String, List<UUID>> loadSysIdsByFromSpec(UUID from, List<String> names) {
         MeasurementPoint.start();
         try {
 
@@ -223,7 +225,19 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
                 return shardSelect(shard)
                         .jdbcTemplate()
                         .query(templates.getQuery(RelationRecordsQuery.LOAD_SYS_KEYS_BY_FROM_SQL, shard),
-                            (rs, n) -> rs.getObject(1, UUID.class),
+                            rs -> {
+
+                                Map<String, List<UUID>> result = new HashMap<>();
+                                while (rs.next()) {
+
+                                    UUID val = rs.getObject(1, UUID.class);
+                                    String name = rs.getString(2);
+
+                                    result.computeIfAbsent(name, k -> new ArrayList<UUID>()).add(val);
+                                }
+
+                                return result;
+                            },
                             shard, from);
             }
 
@@ -233,19 +247,31 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
                 return shardSelect(shard)
                     .jdbcTemplate()
                     .query(templates.getQuery(RelationRecordsQuery.LOAD_SYS_KEYS_BY_FROM_AND_NAMES_SQL, shard),
-                        (rs, n) -> rs.getObject(1, UUID.class),
+                        rs -> {
+
+                            Map<String, List<UUID>> result = new HashMap<>();
+                            while (rs.next()) {
+
+                                UUID val = rs.getObject(1, UUID.class);
+                                String name = rs.getString(2);
+
+                                result.computeIfAbsent(name, k -> new ArrayList<UUID>()).add(val);
+                            }
+
+                            return result;
+                        },
                         shard, from, a);
 
             } catch (SQLException e) {
                 LOGGER.warn("Cannot create relation names array.", e);
-                return Collections.emptyList();
+                return Collections.emptyMap();
             }
         } finally {
             MeasurementPoint.stop();
         }
     }
 
-    private List<UUID> loadSysIdsByToSpec(UUID to, List<String> names) {
+    private Map<String, List<UUID>> loadSysIdsByToSpec(UUID to, List<String> names) {
         MeasurementPoint.start();
         try {
 
@@ -254,7 +280,19 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
                 return shardSelect(shard)
                         .jdbcTemplate()
                         .query(templates.getQuery(RelationRecordsQuery.LOAD_SYS_KEYS_BY_TO_SQL, shard),
-                            (rs, n) -> rs.getObject(1, UUID.class),
+                            rs -> {
+
+                                Map<String, List<UUID>> result = new HashMap<>();
+                                while (rs.next()) {
+
+                                    UUID val = rs.getObject(1, UUID.class);
+                                    String name = rs.getString(2);
+
+                                    result.computeIfAbsent(name, k -> new ArrayList<UUID>()).add(val);
+                                }
+
+                                return result;
+                            },
                             shard, to);
             }
 
@@ -264,12 +302,24 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
                 return shardSelect(shard)
                     .jdbcTemplate()
                     .query(templates.getQuery(RelationRecordsQuery.LOAD_SYS_KEYS_BY_TO_AND_NAMES_SQL, shard),
-                        (rs, n) -> rs.getObject(1, UUID.class),
+                        rs -> {
+
+                            Map<String, List<UUID>> result = new HashMap<>();
+                            while (rs.next()) {
+
+                                UUID val = rs.getObject(1, UUID.class);
+                                String name = rs.getString(2);
+
+                                result.computeIfAbsent(name, k -> new ArrayList<UUID>()).add(val);
+                            }
+
+                            return result;
+                        },
                         shard, to, a);
 
             } catch (SQLException e) {
                 LOGGER.warn("Cannot create relation names array.", e);
-                return Collections.emptyList();
+                return Collections.emptyMap();
             }
         } finally {
             MeasurementPoint.stop();
@@ -767,15 +817,16 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
         MeasurementPoint.start();
         try {
 
-            List<UUID> sysKeys = isToSide
+            Map<String, List<UUID>> relationIds = isToSide
                     ? loadSysIdsByToSpec(recordEtalonId, names)
                     : loadSysIdsByFromSpec(recordEtalonId, names);
 
-            if (CollectionUtils.isEmpty(sysKeys)) {
+            if (MapUtils.isEmpty(relationIds)) {
                 return Collections.emptyList();
             }
 
-            return sysKeys.stream()
+            return relationIds.values().stream()
+                .flatMap(Collection::stream)
                 .map(key -> loadTimeline(key, true, fetchData, includeDrafts))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -801,7 +852,7 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
             int shard = StorageUtils.shard(relationEtalonId);
             RelationTimelinePO result = shardSelect(shard)
                     .jdbcTemplate()
-                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_SQL, shard),
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_ETALON_ID_SQL, shard),
                             rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
                                     true, // fetch_keys
                                     relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, // etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id
@@ -846,7 +897,7 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
             int shard = StorageUtils.shard(relationEtalonId);
             RelationTimelinePO result = shardSelect(shard)
                     .jdbcTemplate()
-                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_SQL, shard),
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_ETALON_ID_SQL, shard),
                             rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
                                     true, // fetch_keys
                                     relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, // etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id
@@ -890,7 +941,7 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
             int shard = StorageUtils.shard(relationEtalonId);
             RelationTimelinePO result = shardSelect(shard)
                     .jdbcTemplate()
-                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_SQL, shard),
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_ETALON_ID_SQL, shard),
                             rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
                                     true, // fetch_keys
                                     relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, relationEtalonId, // etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id
@@ -914,6 +965,142 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
 
             return result;
 
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, boolean includeDraftVersions) {
+
+        MeasurementPoint.start();
+        try {
+
+            // fetch_keys, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, operation_id, etalon_id, operation_id, etalon_id, operation_id,
+            // lud, point, is_approver, user_name, updates_after, updates_after
+            String user = SecurityUtils.getCurrentUserName();
+            Timestamp point = VendorUtils.coalesce(asOf);
+            int shard = relationLSN.getShard();
+            RelationTimelinePO result = shardSelect(shard)
+                    .jdbcTemplate()
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_LSN_SQL, shard),
+                            rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
+                                    true, // fetch_keys
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    null, null, relationLSN.getShard(), relationLSN.getLsn(), // operation_id, operation_id, shard, lsn,
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    null, null, point, // operation_id, lud, point
+                                    includeDraftVersions, user, // is_approver, user_name,
+                                    null, null // updates_after, updates_after
+                            );
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getFromKeys())) {
+                result.getKeys().setFromKeys(postLoadRecordKeys(result.getKeys().getFromKeys().getId()));
+            }
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getToKeys())) {
+                result.getKeys().setToKeys(postLoadRecordKeys(result.getKeys().getToKeys().getId()));
+                postProcessContainmentKeys(result.getKeys());
+                postProcessContainmentVersions(result, asOf, null, includeDraftVersions);
+            }
+
+            return result;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, Date lud, boolean includeDraftVersions) {
+
+        MeasurementPoint.start();
+        try {
+
+            // fetch_keys, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, operation_id, etalon_id, operation_id, etalon_id, operation_id,
+            // lud, point, is_approver, user_name, updates_after, updates_after
+            String user = SecurityUtils.getCurrentUserName();
+            Timestamp point = VendorUtils.coalesce(asOf);
+            int shard = relationLSN.getShard();
+            RelationTimelinePO result = shardSelect(shard)
+                    .jdbcTemplate()
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_LSN_SQL, shard),
+                            rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
+                                    true, // fetch_keys
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    null, null, relationLSN.getShard(), relationLSN.getLsn(), // operation_id, operation_id, shard, lsn,
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    null, lud, point, // operation_id, lud, point
+                                    includeDraftVersions, user, // is_approver, user_name,
+                                    null, null // updates_after, updates_after
+                            );
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getFromKeys())) {
+                result.getKeys().setFromKeys(postLoadRecordKeys(result.getKeys().getFromKeys().getId()));
+            }
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getToKeys())) {
+                result.getKeys().setToKeys(postLoadRecordKeys(result.getKeys().getToKeys().getId()));
+                postProcessContainmentKeys(result.getKeys());
+                postProcessContainmentVersions(result, asOf, null, includeDraftVersions);
+            }
+
+            return result;
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, String operationId,
+            boolean includeDraftVersions) {
+
+        MeasurementPoint.start();
+        try {
+
+            // fetch_keys, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, etalon_id, operation_id, etalon_id, operation_id, etalon_id, operation_id,
+            // lud, point, is_approver, user_name, updates_after, updates_after
+            String user = SecurityUtils.getCurrentUserName();
+            Timestamp point = VendorUtils.coalesce(asOf);
+            int shard = relationLSN.getShard();
+            RelationTimelinePO result = shardSelect(shard)
+                    .jdbcTemplate()
+                    .query(templates.getQuery(RelationRecordsQuery.LOAD_RELATION_VERSIONS_BY_LSN_SQL, shard),
+                            rs -> rs.next() ? RelationTimelineRowMapper.DEFAULT_RELATION_TIMELINE_ROW_MAPPER.mapRow(rs, 0) : null,
+                                    true, // fetch_keys
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    operationId, operationId, relationLSN.getShard(), relationLSN.getLsn(), // operation_id, operation_id, shard, lsn,
+                                    relationLSN.getShard(), relationLSN.getLsn(), // shard, lsn
+                                    operationId, null, point, // operation_id, lud, point
+                                    includeDraftVersions, user, // is_approver, user_name,
+                                    null, null // updates_after, updates_after
+                            );
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getFromKeys())) {
+                result.getKeys().setFromKeys(postLoadRecordKeys(result.getKeys().getFromKeys().getId()));
+            }
+
+            // FIXME: Post process rel keys for ISO schema
+            if (Objects.nonNull(result) && Objects.nonNull(result.getKeys()) && Objects.nonNull(result.getKeys().getToKeys())) {
+                result.getKeys().setToKeys(postLoadRecordKeys(result.getKeys().getToKeys().getId()));
+                postProcessContainmentKeys(result.getKeys());
+                postProcessContainmentVersions(result, asOf, null, includeDraftVersions);
+            }
+
+            return result;
         } finally {
             MeasurementPoint.stop();
         }
@@ -960,22 +1147,47 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
         MeasurementPoint.start();
         try {
 
-            List<UUID> relationIds = Collections.emptyList();
+            Map<String, List<UUID>> relationIds = Collections.emptyMap();
             if (RelationSide.FROM == side) {
                 relationIds = loadSysIdsByFromSpec(recordEtalonId, Collections.singletonList(relationName));
             } else if (RelationSide.TO == side) {
                 relationIds = loadSysIdsByToSpec(recordEtalonId, Collections.singletonList(relationName));
             }
 
-            if (CollectionUtils.isEmpty(relationIds)) {
+            if (MapUtils.isEmpty(relationIds)) {
                 return Collections.emptyList();
             }
 
-            List<RelationEtalonPO> result = loadEtalonRelations(relationIds);
+            List<RelationEtalonPO> result = loadEtalonRelations(relationIds.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList()));
+
             return result.stream()
                     .filter(po -> CollectionUtils.isEmpty(statuses) || statuses.contains(po.getStatus()))
                     .collect(Collectors.toList());
 
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Map<String, List<UUID>> loadMappedRelationEtalonIds(UUID recordEtalonId, List<String> relationNames,
+            RelationSide side) {
+
+        MeasurementPoint.start();
+        try {
+
+            if (RelationSide.FROM == side) {
+                return loadSysIdsByFromSpec(recordEtalonId, relationNames);
+            } else if (RelationSide.TO == side) {
+                return loadSysIdsByToSpec(recordEtalonId, relationNames);
+            }
+
+            return Collections.emptyMap();
         } finally {
             MeasurementPoint.stop();
         }
@@ -2276,12 +2488,15 @@ public class RelationsDaoImpl extends BaseStorageDAOImpl implements RelationsDao
         MeasurementPoint.start();
         try {
 
-            List<UUID> relationIds = loadSysIdsByFromSpec(recordEtalonId, names);
-            if (CollectionUtils.isEmpty(relationIds)) {
+            Map<String, List<UUID>> relationIds = loadSysIdsByFromSpec(recordEtalonId, names);
+            if (MapUtils.isEmpty(relationIds)) {
                 return Collections.emptyList();
             }
 
-            List<RelationEtalonPO> etalons = loadEtalonRelations(relationIds);
+            List<RelationEtalonPO> etalons = loadEtalonRelations(relationIds.values().stream()
+                    .flatMap(Collection::stream)
+                    .collect(Collectors.toList()));
+
             if (CollectionUtils.isEmpty(etalons)) {
                 return Collections.emptyList();
             }

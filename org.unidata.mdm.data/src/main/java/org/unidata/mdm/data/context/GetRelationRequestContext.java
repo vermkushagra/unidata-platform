@@ -3,12 +3,17 @@ package org.unidata.mdm.data.context;
 import java.util.Date;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
+import org.unidata.mdm.data.type.data.OriginRelation;
+import org.unidata.mdm.system.context.PipelineExecutionContext;
 
 /**
  * @author Mikhail Mikhailov
  * Gets relations
  */
-public class GetRelationRequestContext extends AbstractRelationToRequestContext {
+public class GetRelationRequestContext
+    extends AbstractRelationToRequestContext
+    implements PipelineExecutionContext, AccessRightContext, ReadOnlyTimelineContext<OriginRelation>, SetupAwareContext {
     /**
      * Generated SVUID.
      */
@@ -41,6 +46,14 @@ public class GetRelationRequestContext extends AbstractRelationToRequestContext 
 
         flags.set(DataContextFlags.FLAG_INCLUDE_DRAFTS, b.includeDrafts);
         flags.set(DataContextFlags.FLAG_FETCH_TIMELINE_DATA, b.fetchTimelineData);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        return RelationGetStartExecutor.SEGMENT_ID;
     }
 
     /**

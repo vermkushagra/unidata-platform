@@ -15,7 +15,6 @@ import org.unidata.mdm.system.context.CommonRequestContext;
  *
  */
 public class GetRelationsDigestRequestContext extends CommonRequestContext {
-
     /**
      * SVUID.
      */
@@ -56,7 +55,6 @@ public class GetRelationsDigestRequestContext extends CommonRequestContext {
      * Return fields.
      */
     private final List<String> fields;
-
     /**
      * Constructor.
      */
@@ -260,6 +258,7 @@ public class GetRelationsDigestRequestContext extends CommonRequestContext {
         /**
          * Builder method.
          */
+        @Override
         public GetRelationsDigestRequestContext build() {
             return new GetRelationsDigestRequestContext(this);
         }

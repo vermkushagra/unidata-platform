@@ -10,4 +10,14 @@ public interface PipelineExecutionContext {
      * @return type
      */
     String getStartTypeId();
+    /**
+     * Narrow self to particular context type.
+     * Dangerous! The ability must be checked obligatory via 'supports' call.
+     * @param <T> the target type
+     * @return narrowed object
+     */
+    @SuppressWarnings("unchecked")
+    default <T> T narrow() {
+        return (T) this;
+    }
 }

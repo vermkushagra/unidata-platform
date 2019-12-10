@@ -23,7 +23,7 @@ public interface ContainmentRelationContext<T extends RecordIdentityContext> ext
      * Put containment context.
      * @param containment the containment
      */
-    default void operationType(T containment) {
+    default void containmentContext(T containment) {
         putToStorage(SID_CONTAINMENT_CONTEXT, containment);
     }
 }

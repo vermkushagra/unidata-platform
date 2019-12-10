@@ -205,7 +205,7 @@ public class RecordUpsertPersistenceExecutor extends Point<UpsertRequestContext>
 
         enrichmentCtx.timestamp(ch.getValue().getInfoSection().getUpdateDate());
 
-        RecordOriginPO okpo = RecordFactoryUtils.createOriginRecordPO(enrichmentCtx, enrichmentKeys, RecordStatus.ACTIVE);
+        RecordOriginPO okpo = RecordFactoryUtils.createRecordOriginPO(enrichmentCtx, enrichmentKeys, RecordStatus.ACTIVE);
 
         RecordExternalKeysPO ekpo = new RecordExternalKeysPO();
         ekpo.setExternalId(okpo.getExternalId(), okpo.getName(), okpo.getSourceSystem());

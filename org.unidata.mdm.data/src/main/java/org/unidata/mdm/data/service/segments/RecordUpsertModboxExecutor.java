@@ -168,7 +168,7 @@ public class RecordUpsertModboxExecutor extends Point<UpsertRequestContext> {
 
         if (!hasEtalonRecord) {
 
-            RecordEtalonPO etalon = RecordFactoryUtils.createEtalonRecordPO(ctx, keys, RecordStatus.ACTIVE);
+            RecordEtalonPO etalon = RecordFactoryUtils.createRecordEtalonPO(ctx, keys, RecordStatus.ACTIVE);
             keys = RecordKeys.builder()
                 .etalonKey(RecordEtalonKey.builder()
                         .id(etalon.getId())
@@ -189,7 +189,7 @@ public class RecordUpsertModboxExecutor extends Point<UpsertRequestContext> {
 
         if (!hasOriginRecord) {
 
-            RecordOriginPO record = RecordFactoryUtils.createOriginRecordPO(ctx, keys, RecordStatus.ACTIVE);
+            RecordOriginPO record = RecordFactoryUtils.createRecordOriginPO(ctx, keys, RecordStatus.ACTIVE);
             RecordExternalKeysPO recordEk = new RecordExternalKeysPO();
             recordEk.setExternalId(record.getExternalId(), record.getName(), record.getSourceSystem());
             recordEk.setEtalonId(UUID.fromString(record.getEtalonId()));
@@ -209,7 +209,7 @@ public class RecordUpsertModboxExecutor extends Point<UpsertRequestContext> {
 
                 sysContext.timestamp(ts);
 
-                system = RecordFactoryUtils.createOriginRecordPO(sysContext,
+                system = RecordFactoryUtils.createRecordOriginPO(sysContext,
                     RecordKeys.builder().etalonKey(keys.getEtalonKey()).shard(keys.getShard()).build(),
                     RecordStatus.ACTIVE);
 

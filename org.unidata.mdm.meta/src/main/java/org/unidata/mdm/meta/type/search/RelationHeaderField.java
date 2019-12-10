@@ -61,6 +61,10 @@ public enum RelationHeaderField implements IndexField {
      */
     FIELD_DELETED("$deleted", FieldType.BOOLEAN),
     /**
+     * Is inactivity mark.
+     */
+    FIELD_INACTIVE("$inactive", FieldType.BOOLEAN),
+    /**
      * Is direct index record or not.
      */
     FIELD_DIRECT("$direct", FieldType.STRING);

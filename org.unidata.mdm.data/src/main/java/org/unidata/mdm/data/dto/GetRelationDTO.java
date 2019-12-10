@@ -3,18 +3,17 @@
  */
 package org.unidata.mdm.data.dto;
 
-import java.util.List;
-
 import org.unidata.mdm.core.dto.ResourceSpecificRightDTO;
 import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RelationKeys;
+import org.unidata.mdm.system.dto.PipelineExecutionResult;
 
 /**
  * @author Mikhail Mikhailov
  * Single relation version DTO.
  */
-public class GetRelationDTO implements RelationDTO, EtalonRelationDTO {
+public class GetRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineExecutionResult {
     /**
      * The keys.
      */

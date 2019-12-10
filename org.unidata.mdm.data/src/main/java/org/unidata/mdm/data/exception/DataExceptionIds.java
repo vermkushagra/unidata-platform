@@ -423,7 +423,86 @@ public final class DataExceptionIds {
 
     public static final ExceptionId EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT =
             new ExceptionId("EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT", "app.data.audit.unknow.pipeline.execution.context");
-
+    /**
+     * Relation not found by name.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_GET_RELATION_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_GET_RELATION_NOT_FOUND", "app.data.get.relationNotFoundByName");
+    /**
+     * Relation not found by name.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_RELATION_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_RELATION_NOT_FOUND", "app.data.relationNotFoundByName");
+    /**
+     * No read rights.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_GET_NO_RIGHTS =
+            new ExceptionId("EX_DATA_RELATIONS_GET_NO_RIGHTS", "app.data.relations.noReadRights");
+    /**
+     * Relation not found by supplied keys.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_GET_NOT_FOUND_BY_SUPPLIED_KEYS =
+            new ExceptionId("EX_DATA_RELATIONS_GET_NOT_FOUND_BY_SUPPLIED_KEYS", "app.data.relations.not.found.by.keys");
+    /**
+     * No insert rights.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_NO_INSERT_RIGHTS =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_NO_INSERT_RIGHTS", "app.data.relations.noInsertRights");
+    /**
+     * No update rights.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_NO_UPDATE_RIGHTS =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_NO_UPDATE_RIGHTS", "app.data.relations.noUpdateRights");
+    /**
+     * Invalid input.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_INVALID_INPUT =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_INVALID_INPUT", "app.data.relations.upsert.invalidInput");
+    /**
+     * From key not found.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_FROM_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_FROM_NOT_FOUND", "app.data.fromKeyNotFound");
+    /**
+     * To key not found.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_TO_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_TO_NOT_FOUND", "app.data.toKeyNotFound");
+    /**
+     * From or to side is in inactive state.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_SIDES_INACTIVE =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_SIDES_INACTIVE", "app.data.sidesInactive");
+    /**
+     * Containment record upsert failed.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_CONTAINS_KEYS_INVALID =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_CONTAINS_KEYS_INVALID", "app.data.containsKeysInvalid");
+    /**
+     * Containment record upsert failed.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_UPSERT_CONTAINS_FAILED =
+            new ExceptionId("EX_DATA_RELATIONS_UPSERT_CONTAINS_FAILED", "app.data.containsUpsertFailed");
+    /**
+     * Relation not found by name.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_DELETE_RELATION_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_DELETE_RELATION_NOT_FOUND", "app.data.delete.relationNotFoundByName");
+    /**
+     * Relation not found.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_DELETE_NOT_FOUND =
+            new ExceptionId("EX_DATA_RELATIONS_DELETE_NOT_FOUND", "app.data.keysNotFound");
+    /**
+     * Relation keys are already in inactive state.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_DELETE_ALREADY_INACTIVE =
+            new ExceptionId("EX_DATA_RELATIONS_DELETE_ALREADY_INACTIVE", "app.data.relations.delete.already.inactive");
+    /**
+     * No delete rights.
+     */
+    public static final ExceptionId EX_DATA_RELATIONS_DELETE_NO_RIGHTS =
+            new ExceptionId("EX_DATA_RELATIONS_DELETE_NO_RIGHTS", "app.data.relations.noDeleteRights");
     /**
      * Constructor.
      */

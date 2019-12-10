@@ -10,39 +10,24 @@ import org.unidata.mdm.core.context.FetchLargeObjectRequestContext;
 import org.unidata.mdm.core.context.SaveLargeObjectRequestContext;
 import org.unidata.mdm.core.dto.LargeObjectDTO;
 import org.unidata.mdm.core.type.timeline.Timeline;
-import org.unidata.mdm.data.context.DeleteRelationRequestContext;
-import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetMultipleRequestContext;
 import org.unidata.mdm.data.context.GetRecordTimelineRequestContext;
-import org.unidata.mdm.data.context.GetRelationRequestContext;
-import org.unidata.mdm.data.context.GetRelationsDigestRequestContext;
-import org.unidata.mdm.data.context.GetRelationsRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
 import org.unidata.mdm.data.context.JoinRequestContext;
 import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.SplitRecordRequestContext;
-import org.unidata.mdm.data.context.UpsertRelationRequestContext;
-import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
 import org.unidata.mdm.data.dto.BulkUpsertResultDTO;
 import org.unidata.mdm.data.dto.DeleteRecordDTO;
-import org.unidata.mdm.data.dto.DeleteRelationDTO;
-import org.unidata.mdm.data.dto.DeleteRelationsDTO;
 import org.unidata.mdm.data.dto.EtalonRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordsDTO;
-import org.unidata.mdm.data.dto.GetRelationDTO;
-import org.unidata.mdm.data.dto.GetRelationsDTO;
 import org.unidata.mdm.data.dto.KeysJoinDTO;
 import org.unidata.mdm.data.dto.MergeRecordsDTO;
-import org.unidata.mdm.data.dto.RelationDigestDTO;
 import org.unidata.mdm.data.dto.SplitRecordsDTO;
-import org.unidata.mdm.data.dto.TimelineDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
-import org.unidata.mdm.data.dto.UpsertRelationDTO;
-import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 
@@ -132,61 +117,6 @@ public interface DataRecordsService {
     Timeline<OriginRecord> loadTimeline(GetRecordTimelineRequestContext ctx);
 
     /**
-     * Loads relevant relations time line for the given relation identities and relation name.
-     *
-     * @param ctx the context
-     * @return timeline
-     */
-    List<TimelineDTO> getRelationsTimeline(GetRelationsRequestContext ctx);
-
-    /**
-     * Loads relevant relations versions time line for the given relation identity.
-     *
-     * @param ctx identity context
-     * @return timeline
-     */
-    TimelineDTO getRelationTimeline(GetRelationRequestContext ctx);
-
-    /**
-     * Collects and returns relation's digest according to the request context.
-     *
-     * @param ctx request context
-     * @return result
-     */
-    RelationDigestDTO loadRelatedEtalonIdsForDigest(GetRelationsDigestRequestContext ctx);
-
-    /**
-     * Loads a relation by its etalon or origin id.
-     *
-     * @param ctx the context
-     * @return relation
-     */
-    GetRelationDTO getRelation(GetRelationRequestContext ctx);
-
-    /**
-     * Gets the relations.
-     * @param ctx the context
-     * @return relations DTO
-     */
-    GetRelationsDTO getRelations(GetRelationsRequestContext ctx);
-
-    /**
-     * Upsert relation call.
-     *
-     * @param ctx the context
-     * @return result (inserted/updated record)
-     */
-    UpsertRelationDTO upsertRelation(UpsertRelationRequestContext ctx);
-
-    /**
-     * Upsert relations call.
-     *
-     * @param ctx the context
-     * @return result (inserted/updated records)
-     */
-    UpsertRelationsDTO upsertRelations(UpsertRelationsRequestContext ctx);
-
-    /**
      * @param ctx - record upsert context
      * @return {@link UpsertRecordDTO}
      */
@@ -225,20 +155,6 @@ public interface DataRecordsService {
      */
     @Deprecated
     BulkUpsertResultDTO bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs);
-
-    /**
-     * Deletes a relation.
-     *
-     * @return result DTO
-     */
-    DeleteRelationDTO deleteRelation(DeleteRelationRequestContext ctx);
-
-    /**
-     * Deletes possibly multiple relations.
-     *
-     * @return result DTO
-     */
-    DeleteRelationsDTO deleteRelations(DeleteRelationsRequestContext ctx);
 
     /**
      * Try to restore given record.

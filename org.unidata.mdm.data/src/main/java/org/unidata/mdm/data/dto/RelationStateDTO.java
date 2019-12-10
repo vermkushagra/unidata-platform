@@ -3,8 +3,6 @@
  */
 package org.unidata.mdm.data.dto;
 
-import java.util.Date;
-
 import org.unidata.mdm.data.type.data.RelationType;
 
 /**
@@ -22,14 +20,6 @@ public class RelationStateDTO {
      */
     private RelationType relationType;
     /**
-     * Minimum lower bound.
-     */
-    private Date rangeFrom;
-    /**
-     * Maximum upper bound.
-     */
-    private Date rangeTo;
-    /**
      * Constructor.
      */
     public RelationStateDTO() {
@@ -38,12 +28,10 @@ public class RelationStateDTO {
     /**
      * Constructor.
      */
-    public RelationStateDTO(String relationName, RelationType relationType, Date rangeFrom, Date rangeTo) {
+    public RelationStateDTO(String relationName, RelationType relationType) {
         super();
         this.relationName = relationName;
         this.relationType = relationType;
-        this.rangeFrom = rangeFrom;
-        this.rangeTo = rangeTo;
     }
     /**
      * @return the relationName
@@ -68,29 +56,5 @@ public class RelationStateDTO {
      */
     public void setRelationType(RelationType relationType) {
         this.relationType = relationType;
-    }
-    /**
-     * @return the rangeFrom
-     */
-    public Date getRangeFrom() {
-        return rangeFrom;
-    }
-    /**
-     * @param rangeFrom the rangeFrom to set
-     */
-    public void setRangeFrom(Date rangeFrom) {
-        this.rangeFrom = rangeFrom;
-    }
-    /**
-     * @return the rangeTo
-     */
-    public Date getRangeTo() {
-        return rangeTo;
-    }
-    /**
-     * @param rangeTo the rangeTo to set
-     */
-    public void setRangeTo(Date rangeTo) {
-        this.rangeTo = rangeTo;
     }
 }

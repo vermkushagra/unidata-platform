@@ -260,6 +260,32 @@ public interface RelationsDao {
      */
     RelationTimelinePO loadRelationVersions(UUID relationEtalonId, Date asOf, String operationId, boolean includeDraftVersions);
     /**
+     * Loads all versions for a relation LSN (needed for etalon calculation).
+     * @param relationLSN _relation_ etalon LSN
+     * @param asOf as of date
+     * @param includeDraftVersions include draft versions into view or not
+     * @return list of versions
+     */
+    RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, boolean includeDraftVersions);
+    /**
+     * Loads versions by operation id.
+     * @param relationLSN
+     * @param asOf
+     * @param operationId
+     * @param includeDraftVersions
+     * @return
+     */
+    RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, Date lud, boolean includeDraftVersions);
+    /**
+     * Loads versions by operation id.
+     * @param relationLSN
+     * @param asOf
+     * @param operationId
+     * @param includeDraftVersions
+     * @return
+     */
+    RelationTimelinePO loadRelationVersions(LSN relationLSN, Date asOf, String operationId, boolean includeDraftVersions);
+    /**
      * UC: Decline/approve pending versions of all relations of a record etalon id.
      * @param relationEtalonId the record etalon id
      * @param to the state to update to
@@ -275,6 +301,15 @@ public interface RelationsDao {
      */
     List<RelationEtalonPO> loadEtalonRelations(
             UUID recordEtalonId, String relationName, List<RecordStatus> statuses, RelationSide side);
+    /**
+     * Loads relation etalon ids, mapped to their relname.
+     * @param recordEtalonId the record id
+     * @param relationNames relation names. May be empty. All relations are fetched in this case
+     * @param side from or to
+     * @return map
+     */
+    Map<String, List<UUID>> loadMappedRelationEtalonIds(UUID recordEtalonId, List<String> relationNames,
+            RelationSide side);
     /**
      * Load relations that have etalon id as a 'To' key.
      *

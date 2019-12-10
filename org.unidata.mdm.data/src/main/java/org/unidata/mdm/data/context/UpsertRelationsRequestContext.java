@@ -21,7 +21,7 @@ public class UpsertRelationsRequestContext
      * This fragment ID.
      */
     public static final RequestFragmentId<UpsertRelationsRequestContext> FRAGMENT_ID
-        = new RequestFragmentId<>("<UPSERT_RELATIONS_FRAGMENT>", null);
+        = new RequestFragmentId<>("UPSERT_RELATIONS_REQUEST", null);
     /**
      * Generated SVUID.
      */

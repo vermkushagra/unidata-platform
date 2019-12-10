@@ -106,7 +106,7 @@ public class UpsertRequestContext
         flags.set(DataContextFlags.FLAG_RECALCULATE_WHOLE_TIMELINE, b.recalculateWholeTimeline);
         flags.set(DataContextFlags.FLAG_IS_RECORD_RESTORE, b.isRestore);
         flags.set(DataContextFlags.FLAG_IS_PERIOD_RESTORE, b.isPeriodRestore);
-        flags.set(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS, b.includeDraftVersions);
+        flags.set(DataContextFlags.FLAG_INCLUDE_DRAFTS, b.includeDraftVersions);
         flags.set(DataContextFlags.FLAG_MERGE_WITH_PREVIOUS_VERSION, b.mergeWithPreviousVersion);
         flags.set(DataContextFlags.FLAG_SKIP_INDEX_DROP, b.skipIndexDrop);
         flags.set(DataContextFlags.FLAG_SKIP_MATCHING_PREPROCESSING, b.skipMatchingPreprocessing);
@@ -290,7 +290,7 @@ public class UpsertRequestContext
      * @return the includeDraftVersions
      */
     public boolean isIncludeDraftVersions() {
-        return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS);
+        return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFTS);
     }
 
     /**
@@ -629,7 +629,7 @@ public class UpsertRequestContext
             this.recalculateWholeTimeline = other.flags.get(DataContextFlags.FLAG_RECALCULATE_WHOLE_TIMELINE);
             this.isRestore = other.flags.get(DataContextFlags.FLAG_IS_RECORD_RESTORE);
             this.isPeriodRestore = other.flags.get(DataContextFlags.FLAG_IS_PERIOD_RESTORE);
-            this.includeDraftVersions = other.flags.get(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS);
+            this.includeDraftVersions = other.flags.get(DataContextFlags.FLAG_INCLUDE_DRAFTS);
             this.mergeWithPreviousVersion = other.flags.get(DataContextFlags.FLAG_MERGE_WITH_PREVIOUS_VERSION);
             this.skipMatchingPreprocessing = other.flags.get(DataContextFlags.FLAG_SKIP_MATCHING_PREPROCESSING);
             this.suppressAudit = other.flags.get(DataContextFlags.FLAG_SUPPRESS_AUDIT);

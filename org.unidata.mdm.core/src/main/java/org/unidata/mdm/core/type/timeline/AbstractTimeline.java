@@ -86,6 +86,13 @@ public abstract class AbstractTimeline<C extends Calculable> implements Timeline
      * {@inheritDoc}
      */
     @Override
+    public boolean isActive() {
+        return intervals.stream().anyMatch(TimeInterval::isActive);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public TimeInterval<C> first() {
         return isEmpty() ? null : get(0);
     }

@@ -25,8 +25,11 @@ public class UpsertRelationRequestContext
         ApprovalStateSettingContext,
         UpsertIndicatorContext,
         BatchAwareContext,
+        SetupAwareContext,
         UserExitExecutableContext,
-        OperationTypeContext {
+        OperationTypeContext,
+        AccessRightContext,
+        ReferenceRelationContext {
     /**
      * Generated SVUID.
      */
@@ -72,7 +75,7 @@ public class UpsertRelationRequestContext
         this.approvalState = b.approvalState;
         this.auditLevel = b.auditLevel;
 
-        flags.set(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS, b.includeDraftVersions);
+        flags.set(DataContextFlags.FLAG_INCLUDE_DRAFTS, b.includeDraftVersions);
         flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
         flags.set(DataContextFlags.FLAG_EMPTY_STORAGE, b.emptyStorage);
         flags.set(DataContextFlags.FLAG_BYPASS_EXTENSION_POINTS, b.bypassExtensionPoints);
@@ -145,7 +148,7 @@ public class UpsertRelationRequestContext
      * @return the includeDraftVersions
      */
     public boolean isIncludeDraftVersions() {
-        return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFT_VERSIONS);
+        return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFTS);
     }
 
     /**

@@ -54,8 +54,28 @@ import org.unidata.mdm.data.service.segments.RecordUpsertResolveCodePointersExec
 import org.unidata.mdm.data.service.segments.RecordUpsertSecurityExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
 import org.unidata.mdm.data.service.segments.RecordUpsertValidateExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationCommonPeriodCheckExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteContainmentExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteIndexingExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeletePersistenceExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteSecurityExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteTimelineExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationGetFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationGetSecurityExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertContainmentExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertIndexingExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertModboxExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertPersistenceExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertSecurityExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertTimelineExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertValidateExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationsDeleteConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationsGetConnectorExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.storage.DataCluster;
 import org.unidata.mdm.data.util.DataDiffUtils;
@@ -104,8 +124,12 @@ public class DataModule extends AbstractModule {
         RecordDeleteStartExecutor.SEGMENT_ID,
 
         // Relation
-        // Start
+        // Upsert start
         RelationUpsertStartExecutor.SEGMENT_ID,
+        // Get start
+        RelationGetStartExecutor.SEGMENT_ID,
+        // Delete start
+        RelationDeleteStartExecutor.SEGMENT_ID,
 
         // 2. Points
         // Upsert record
@@ -150,12 +174,50 @@ public class DataModule extends AbstractModule {
         // Data delete persistence executor
         RecordDeletePersistenceExecutor.SEGMENT_ID,
 
+        // Common
+        RelationCommonPeriodCheckExecutor.SEGMENT_ID,
+
+        // Get relation
+        // Security check
+        RelationGetSecurityExecutor.SEGMENT_ID,
+
+        // Upsert relation
+        RelationUpsertSecurityExecutor.SEGMENT_ID,
+        // Validate input data
+        RelationUpsertValidateExecutor.SEGMENT_ID,
+        // Containment support.
+        RelationUpsertContainmentExecutor.SEGMENT_ID,
+        // Modbox init
+        RelationUpsertModboxExecutor.SEGMENT_ID,
+        // Next (resulting) timeline
+        RelationUpsertTimelineExecutor.SEGMENT_ID,
+        // Indexing info creation
+        RelationUpsertIndexingExecutor.SEGMENT_ID,
+        // Persistence executor
+        RelationUpsertPersistenceExecutor.SEGMENT_ID,
+
+        // Delete relation
+        // Sec. check
+        RelationDeleteSecurityExecutor.SEGMENT_ID,
+        // Timeline creator
+        RelationDeleteTimelineExecutor.SEGMENT_ID,
+        // Process containment
+        RelationDeleteContainmentExecutor.SEGMENT_ID,
+        // Index updates
+        RelationDeleteIndexingExecutor.SEGMENT_ID,
+        // Persistence executor
+        RelationDeletePersistenceExecutor.SEGMENT_ID,
+
         // Audit
         AuditDataSegment.SEGMENT_ID,
 
         // 3. Connectors
         // Upsert relations connector
         RelationsUpsertConnectorExecutor.SEGMENT_ID,
+        // Get relations connector
+        RelationsGetConnectorExecutor.SEGMENT_ID,
+        // Delete relations connector
+        RelationsDeleteConnectorExecutor.SEGMENT_ID,
 
         // 4. Fallbacks
         // Audit data fallback
@@ -172,7 +234,11 @@ public class DataModule extends AbstractModule {
 
         // Relation
         // Upsert finish
-        RelationUpsertFinishExecutor.SEGMENT_ID
+        RelationUpsertFinishExecutor.SEGMENT_ID,
+        // Get finish
+        RelationGetFinishExecutor.SEGMENT_ID,
+        // Delete finish
+        RelationDeleteFinishExecutor.SEGMENT_ID
     };
     /**
      * This configuration.

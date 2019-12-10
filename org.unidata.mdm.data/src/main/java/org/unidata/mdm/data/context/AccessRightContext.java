@@ -20,7 +20,7 @@ public interface AccessRightContext extends StorageCapableContext {
      * @return right or null
      */
     @Nullable
-    default Right accessRight() {
+    default<R extends Right> R accessRight() {
         return getFromStorage(SID_ACCESS_RIGHT);
     }
     /**

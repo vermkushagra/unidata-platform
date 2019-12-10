@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.type.pipeline.Pipeline;
 
 /**
  * @author Mikhail Mikhailov
@@ -28,6 +29,10 @@ public abstract class AbstractBatchSetAccumulator<T extends CommonRequestContext
      * Initial size of the commit interval.
      */
     protected int commitSize;
+    /**
+     * Pipeline.
+     */
+    protected Pipeline pipeline;
     /**
      * Constructor.
      * @param commitSize commit size
@@ -80,5 +85,19 @@ public abstract class AbstractBatchSetAccumulator<T extends CommonRequestContext
 
     public void setAbortOnFailure(boolean abortOnFailure) {
         this.abortOnFailure = abortOnFailure;
+    }
+    /**
+     * Sets the pipeline, which may be used for set execution.
+     * @param p the pipeline
+     */
+    public void setPipeline(Pipeline p) {
+        this.pipeline = p;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Pipeline pipeline() {
+        return pipeline;
     }
 }

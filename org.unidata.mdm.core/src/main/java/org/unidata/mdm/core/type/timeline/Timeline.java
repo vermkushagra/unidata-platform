@@ -38,6 +38,12 @@ public interface Timeline <C extends Calculable> extends Iterable<TimeInterval<C
      */
     boolean isEmpty();
     /**
+     * Returns if at least one of the periods in this timeline is active.
+     * Returns false otherwise.
+     * @return true, if at least one period is active, false otherwise
+     */
+    boolean isActive();
+    /**
      * Tells whether this timeline is not empty.
      * @return true, if empty, false otherwise
      */
