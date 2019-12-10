@@ -98,6 +98,10 @@ public class RelationsGetConnectorExecutor extends Connector<PipelineExecutionCo
             return null;
         }
 
+        if (ctx instanceof RecordIdentityContext) {
+            payload.keys(((RecordIdentityContext) ctx).keys());
+        }
+
         return execute(payload, null);
     }
 

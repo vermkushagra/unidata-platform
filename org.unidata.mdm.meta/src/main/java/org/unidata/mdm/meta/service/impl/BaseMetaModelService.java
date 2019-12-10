@@ -2130,7 +2130,7 @@ public abstract class BaseMetaModelService implements MetaModelService, EventRec
             mappingService.dropAllEntityIndexes(storageId);
         }
 
-        ctx.getEntityUpdate().forEach(entityDef -> mappingService.updateEntityMapping(storageId, true, entityDef, ctx.getNestedEntityUpdate()));
+        ctx.getEntityUpdate().forEach(entityDef -> mappingService.updateEntityMapping(storageId, false, entityDef, ctx.getNestedEntityUpdate()));
         ctx.getLookupEntityUpdate().forEach(entityDef -> mappingService.updateLookupMapping(storageId, true, entityDef));
         ctx.getRelationsUpdate().forEach(relationDef -> mappingService.updateRelationMapping(storageId, null, relationDef));
     }

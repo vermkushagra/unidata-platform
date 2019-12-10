@@ -16,10 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
+import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.migrations.CoreSchemaMigrations;
 import org.unidata.mdm.core.migrations.UninstallCoreSchemaMigrations;
+import org.unidata.mdm.core.service.impl.AsyncRareTaskExecutor;
 import org.unidata.mdm.core.type.search.AuditHeaderField;
 import org.unidata.mdm.core.type.search.AuditIndexType;
 import org.unidata.mdm.core.util.CoreServiceUtils;
@@ -59,10 +61,6 @@ public class CoreModule implements Module {
             new Dependency("org.unidata.mdm.search", "5.2")
     );
 
-
-    // todo move to StorageUtils.DATA_STORAGE_SCHEMA_NAME
-    private String mdmCoreSecuritySchemaName = "org_unidata_mdm_core";
-
     @Autowired
     private HazelcastInstance hazelcastInstance;
 
@@ -74,6 +72,9 @@ public class CoreModule implements Module {
 
     @Autowired
     private CoreConfiguration coreConfiguration;
+
+    @Autowired
+    private AsyncRareTaskExecutor asyncRareTaskExecutor;
 
     /**
      * Lock name.
@@ -115,6 +116,7 @@ public class CoreModule implements Module {
     /**
      * The mapping.
      */
+    // FIXME create dynamically
     private static final Mapping AUDIT_INDEX_MAPPING = new Mapping(AuditIndexType.AUDIT)
             .withFields(
                     new StringMappingField(AuditHeaderField.TYPE.getName())
@@ -141,7 +143,6 @@ public class CoreModule implements Module {
                             .withIndexType(AuditIndexType.AUDIT)
             );
 
-
     @Override
     public void install() {
         LOGGER.info("Install");
@@ -159,7 +160,6 @@ public class CoreModule implements Module {
             );
         }
     }
-
 
     @Override
     public void uninstall() {
@@ -220,11 +220,11 @@ public class CoreModule implements Module {
     @Override
     public void stop() {
         LOGGER.info("Stopping...");
+        asyncRareTaskExecutor.shutdown();
         Hazelcast.shutdownAll();
         DataSourceUtils.shutdown(coreDataSource);
         LOGGER.info("Stopped.");
     }
-
 
     private Migrator getMigrator() throws SQLException {
         if (migrator != null) {
@@ -234,7 +234,7 @@ public class CoreModule implements Module {
         Connection connection = coreDataSource.getConnection();
 
         Database database = new Selector()
-                .loadFromConnection(connection, mdmCoreSecuritySchemaName);
+                .loadFromConnection(connection, CoreConfigurationConstants.CORE_SCHEMA_NAME);
 
         return new Migrator(database, "change_log");
     }

@@ -76,7 +76,7 @@ public class MetaModelMappingServiceImpl implements MetaModelMappingService {
     private static final String FROM_TO_TIMESTAMP_TARGET_FORMAT = "date_time||epoch_millis";
 
     private static final String CREATE_INDEX_LOCK_NAME = "createMetaIndexLock";
-
+    // FIXME Create mappings dynamically on the heap
     private static final Mapping MODEL_INDEX_MAPPING = new Mapping(ModelIndexType.MODEL)
         .withFields(
             new StringMappingField(ModelHeaderField.FIELD_NAME.getName())
@@ -91,7 +91,7 @@ public class MetaModelMappingServiceImpl implements MetaModelMappingService {
             new StringMappingField(ModelHeaderField.FIELD_VALUE.getName())
                 .withIndexType(ModelIndexType.MODEL)
         );
-
+    // FIXME Create mappings dynamically on the heap
     private static final List<MappingField> RECORD_HEADER = Arrays.asList(
         new StringMappingField(RecordHeaderField.FIELD_ETALON_ID.getName())
             .withDocValue(true)
@@ -124,7 +124,7 @@ public class MetaModelMappingServiceImpl implements MetaModelMappingService {
             .withDocValue(true)
             .withNonAnalyzable(true)
     );
-
+    // FIXME Create mappings dynamically on the heap
     private static final List<MappingField> RELATION_HEADER = Arrays.asList(
         new StringMappingField(RelationHeaderField.FIELD_ETALON_ID.getName())
             .withDocValue(true)
@@ -157,6 +157,8 @@ public class MetaModelMappingServiceImpl implements MetaModelMappingService {
         new BooleanMappingField(RelationHeaderField.FIELD_PUBLISHED.getName())
             .withDefaultValue(Boolean.TRUE),
         new BooleanMappingField(RelationHeaderField.FIELD_DELETED.getName())
+            .withDefaultValue(Boolean.FALSE),
+        new BooleanMappingField(RelationHeaderField.FIELD_INACTIVE.getName())
             .withDefaultValue(Boolean.FALSE),
         new BooleanMappingField(RelationHeaderField.FIELD_DIRECT.getName())
             .withDefaultValue(Boolean.FALSE)

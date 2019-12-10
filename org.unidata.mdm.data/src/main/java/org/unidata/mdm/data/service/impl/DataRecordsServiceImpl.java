@@ -24,7 +24,6 @@ import org.unidata.mdm.core.dto.LargeObjectDTO;
 import org.unidata.mdm.core.service.LargeObjectsServiceComponent;
 import org.unidata.mdm.core.type.timeline.Timeline;
 import org.unidata.mdm.data.audit.AuditDataFallback;
-import org.unidata.mdm.data.audit.AuditDataSegment;
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetMultipleRequestContext;
 import org.unidata.mdm.data.context.GetRecordTimelineRequestContext;
@@ -44,31 +43,10 @@ import org.unidata.mdm.data.dto.MergeRecordsDTO;
 import org.unidata.mdm.data.dto.SplitRecordsDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
 import org.unidata.mdm.data.service.DataRecordsService;
-import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetFinishExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertFinishExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertIndexingExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertLobSubmitExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertMeasuredAttributesExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertMergeTimelineExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertModboxExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertPeriodCheckExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertPersistenceExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertResolveCodePointersExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertValidateExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationUpsertFinishExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.service.PipelineService;
-import org.unidata.mdm.system.type.pipeline.Pipeline;
 
 /**
  * The Class DataRecordsServiceImpl.
@@ -165,6 +143,7 @@ public class DataRecordsServiceImpl implements DataRecordsService {
      */
     @Override
     public GetRecordDTO getRecord(GetRequestContext ctx) {
+        /*
         Pipeline p = Pipeline.start(pipelineService.start(RecordGetStartExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordGetSecurityExecutor.SEGMENT_ID))
                 .with(pipelineService.point(RecordGetDiffExecutor.SEGMENT_ID))
@@ -172,8 +151,8 @@ public class DataRecordsServiceImpl implements DataRecordsService {
                 .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
                 .fallback(pipelineService.fallback(AuditDataFallback.SEGMENT_ID))
                 .end(pipelineService.finish(RecordGetFinishExecutor.SEGMENT_ID));
-
-        return executionService.execute(p, ctx);
+        */
+        return executionService.execute(/* p, */ ctx);
     }
 
     /**
@@ -465,9 +444,9 @@ public class DataRecordsServiceImpl implements DataRecordsService {
 //                .with(pipelineService.point(AuditDataSegment.SEGMENT_ID))
 //                .fallback(pipelineService.fallback(AuditDataFallback.SEGMENT_ID))
 //                .end(pipelineService.finish(RecordUpsertFinishExecutor.SEGMENT_ID));
-        final Pipeline pipeline = pipelineService.getById(RecordUpsertStartExecutor.SEGMENT_ID);
+        //final Pipeline pipeline = pipelineService.getById(RecordUpsertStartExecutor.SEGMENT_ID);
 
-        UpsertRecordDTO result = executionService.execute(pipeline, ctx);
+        UpsertRecordDTO result = executionService.execute(/*pipeline, */ ctx);
         return result;
     }
 

@@ -11,6 +11,10 @@ public final class CoreConfigurationConstants {
      */
     public static final String CORE_DATASOURCE_PROPERTIES_PREFIX = CoreModule.MODULE_ID + ".datasource.";
     /**
+     * This module schema name.
+     */
+    public static final String CORE_SCHEMA_NAME = "org_unidata_mdm_core";
+    /**
      * Constructor.
      */
     private CoreConfigurationConstants() {

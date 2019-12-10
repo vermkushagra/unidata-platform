@@ -1,7 +1,9 @@
 package org.unidata.mdm.data.context;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -192,8 +194,40 @@ public class DeleteRelationsRequestContext
          * @return self
          */
         public DeleteRelationsRequestContextBuilder relations(Map<String, List<DeleteRelationRequestContext>> relations) {
-            this.relations = relations;
+            relations.forEach(this::relations);
             return this;
+        }
+        /**
+         * @param relations the relations to set
+         * @return self
+         */
+        public DeleteRelationsRequestContextBuilder relations(String name, List<DeleteRelationRequestContext> relations) {
+            relations.forEach(v -> relation(name, v));
+            return this;
+        }
+        /**
+         * @param relations the relations to set
+         * @return self
+         */
+        public DeleteRelationsRequestContextBuilder relation(String relationName, DeleteRelationRequestContext relation) {
+
+            Objects.requireNonNull(relationName);
+            if (Objects.isNull(this.relations)) {
+                this.relations = new HashMap<>();
+            }
+
+            this.relations
+                .computeIfAbsent(relationName, k -> new ArrayList<DeleteRelationRequestContext>())
+                .add(relation);
+            return this;
+        }
+        /**
+         * @param relations the relations to set
+         * @return self
+         */
+        public DeleteRelationsRequestContextBuilder relation(DeleteRelationRequestContext relation) {
+            Objects.requireNonNull(relation);
+            return relation(relation.getRelationName(), relation);
         }
         /**
          * @param lastUpdate the last update to set

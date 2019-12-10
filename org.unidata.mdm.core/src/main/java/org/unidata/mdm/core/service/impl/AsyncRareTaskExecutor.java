@@ -12,16 +12,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
-import javax.annotation.PreDestroy;
 
-import io.prometheus.client.Counter;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Service;
-import org.unidata.mdm.core.service.AsyncExecutor;
-import org.unidata.mdm.system.service.RuntimePropertiesService;
-import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
-import reactor.core.Disposable;
+import org.unidata.mdm.core.service.AsyncExecutor;
+import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
+
+import io.prometheus.client.Counter;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -89,8 +87,8 @@ public class AsyncRareTaskExecutor implements AsyncExecutor, ConfigurationUpdate
                 });
     }
 
-    @PreDestroy
-    public void preDestroy() {
+    // Called from Module's stop()
+    public void shutdown() {
         threadPoolExecutor.shutdown();
     }
 
