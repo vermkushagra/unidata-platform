@@ -11,7 +11,7 @@ import org.unidata.mdm.data.module.DataModule;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.service.impl.MeasuredAttributeValueConverter;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
@@ -20,7 +20,7 @@ import org.unidata.mdm.system.type.runtime.MeasurementPoint;
  * Normalize measured attributes before upserting record
  */
 @Component(RecordUpsertMeasuredAttributesExecutor.SEGMENT_ID)
-public class RecordUpsertMeasuredAttributesExecutor extends Point<PipelineExecutionContext>
+public class RecordUpsertMeasuredAttributesExecutor extends Point<PipelineInput>
         implements RecordIdentityContextSupport, MeasurementMetaSettingSupport {
     /**
      * This segment ID.
@@ -83,7 +83,7 @@ public class RecordUpsertMeasuredAttributesExecutor extends Point<PipelineExecut
      * {@inheritDoc}
      */
     @Override
-    public void point(PipelineExecutionContext ctx) {
+    public void point(PipelineInput ctx) {
 
         if (ctx instanceof UpsertRequestContext) {
             UpsertRequestContext urCtx = (UpsertRequestContext) ctx;

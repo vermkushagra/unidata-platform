@@ -36,18 +36,18 @@ import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.type.RelationSide;
-import org.unidata.mdm.system.context.CompositeRequestContext;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
  * @author Mikhail Mikhailov on Dec 4, 2019
  */
 @Component(RelationsGetConnectorExecutor.SEGMENT_ID)
-public class RelationsGetConnectorExecutor extends Connector<PipelineExecutionContext, GetRelationsDTO> {
+public class RelationsGetConnectorExecutor extends Connector<PipelineInput, GetRelationsDTO> {
     /**
      * This segment ID.
      */
@@ -90,9 +90,9 @@ public class RelationsGetConnectorExecutor extends Connector<PipelineExecutionCo
      * {@inheritDoc}
      */
     @Override
-    public GetRelationsDTO connect(PipelineExecutionContext ctx) {
+    public GetRelationsDTO connect(PipelineInput ctx) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         GetRelationsRequestContext payload = target.fragment(GetRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
@@ -109,9 +109,9 @@ public class RelationsGetConnectorExecutor extends Connector<PipelineExecutionCo
      * {@inheritDoc}
      */
     @Override
-    public GetRelationsDTO connect(PipelineExecutionContext ctx, Pipeline p) {
+    public GetRelationsDTO connect(PipelineInput ctx, Pipeline p) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         GetRelationsRequestContext payload = target.fragment(GetRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;

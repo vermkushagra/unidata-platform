@@ -107,7 +107,6 @@ import org.unidata.mdm.data.context.SplitRecordRequestContext;
 import org.unidata.mdm.data.context.UpsertRelationRequestContext;
 import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
-import org.unidata.mdm.data.dto.BulkUpsertResultDTO;
 import org.unidata.mdm.data.dto.DeleteRecordDTO;
 import org.unidata.mdm.data.dto.DeleteRelationDTO;
 import org.unidata.mdm.data.dto.DeleteRelationsDTO;
@@ -117,6 +116,7 @@ import org.unidata.mdm.data.dto.GetRelationDTO;
 import org.unidata.mdm.data.dto.GetRelationsDTO;
 import org.unidata.mdm.data.dto.KeysJoinDTO;
 import org.unidata.mdm.data.dto.MergeRecordsDTO;
+import org.unidata.mdm.data.dto.RecordsBulkResultDTO;
 import org.unidata.mdm.data.dto.RelationStateDTO;
 import org.unidata.mdm.data.dto.SplitRecordsDTO;
 import org.unidata.mdm.data.dto.UpsertRecordDTO;
@@ -376,10 +376,10 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .map(request -> convertToUpsertContext(request, bulkRequest.getCommon(), true))
                     .collect(Collectors.toList());
 
-            BulkUpsertResultDTO result = dataRecordsService.bulkUpsertRecords(upsertRequestContexts, true);
+            RecordsBulkResultDTO result = dataRecordsService.bulkUpsertRecords(upsertRequestContexts, true);
             ResponseBulkUpsert upsert = JaxbUtils.getApiObjectFactory().createResponseBulkUpsert();
 
-            Collection<ResponseUpsert> innerResponses = result.getRecords().stream()
+            Collection<ResponseUpsert> innerResponses = result.getUpsertRecords().stream()
                     .map(innerResult -> JaxbUtils.getApiObjectFactory().createResponseUpsert()
                             .withEtalonKey(DumpUtils.to(innerResult.getRecordKeys().getEtalonKey()))
                             .withOriginKey(DumpUtils.to(innerResult.getRecordKeys().getOriginKey()))
@@ -755,11 +755,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             List<RecordIdentityContext> duplicates = new ArrayList<>();
             for (Object value : requestMerge.getDuplicateEtalonKeyOrDuplicateOriginKey()) {
                 if (value instanceof EtalonKey) {
-                    duplicates.add(new GetRequestContext.GetRequestContextBuilder()
+                    duplicates.add(GetRequestContext.builder()
                             .etalonKey(DumpUtils.from((EtalonKey) value))
                             .build());
                 } else if (value instanceof OriginKey) {
-                    duplicates.add(new GetRequestContext.GetRequestContextBuilder()
+                    duplicates.add(GetRequestContext.builder()
                             .originKey(DumpUtils.from((OriginKey) value))
                             .build());
                 }
@@ -770,7 +770,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         DataSoapExceptionIds.EX_SOAP_INCORRECT_REQUEST_MERGE_EMPTY_DUPLICATE_KEYS);
             }
 
-            MergeRequestContext ctx = new MergeRequestContext.MergeRequestContextBuilder()
+            MergeRequestContext ctx = MergeRequestContext.builder()
                     .etalonKey(DumpUtils.from(requestMerge.getMasterEtalonKey()))
                     .originKey(DumpUtils.from(requestMerge.getMasterOriginKey()))
                     .duplicates(duplicates)
@@ -911,7 +911,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     ids.add(hit.getId());
                 }
 
-                GetMultipleRequestContext dCtx = new GetMultipleRequestContext.GetMultipleRequestContextBuilder()
+                GetMultipleRequestContext dCtx = GetMultipleRequestContext.builder()
                         .entityName(ctx.getEntity())
                         .etalonKeys(ids).build();
 
@@ -966,7 +966,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             EtalonKey etalonKey = request.getRequestSoftDelete().getEtalonKey();
             SoftDeleteActionType actionType = request.getRequestSoftDelete().getActionType();
 
-            DeleteRequestContext ctx = new DeleteRequestContext.DeleteRequestContextBuilder()
+            DeleteRequestContext ctx = DeleteRequestContext.builder()
                     // Set etalon key
                     .etalonKey(etalonKey != null ? etalonKey.getId() : null)
                     // Set origin key
@@ -1045,7 +1045,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 totalSubmitted = relations.values().stream().mapToInt(List::size).sum();
             }
 
-            DeleteRelationsRequestContext dCtx = new DeleteRelationsRequestContext.DeleteRelationsRequestContextBuilder()
+            DeleteRelationsRequestContext dCtx = DeleteRelationsRequestContext.builder()
                     .etalonKey(DumpUtils.from(del.getEtalonKey()))
                     .originKey(DumpUtils.from(del.getOriginKey()))
                     .relations(relations)
@@ -1138,7 +1138,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
 
             // Upsert relations
             if (!relations.isEmpty()) {
-                rCtx = new UpsertRelationsRequestContext.UpsertRelationsRequestContextBuilder()
+                rCtx = UpsertRelationsRequestContext.builder()
                         .relations(relations)
                         .etalonKey(fromEtalonKey != null ? fromEtalonKey.getId() : null)
                         .originKey(fromOriginKey != null ? fromOriginKey.getId() : null)
@@ -1969,7 +1969,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
 
             for (DeleteRelationRecordDef key : delRelDef.getKeys()) {
 
-                DeleteRelationRequestContext ctx = new DeleteRelationRequestContext.DeleteRelationRequestContextBuilder()
+                DeleteRelationRequestContext ctx = DeleteRelationRequestContext.builder()
                         // Keys
                         .etalonKey(DumpUtils.from(key.getEtalonKey()))
                         .originKey(DumpUtils.from(key.getOriginKey()))

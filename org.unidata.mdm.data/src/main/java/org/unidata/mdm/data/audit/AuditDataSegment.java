@@ -9,7 +9,7 @@ import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
 import org.unidata.mdm.data.module.DataModule;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
 
@@ -17,7 +17,7 @@ import org.unidata.mdm.system.type.pipeline.Start;
  * @author Alexander Malyshev
  */
 @Component(AuditDataSegment.SEGMENT_ID)
-public class AuditDataSegment extends Point<PipelineExecutionContext> {
+public class AuditDataSegment extends Point<PipelineInput> {
 
     /**
      * This segment ID.
@@ -40,7 +40,7 @@ public class AuditDataSegment extends Point<PipelineExecutionContext> {
     }
 
     @Override
-    public void point(PipelineExecutionContext ctx) {
+    public void point(PipelineInput ctx) {
         auditService.writeEvent(
                 AuditDataUtils.auditEventType(ctx),
                 Collections.singletonMap(AuditDataConstants.CONTEXT_FILED, ctx)

@@ -1,8 +1,8 @@
 package org.unidata.mdm.system.service;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
@@ -11,7 +11,7 @@ import org.unidata.mdm.system.type.pipeline.Start;
  */
 public interface ExecutionService {
     /**
-     * Calls {@link Start#init(PipelineExecutionContext)}
+     * Calls {@link Start#subject(PipelineInput)}
      * to select a pre-configured pipeline for the context and than
      * calls the variant below.
      *
@@ -20,7 +20,7 @@ public interface ExecutionService {
      * @param ctx the request context
      * @return result
      */
-    <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execute(C ctx);
+    <C extends PipelineInput, R extends PipelineOutput> R execute(C ctx);
     /**
      * Calls the pipeline 'p' for the supplied context 'c'.
      *
@@ -30,5 +30,5 @@ public interface ExecutionService {
      * @param ctx the context
      * @return result
      */
-    <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execute(Pipeline p, C ctx);
+    <C extends PipelineInput, R extends PipelineOutput> R execute(Pipeline p, C ctx);
 }

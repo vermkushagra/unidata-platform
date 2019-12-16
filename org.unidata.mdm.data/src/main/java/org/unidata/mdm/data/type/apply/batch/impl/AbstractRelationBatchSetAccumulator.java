@@ -16,12 +16,14 @@ import org.unidata.mdm.data.type.apply.batch.AbstractBatchSetAccumulator;
 import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.search.context.IndexRequestContext;
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Common classifier part.
  */
-public abstract class AbstractRelationBatchSetAccumulator<T extends CommonRequestContext> extends AbstractBatchSetAccumulator<T> {
+public abstract class AbstractRelationBatchSetAccumulator<T extends CommonRequestContext, O extends PipelineOutput>
+    extends AbstractBatchSetAccumulator<T, O> {
     /**
      * Collected rel. etalon updates.
      */

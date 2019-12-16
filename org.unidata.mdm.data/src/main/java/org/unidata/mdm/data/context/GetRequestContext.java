@@ -13,7 +13,7 @@ import java.util.Map;
 import org.unidata.mdm.core.type.audit.AuditLevel;
 import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
@@ -24,7 +24,7 @@ public class GetRequestContext
     implements
         SimpleAttributesDiffContext,
         AccessRightContext,
-        PipelineExecutionContext,
+        PipelineInput,
         ReadOnlyTimelineContext<OriginRecord> {
     /**
      * Generated SVUID.
@@ -61,7 +61,7 @@ public class GetRequestContext
     /**
      * Constructor.
      */
-    private GetRequestContext(GetRequestContextBuilder b) {
+    protected GetRequestContext(GetRequestContextBuilder b) {
 
         super(b);
         this.forDate = b.forDate;
@@ -362,7 +362,7 @@ public class GetRequestContext
         /**
          * Constructor.
          */
-        public GetRequestContextBuilder() {
+        protected GetRequestContextBuilder() {
             super();
         }
         /**

@@ -17,8 +17,8 @@ import org.unidata.mdm.data.dto.GetRelationsDTO;
 import org.unidata.mdm.data.dto.RelationDigestDTO;
 import org.unidata.mdm.data.dto.UpsertRelationDTO;
 import org.unidata.mdm.data.dto.UpsertRelationsDTO;
-import org.unidata.mdm.data.type.apply.batch.BatchSetAccumulator;
 import org.unidata.mdm.data.type.data.OriginRelation;
+import org.unidata.mdm.system.type.batch.BatchSetAccumulator;
 
 /**
  * @author Mikhail Mikhailov on Dec 3, 2019
@@ -104,7 +104,7 @@ public interface DataRelationsService {
      * @param accumulator accumulator
      * @return list of results
      */
-    List<DeleteRelationsDTO> batchDeleteRelations(BatchSetAccumulator<DeleteRelationsRequestContext> accumulator);
+    List<DeleteRelationsDTO> batchDeleteRelations(BatchSetAccumulator<DeleteRelationsRequestContext, DeleteRelationsDTO> accumulator);
     /**
      * Batch delete relations with default accumulator context.
      *
@@ -118,7 +118,7 @@ public interface DataRelationsService {
      * @param accumulator accumulator
      * @return result
      */
-    List<UpsertRelationsDTO> batchUpsertRelations(BatchSetAccumulator<UpsertRelationsRequestContext> accumulator);
+    List<UpsertRelationsDTO> batchUpsertRelations(BatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> accumulator);
     /**
      * Batch upsert relations with default accumulator context.
      *

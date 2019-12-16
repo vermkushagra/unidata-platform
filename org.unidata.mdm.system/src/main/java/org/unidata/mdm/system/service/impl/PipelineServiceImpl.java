@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,10 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.convert.PipelinesConverter;
 import org.unidata.mdm.system.dao.PipelinesDAO;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.exception.PipelineException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.po.PipelinePO;
@@ -51,6 +47,8 @@ import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Segment;
 import org.unidata.mdm.system.type.pipeline.SegmentType;
@@ -75,9 +73,6 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      * Registered segments.
      */
     private final ConcurrentMap<String, Segment> segments = new ConcurrentHashMap<>();
-
-    private final TypeReference<PipelinePO> pipelinePOTypeReference = new TypeReference<PipelinePO>() {};
-
     /**
      * ES instance.
      */
@@ -109,27 +104,27 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
         // 1. Collect points
         for (Module m : moduleService.getModules()) {
 
-            Collection<Start<PipelineExecutionContext>> startSegments = m.getStartTypes();
+            Collection<Start<PipelineInput>> startSegments = m.getStartTypes();
             if (CollectionUtils.isNotEmpty(startSegments)) {
                 segments.putAll(startSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
 
-            Collection<Point<PipelineExecutionContext>> pointSegments = m.getPointTypes();
+            Collection<Point<PipelineInput>> pointSegments = m.getPointTypes();
             if (CollectionUtils.isNotEmpty(pointSegments)) {
                 segments.putAll(pointSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
 
-            Collection<Connector<PipelineExecutionContext, PipelineExecutionResult>> connectorSegments = m.getConnectorTypes();
+            Collection<Connector<PipelineInput, PipelineOutput>> connectorSegments = m.getConnectorTypes();
             if (CollectionUtils.isNotEmpty(connectorSegments)) {
                 segments.putAll(connectorSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
 
-            Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> finishSegments = m.getFinishTypes();
+            Collection<Finish<PipelineInput, PipelineOutput>> finishSegments = m.getFinishTypes();
             if (CollectionUtils.isNotEmpty(finishSegments)) {
                 segments.putAll(finishSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
 
-            Collection<Fallback<PipelineExecutionContext>> fallbackSegments = m.getFallbacks();
+            Collection<Fallback<PipelineInput>> fallbackSegments = m.getFallbacks();
             if (CollectionUtils.isNotEmpty(fallbackSegments)) {
                 segments.putAll(fallbackSegments.stream().collect(Collectors.toMap(Segment::getId, Function.identity())));
             }
@@ -347,7 +342,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
 
         Start<?> start = (Start<?>) s;
         return segments.values().stream()
-                .filter(segment -> segment.getType() != SegmentType.START && segment.supports(start))
+                .filter(segment -> segment.getType() != SegmentType.START && s.isBatched() == segment.isBatched() && segment.supports(start))
                 .collect(Collectors.toList());
     }
     /**
@@ -410,7 +405,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends PipelineExecutionContext> Start<C> start(String id) {
+    public <C extends PipelineInput> Start<C> start(String id) {
 
         Segment s = segments.get(id);
         if (Objects.nonNull(s) && s.getType() == SegmentType.START) {
@@ -424,7 +419,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends PipelineExecutionContext> Point<C> point(String id) {
+    public <C extends PipelineInput> Point<C> point(String id) {
 
         Segment s = segments.get(id);
         if (Objects.nonNull(s) && s.getType() == SegmentType.POINT) {
@@ -438,7 +433,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Connector<C, R> connector(String id) {
+    public <C extends PipelineInput, R extends PipelineOutput> Connector<C, R> connector(String id) {
 
         Segment s = segments.get(id);
         if (Objects.nonNull(s) && s.getType() == SegmentType.CONNECTOR) {
@@ -452,7 +447,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends PipelineExecutionContext> Fallback<C> fallback(String id) {
+    public <C extends PipelineInput> Fallback<C> fallback(String id) {
 
         Segment s = segments.get(id);
         if (Objects.nonNull(s) && s.getType() == SegmentType.FALLBACK) {
@@ -467,7 +462,7 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Finish<C, R> finish(String id) {
+    public <C extends PipelineInput, R extends PipelineOutput> Finish<C, R> finish(String id) {
 
         Segment s = segments.get(id);
         if (Objects.nonNull(s) && s.getType() == SegmentType.FINISH) {

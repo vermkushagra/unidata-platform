@@ -7,13 +7,13 @@ import org.unidata.mdm.core.dto.ResourceSpecificRightDTO;
 import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RelationKeys;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Single relation version DTO.
  */
-public class GetRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineExecutionResult {
+public class GetRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineOutput {
     /**
      * The keys.
      */

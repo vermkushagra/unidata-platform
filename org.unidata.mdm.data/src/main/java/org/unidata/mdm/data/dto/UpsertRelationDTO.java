@@ -13,13 +13,13 @@ import org.unidata.mdm.data.type.data.EtalonRelation;
 import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.data.UpsertAction;
 import org.unidata.mdm.data.type.keys.RelationKeys;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Upsert relation DTO.
  */
-public class UpsertRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineExecutionResult {
+public class UpsertRelationDTO implements RelationDTO, EtalonRelationDTO, PipelineOutput {
     /**
      * Relation keys.
      */

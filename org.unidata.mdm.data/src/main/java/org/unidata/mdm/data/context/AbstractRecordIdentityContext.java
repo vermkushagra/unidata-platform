@@ -1,13 +1,13 @@
 package org.unidata.mdm.data.context;
 
 import org.apache.commons.lang3.StringUtils;
-import org.unidata.mdm.core.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.core.type.calculables.ModificationBoxKey;
 import org.unidata.mdm.core.type.keys.ExternalId;
 import org.unidata.mdm.core.type.keys.LSN;
 import org.unidata.mdm.data.type.keys.RecordEtalonKey;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RecordOriginKey;
+import org.unidata.mdm.system.context.AbstractCompositeRequestContext;
 
 /**
  * @author Mikhail Mikhailov

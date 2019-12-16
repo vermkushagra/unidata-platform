@@ -58,7 +58,7 @@ public class GetRelationsDigestRequestContext extends CommonRequestContext {
     /**
      * Constructor.
      */
-    private GetRelationsDigestRequestContext(GetRelationsDigestRequestContextBuilder b) {
+    protected GetRelationsDigestRequestContext(GetRelationsDigestRequestContextBuilder b) {
         super(b);
         this.etalonId = b.etalonId;
         this.count = b.count;
@@ -144,6 +144,10 @@ public class GetRelationsDigestRequestContext extends CommonRequestContext {
         return fields;
     }
 
+    public static GetRelationsDigestRequestContextBuilder builder() {
+        return new GetRelationsDigestRequestContextBuilder();
+    }
+
     /**
      * Get relations digest requestbuilder.
      * @author Mikhail Mikhailov
@@ -188,7 +192,7 @@ public class GetRelationsDigestRequestContext extends CommonRequestContext {
         /**
          * Constructor.
          */
-        public GetRelationsDigestRequestContextBuilder() {
+        protected GetRelationsDigestRequestContextBuilder() {
             super();
         }
 

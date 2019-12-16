@@ -21,7 +21,6 @@ import org.unidata.mdm.data.po.keys.RelationExternalKeyPO;
 import org.unidata.mdm.data.po.keys.RelationKeysPO;
 import org.unidata.mdm.data.service.RecordBatchSetProcessor;
 import org.unidata.mdm.data.service.RelationBatchSetProcessor;
-import org.unidata.mdm.data.type.apply.batch.BatchSetSize;
 import org.unidata.mdm.data.type.apply.batch.impl.AbstractRelationBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RecordDeleteBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RecordUpsertBatchSetAccumulator;
@@ -29,6 +28,7 @@ import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSetAccumula
 import org.unidata.mdm.data.type.apply.batch.impl.RelationMergeBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationUpsertBatchSetAccumulator;
 import org.unidata.mdm.search.context.IndexRequestContext;
+import org.unidata.mdm.system.type.batch.BatchSetSize;
 
 /**
  * @author Mikhail Mikhailov
@@ -219,7 +219,7 @@ public class RelationBatchSetProcessorImpl extends RelationChangeSetProcessorImp
      * Applies etalons updates.
      * @param accumulator the accumulator
      */
-    private void applyUpdateEtalons(AbstractRelationBatchSetAccumulator<?> accumulator) {
+    private void applyUpdateEtalons(AbstractRelationBatchSetAccumulator<?, ?> accumulator) {
 
         for (List<RelationEtalonPO> set : accumulator.getEtalonUpdates().values()) {
 
@@ -239,7 +239,7 @@ public class RelationBatchSetProcessorImpl extends RelationChangeSetProcessorImp
      * Applies origins updates.
      * @param accumulator the accumulator
      */
-    private void applyUpdateOrigins(AbstractRelationBatchSetAccumulator<?> accumulator) {
+    private void applyUpdateOrigins(AbstractRelationBatchSetAccumulator<?, ?> accumulator) {
 
         for (Entry<Integer, List<RelationOriginPO>> set : accumulator.getOriginUpdates().entrySet()) {
 
@@ -259,7 +259,7 @@ public class RelationBatchSetProcessorImpl extends RelationChangeSetProcessorImp
      * Applies vistory updates.
      * @param accumulator the accumulator
      */
-    private void applyInsertVistory(AbstractRelationBatchSetAccumulator<?> accumulator) {
+    private void applyInsertVistory(AbstractRelationBatchSetAccumulator<?, ?> accumulator) {
 
         for (Entry<Integer, List<RelationVistoryPO>> set : accumulator.getVistory().entrySet()) {
 
@@ -278,7 +278,7 @@ public class RelationBatchSetProcessorImpl extends RelationChangeSetProcessorImp
      * Applies origins inserts.
      * @param accumulator the accumulator
      */
-    private void applyInsertExternalKeys(AbstractRelationBatchSetAccumulator<?> accumulator) {
+    private void applyInsertExternalKeys(AbstractRelationBatchSetAccumulator<?, ?> accumulator) {
 
         for (Entry<Integer, List<RelationExternalKeyPO>> entry : accumulator.getFromExternalKeysInserts().entrySet()) {
 
@@ -329,7 +329,7 @@ public class RelationBatchSetProcessorImpl extends RelationChangeSetProcessorImp
      * Applies etalons updates.
      * @param accumulator the accumulator
      */
-    private void applyWipeExternalKeys(AbstractRelationBatchSetAccumulator<?> accumulator) {
+    private void applyWipeExternalKeys(AbstractRelationBatchSetAccumulator<?, ?> accumulator) {
 
         for (Entry<Integer, List<RelationExternalKeyPO>> set : accumulator.getFromExternalKeysWipes().entrySet()) {
 

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.unidata.mdm.core.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.meta.EntitiesGroupDef;
 import org.unidata.mdm.meta.EntityDef;
 import org.unidata.mdm.meta.EnumerationDataType;
@@ -21,8 +20,9 @@ import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.SimpleAttributeDef;
 import org.unidata.mdm.meta.SourceSystemDef;
 import org.unidata.mdm.meta.service.segments.ModelUpsertStartExecutor;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.system.context.StorageSpecificContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
@@ -30,7 +30,7 @@ import org.unidata.mdm.system.context.StorageSpecificContext;
  */
 public class UpdateModelRequestContext
         extends AbstractCompositeRequestContext
-        implements MayHaveDraft, PipelineExecutionContext, StorageSpecificContext, Serializable {
+        implements MayHaveDraft, PipelineInput, StorageSpecificContext, Serializable {
     /**
      * Generated SVUID.
      */
@@ -231,6 +231,7 @@ public class UpdateModelRequestContext
         return getFlag(MetaContextFlags.FLAG_DIRECT);
     }
 
+    @Override
     public boolean isDraft() {
         return getFlag(MetaContextFlags.FLAG_DRAFT);
     }

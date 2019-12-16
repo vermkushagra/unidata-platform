@@ -5,7 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang3.tuple.Pair;
 import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRelation;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
@@ -13,7 +13,7 @@ import org.unidata.mdm.system.context.PipelineExecutionContext;
  */
 public class GetRelationRequestContext
     extends AbstractRelationToRequestContext
-    implements PipelineExecutionContext, AccessRightContext, ReadOnlyTimelineContext<OriginRelation>, SetupAwareContext {
+    implements PipelineInput, AccessRightContext, ReadOnlyTimelineContext<OriginRelation>, SetupAwareContext {
     /**
      * Generated SVUID.
      */
@@ -37,7 +37,7 @@ public class GetRelationRequestContext
     /**
      * Constructor.
      */
-    private GetRelationRequestContext(GetRelationRequestContextBuilder b) {
+    protected GetRelationRequestContext(GetRelationRequestContextBuilder b) {
         super(b);
         this.forDate = b.forDate;
         this.forDatesFrame = b.forDatesFrame;
@@ -135,7 +135,7 @@ public class GetRelationRequestContext
         /**
          * Constructor.
          */
-        public GetRelationRequestContextBuilder() {
+        protected GetRelationRequestContextBuilder() {
             super();
         }
         /**

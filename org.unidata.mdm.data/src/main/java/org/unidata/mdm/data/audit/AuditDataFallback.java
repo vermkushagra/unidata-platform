@@ -5,15 +5,15 @@ import org.unidata.mdm.core.audit.AuditConstants;
 import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.data.module.DataModule;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.type.pipeline.Fallback;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Start;
 
 /**
  * @author Alexander Malyshev
  */
 @Component(AuditDataFallback.SEGMENT_ID)
-public class AuditDataFallback extends Fallback<PipelineExecutionContext> {
+public class AuditDataFallback extends Fallback<PipelineInput> {
     /**
      * This segment ID.
      */
@@ -32,7 +32,7 @@ public class AuditDataFallback extends Fallback<PipelineExecutionContext> {
     }
 
     @Override
-    public void accept(PipelineExecutionContext pipelineExecutionContext, Throwable throwable) {
+    public void accept(PipelineInput pipelineExecutionContext, Throwable throwable) {
         auditService.writeEvent(
                 AuditDataUtils.auditEventType(pipelineExecutionContext),
                 Maps.of(

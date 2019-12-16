@@ -7,20 +7,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
-import org.unidata.mdm.system.dto.ResultFragment;
-import org.unidata.mdm.system.dto.ResultFragmentId;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
 
 /**
  * @author Mikhail Mikhailov
  *
  */
-public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, ResultFragment<UpsertRelationsDTO>, PipelineExecutionResult {
+public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, OutputFragment<UpsertRelationsDTO>, PipelineOutput {
     /**
      * This fragment ID.
      */
-    public static final ResultFragmentId<UpsertRelationsDTO> ID
-        = new ResultFragmentId<>("UPSERT_RELATIONS_RESULT", UpsertRelationsDTO::new);
+    public static final FragmentId<UpsertRelationsDTO> ID
+        = new FragmentId<>("UPSERT_RELATIONS_RESULT", UpsertRelationsDTO::new);
     /**
      * Relations upsert result.
      */
@@ -48,7 +48,7 @@ public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, Resu
     }
 
     @Override
-    public ResultFragmentId<UpsertRelationsDTO> getFragmentId() {
+    public FragmentId<UpsertRelationsDTO> fragmentId() {
         return ID;
     }
 }

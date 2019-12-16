@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.unidata.mdm.core.context.ValidityRangeContext;
-import org.unidata.mdm.system.context.RequestFragmentContext;
-import org.unidata.mdm.system.context.RequestFragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
 
 /**
  * @author Mikhail Mikhailov
@@ -18,12 +18,12 @@ import org.unidata.mdm.system.context.RequestFragmentId;
  */
 public class UpsertRelationsRequestContext
     extends AbstractRelationsFromRequestContext<UpsertRelationRequestContext>
-    implements ValidityRangeContext, RequestFragmentContext<UpsertRelationsRequestContext> {
+    implements ValidityRangeContext, InputFragment<UpsertRelationsRequestContext> {
     /**
      * This fragment ID.
      */
-    public static final RequestFragmentId<UpsertRelationsRequestContext> FRAGMENT_ID
-        = new RequestFragmentId<>("UPSERT_RELATIONS_REQUEST", null);
+    public static final FragmentId<UpsertRelationsRequestContext> FRAGMENT_ID
+        = new FragmentId<>("UPSERT_RELATIONS_REQUEST", () -> UpsertRelationsRequestContext.builder().build());
     /**
      * Generated SVUID.
      */
@@ -60,7 +60,7 @@ public class UpsertRelationsRequestContext
      * Constructor.
      * @param b the builder
      */
-    private UpsertRelationsRequestContext(UpsertRelationsRequestContextBuilder b) {
+    protected UpsertRelationsRequestContext(UpsertRelationsRequestContextBuilder b) {
         super(b);
         this.relations = b.relations;
         this.lastUpdate = b.lastUpdate;
@@ -133,7 +133,7 @@ public class UpsertRelationsRequestContext
     }
 
     @Override
-    public RequestFragmentId<UpsertRelationsRequestContext> getFragmentId() {
+    public FragmentId<UpsertRelationsRequestContext> fragmentId() {
         return FRAGMENT_ID;
     }
 
@@ -182,7 +182,7 @@ public class UpsertRelationsRequestContext
         /**
          * Constructor.
          */
-        public UpsertRelationsRequestContextBuilder() {
+        protected UpsertRelationsRequestContextBuilder() {
             super();
         }
         /**

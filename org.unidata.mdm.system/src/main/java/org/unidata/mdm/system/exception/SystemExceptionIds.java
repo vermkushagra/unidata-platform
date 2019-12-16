@@ -55,6 +55,11 @@ public class SystemExceptionIds {
     public static final ExceptionId EX_PIPELINE_ALREADY_FINISHED
         = new ExceptionId("EX_PIPELINE_ALREADY_FINISHED", "app.pipeline.already.finished");
     /**
+     * Attempt to add a non batched segment to a batched pipeline or vice versa.
+     */
+    public static final ExceptionId EX_PIPELINE_BATCHED_MISMATCH
+        = new ExceptionId("EX_PIPELINE_BATCHED_MISMATCH", "app.pipeline.batched.not.batched");
+    /**
      * The pipeline is not finished yet.
      */
     public static final ExceptionId EX_PIPELINE_IS_NOT_FINISHED

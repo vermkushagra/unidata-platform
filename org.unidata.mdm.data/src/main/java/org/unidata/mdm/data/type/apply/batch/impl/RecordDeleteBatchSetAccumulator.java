@@ -9,27 +9,34 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.unidata.mdm.data.context.DataContextFlags;
 import org.unidata.mdm.data.context.DeleteRequestContext;
+import org.unidata.mdm.data.dto.DeleteRecordDTO;
 import org.unidata.mdm.data.po.data.RecordVistoryPO;
 import org.unidata.mdm.data.po.keys.RecordExternalKeysPO;
 import org.unidata.mdm.data.po.keys.RecordKeysPO;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsDeleteStartExecutor;
 import org.unidata.mdm.data.type.apply.RecordDeleteChangeSet;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
 
 /**
  * @author Mikhail Mikhailov
  * Delete accumulator.
  */
-public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<DeleteRequestContext> {
+public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<DeleteRequestContext, DeleteRecordDTO> {
     /**
      * Record wipe deletes.
      */
-    private Map<Integer, List<RecordKeysPO>> wipeRecordKeys;
+    private final Map<Integer, List<RecordKeysPO>> wipeRecordKeys;
     /**
      * Specifically external ids, distributed by EXT ID SHARD number.
      */
-    private Map<Integer, List<RecordExternalKeysPO>> wipeExternalKeys;
+    private final Map<Integer, List<RecordExternalKeysPO>> wipeExternalKeys;
+    /**
+     * The stats.
+     */
+    private final RecordDeleteBatchSetStatistics statistics;
     /**
      * Constructor.
      * @param commitSize commit size
@@ -38,6 +45,7 @@ public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccum
         super(commitSize);
         wipeRecordKeys = new HashMap<>(StorageUtils.numberOfShards());
         wipeExternalKeys = new HashMap<>(StorageUtils.numberOfShards());
+        statistics = new RecordDeleteBatchSetStatistics();
     }
 
     /**
@@ -89,6 +97,7 @@ public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccum
         super.discharge();
         wipeRecordKeys.values().forEach(Collection::clear);
         wipeExternalKeys.values().forEach(Collection::clear);
+        statistics.reset();
     }
 
     /**
@@ -135,6 +144,21 @@ public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccum
      */
     public Map<Integer, List<RecordExternalKeysPO>> getWipeExternalKeys() {
         return wipeExternalKeys;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RecordDeleteBatchSetStatistics statistics() {
+        return statistics;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        return RecordsDeleteStartExecutor.SEGMENT_ID;
     }
     /**
      * @author Mikhail Mikhailov
@@ -206,6 +230,7 @@ public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccum
                 return;
             }
             ctx.changeSet(new RecordDeleteBatchSet(RecordDeleteBatchSetAccumulator.this));
+            ctx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
         }
     }
 }

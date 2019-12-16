@@ -33,7 +33,7 @@ import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.SplitRecordRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
-import org.unidata.mdm.data.dto.BulkUpsertResultDTO;
+import org.unidata.mdm.data.dto.RecordsBulkResultDTO;
 import org.unidata.mdm.data.dto.DeleteRecordDTO;
 import org.unidata.mdm.data.dto.EtalonRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordDTO;
@@ -584,7 +584,7 @@ public class DataRecordsServiceImpl implements DataRecordsService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public BulkUpsertResultDTO bulkUpsertRecords(@Nonnull List<UpsertRequestContext> recordUpsertCtxs, boolean abortOnFailure) {
+    public RecordsBulkResultDTO bulkUpsertRecords(@Nonnull List<UpsertRequestContext> recordUpsertCtxs, boolean abortOnFailure) {
 // TODO: @Modules
 //        Map<BatchOperationType, List<? extends CommonRequestContext>> collected = new EnumMap<>(BatchOperationType.class);
 //        recordUpsertCtxs.forEach(ctx -> {
@@ -658,7 +658,7 @@ public class DataRecordsServiceImpl implements DataRecordsService {
      */
     @Override
     @Transactional
-    public BulkUpsertResultDTO bulkUpsertRecords(@Nonnull List<UpsertRequestContext> recordUpsertCtxs) {
+    public RecordsBulkResultDTO bulkUpsertRecords(@Nonnull List<UpsertRequestContext> recordUpsertCtxs) {
         return bulkUpsertRecords(recordUpsertCtxs, true);
     }
 

@@ -13,7 +13,7 @@ import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.type.info.impl.EntityInfoHolder;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
@@ -24,7 +24,7 @@ import org.unidata.mdm.system.type.runtime.MeasurementPoint;
  */
 @Component(RelationCommonPeriodCheckExecutor.SEGMENT_ID)
 public class RelationCommonPeriodCheckExecutor
-    extends Point<PipelineExecutionContext>
+    extends Point<PipelineInput>
     implements ValidityRangeCheckSupport<MutableValidityRangeContext> {
     /**
      * This segment ID.
@@ -49,7 +49,7 @@ public class RelationCommonPeriodCheckExecutor
      * {@inheritDoc}
      */
     @Override
-    public void point(PipelineExecutionContext ctx) {
+    public void point(PipelineInput ctx) {
 
         MeasurementPoint.start();
         try {

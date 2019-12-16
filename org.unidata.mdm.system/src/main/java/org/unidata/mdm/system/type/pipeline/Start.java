@@ -3,13 +3,11 @@ package org.unidata.mdm.system.type.pipeline;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-
 /**
  * @author Mikhail Mikhailov
  * The pipeline starting segment.
  */
-public abstract class Start<C extends PipelineExecutionContext> extends Segment {
+public abstract class Start<C extends PipelineInput> extends Segment {
     /**
      * The input type class.
      */
@@ -43,6 +41,13 @@ public abstract class Start<C extends PipelineExecutionContext> extends Segment 
     @Override
     public boolean supports(Start<?> start) {
         return start == this;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBatched() {
+        return false;
     }
     /**
      * Performs the step.

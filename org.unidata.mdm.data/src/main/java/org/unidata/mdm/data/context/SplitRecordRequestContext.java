@@ -1,7 +1,5 @@
 package org.unidata.mdm.data.context;
 
-import java.util.Date;
-
 import org.unidata.mdm.core.context.ApprovalStateSettingContext;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.data.type.keys.RecordEtalonKey;
@@ -23,7 +21,7 @@ public class SplitRecordRequestContext extends AbstractRecordIdentityContext imp
      */
     private ApprovalState approvalState;
 
-    private SplitRecordRequestContext(SplitRequestContextBuilder b) {
+    protected SplitRecordRequestContext(SplitRequestContextBuilder b) {
         super(b);
         this.oldEtalonKey = b.oldEtalonKey;
     }
@@ -104,7 +102,7 @@ public class SplitRecordRequestContext extends AbstractRecordIdentityContext imp
 
         private RecordEtalonKey oldEtalonKey;
 
-        private SplitRequestContextBuilder() {
+        protected SplitRequestContextBuilder() {
             super();
         }
 

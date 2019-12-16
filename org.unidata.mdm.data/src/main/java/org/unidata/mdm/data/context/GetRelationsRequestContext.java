@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.context.RequestFragmentContext;
-import org.unidata.mdm.system.context.RequestFragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
 
 /**
  * @author Mikhail Mikhailov
@@ -21,7 +19,7 @@ import org.unidata.mdm.system.context.RequestFragmentId;
  */
 public class GetRelationsRequestContext
     extends AbstractRelationsFromRequestContext<GetRelationRequestContext>
-    implements RequestFragmentContext<GetRelationsRequestContext>, PipelineExecutionContext {
+    implements InputFragment<GetRelationsRequestContext> {
     /**
      * SVUID.
      */
@@ -29,8 +27,8 @@ public class GetRelationsRequestContext
     /**
      * This context fragment id.
      */
-    public static final RequestFragmentId<GetRelationsRequestContext> FRAGMENT_ID
-        = new RequestFragmentId<>("GET_RELATIONS_REQUEST", () -> GetRelationsRequestContext.builder().build());
+    public static final FragmentId<GetRelationsRequestContext> FRAGMENT_ID
+        = new FragmentId<>("GET_RELATIONS_REQUEST", () -> GetRelationsRequestContext.builder().build());
     /**
      * The relations to upsert.
      */
@@ -58,7 +56,7 @@ public class GetRelationsRequestContext
     /**
      * Constructor.
      */
-    private GetRelationsRequestContext(GetRelationsRequestContextBuilder b) {
+    protected GetRelationsRequestContext(GetRelationsRequestContextBuilder b) {
         super(b);
         this.relations = b.relations;
         this.relationNames = b.relationNames;
@@ -78,17 +76,9 @@ public class GetRelationsRequestContext
      * {@inheritDoc}
      */
     @Override
-    public String getStartTypeId() {
-        return RelationGetStartExecutor.SEGMENT_ID;
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public RequestFragmentId<GetRelationsRequestContext> getFragmentId() {
+    public FragmentId<GetRelationsRequestContext> fragmentId() {
         return FRAGMENT_ID;
     }
-
     /**
      * @return the relations
      */
@@ -230,7 +220,7 @@ public class GetRelationsRequestContext
         /**
          * Constructor.
          */
-        public GetRelationsRequestContextBuilder() {
+        protected GetRelationsRequestContextBuilder() {
             super();
         }
 

@@ -28,7 +28,7 @@ public class GetRelationTimelineRequestContext extends AbstractRelationToRequest
     /**
      * Constructor.
      */
-    private GetRelationTimelineRequestContext(GetRelationTimelineRequestContextBuilder b) {
+    protected GetRelationTimelineRequestContext(GetRelationTimelineRequestContextBuilder b) {
         super(b);
         this.forDate = b.forDate;
         this.forDatesFrame = b.forDatesFrame;
@@ -141,7 +141,7 @@ public class GetRelationTimelineRequestContext extends AbstractRelationToRequest
         /**
          * Constructor.
          */
-        public GetRelationTimelineRequestContextBuilder() {
+        protected GetRelationTimelineRequestContextBuilder() {
             super();
         }
         /**

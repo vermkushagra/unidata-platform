@@ -1,14 +1,12 @@
 package org.unidata.mdm.system.type.pipeline;
 
-import org.unidata.mdm.system.context.CompositeRequestContext;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 
 /**
  * @author Mikhail Mikhailov
  * Connector segment marker interface.
  */
-public abstract class Connector<I extends PipelineExecutionContext, O extends PipelineExecutionResult> extends Segment {
+public abstract class Connector<I extends PipelineInput, O extends PipelineOutput> extends Segment {
     /**
      * Constructor.
      * @param id the id
@@ -30,7 +28,14 @@ public abstract class Connector<I extends PipelineExecutionContext, O extends Pi
      */
     @Override
     public boolean supports(Start<?> start) {
-        return CompositeRequestContext.class.isAssignableFrom(start.getInputTypeClass());
+        return InputFragmentContainer.class.isAssignableFrom(start.getInputTypeClass());
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBatched() {
+        return false;
     }
     /**
      * Performs actual execution of the segment's code.

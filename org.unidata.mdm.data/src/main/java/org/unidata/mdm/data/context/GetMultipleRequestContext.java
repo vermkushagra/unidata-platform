@@ -41,7 +41,7 @@ public class GetMultipleRequestContext extends CommonRequestContext {
     /**
      * Constructor.
      */
-    private GetMultipleRequestContext(GetMultipleRequestContextBuilder b) {
+    protected GetMultipleRequestContext(GetMultipleRequestContextBuilder b) {
         super(b);
         this.entityName = b.entityName;
         this.forDate = b.forDate;
@@ -174,7 +174,7 @@ public class GetMultipleRequestContext extends CommonRequestContext {
         /**
          * Constructor.
          */
-        public GetMultipleRequestContextBuilder() {
+        protected GetMultipleRequestContextBuilder() {
             super();
         }
 

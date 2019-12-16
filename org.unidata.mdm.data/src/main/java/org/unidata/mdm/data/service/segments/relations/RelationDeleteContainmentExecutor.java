@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.data.context.DeleteRelationRequestContext;
 import org.unidata.mdm.data.context.DeleteRequestContext;
-import org.unidata.mdm.data.context.DeleteRequestContext.DeleteRequestContextBuilder;
 import org.unidata.mdm.data.module.DataModule;
 import org.unidata.mdm.data.service.segments.ContainmentRelationSupport;
 import org.unidata.mdm.data.type.data.RelationType;
@@ -54,7 +53,7 @@ public class RelationDeleteContainmentExecutor extends Point<DeleteRelationReque
             }
 
             ApprovalState state = ApprovalState.APPROVED;
-            DeleteRequestContext dCtx = new DeleteRequestContextBuilder()
+            DeleteRequestContext dCtx = DeleteRequestContext.builder()
                     .etalonKey(keys.getEtalonKey().getTo().getId())
                     .cascade(false)
                     .validFrom(ctx.getValidFrom())

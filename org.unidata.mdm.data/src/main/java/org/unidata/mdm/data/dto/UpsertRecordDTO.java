@@ -8,13 +8,13 @@ import org.unidata.mdm.data.type.data.EtalonRecord;
 import org.unidata.mdm.data.type.data.UpsertAction;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.system.dto.AbstractCompositeResult;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Upsert result DTO.
  */
-public class UpsertRecordDTO extends AbstractCompositeResult implements RecordDTO, EtalonRecordDTO, PipelineExecutionResult {
+public class UpsertRecordDTO extends AbstractCompositeResult implements RecordDTO, EtalonRecordDTO, PipelineOutput {
     /**
      * Record keys for short upsert.
      */

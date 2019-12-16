@@ -11,14 +11,14 @@ import org.unidata.mdm.data.type.data.EtalonRecord;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.system.dto.AbstractCompositeResult;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  *         Get record result DTO.
  */
 public class GetRecordDTO extends AbstractCompositeResult
-    implements RecordDTO, OriginRecordsDTO, EtalonRecordDTO, PipelineExecutionResult {
+    implements RecordDTO, OriginRecordsDTO, EtalonRecordDTO, PipelineOutput {
     /**
      * Record keys.
      */

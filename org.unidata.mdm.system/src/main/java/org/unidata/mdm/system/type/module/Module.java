@@ -5,12 +5,12 @@ import java.util.Collections;
 
 import javax.annotation.Nullable;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
 
@@ -86,21 +86,21 @@ public interface Module {
      * Gets the exported pipeline start types. May be empty.
      * @return collection of pipeline start types
      */
-    default Collection<Start<PipelineExecutionContext>> getStartTypes() {
+    default Collection<Start<PipelineInput>> getStartTypes() {
         return Collections.emptyList();
     }
     /**
      * Gets the exported pipeline point types. May be empty.
      * @return collection of pipeline point types
      */
-    default Collection<Point<PipelineExecutionContext>> getPointTypes() {
+    default Collection<Point<PipelineInput>> getPointTypes() {
         return Collections.emptyList();
     }
     /**
      * Gets the exported pipeline connector types. May be empty.
      * @return collection of pipeline connector types
      */
-    default Collection<Connector<PipelineExecutionContext, PipelineExecutionResult>> getConnectorTypes() {
+    default Collection<Connector<PipelineInput, PipelineOutput>> getConnectorTypes() {
         return Collections.emptyList();
     }
 
@@ -108,7 +108,7 @@ public interface Module {
      * Get the modules fallbacks
      * @return collection of fallbacks
      */
-    default Collection<Fallback<PipelineExecutionContext>> getFallbacks() {
+    default Collection<Fallback<PipelineInput>> getFallbacks() {
         return Collections.emptyList();
     }
 
@@ -116,7 +116,7 @@ public interface Module {
      * Gets the exported pipeline finish types. May be empty.
      * @return collection of pipeline finish types
      */
-    default Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> getFinishTypes() {
+    default Collection<Finish<PipelineInput, PipelineOutput>> getFinishTypes() {
         return Collections.emptyList();
     }
 }

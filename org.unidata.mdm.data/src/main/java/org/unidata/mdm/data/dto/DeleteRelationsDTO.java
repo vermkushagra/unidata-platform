@@ -6,19 +6,20 @@ package org.unidata.mdm.data.dto;
 import java.util.List;
 import java.util.Map;
 
-import org.unidata.mdm.system.dto.ResultFragment;
-import org.unidata.mdm.system.dto.ResultFragmentId;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
 
 /**
  * @author Mikhail Mikhailov
  * Mass delete result DTO.
  */
-public class DeleteRelationsDTO implements RelationsDTO<DeleteRelationDTO>, ResultFragment<DeleteRelationsDTO> {
+public class DeleteRelationsDTO implements RelationsDTO<DeleteRelationDTO>, OutputFragment<DeleteRelationsDTO>, PipelineOutput {
     /**
      * This fragment ID.
      */
-    public static final ResultFragmentId<DeleteRelationsDTO> ID
-        = new ResultFragmentId<>("DELETE_RELATIONS_RESULT", DeleteRelationsDTO::new);
+    public static final FragmentId<DeleteRelationsDTO> ID
+        = new FragmentId<>("DELETE_RELATIONS_RESULT", DeleteRelationsDTO::new);
     /**
      * Deleted relations.
      */
@@ -48,7 +49,7 @@ public class DeleteRelationsDTO implements RelationsDTO<DeleteRelationDTO>, Resu
      * {@inheritDoc}
      */
     @Override
-    public ResultFragmentId<DeleteRelationsDTO> getFragmentId() {
+    public FragmentId<DeleteRelationsDTO> fragmentId() {
         return ID;
     }
 }

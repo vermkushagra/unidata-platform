@@ -57,7 +57,7 @@ public class MergeRequestContext
     /**
      * Constructor.
      */
-    private MergeRequestContext(MergeRequestContextBuilder b) {
+    protected MergeRequestContext(MergeRequestContextBuilder b) {
         super(b);
         this.ruleId = b.ruleId;
         this.duplicates = b.duplicates;
@@ -202,6 +202,11 @@ public class MergeRequestContext
         private boolean withTransition = true;
 
         private Integer ruleId;
+
+        protected MergeRequestContextBuilder() {
+            super();
+        }
+
         /**
          * @param ruleId the ruleId to set
          */

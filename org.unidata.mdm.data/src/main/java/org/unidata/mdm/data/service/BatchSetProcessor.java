@@ -1,6 +1,6 @@
 package org.unidata.mdm.data.service;
 
-import org.unidata.mdm.data.type.apply.batch.BatchSetAccumulator;
+import org.unidata.mdm.system.type.batch.BatchSetAccumulator;
 
 /**
  * @author Mikhail Mikhailov
@@ -11,5 +11,5 @@ public interface BatchSetProcessor {
      * Apply updates, collected by this accumulator.
      * @param bsa accumulator to use
      */
-    void apply(BatchSetAccumulator<?> bsa);
+    void apply(BatchSetAccumulator<?, ?> bsa);
 }

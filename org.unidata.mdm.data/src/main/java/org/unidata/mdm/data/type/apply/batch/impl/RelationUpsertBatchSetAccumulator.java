@@ -12,26 +12,28 @@ import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.unidata.mdm.core.type.timeline.Timeline;
+import org.unidata.mdm.data.context.DataContextFlags;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.UpsertRelationRequestContext;
 import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
+import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.po.data.RelationEtalonPO;
 import org.unidata.mdm.data.po.data.RelationOriginPO;
 import org.unidata.mdm.data.po.data.RelationVistoryPO;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.type.apply.batch.BatchKeyReference;
 import org.unidata.mdm.data.type.data.OriginRelation;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RelationKeys;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
 
 /**
  * @author Mikhail Mikhailov
  * Relation batch set accumulator.
  */
 public class RelationUpsertBatchSetAccumulator
-    extends AbstractRelationBatchSetAccumulator<UpsertRelationsRequestContext> {
+    extends AbstractRelationBatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> {
     /**
      * Collected rel. etalons.
      */
@@ -57,6 +59,10 @@ public class RelationUpsertBatchSetAccumulator
      */
     private final Map<String, List<Timeline<OriginRelation>>> collectedReferenceTimelines = new HashMap<>();
     /**
+     * Stats / results.
+     */
+    private final RelationUpsertBatchSetStatistics statistics;
+    /**
      * Constructor.
      * @param commitSize chunk size
      * @param isMultiversion true for several updates from the same record id in the same job.
@@ -73,6 +79,7 @@ public class RelationUpsertBatchSetAccumulator
         // Containments and keys cache
         containmentRelation = isContainment;
         recordBatchSetAccumulator = isContainment ? new RecordUpsertBatchSetAccumulator(commitSize, isMultiversion) : null;
+        statistics = new RelationUpsertBatchSetStatistics();
 
         if (isMultiversion) {
             ids = new HashMap<>();
@@ -182,6 +189,23 @@ public class RelationUpsertBatchSetAccumulator
         return null;
     }
     /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RelationUpsertBatchSetStatistics statistics() {
+        return statistics;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
      * @author Mikhail Mikhailov
      * Simple batch iterator.
      */
@@ -269,8 +293,12 @@ public class RelationUpsertBatchSetAccumulator
                             uCtx.relationKeys(relationKeys.getKeys());
                         }
                     }
+
+                    uCtx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
                 }
             }
+
+            ctx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
         }
 
         /**

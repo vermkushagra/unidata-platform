@@ -15,14 +15,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.DataShift;
 import org.unidata.mdm.core.type.timeline.MutableTimeInterval;
+import org.unidata.mdm.data.context.DataContextFlags;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
+import org.unidata.mdm.data.dto.UpsertRecordDTO;
 import org.unidata.mdm.data.po.data.RecordEtalonPO;
 import org.unidata.mdm.data.po.data.RecordOriginPO;
 import org.unidata.mdm.data.po.data.RecordVistoryPO;
 import org.unidata.mdm.data.po.keys.RecordExternalKeysPO;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsUpsertStartExecutor;
 import org.unidata.mdm.data.type.apply.RecordUpsertChangeSet;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.type.apply.batch.BatchKeyReference;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.data.type.data.OriginRecordInfoSection;
@@ -31,12 +33,14 @@ import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RecordOriginKey;
 import org.unidata.mdm.data.type.timeline.RecordTimeInterval;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
 
 /**
  * @author Mikhail Mikhailov
  * Simple record batch set accumulator.
+ * FIXME: remove origin/etalon phases code. Upsert now works in a single step.
  */
-public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<UpsertRequestContext> {
+public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<UpsertRequestContext, UpsertRecordDTO> {
     /**
      * Record etalon inserts.
      */
@@ -54,6 +58,10 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
      */
     private final Map<String, BatchKeyReference<RecordKeys>> ids;
     /**
+     * The run stats.
+     */
+    private final RecordUpsertBatchSetStatistics statistics;
+    /**
      * Constructor.
      * @param commitSize chunk size
      * @param isMultiversion true for several updates from the same record id in the same job.
@@ -65,6 +73,7 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
         this.etalonInserts = new HashMap<>(StorageUtils.numberOfShards());
         this.originInserts = new HashMap<>(StorageUtils.numberOfShards());
         this.externalKeysInserts = new HashMap<>(StorageUtils.numberOfShards());
+        this.statistics = new RecordUpsertBatchSetStatistics();
 
         if (isMultiversion) {
             this.ids = new HashMap<>();
@@ -128,6 +137,13 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
      * {@inheritDoc}
      */
     @Override
+    public String getStartTypeId() {
+        return RecordsUpsertStartExecutor.SEGMENT_ID;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void discharge() {
         super.discharge();
         dischargeOriginsPhase();
@@ -138,6 +154,7 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
         etalonInserts.values().forEach(Collection::clear);
         originInserts.values().forEach(Collection::clear);
         externalKeysInserts.values().forEach(Collection::clear);
+        statistics.reset();
     }
     /**
      * {@inheritDoc}
@@ -331,7 +348,14 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
             }
         }
     }
-
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RecordUpsertBatchSetStatistics statistics() {
+        return statistics;
+    }
     /**
      * @author Mikhail Mikhailov
      * Simple batch iterator.
@@ -407,6 +431,9 @@ public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccum
             if (Objects.nonNull(cachedKeys)) {
                 ctx.keys(cachedKeys.getKeys());
             }
+
+            // Ensure the flag is set
+            ctx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
         }
     }
 }

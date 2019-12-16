@@ -35,7 +35,7 @@ public class GetRecordsTimelinesRequestContext extends CommonRequestContext {
     /**
      * Constructor.
      */
-    private GetRecordsTimelinesRequestContext(GetRecordTimelineRequestContextBuilder b) {
+    protected GetRecordsTimelinesRequestContext(GetRecordTimelineRequestContextBuilder b) {
 
         super(b);
         this.etalonKeys = new ArrayList<>(b.etalonKeys);
@@ -137,7 +137,7 @@ public class GetRecordsTimelinesRequestContext extends CommonRequestContext {
         /**
          * Constructor.
          */
-        public GetRecordTimelineRequestContextBuilder() {
+        protected GetRecordTimelineRequestContextBuilder() {
             super();
         }
         /**

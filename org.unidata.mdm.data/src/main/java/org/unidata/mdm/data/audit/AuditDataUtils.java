@@ -4,8 +4,8 @@ import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
 import org.unidata.mdm.data.exception.DataExceptionIds;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Alexander Malyshev
@@ -13,7 +13,7 @@ import org.unidata.mdm.system.exception.PlatformFailureException;
 public final class AuditDataUtils {
     private AuditDataUtils() { }
 
-    public static String auditEventType(PipelineExecutionContext pipelineExecutionContext) {
+    public static String auditEventType(PipelineInput pipelineExecutionContext) {
         if (pipelineExecutionContext instanceof UpsertRequestContext) {
             return AuditDataConstants.RECORD_UPSERT_EVENT_TYPE;
         }

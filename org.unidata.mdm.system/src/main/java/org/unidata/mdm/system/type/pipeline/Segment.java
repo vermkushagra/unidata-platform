@@ -48,4 +48,10 @@ public abstract class Segment {
      * @return true, if supports, false otherwise
      */
     public abstract boolean supports(Start<?> start);
+    /**
+     * Marks a segment as a participant in a batched pipeline.
+     * Pipelines, started by a start segment denoted as batched, become batched pipelines.
+     * @return true, for batched, false otherwise
+     */
+    public abstract boolean isBatched();
 }

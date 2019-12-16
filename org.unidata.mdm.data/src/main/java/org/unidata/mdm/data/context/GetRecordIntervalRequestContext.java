@@ -36,7 +36,7 @@ public class GetRecordIntervalRequestContext
     /**
      * Constructor.
      */
-    private GetRecordIntervalRequestContext(GetRecordIntervalRequestContextBuilder b) {
+    protected GetRecordIntervalRequestContext(GetRecordIntervalRequestContextBuilder b) {
         super(b);
         this.forDate = b.forDate;
         this.forUpdatesAfter = b.forUpdatesAfter;
@@ -202,7 +202,7 @@ public class GetRecordIntervalRequestContext
         /**
          * Constructor.
          */
-        private GetRecordIntervalRequestContextBuilder() {
+        protected GetRecordIntervalRequestContextBuilder() {
             super();
         }
         /**

@@ -50,7 +50,7 @@ public class DeleteRelationRequestContext
     /**
      * Constructor.
      */
-    private DeleteRelationRequestContext(DeleteRelationRequestContextBuilder b) {
+    protected DeleteRelationRequestContext(DeleteRelationRequestContextBuilder b) {
         super(b);
         this.relationName = b.relationName;
         this.validFrom = b.validFrom;
@@ -241,7 +241,7 @@ public class DeleteRelationRequestContext
         /**
          * Constructor.
          */
-        public DeleteRelationRequestContextBuilder() {
+        protected DeleteRelationRequestContextBuilder() {
            super();
         }
         /**

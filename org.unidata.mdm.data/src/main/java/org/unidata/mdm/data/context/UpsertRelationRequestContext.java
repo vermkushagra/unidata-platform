@@ -65,7 +65,7 @@ public class UpsertRelationRequestContext
     /**
      * Constructor.
      */
-    private UpsertRelationRequestContext(UpsertRelationRequestContextBuilder b) {
+    protected UpsertRelationRequestContext(UpsertRelationRequestContextBuilder b) {
         super(b);
         this.relationName = b.relationName;
         this.relation = b.relation;
@@ -251,7 +251,7 @@ public class UpsertRelationRequestContext
         /**
          * Constructor.
          */
-        public UpsertRelationRequestContextBuilder() {
+        protected UpsertRelationRequestContextBuilder() {
            super();
         }
 

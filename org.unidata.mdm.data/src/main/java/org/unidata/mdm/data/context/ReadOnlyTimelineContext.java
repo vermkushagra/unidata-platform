@@ -2,15 +2,15 @@ package org.unidata.mdm.data.context;
 
 import org.unidata.mdm.core.type.calculables.Calculable;
 import org.unidata.mdm.core.type.timeline.Timeline;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.context.StorageCapableContext;
 import org.unidata.mdm.system.context.StorageId;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
  * Read only data view - variants of GET (data, rel, clsf, etc).
  */
-public interface ReadOnlyTimelineContext<T extends Calculable> extends StorageCapableContext, PipelineExecutionContext {
+public interface ReadOnlyTimelineContext<T extends Calculable> extends StorageCapableContext, PipelineInput {
     /**
      * Current timeline.
      */

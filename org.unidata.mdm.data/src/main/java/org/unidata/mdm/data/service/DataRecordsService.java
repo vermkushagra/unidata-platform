@@ -19,7 +19,7 @@ import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.context.SplitRecordRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
-import org.unidata.mdm.data.dto.BulkUpsertResultDTO;
+import org.unidata.mdm.data.dto.RecordsBulkResultDTO;
 import org.unidata.mdm.data.dto.DeleteRecordDTO;
 import org.unidata.mdm.data.dto.EtalonRecordDTO;
 import org.unidata.mdm.data.dto.GetRecordDTO;
@@ -147,14 +147,14 @@ public interface DataRecordsService {
      * @param recordUpsertCtxs - collection of upsert record contexts.
      * @return collection {@link UpsertRecordDTO}
      */
-    BulkUpsertResultDTO bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs, boolean abourOnFailure);
+    RecordsBulkResultDTO bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs, boolean abourOnFailure);
 
     /**
      * @param recordUpsertCtxs - collection of upsert record contexts.
      * @return collection {@link UpsertRecordDTO}
      */
     @Deprecated
-    BulkUpsertResultDTO bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs);
+    RecordsBulkResultDTO bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs);
 
     /**
      * Try to restore given record.

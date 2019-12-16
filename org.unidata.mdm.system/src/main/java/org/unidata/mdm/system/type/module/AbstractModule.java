@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Segment;
 import org.unidata.mdm.system.type.pipeline.Start;
@@ -21,23 +21,23 @@ public abstract class AbstractModule implements Module {
     /**
      * Local start segments.
      */
-    protected final Map<String, Start<PipelineExecutionContext>> starts = new HashMap<>();
+    protected final Map<String, Start<PipelineInput>> starts = new HashMap<>();
     /**
      * Local point segments.
      */
-    protected final Map<String, Point<PipelineExecutionContext>> points = new HashMap<>();
+    protected final Map<String, Point<PipelineInput>> points = new HashMap<>();
     /**
      * Local connector segments.
      */
-    protected final Map<String, Connector<PipelineExecutionContext, PipelineExecutionResult>> connectors = new HashMap<>();
+    protected final Map<String, Connector<PipelineInput, PipelineOutput>> connectors = new HashMap<>();
     /**
      * Local finish segments.
      */
-    protected final Map<String, Finish<PipelineExecutionContext, PipelineExecutionResult>> finishes = new HashMap<>();
+    protected final Map<String, Finish<PipelineInput, PipelineOutput>> finishes = new HashMap<>();
     /**
      * Local fallback segments.
      */
-    protected final Map<String, Fallback<PipelineExecutionContext>> fallbacks = new HashMap<>();
+    protected final Map<String, Fallback<PipelineInput>> fallbacks = new HashMap<>();
     /**
      * Adds collection of segments to this module.
      * @param segments the collectin to add
@@ -52,19 +52,19 @@ public abstract class AbstractModule implements Module {
         for (Segment s : segments) {
             switch (s.getType()) {
             case START:
-                starts.put(s.getId(), (Start<PipelineExecutionContext>) s);
+                starts.put(s.getId(), (Start<PipelineInput>) s);
                 break;
             case POINT:
-                points.put(s.getId(), (Point<PipelineExecutionContext>) s);
+                points.put(s.getId(), (Point<PipelineInput>) s);
                 break;
             case CONNECTOR:
-                connectors.put(s.getId(), (Connector<PipelineExecutionContext, PipelineExecutionResult>) s);
+                connectors.put(s.getId(), (Connector<PipelineInput, PipelineOutput>) s);
                 break;
             case FALLBACK:
-                fallbacks.put(s.getId(), (Fallback<PipelineExecutionContext>) s);
+                fallbacks.put(s.getId(), (Fallback<PipelineInput>) s);
                 break;
             case FINISH:
-                finishes.put(s.getId(), (Finish<PipelineExecutionContext, PipelineExecutionResult>) s);
+                finishes.put(s.getId(), (Finish<PipelineInput, PipelineOutput>) s);
                 break;
             default:
                 break;
@@ -75,35 +75,35 @@ public abstract class AbstractModule implements Module {
      * {@inheritDoc}
      */
     @Override
-    public Collection<Start<PipelineExecutionContext>> getStartTypes() {
+    public Collection<Start<PipelineInput>> getStartTypes() {
         return starts.values();
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public Collection<Finish<PipelineExecutionContext, PipelineExecutionResult>> getFinishTypes() {
+    public Collection<Finish<PipelineInput, PipelineOutput>> getFinishTypes() {
         return finishes.values();
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public Collection<Point<PipelineExecutionContext>> getPointTypes() {
+    public Collection<Point<PipelineInput>> getPointTypes() {
         return points.values();
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public Collection<Fallback<PipelineExecutionContext>> getFallbacks() {
+    public Collection<Fallback<PipelineInput>> getFallbacks() {
         return fallbacks.values();
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public Collection<Connector<PipelineExecutionContext, PipelineExecutionResult>> getConnectorTypes() {
+    public Collection<Connector<PipelineInput, PipelineOutput>> getConnectorTypes() {
         return connectors.values();
     }
 }

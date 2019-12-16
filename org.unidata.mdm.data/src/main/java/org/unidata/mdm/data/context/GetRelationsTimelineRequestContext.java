@@ -41,7 +41,7 @@ public class GetRelationsTimelineRequestContext
     /**
      * Constructor.
      */
-    private GetRelationsTimelineRequestContext(GetRelationsTimelineRequestContextBuilder b) {
+    protected GetRelationsTimelineRequestContext(GetRelationsTimelineRequestContextBuilder b) {
         super(b);
         this.relationNames = b.relationNames;
         this.forDate = b.forDate;
@@ -204,7 +204,7 @@ public class GetRelationsTimelineRequestContext
         /**
          * Constructor.
          */
-        public GetRelationsTimelineRequestContextBuilder() {
+        protected GetRelationsTimelineRequestContextBuilder() {
             super();
         }
         /**

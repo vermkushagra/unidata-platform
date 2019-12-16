@@ -88,7 +88,7 @@ public class UpsertRequestContext
     /**
      * Constructor.
      */
-    private UpsertRequestContext(UpsertRequestContextBuilder b) {
+    protected UpsertRequestContext(UpsertRequestContextBuilder b) {
         super(b);
 
         this.record = b.record;
@@ -604,14 +604,14 @@ public class UpsertRequestContext
         /**
          * Constructor.
          */
-        public UpsertRequestContextBuilder() {
+        protected UpsertRequestContextBuilder() {
             super();
         }
 
         /**
          * Constructor.
          */
-        public UpsertRequestContextBuilder(UpsertRequestContext other) {
+        protected UpsertRequestContextBuilder(UpsertRequestContext other) {
             super(other);
             this.record = other.record;
             this.lastUpdate = other.lastUpdate;

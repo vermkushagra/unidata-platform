@@ -10,21 +10,23 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.unidata.mdm.data.context.DataContextFlags;
 import org.unidata.mdm.data.context.DeleteRelationRequestContext;
 import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.DeleteRequestContext;
+import org.unidata.mdm.data.dto.DeleteRelationsDTO;
 import org.unidata.mdm.data.po.data.RelationVistoryPO;
 import org.unidata.mdm.data.po.keys.RelationKeysPO;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.type.keys.RelationKeys;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
 
 /**
  * @author Mikhail Mikhailov
  * Relation batch set accumulator.
  */
 public class RelationDeleteBatchSetAccumulator
-    extends AbstractRelationBatchSetAccumulator<DeleteRelationsRequestContext> {
+    extends AbstractRelationBatchSetAccumulator<DeleteRelationsRequestContext, DeleteRelationsDTO> {
     /**
      * Containments accumulator.
      */
@@ -33,6 +35,10 @@ public class RelationDeleteBatchSetAccumulator
      * Relation wipe deletes.
      */
     private final Map<Integer, List<RelationKeysPO>> wipeRelationKeys;
+    /**
+     * Stats / results.
+     */
+    private final RelationDeleteBatchSetStatistics statistics;
     /**
      * Constructor.
      * @param commitSize chunk size
@@ -46,6 +52,7 @@ public class RelationDeleteBatchSetAccumulator
         // Containments
         recordBatchSetAccumulator = isContainment ? new RecordDeleteBatchSetAccumulator(commitSize) : null;
         wipeRelationKeys = new HashMap<>(StorageUtils.numberOfShards());
+        statistics = new RelationDeleteBatchSetStatistics();
     }
     /**
      * Adds a single wipe delete update.
@@ -100,6 +107,23 @@ public class RelationDeleteBatchSetAccumulator
     public Map<Integer, List<RelationKeysPO>> getWipeRelationKeys() {
         return wipeRelationKeys;
     }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RelationDeleteBatchSetStatistics statistics() {
+        return statistics;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /**
      * @author Mikhail Mikhailov
      * Simple batch iterator.
@@ -170,8 +194,11 @@ public class RelationDeleteBatchSetAccumulator
                     }
 
                     dCtx.changeSet(new RelationDeleteBatchSet(RelationDeleteBatchSetAccumulator.this));
+                    dCtx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
                 }
             }
+
+            ctx.setFlag(DataContextFlags.FLAG_BATCH_OPERATION, true);
         }
 
         /**

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.unidata.mdm.core.context.ValidityRangeContext;
-import org.unidata.mdm.system.context.RequestFragmentContext;
-import org.unidata.mdm.system.context.RequestFragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
 
 /**
  * @author Mikhail Mikhailov
@@ -18,7 +18,7 @@ import org.unidata.mdm.system.context.RequestFragmentId;
  */
 public class DeleteRelationsRequestContext
     extends AbstractRelationsFromRequestContext<DeleteRelationRequestContext>
-    implements ValidityRangeContext, RequestFragmentContext<DeleteRelationsRequestContext> {
+    implements ValidityRangeContext, InputFragment<DeleteRelationsRequestContext> {
     /**
      * Generated SVUID.
      */
@@ -26,8 +26,8 @@ public class DeleteRelationsRequestContext
     /**
      * This context fragment id.
      */
-    public static final RequestFragmentId<DeleteRelationsRequestContext> FRAGMENT_ID
-        = new RequestFragmentId<>("DELETE_RELATIONS_REQUEST", () -> DeleteRelationsRequestContext.builder().build());
+    public static final FragmentId<DeleteRelationsRequestContext> FRAGMENT_ID
+        = new FragmentId<>("DELETE_RELATIONS_REQUEST", () -> DeleteRelationsRequestContext.builder().build());
     /**
      * The relations to upsert.
      */
@@ -60,7 +60,7 @@ public class DeleteRelationsRequestContext
      * Constructor.
      * @param b the builder
      */
-    private DeleteRelationsRequestContext(DeleteRelationsRequestContextBuilder b) {
+    protected DeleteRelationsRequestContext(DeleteRelationsRequestContextBuilder b) {
         super(b);
         this.relations = b.relations;
         this.lastUpdate = b.lastUpdate;
@@ -75,7 +75,7 @@ public class DeleteRelationsRequestContext
      * {@inheritDoc}
      */
     @Override
-    public RequestFragmentId<DeleteRelationsRequestContext> getFragmentId() {
+    public FragmentId<DeleteRelationsRequestContext> fragmentId() {
         return FRAGMENT_ID;
     }
 
@@ -186,7 +186,7 @@ public class DeleteRelationsRequestContext
         /**
          * Constructor.
          */
-        public DeleteRelationsRequestContextBuilder() {
+        protected DeleteRelationsRequestContextBuilder() {
             super();
         }
         /**

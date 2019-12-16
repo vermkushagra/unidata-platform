@@ -13,7 +13,7 @@ public class JoinRequestContext
     /**
      * Constructor.
      */
-    private JoinRequestContext(JoinRequestContextBuilder b) {
+    protected JoinRequestContext(JoinRequestContextBuilder b) {
         super(b);
     }
     /**
@@ -31,7 +31,7 @@ public class JoinRequestContext
         /**
          * Constructor.
          */
-        public JoinRequestContextBuilder() {
+        protected JoinRequestContextBuilder() {
             super();
         }
         /**

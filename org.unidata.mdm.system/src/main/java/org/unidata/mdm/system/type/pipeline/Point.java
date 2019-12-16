@@ -1,12 +1,10 @@
 package org.unidata.mdm.system.type.pipeline;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-
 /**
  * @author Mikhail Mikhailov
  * Point segment.
  */
-public abstract class Point<C extends PipelineExecutionContext> extends Segment {
+public abstract class Point<C extends PipelineInput> extends Segment {
     /**
      * Constructor.
      * @param id the id
@@ -21,6 +19,13 @@ public abstract class Point<C extends PipelineExecutionContext> extends Segment 
     @Override
     public SegmentType getType() {
         return SegmentType.POINT;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBatched() {
+        return false;
     }
     /**
      * Performs actual execution of the segment's code.

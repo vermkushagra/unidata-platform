@@ -1,12 +1,9 @@
 package org.unidata.mdm.system.type.pipeline;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
-
 /**
  * @author Mikhail Mikhailov on Oct 2, 2019
  */
-public abstract class Finish<C extends PipelineExecutionContext, R extends PipelineExecutionResult> extends Segment {
+public abstract class Finish<C extends PipelineInput, R extends PipelineOutput> extends Segment {
     /**
      * The exact output type class.
      */
@@ -32,6 +29,13 @@ public abstract class Finish<C extends PipelineExecutionContext, R extends Pipel
      */
     public Class<R> getOutputTypeClass() {
         return outputTypeClass;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBatched() {
+        return false;
     }
     /**
      * Preformes the last pipeline step, converting context state to result.

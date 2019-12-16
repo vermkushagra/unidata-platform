@@ -10,11 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.CompositeResult;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
-import org.unidata.mdm.system.dto.ResultFragment;
-import org.unidata.mdm.system.dto.ResultFragmentId;
 import org.unidata.mdm.system.exception.PipelineException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.ExecutionService;
@@ -23,9 +18,14 @@ import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Segment;
 import org.unidata.mdm.system.type.pipeline.Start;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
+import org.unidata.mdm.system.type.pipeline.fragment.OutputFragmentCollector;
 
 /**
  * @author Mikhail Mikhailov on Oct 1, 2019
@@ -49,7 +49,7 @@ public class ExecutionServiceImpl implements ExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execute(C ctx) {
+    public <C extends PipelineInput, R extends PipelineOutput> R execute(C ctx) {
 
         if (Objects.isNull(ctx)) {
             return null;
@@ -87,7 +87,7 @@ public class ExecutionServiceImpl implements ExecutionService {
      * {@inheritDoc}
      */
     @Override
-    public <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execute(Pipeline p, C ctx) {
+    public <C extends PipelineInput, R extends PipelineOutput> R execute(Pipeline p, C ctx) {
 
         if (Objects.isNull(p) || Objects.isNull(ctx)) {
             return null;
@@ -99,8 +99,8 @@ public class ExecutionServiceImpl implements ExecutionService {
         }
 
         R result = null;
-        Map<ResultFragmentId<?>, ResultFragment<?>> collected = null;
-        boolean resultIsComposite = CompositeResult.class.isAssignableFrom(p.getFinish().getOutputTypeClass());
+        Map<FragmentId<?>, OutputFragment<?>> collected = null;
+        boolean resultIsComposite = OutputFragmentCollector.class.isAssignableFrom(p.getFinish().getOutputTypeClass());
         final List<Fallback<C>> fallbacks = new ArrayList<>(p.getFallbacks());
         for (int i = 0; i < p.getSegments().size(); i++) {
 
@@ -115,11 +115,11 @@ public class ExecutionServiceImpl implements ExecutionService {
                         break;
                     case CONNECTOR:
 
-                        PipelineExecutionResult intermediate = execConnector(s, ctx, p);
+                        PipelineOutput intermediate = execConnector(s, ctx, p);
 
                         // The pipeline is not supposed to return composite result
                         // or returned is null. Break.
-                        if (!resultIsComposite || intermediate == null || !ResultFragment.class.isAssignableFrom(intermediate.getClass())) {
+                        if (!resultIsComposite || intermediate == null || !OutputFragment.class.isAssignableFrom(intermediate.getClass())) {
                             break;
                         }
 
@@ -127,8 +127,8 @@ public class ExecutionServiceImpl implements ExecutionService {
                             collected = new IdentityHashMap<>();
                         }
 
-                        ResultFragment<?> fragment = (ResultFragment<?>) intermediate;
-                        collected.put(fragment.getFragmentId(), fragment);
+                        OutputFragment<?> fragment = (OutputFragment<?>) intermediate;
+                        collected.put(fragment.fragmentId(), fragment);
                         break;
                     case FINISH:
                         result = execFinish(s, ctx);
@@ -145,7 +145,7 @@ public class ExecutionServiceImpl implements ExecutionService {
         }
 
         if (resultIsComposite && collected != null && !collected.isEmpty()) {
-            CompositeResult composite = (CompositeResult) result;
+            OutputFragmentCollector<?> composite = (OutputFragmentCollector<?>) result;
             collected.values().forEach(composite::fragment);
         }
 
@@ -159,7 +159,7 @@ public class ExecutionServiceImpl implements ExecutionService {
      * @param ctx the context
      */
     @SuppressWarnings("unchecked")
-    private <C extends PipelineExecutionContext> void execStart(Segment s, C ctx) {
+    private <C extends PipelineInput> void execStart(Segment s, C ctx) {
         ((Start<C>) s).start(ctx);
     }
     /**
@@ -169,7 +169,7 @@ public class ExecutionServiceImpl implements ExecutionService {
      * @param ctx the context
      */
     @SuppressWarnings("unchecked")
-    private <C extends PipelineExecutionContext> void execPoint(Segment s, C ctx) {
+    private <C extends PipelineInput> void execPoint(Segment s, C ctx) {
         ((Point<C>) s).point(ctx);
     }
     /**
@@ -181,9 +181,9 @@ public class ExecutionServiceImpl implements ExecutionService {
      * @return result fragment or null
      */
     @SuppressWarnings("unchecked")
-    private <C extends PipelineExecutionContext> PipelineExecutionResult execConnector(Segment s, C ctx, Pipeline p) {
+    private <C extends PipelineInput> PipelineOutput execConnector(Segment s, C ctx, Pipeline p) {
 
-        Connector<C, ? extends PipelineExecutionResult> c = (Connector<C, ? extends PipelineExecutionResult>) s;
+        Connector<C, ? extends PipelineOutput> c = (Connector<C, ? extends PipelineOutput>) s;
 
         Pipeline connected = p.getConnected(c);
         if (Objects.isNull(connected)) {
@@ -201,11 +201,11 @@ public class ExecutionServiceImpl implements ExecutionService {
      * @return result or null
      */
     @SuppressWarnings("unchecked")
-    private <C extends PipelineExecutionContext, R extends PipelineExecutionResult> R execFinish(Segment s, C ctx) {
+    private <C extends PipelineInput, R extends PipelineOutput> R execFinish(Segment s, C ctx) {
         return ((Finish<C, R>) s).finish(ctx);
     }
 
-    private<C extends PipelineExecutionContext> void executeFallbacks(
+    private<C extends PipelineInput> void executeFallbacks(
             final C c,
             final Throwable t,
             final List<Fallback<C>> fallbacks

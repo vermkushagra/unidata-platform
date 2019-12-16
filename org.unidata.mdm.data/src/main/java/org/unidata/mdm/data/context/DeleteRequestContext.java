@@ -9,7 +9,7 @@ import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.RecordStatus;
 import org.unidata.mdm.data.service.segments.RecordDeleteStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
@@ -18,7 +18,7 @@ import org.unidata.mdm.system.context.PipelineExecutionContext;
 public class DeleteRequestContext
     extends AbstractRecordIdentityContext
     implements
-        PipelineExecutionContext,
+        PipelineInput,
         MutableValidityRangeContext,
         ApprovalStateSettingContext,
         OperationTypeContext,
@@ -53,7 +53,7 @@ public class DeleteRequestContext
     /**
      * Constructor.
      */
-    private DeleteRequestContext(DeleteRequestContextBuilder b) {
+    protected DeleteRequestContext(DeleteRequestContextBuilder b) {
         super(b);
 
         this.validFrom = b.validFrom;
@@ -256,7 +256,7 @@ public class DeleteRequestContext
         /**
          * Constructor.
          */
-        public DeleteRequestContextBuilder() {
+        protected DeleteRequestContextBuilder() {
             super();
         }
 

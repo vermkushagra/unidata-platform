@@ -4,16 +4,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.unidata.mdm.core.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.context.AbstractCompositeRequestContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov on Nov 28, 2019
  */
 public class GetModelRequestContext
         extends AbstractCompositeRequestContext
-        implements PipelineExecutionContext, MayHaveDraft {
+        implements PipelineInput, MayHaveDraft {
     /**
      * GSVUID.
      */
@@ -83,6 +83,7 @@ public class GetModelRequestContext
      * Is a draft request?
      * @return draft request state
      */
+    @Override
     public boolean isDraft() {
         return getFlag(MetaContextFlags.FLAG_DRAFT);
     }

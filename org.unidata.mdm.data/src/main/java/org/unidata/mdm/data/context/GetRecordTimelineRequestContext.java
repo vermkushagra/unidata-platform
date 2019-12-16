@@ -28,7 +28,7 @@ public class GetRecordTimelineRequestContext
     /**
      * Constructor.
      */
-    private GetRecordTimelineRequestContext(GetRecordTimelineRequestContextBuilder b) {
+    protected GetRecordTimelineRequestContext(GetRecordTimelineRequestContextBuilder b) {
         super(b);
         this.forDate = b.forDate;
         this.forDatesFrame = b.forDatesFrame;
@@ -125,14 +125,14 @@ public class GetRecordTimelineRequestContext
         /**
          * Constructor.
          */
-        private GetRecordTimelineRequestContextBuilder() {
+        protected GetRecordTimelineRequestContextBuilder() {
             super();
         }
         /**
          * Copy constructor.
          * @param other the other identity
          */
-        private GetRecordTimelineRequestContextBuilder(AbstractRecordIdentityContext other) {
+        protected GetRecordTimelineRequestContextBuilder(AbstractRecordIdentityContext other) {
             super(other);
         }
         /**

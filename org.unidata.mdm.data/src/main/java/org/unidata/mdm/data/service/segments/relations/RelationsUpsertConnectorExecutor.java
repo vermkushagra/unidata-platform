@@ -31,18 +31,18 @@ import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.service.MetaModelService;
-import org.unidata.mdm.system.context.CompositeRequestContext;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
  * @author Mikhail Mikhailov on Nov 24, 2019
  */
 @Component(RelationsUpsertConnectorExecutor.SEGMENT_ID)
-public class RelationsUpsertConnectorExecutor extends Connector<PipelineExecutionContext, UpsertRelationsDTO> {
+public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, UpsertRelationsDTO> {
     /**
      * This segment ID.
      */
@@ -82,9 +82,9 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineExecutio
      * {@inheritDoc}
      */
     @Override
-    public UpsertRelationsDTO connect(PipelineExecutionContext ctx) {
+    public UpsertRelationsDTO connect(PipelineInput ctx) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
@@ -101,9 +101,9 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineExecutio
      * {@inheritDoc}
      */
     @Override
-    public UpsertRelationsDTO connect(PipelineExecutionContext ctx, Pipeline p) {
+    public UpsertRelationsDTO connect(PipelineInput ctx, Pipeline p) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;

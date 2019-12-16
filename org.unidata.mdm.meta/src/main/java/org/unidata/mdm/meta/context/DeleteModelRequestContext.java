@@ -4,17 +4,17 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-import org.unidata.mdm.core.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
+import org.unidata.mdm.system.context.AbstractCompositeRequestContext;
 import org.unidata.mdm.system.context.StorageSpecificContext;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Mikhail Mikhailov
  */
 public class DeleteModelRequestContext
         extends AbstractCompositeRequestContext
-        implements MayHaveDraft, PipelineExecutionContext, StorageSpecificContext, Serializable {
+        implements MayHaveDraft, PipelineInput, StorageSpecificContext, Serializable {
 
     /**
      * SVUID.
@@ -168,6 +168,7 @@ public class DeleteModelRequestContext
         return nestedEntitiesIds != null && !nestedEntitiesIds.isEmpty();
     }
 
+    @Override
     public boolean isDraft() {
         return getFlag(MetaContextFlags.FLAG_DRAFT);
     }

@@ -35,10 +35,8 @@ import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.data.context.DeleteRelationRequestContext;
 import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.GetRelationRequestContext;
-import org.unidata.mdm.data.context.GetRelationRequestContext.GetRelationRequestContextBuilder;
 import org.unidata.mdm.data.context.GetRelationsDigestRequestContext;
 import org.unidata.mdm.data.context.GetRelationsRequestContext;
-import org.unidata.mdm.data.context.GetRelationsRequestContext.GetRelationsRequestContextBuilder;
 import org.unidata.mdm.data.context.GetRelationsTimelineRequestContext;
 import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.context.UpsertRelationRequestContext;
@@ -64,9 +62,6 @@ import org.unidata.mdm.data.service.segments.relations.RelationsGetConnectorExec
 import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.apply.RelationMergeChangeSet;
 import org.unidata.mdm.data.type.apply.batch.AbstractBatchSetAccumulator;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
-import org.unidata.mdm.data.type.apply.batch.BatchSetAccumulator;
-import org.unidata.mdm.data.type.apply.batch.BatchSetSize;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationUpsertBatchSetAccumulator;
 import org.unidata.mdm.data.type.data.EtalonRelation;
@@ -84,6 +79,9 @@ import org.unidata.mdm.meta.type.search.RelationToIndexId;
 import org.unidata.mdm.search.context.IndexRequestContext;
 import org.unidata.mdm.search.type.id.ManagedIndexId;
 import org.unidata.mdm.system.service.ExecutionService;
+import org.unidata.mdm.system.type.batch.BatchIterator;
+import org.unidata.mdm.system.type.batch.BatchSetAccumulator;
+import org.unidata.mdm.system.type.batch.BatchSetSize;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
@@ -320,7 +318,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
      * @return list of results
      */
     @Override
-    public List<DeleteRelationsDTO> batchDeleteRelations(BatchSetAccumulator<DeleteRelationsRequestContext> accumulator) {
+    public List<DeleteRelationsDTO> batchDeleteRelations(BatchSetAccumulator<DeleteRelationsRequestContext, DeleteRelationsDTO> accumulator) {
 
         // 1. Collect updates
         List<DeleteRelationsDTO> result = new ArrayList<>(accumulator.workingCopy().size());
@@ -355,7 +353,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
     @Override
     public List<DeleteRelationsDTO> batchDeleteRelations(List<DeleteRelationsRequestContext> ctxs, boolean abortOnFailure) {
 
-        AbstractBatchSetAccumulator<DeleteRelationsRequestContext> accumulator = getDefaultRelationDeleteAccumulator();
+        AbstractBatchSetAccumulator<DeleteRelationsRequestContext, DeleteRelationsDTO> accumulator = getDefaultRelationDeleteAccumulator();
 
         accumulator.setAbortOnFailure(abortOnFailure);
         accumulator.charge(ctxs);
@@ -374,7 +372,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<UpsertRelationsDTO> batchUpsertRelations(BatchSetAccumulator<UpsertRelationsRequestContext> accumulator) {
+    public List<UpsertRelationsDTO> batchUpsertRelations(BatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> accumulator) {
 
         // 1. Collect updates
         List<UpsertRelationsDTO> result = new ArrayList<>(accumulator.workingCopy().size());
@@ -410,7 +408,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
     @Transactional
     public List<UpsertRelationsDTO> batchUpsertRelations(List<UpsertRelationsRequestContext> ctxs, boolean abortOnFailure) {
 
-        AbstractBatchSetAccumulator<UpsertRelationsRequestContext> accumulator = getDefaultRelationUpsertAccumulator();
+        AbstractBatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> accumulator = getDefaultRelationUpsertAccumulator();
 
         accumulator.setAbortOnFailure(abortOnFailure);
         accumulator.charge(ctxs);
@@ -594,7 +592,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
             }
 
             List<GetRelationRequestContext> requestList = toEtalons.stream().map(
-                    po -> new GetRelationRequestContextBuilder()
+                    po -> GetRelationRequestContext.builder()
                             .relationEtalonKey(po.getId())
                             .forDate(asOf)
                             .forLastUpdate(lud)
@@ -602,7 +600,7 @@ public class DataRelationsServiceImpl implements DataRelationsService {
                             .build())
                     .collect(Collectors.toList());
 
-            GetRelationsRequestContext ctx = new GetRelationsRequestContextBuilder()
+            GetRelationsRequestContext ctx = GetRelationsRequestContext.builder()
                     .relations(Collections.singletonMap(name, requestList))
                     .build();
 
@@ -1090,14 +1088,14 @@ public class DataRelationsServiceImpl implements DataRelationsService {
         commonRelationsComponent.deactivateRelationsByName(relationName);
     }
 
-    private AbstractBatchSetAccumulator<UpsertRelationsRequestContext> getDefaultRelationUpsertAccumulator() {
+    private AbstractBatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> getDefaultRelationUpsertAccumulator() {
         RelationUpsertBatchSetAccumulator accumulator
                 = new RelationUpsertBatchSetAccumulator(500, false, false);
         accumulator.setBatchSetSize(BatchSetSize.SMALL);
         return accumulator;
     }
 
-    private AbstractBatchSetAccumulator<DeleteRelationsRequestContext> getDefaultRelationDeleteAccumulator() {
+    private AbstractBatchSetAccumulator<DeleteRelationsRequestContext, DeleteRelationsDTO> getDefaultRelationDeleteAccumulator() {
         RelationDeleteBatchSetAccumulator accumulator
                 = new RelationDeleteBatchSetAccumulator(500, false);
         accumulator.setBatchSetSize(BatchSetSize.SMALL);

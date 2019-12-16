@@ -31,18 +31,18 @@ import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.service.MetaModelService;
-import org.unidata.mdm.system.context.CompositeRequestContext;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
  * @author Mikhail Mikhailov on Nov 24, 2019
  */
 @Component(RelationsDeleteConnectorExecutor.SEGMENT_ID)
-public class RelationsDeleteConnectorExecutor extends Connector<PipelineExecutionContext, DeleteRelationsDTO> {
+public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, DeleteRelationsDTO> {
     /**
      * This segment ID.
      */
@@ -82,9 +82,9 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineExecutio
      * {@inheritDoc}
      */
     @Override
-    public DeleteRelationsDTO connect(PipelineExecutionContext ctx) {
+    public DeleteRelationsDTO connect(PipelineInput ctx) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         DeleteRelationsRequestContext payload = target.fragment(DeleteRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
@@ -101,9 +101,9 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineExecutio
      * {@inheritDoc}
      */
     @Override
-    public DeleteRelationsDTO connect(PipelineExecutionContext ctx, Pipeline p) {
+    public DeleteRelationsDTO connect(PipelineInput ctx, Pipeline p) {
 
-        CompositeRequestContext target = (CompositeRequestContext) ctx;
+        InputFragmentContainer target = (InputFragmentContainer) ctx;
         DeleteRelationsRequestContext payload = target.fragment(DeleteRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;

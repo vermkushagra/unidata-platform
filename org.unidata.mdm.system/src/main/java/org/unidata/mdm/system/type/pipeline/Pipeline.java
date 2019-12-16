@@ -12,8 +12,6 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.exception.PipelineException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 
@@ -35,6 +33,10 @@ public final class Pipeline {
      */
     private final String description;
     /**
+     * Marks a pipeline as batched pipeline.
+     */
+    private final boolean batched;
+    /**
      * Collected segments.
      */
     private final List<Segment> segments = new ArrayList<>();
@@ -45,7 +47,7 @@ public final class Pipeline {
     /**
      * Connected non-default specific pipelines.
      */
-    private Map<Connector<? extends PipelineExecutionContext, ? extends PipelineExecutionResult>, Pipeline> connected;
+    private Map<Connector<? extends PipelineInput, ? extends PipelineOutput>, Pipeline> connected;
     /**
      * Just the indicator that .end has already been called and the PL is closed.
      */
@@ -55,12 +57,14 @@ public final class Pipeline {
      * @param startId the start segment id.
      * @param subjectId the subject id. May be null/blank.
      * @param description the description.
+     * @param batched the batched mark
      */
-    private Pipeline(String startId, String subjectId, String description) {
+    private Pipeline(String startId, String subjectId, String description, boolean batched) {
         super();
         this.startId = startId;
         this.subjectId = subjectId;
         this.description = description;
+        this.batched = batched;
     }
     /**
      * Gets pipeline ID. Must be unique accross the system.
@@ -94,7 +98,7 @@ public final class Pipeline {
      * @return fallbacks
      */
     @SuppressWarnings("unchecked")
-    public<C extends PipelineExecutionContext> List<Fallback<C>> getFallbacks() {
+    public<C extends PipelineInput> List<Fallback<C>> getFallbacks() {
         return fallbacks.stream()
                 .map(f -> (Fallback<C>) f)
                 .collect(Collectors.toList());
@@ -104,16 +108,16 @@ public final class Pipeline {
      * @return the starting point
      */
     @SuppressWarnings("unchecked")
-    public Start<PipelineExecutionContext> getStart() {
-        return (Start<PipelineExecutionContext>) segments.get(0);
+    public Start<PipelineInput> getStart() {
+        return (Start<PipelineInput>) segments.get(0);
     }
     /**
      * Gets the finishing point.
      * @return the finishing point or null, if the pipeline is not finished yet
      */
     @SuppressWarnings("unchecked")
-    public Finish<PipelineExecutionContext, PipelineExecutionResult> getFinish() {
-        return finished ? (Finish<PipelineExecutionContext, PipelineExecutionResult>) segments.get(segments.size() - 1) : null;
+    public Finish<PipelineInput, PipelineOutput> getFinish() {
+        return finished ? (Finish<PipelineInput, PipelineOutput>) segments.get(segments.size() - 1) : null;
     }
 
     /**
@@ -122,7 +126,7 @@ public final class Pipeline {
      * @return pipeline instance or null
      */
     @Nullable
-    public Pipeline getConnected(@Nonnull Connector<? extends PipelineExecutionContext, ? extends PipelineExecutionResult> c) {
+    public Pipeline getConnected(@Nonnull Connector<? extends PipelineInput, ? extends PipelineOutput> c) {
         if (Objects.isNull(connected)) {
             return null;
         }
@@ -137,13 +141,21 @@ public final class Pipeline {
         return finished;
     }
     /**
+     * Returns batched state.
+     * @return batched state
+     */
+    public boolean isBatched() {
+        return batched;
+    }
+    /**
      * Adds a point to this pipeline.
      * @param p the point
      * @return self
      */
-    public Pipeline with(@Nonnull Point<? extends PipelineExecutionContext> p) {
+    public Pipeline with(@Nonnull Point<? extends PipelineInput> p) {
         Objects.requireNonNull(p, "Point segment is null");
         throwIfPipelineClosed();
+        throwIfPipelineBatchedMismatch(p);
         segments.add(p);
         return this;
     }
@@ -152,9 +164,10 @@ public final class Pipeline {
      * @param c the connector
      * @return self
      */
-    public Pipeline with(@Nonnull Connector<? extends PipelineExecutionContext, ? extends PipelineExecutionResult> c) {
+    public Pipeline with(@Nonnull Connector<? extends PipelineInput, ? extends PipelineOutput> c) {
         Objects.requireNonNull(c, "Connector segment is null");
         throwIfPipelineClosed();
+        throwIfPipelineBatchedMismatch(c);
         segments.add(c);
         return this;
     }
@@ -163,12 +176,14 @@ public final class Pipeline {
      * @param c the connector
      * @return self
      */
-    public Pipeline with(@Nonnull Connector<? extends PipelineExecutionContext, ? extends PipelineExecutionResult> c, @Nonnull Pipeline p) {
+    public Pipeline with(@Nonnull Connector<? extends PipelineInput, ? extends PipelineOutput> c, @Nonnull Pipeline p) {
 
         Objects.requireNonNull(c, "Connector segment is null");
         Objects.requireNonNull(p, "Connecting pipeline is null");
 
         throwIfPipelineClosed();
+        throwIfPipelineBatchedMismatch(c);
+
         segments.add(c);
 
         if (Objects.isNull(connected)) {
@@ -184,7 +199,9 @@ public final class Pipeline {
      * @param fallback the fallback function
      * @return self
      */
-    public Pipeline fallback(@Nonnull Fallback<? extends PipelineExecutionContext> fallback) {
+    public Pipeline fallback(@Nonnull Fallback<? extends PipelineInput> fallback) {
+        Objects.requireNonNull(fallback, "Fallback segment is null");
+        throwIfPipelineBatchedMismatch(fallback);
         fallbacks.add(fallback);
         return this;
     }
@@ -194,9 +211,10 @@ public final class Pipeline {
      * @param f the finish segment
      * @return self
      */
-    public Pipeline end(@Nonnull Finish<? extends PipelineExecutionContext, ? extends PipelineExecutionResult> f) {
+    public Pipeline end(@Nonnull Finish<? extends PipelineInput, ? extends PipelineOutput> f) {
         Objects.requireNonNull(f, "Finish segment is null");
         throwIfPipelineClosed();
+        throwIfPipelineBatchedMismatch(f);
         segments.add(f);
         finished = true;
         return this;
@@ -210,12 +228,21 @@ public final class Pipeline {
         }
     }
     /**
+     * Throws if this PL is already closed.
+     */
+    private void throwIfPipelineBatchedMismatch(Segment s) {
+        if (s.isBatched() != batched) {
+            throw new PipelineException("Attempt to add a non batched segment to a batched pipeline or vice versa.",
+                    SystemExceptionIds.EX_PIPELINE_BATCHED_MISMATCH);
+        }
+    }
+    /**
      * Starts a pipeline from starting point with no subject.
      * Description will be taken from the starting point.
      * @param s the starting point
      * @return a pipeline instance
      */
-    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s) {
+    public static Pipeline start(@Nonnull Start<? extends PipelineInput> s) {
         return start(s, null, null);
     }
     /**
@@ -225,7 +252,7 @@ public final class Pipeline {
      * @param subjectId the subject id, on which this pipeline overrides the default one
      * @return a pipeline instance
      */
-    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s, String subjectId) {
+    public static Pipeline start(@Nonnull Start<? extends PipelineInput> s, String subjectId) {
         return start(s, subjectId, null);
     }
     /**
@@ -235,12 +262,13 @@ public final class Pipeline {
      * @param description the description
      * @return a pipeline instance
      */
-    public static Pipeline start(@Nonnull Start<? extends PipelineExecutionContext> s, String subjectId, String description) {
+    public static Pipeline start(@Nonnull Start<? extends PipelineInput> s, String subjectId, String description) {
         Objects.requireNonNull(s, "Start segment is null");
         Pipeline p = new Pipeline(
                 s.getId(),
                 StringUtils.isBlank(subjectId) ? SystemConfigurationConstants.NON_SUBJECT : subjectId,
-                StringUtils.isBlank(description) ? s.getDescription() : description);
+                StringUtils.isBlank(description) ? s.getDescription() : description,
+                s.isBatched());
         p.segments.add(s);
         return p;
     }

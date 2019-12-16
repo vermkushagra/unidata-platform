@@ -10,18 +10,19 @@ import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.unidata.mdm.data.context.MergeRequestContext;
+import org.unidata.mdm.data.dto.MergeRecordsDTO;
 import org.unidata.mdm.data.po.data.RecordEtalonPO;
 import org.unidata.mdm.data.po.data.RecordOriginRemapPO;
 import org.unidata.mdm.data.po.keys.RecordExternalKeysPO;
 import org.unidata.mdm.data.type.apply.RecordMergeChangeSet;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
 
 /**
  * @author Mikhail Mikhailov
  * Merge accumulator for records.
  */
-public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<MergeRequestContext> {
+public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<MergeRequestContext, MergeRecordsDTO> {
     /**
      * Relation merge acc.
      */
@@ -48,6 +49,10 @@ public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumu
      */
     private final Map<Integer, List<RecordExternalKeysPO>> externalKeysUpdates;
     /**
+     * Stats/result.
+     */
+    private final RecordMergeBatchSetStatisitcs statisitcs;
+    /**
      * Constructor.
      * @param commitSize the size of the commit interval (number of contexts in a single block)
      */
@@ -60,6 +65,25 @@ public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumu
         etalonWinners = new ArrayList<>(commitSize);
         originRemaps = new HashMap<>(StorageUtils.numberOfShards());
         externalKeysUpdates = new HashMap<>(StorageUtils.numberOfShards());
+        statisitcs = new RecordMergeBatchSetStatisitcs();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public RecordMergeBatchSetStatisitcs statistics() {
+        return statisitcs;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /**

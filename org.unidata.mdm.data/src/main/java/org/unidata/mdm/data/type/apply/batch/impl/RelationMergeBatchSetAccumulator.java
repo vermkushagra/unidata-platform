@@ -14,14 +14,16 @@ import org.unidata.mdm.data.po.data.RelationEtalonRemapFromPO;
 import org.unidata.mdm.data.po.data.RelationEtalonRemapToPO;
 import org.unidata.mdm.data.po.data.RelationOriginRemapPO;
 import org.unidata.mdm.data.type.apply.RelationMergeChangeSet;
-import org.unidata.mdm.data.type.apply.batch.BatchIterator;
 import org.unidata.mdm.data.util.StorageUtils;
+import org.unidata.mdm.system.type.batch.BatchIterator;
+import org.unidata.mdm.system.type.batch.BatchSetStatistics;
+import org.unidata.mdm.system.type.pipeline.VoidPipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Relation merge support accumulator.
  */
-public class RelationMergeBatchSetAccumulator extends AbstractRelationBatchSetAccumulator<MergeRequestContext> {
+public class RelationMergeBatchSetAccumulator extends AbstractRelationBatchSetAccumulator<MergeRequestContext, VoidPipelineOutput> {
     /**
      * Collected rel. from etalons.
      */
@@ -43,6 +45,25 @@ public class RelationMergeBatchSetAccumulator extends AbstractRelationBatchSetAc
         etalonToRemaps = new HashMap<>(StorageUtils.numberOfShards());
         originRemaps = new HashMap<>(StorageUtils.numberOfShards());
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public <S extends BatchSetStatistics<VoidPipelineOutput>> S statistics() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getStartTypeId() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /**
      * Adds a single rel etalon remap record update.
      * @param po the update

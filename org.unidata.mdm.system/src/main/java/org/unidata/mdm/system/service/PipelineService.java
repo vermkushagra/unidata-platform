@@ -1,7 +1,6 @@
 package org.unidata.mdm.system.service;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
@@ -10,12 +9,12 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.unidata.mdm.system.context.PipelineExecutionContext;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
+import org.unidata.mdm.system.type.pipeline.PipelineInput;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Segment;
 import org.unidata.mdm.system.type.pipeline.Start;
@@ -116,7 +115,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @return start segment or null
      */
     @Nullable
-    <C extends PipelineExecutionContext> Start<C> start(String id);
+    <C extends PipelineInput> Start<C> start(String id);
     /**
      * Get segment specifically as a point segment by id.
      * @param <C> the context type
@@ -124,7 +123,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @return point segment or null
      */
     @Nullable
-    <C extends PipelineExecutionContext> Point<C> point(String id);
+    <C extends PipelineInput> Point<C> point(String id);
     /**
      * Get segment specifically as a connector segment by id.
      * @param <C> the context type
@@ -133,7 +132,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @return connector segment or null
      */
     @Nullable
-    <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Connector<C, R> connector(String id);
+    <C extends PipelineInput, R extends PipelineOutput> Connector<C, R> connector(String id);
     /**
      * Get segment specifically as a finish segment by id.
      * @param <C> the context type
@@ -142,7 +141,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @return finish segment or null
      */
     @Nullable
-    <C extends PipelineExecutionContext, R extends PipelineExecutionResult> Finish<C, R> finish(String id);
+    <C extends PipelineInput, R extends PipelineOutput> Finish<C, R> finish(String id);
     /**
      * Gets a fallback segment by id.
      * @param <C> The input type
@@ -151,7 +150,7 @@ public interface PipelineService extends AfterPlatformStartup {
      * @return fallback segment or null
      */
     @Nullable
-    <C extends PipelineExecutionContext> Fallback<C> fallback(String id);
+    <C extends PipelineInput> Fallback<C> fallback(String id);
 
     void load(String startId, String subject, InputStream fileInputStream) throws IOException;
 

@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Objects;
 
 import org.unidata.mdm.system.dto.AbstractCompositeResult;
-import org.unidata.mdm.system.dto.PipelineExecutionResult;
+import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov on Nov 28, 2019
  */
-public class GetModelDTO extends AbstractCompositeResult implements PipelineExecutionResult {
+public class GetModelDTO extends AbstractCompositeResult implements PipelineOutput {
     /**
      * Entities.
      */
