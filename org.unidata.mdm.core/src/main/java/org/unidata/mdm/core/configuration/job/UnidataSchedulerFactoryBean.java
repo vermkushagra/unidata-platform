@@ -53,18 +53,18 @@ public class UnidataSchedulerFactoryBean extends SchedulerFactoryBean implements
     protected void registerJobsAndTriggers() throws SchedulerException {
         Set<TriggerKey> triggersForRestore = getScheduler().getTriggerKeys(GroupMatcher.groupEquals(MEMORY_GROUP));
         Map<TriggerKey, Date> lastFireDatesMap = new HashMap<>();
-        if(CollectionUtils.isNotEmpty(triggersForRestore)){
-            for(TriggerKey triggerKey : triggersForRestore){
+        if (CollectionUtils.isNotEmpty(triggersForRestore)) {
+            for (TriggerKey triggerKey : triggersForRestore) {
                 lastFireDatesMap.put(triggerKey, getScheduler().getTrigger(triggerKey).getPreviousFireTime());
             }
         }
 
         super.registerJobsAndTriggers();
 
-        if(CollectionUtils.isNotEmpty(triggersForRestore)){
-            for(TriggerKey triggerKey : triggersForRestore){
+        if (CollectionUtils.isNotEmpty(triggersForRestore)) {
+            for (TriggerKey triggerKey : triggersForRestore) {
                 Trigger trigger = getScheduler().getTrigger(triggerKey);
-                if(trigger instanceof CronTriggerImpl){
+                if (trigger instanceof CronTriggerImpl) {
                     ((CronTriggerImpl) trigger).setPreviousFireTime(lastFireDatesMap.get(triggerKey));
                     getScheduler().rescheduleJob(triggerKey, trigger);
                 }
