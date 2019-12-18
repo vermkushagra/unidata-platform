@@ -1,6 +1,7 @@
 package org.unidata.mdm.system.configuration;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -9,17 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
-import org.unidata.mdm.system.util.MessageUtils;
 
 import com.hazelcast.config.Config;
 import com.hazelcast.config.JoinConfig;
@@ -31,45 +30,70 @@ import com.hazelcast.core.HazelcastInstance;
  * Root spring context link.
  */
 @Configuration
-public class SystemConfiguration implements ApplicationContextAware {
-    /**
-     * The spring app. context.
-     */
-    private static ApplicationContext applicationContext;
+public class SystemConfiguration extends AbstractConfiguration {
 
-    @Autowired
-    private Environment env;
+    private static final ConfigurationId ID = () -> "SYSTEM_CONFIGURATION";
+
+    private ResourceBundleMessageSource systemMessageSource;
+
     /**
      * Constructor.
      */
     public SystemConfiguration() {
         super();
+
+        // Do it here, because otherwise, we can not control bundles joining
+        systemMessageSource = new ResourceBundleMessageSource();
+        systemMessageSource.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        systemMessageSource.addBasenames("classpath:system_messages");
     }
+
+    /**
+     * Link to system bundles.
+     */
+    public ResourceBundleMessageSource getSystemMessageSource() {
+        return systemMessageSource;
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) {
-        // The usual trick.
-        SystemConfiguration.applicationContext = applicationContext;
+    protected ConfigurationId getId() {
+        return ID;
+    }
+
+    public static ApplicationContext getApplicationContext() {
+        return CONFIGURED_CONTEXT_MAP.get(ID);
     }
     /**
      * Gets a bean.
+     *
      * @param <T>
      * @param beanClass the bean class
      * @return bean
      */
     public static <T> T getBean(Class<T> beanClass) {
-        return applicationContext.getBean(beanClass);
+        if (CONFIGURED_CONTEXT_MAP.containsKey(ID)) {
+            return CONFIGURED_CONTEXT_MAP.get(ID).getBean(beanClass);
+        }
+
+        return null;
     }
+
     /**
      * Gets beans of type.
+     *
      * @param <T>
      * @param beanClass the bean class
      * @return bean
      */
     public static <T> Map<String, T> getBeans(Class<T> beanClass) {
-        return applicationContext.getBeansOfType(beanClass);
+        if (CONFIGURED_CONTEXT_MAP.containsKey(ID)) {
+            return CONFIGURED_CONTEXT_MAP.get(ID).getBeansOfType(beanClass);
+        }
+
+        return Collections.emptyMap();
     }
 
     @Bean
@@ -104,7 +128,7 @@ public class SystemConfiguration implements ApplicationContextAware {
     }
 
     @Bean("systemDataSource")
-    public DataSource systemDataSource() {
+    public DataSource systemDataSource(@Autowired Environment env) {
 
         // Single connection data source
         String url = env.getProperty(SystemConfigurationConstants.UNIDATA_SYSTEM_URL);
@@ -133,16 +157,6 @@ public class SystemConfiguration implements ApplicationContextAware {
 
     @Bean
     public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-
-        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        source.addBasenames("classpath:messages");
-
-        return source;
-    }
-
-    @Bean
-    public MessageUtils messageUtils(MessageSource messageSource) {
-        return new MessageUtils(messageSource);
+        return systemMessageSource;
     }
 }

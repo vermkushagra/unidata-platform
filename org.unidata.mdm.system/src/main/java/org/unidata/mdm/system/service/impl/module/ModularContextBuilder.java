@@ -1,8 +1,10 @@
 package org.unidata.mdm.system.service.impl.module;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -12,6 +14,8 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.unidata.mdm.system.configuration.SystemConfiguration;
 import org.unidata.mdm.system.type.module.Module;
 
 /**
@@ -119,7 +123,17 @@ public class ModularContextBuilder {
         // 5. Refresh
         result.refresh();
 
-        // 6. And return
+        // 6. Add resource basenames to parent MS, if those are defined
+        if (ArrayUtils.isNotEmpty(module.getResourceBundleBasenames())) {
+            SystemConfiguration configuration = parent.getBean(SystemConfiguration.class);
+            ResourceBundleMessageSource rbms = configuration.getSystemMessageSource();
+            String[] basenames = Arrays.stream(module.getResourceBundleBasenames())
+                .map(v -> "classpath:" + v)
+                .toArray(sz -> new String[sz]);
+            rbms.addBasenames(basenames);
+        }
+
+        // 7. And return
         return result;
     }
     /**

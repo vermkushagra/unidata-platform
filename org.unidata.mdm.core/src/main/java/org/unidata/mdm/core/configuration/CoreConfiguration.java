@@ -1,7 +1,6 @@
 package org.unidata.mdm.core.configuration;
 
 import java.net.MalformedURLException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -10,10 +9,8 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -117,16 +114,6 @@ public class CoreConfiguration extends AbstractConfiguration {
     @Bean
     public ProviderManager authenticationManager(final AuthenticationProvider authenticationProvider) {
         return new ProviderManager(Collections.singletonList(authenticationProvider));
-    }
-
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-
-        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        source.addBasenames("classpath:messages");
-
-        return source;
     }
 
     /**

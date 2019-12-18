@@ -37,6 +37,10 @@ public final class SystemConfigurationConstants {
      */
     public static final String UNIDATA_SYSTEM_URL = SystemModule.MODULE_ID + ".datasource.url";
     /**
+     * Unidata system schema URL property name.
+     */
+    public static final String UNIDATA_DEFAULT_LOCALE = SystemModule.MODULE_ID + ".default.locale";
+    /**
      * Unidata system schema name.
      */
     public static final String UNIDATA_SYSTEM_SCHEMA_NAME = "org_unidata_mdm_system";

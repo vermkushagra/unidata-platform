@@ -16,6 +16,7 @@ import org.unidata.mdm.system.migration.SystemMigrations;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
+import org.unidata.mdm.system.util.MessageUtils;
 import org.unidata.mdm.system.util.PipelineUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
@@ -92,6 +93,7 @@ public class SystemModule implements Module {
     public void start() {
         IdUtils.init();
         PipelineUtils.init();
+        MessageUtils.init();
     }
 
     @Override

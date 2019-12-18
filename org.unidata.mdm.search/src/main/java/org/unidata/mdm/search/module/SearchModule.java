@@ -51,6 +51,14 @@ public class SearchModule implements Module {
         return DEPENDENCIES;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "search_messages" };
+    }
+
     @Override
     public void install() {
         LOGGER.info("Install");

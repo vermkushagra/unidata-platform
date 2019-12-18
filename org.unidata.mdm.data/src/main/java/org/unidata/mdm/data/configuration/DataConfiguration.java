@@ -1,6 +1,5 @@
 package org.unidata.mdm.data.configuration;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -9,10 +8,8 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
@@ -96,15 +93,5 @@ public class DataConfiguration extends AbstractConfiguration {
     public DataSource storageDataSource() {
     	Properties properties = getAllPropertiesWithPrefix(DataConfigurationConstants.DATA_DATASOURCE_PROPERTIES_PREFIX, true);
     	return DataSourceUtils.newPoolingNonXADataSource(properties);
-    }
-
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-
-        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        source.addBasenames("classpath:messages");
-
-        return source;
     }
 }

@@ -1,6 +1,5 @@
 package org.unidata.mdm.meta.configuration;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -10,16 +9,13 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
-import org.unidata.mdm.system.util.MessageUtils;
 
 /**
  * @author Alexander Malyshev
@@ -106,20 +102,5 @@ public class MetaConfiguration extends AbstractConfiguration {
         final PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
         propertiesFactoryBean.setLocation(new ClassPathResource("/db/meta-draft-sql.xml"));
         return propertiesFactoryBean;
-    }
-
-    @Bean
-    public MessageSource messageSource() {
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-
-        source.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        source.addBasenames("classpath:messages");
-
-        return source;
-    }
-
-    @Bean
-    public MessageUtils messageUtils(MessageSource messageSource) {
-        return new MessageUtils(messageSource);
     }
 }

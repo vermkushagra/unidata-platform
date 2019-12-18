@@ -62,12 +62,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
 
     private final AtomicBoolean init = new AtomicBoolean(false);
 
-    private static final String MODULE_ID_ATTRIBUTE = "Unidata-Module";
-    private static final String MODULE_VERSION_ATTRIBUTE = "Unidata-Module-Version";
-    private static final String MODULE_TAG_ATTRIBUTE = "Unidata-Module-Tag";
     private static final String MODULE_CLASS_ATTRIBUTE = "Unidata-Module-Class";
-    private static final String MODULE_DEPENDENCIES_ATTRIBUTE = "Unidata-Module-Depends";
-    private static final String DEPENDENCIES_DELIMITER = ";";
 
     private final RuntimePropertiesService runtimePropertiesService;
 

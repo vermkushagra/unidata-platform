@@ -107,6 +107,14 @@ public class MetaModule extends AbstractModule {
         return DEPENDENCIES;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "meta_messages" };
+    }
+
     private Migrator migrator;
 
     @Override

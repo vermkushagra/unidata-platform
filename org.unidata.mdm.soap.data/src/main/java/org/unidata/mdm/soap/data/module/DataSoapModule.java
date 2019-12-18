@@ -1,12 +1,11 @@
 package org.unidata.mdm.soap.data.module;
 
-import org.unidata.mdm.system.type.module.Dependency;
-import org.unidata.mdm.system.type.module.Module;
-
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
+import org.unidata.mdm.system.type.module.Dependency;
+import org.unidata.mdm.system.type.module.Module;
 
 /**
  * @author Alexander Malyshev
@@ -40,5 +39,13 @@ public class DataSoapModule implements Module {
     @Override
     public Collection<Dependency> getDependencies() {
         return DEPENDENCIES;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "soap_data_messages" };
     }
 }

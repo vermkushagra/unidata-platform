@@ -106,6 +106,14 @@ public class CoreModule implements Module {
         return DEPENDENCIES;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "core_messages" };
+    }
+
     @Override
     public ApplicationConfigurationProperty[] configurationProperties() {
         return CoreConfigurationProperty.values();

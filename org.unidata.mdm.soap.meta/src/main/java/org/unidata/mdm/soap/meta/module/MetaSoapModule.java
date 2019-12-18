@@ -1,11 +1,11 @@
 package org.unidata.mdm.soap.meta.module;
 
-import org.unidata.mdm.system.type.module.Dependency;
-import org.unidata.mdm.system.type.module.Module;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
+
+import org.unidata.mdm.system.type.module.Dependency;
+import org.unidata.mdm.system.type.module.Module;
 
 /**
  * @author Alexander Malyshev
@@ -39,5 +39,12 @@ public class MetaSoapModule implements Module {
     @Override
     public Collection<Dependency> getDependencies() {
         return DEPENDENCIES;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "soap_meta_messages" };
     }
 }

@@ -8,11 +8,11 @@ public abstract class Segment {
     /**
      * Segment id.
      */
-    private final String id;
+    protected final String id;
     /**
      * Segment descripton.
      */
-    private final String description;
+    protected final String description;
     /**
      * Constructor.
      * @param id the ID

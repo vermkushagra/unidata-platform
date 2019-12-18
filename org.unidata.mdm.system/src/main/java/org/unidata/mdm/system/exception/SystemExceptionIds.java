@@ -1,5 +1,7 @@
 package org.unidata.mdm.system.exception;
 
+import org.unidata.mdm.system.module.SystemModule;
+
 /**
  * @author Mikhail Mikhailov
  * Exception IDs for this module.
@@ -111,6 +113,8 @@ public class SystemExceptionIds {
     public static final ExceptionId EX_EVENT_ALREADY_WAITING
         = new ExceptionId("EX_EVENT_ALREADY_WAITING", "app.event.is.waiting.yet");
 
+    public static final ExceptionId EX_SYSTEM_SECURITY_UTILS_CLASS
+        = new ExceptionId("EX_SYSTEM_SECURITY_UTILS_CLASS", SystemModule.MODULE_ID + ".security.utils.class");
     /**
      * Constructor.
      */

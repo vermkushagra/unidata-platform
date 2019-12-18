@@ -5,6 +5,7 @@ import java.util.Collections;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Fallback;
@@ -118,5 +119,17 @@ public interface Module {
      */
     default Collection<Finish<PipelineInput, PipelineOutput>> getFinishTypes() {
         return Collections.emptyList();
+    }
+    /**
+     * Gets resource bundle basenames - i. e. 'my_resources' for localized resources
+     * such as (my_resources_en, my_resources_fr, my_resources_fi).
+     * Resources may be java or XML properties.
+     * Files must be in classpath.
+     * Property names should be prefixed with MODULE_ID, i. e. (for 'org.unidata.mdm.system')
+     * org.unidata.mdm.system.information.message = The weather is nice today!
+     * @return array of resource bundle base names
+     */
+    default String[] getResourceBundleBasenames() {
+        return ArrayUtils.EMPTY_STRING_ARRAY;
     }
 }

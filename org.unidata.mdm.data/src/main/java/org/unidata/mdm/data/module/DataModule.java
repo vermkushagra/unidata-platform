@@ -302,6 +302,13 @@ public class DataModule extends AbstractModule {
         return DEPENDENCIES;
     }
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String[] getResourceBundleBasenames() {
+        return new String[]{ "data_messages" };
+    }
+    /**
      * Initialization logic is quite complicated:
      * - schema may not exist
      * - cluster metadata may not exist

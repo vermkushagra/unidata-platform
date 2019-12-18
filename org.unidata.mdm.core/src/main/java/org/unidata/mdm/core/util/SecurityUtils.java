@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -172,6 +173,16 @@ public class SecurityUtils {
         // Spring context may be null though while being used by tools
         Authentication auth = SecurityContextHolder.getContext() != null ? SecurityContextHolder.getContext().getAuthentication() : null;
         return auth != null ? auth.getCredentials().toString() : null;
+    }
+
+    /**
+     * Gets current token.
+     *
+     * @return token or null
+     */
+    public static Locale getCurrentUserLocale() {
+        SecurityToken token = getSecurityTokenForCurrentUser();
+        return token != null && token.getUser() != null ? token.getUser().getLocale() : null;
     }
 
     /**
