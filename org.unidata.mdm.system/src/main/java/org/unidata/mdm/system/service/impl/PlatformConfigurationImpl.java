@@ -3,15 +3,10 @@ package org.unidata.mdm.system.service.impl;
 import java.util.Locale;
 import java.util.UUID;
 
-import com.fasterxml.uuid.EthernetAddress;
-import com.fasterxml.uuid.Generators;
-import com.fasterxml.uuid.impl.RandomBasedGenerator;
-import com.fasterxml.uuid.impl.TimeBasedGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
@@ -20,6 +15,11 @@ import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.PlatformConfiguration;
 import org.unidata.mdm.system.type.format.DumpTargetFormat;
 import org.unidata.mdm.system.util.MessageUtils;
+
+import com.fasterxml.uuid.EthernetAddress;
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.RandomBasedGenerator;
+import com.fasterxml.uuid.impl.TimeBasedGenerator;
 
 /**
  * @author Mikhail Mikhailov
@@ -33,9 +33,6 @@ public class PlatformConfigurationImpl implements PlatformConfiguration, Initial
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformConfigurationImpl.class);
     private static final String VALID_CHARS = "0123456789abcdefABCDEF";
     private static final int CORRECT_NODE_LENGTH = 12;
-
-    @Autowired
-    private MessageUtils messageUtils;
     /**
      * Node ID. Fail, if null.
      */
@@ -163,7 +160,7 @@ public class PlatformConfigurationImpl implements PlatformConfiguration, Initial
         if (StringUtils.isBlank(nodeId)
                 || nodeId.length() != CORRECT_NODE_LENGTH
                 || !StringUtils.containsOnly(nodeId, VALID_CHARS)) {
-            String message = messageUtils.getMessageWithLocaleAndDefault(Locale.ENGLISH, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED.message(), "");
+            String message = MessageUtils.getMessageWithLocaleAndDefault(Locale.ENGLISH, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED.message(), "");
             LOGGER.error(message);
             throw new PlatformFailureException(message, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED);
         }

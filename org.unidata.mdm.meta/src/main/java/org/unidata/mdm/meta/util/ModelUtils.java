@@ -39,7 +39,6 @@ import org.unidata.mdm.meta.NestedEntityDef;
 import org.unidata.mdm.meta.SimpleAttributeDef;
 import org.unidata.mdm.meta.SimpleAttributesHolderEntityDef;
 import org.unidata.mdm.meta.SourceSystemDef;
-import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.type.info.impl.AttributeInfoHolder;
 import org.unidata.mdm.system.util.MessageUtils;
 
@@ -80,11 +79,8 @@ public class ModelUtils {
     public static final Comparator<SourceSystemDef> SOURCE_SYSTEMS_REVERSE_COMPARATOR
         = (o1, o2) -> o2.getWeight().intValue() - o1.getWeight().intValue();
 
-    private static MessageUtils messageUtils;
-
 
     public static void init() {
-        messageUtils = MetaConfiguration.getBean(MessageUtils.class);
     }
 
     private static Integer getOrder(AbstractAttributeDef attr)  {
@@ -569,7 +565,7 @@ public class ModelUtils {
                 .withAdmin(true)
                 .withVersion(1L)
                 .withDescription(
-                        messageUtils.getMessage("app.meta.default.source.system"));
+                        MessageUtils.getMessage("app.meta.default.source.system"));
     }
 
     /**
@@ -580,7 +576,7 @@ public class ModelUtils {
         return MetaJaxbUtils.getMetaObjectFactory().createEntitiesGroupDef()
                 .withGroupName(DEFAULT_GROUP_NAME)
                 .withTitle(
-                        messageUtils.getMessage("app.meta.default.entities.group.root"))
+                        MessageUtils.getMessage("app.meta.default.entities.group.root"))
                 .withVersion(1L);
     }
     /**

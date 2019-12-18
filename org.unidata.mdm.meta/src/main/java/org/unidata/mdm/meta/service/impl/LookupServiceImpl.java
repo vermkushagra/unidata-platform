@@ -9,9 +9,6 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +33,10 @@ import org.unidata.mdm.search.type.form.FormFieldsGroup;
 import org.unidata.mdm.search.util.SearchUtils;
 import org.unidata.mdm.system.util.MessageUtils;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+
 /**
  * @author Dmitry Kopin on 31.05.2019.
  */
@@ -53,9 +54,6 @@ public class LookupServiceImpl implements LookupService {
     @Autowired
     private MetaMeasurementService measurementService;
 
-    @Autowired
-    private MessageUtils messageUtils;
-
     private String displayValuesNotFoundMessage = null;
 
     public LookupServiceImpl() {
@@ -70,7 +68,7 @@ public class LookupServiceImpl implements LookupService {
     public Pair<String, String> getLookupDisplayNameById(String lookupName, Object codeAttrValue, Date validFrom, Date validTo, List<String> toBuildAttrs, boolean useAttributeNameForDisplay) {
 
         if (displayValuesNotFoundMessage == null) {
-            displayValuesNotFoundMessage = messageUtils.getMessage("app.error.no.display.value");
+            displayValuesNotFoundMessage = MessageUtils.getMessage("app.error.no.display.value");
         }
         List<String> displayAttrs = CollectionUtils.isNotEmpty(toBuildAttrs) ? toBuildAttrs : metaModelService.findMainDisplayableAttrNamesSorted(lookupName);
         Map<String, AttributeModelElement> attrsMap = metaModelService.getAttributesInfoMap(lookupName);

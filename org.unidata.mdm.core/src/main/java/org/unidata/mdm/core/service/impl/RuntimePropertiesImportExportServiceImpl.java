@@ -1,6 +1,11 @@
 package org.unidata.mdm.core.service.impl;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -45,16 +50,13 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
 
     private final LargeObjectsServiceComponent largeObjectsServiceComponent;
 
-    private final MessageUtils messageUtils;
-
     public RuntimePropertiesImportExportServiceImpl(
             final RuntimePropertiesService runtimePropertiesService,
             final UserService userService,
-            final LargeObjectsServiceComponent largeObjectsServiceComponent, MessageUtils messageUtils) {
+            final LargeObjectsServiceComponent largeObjectsServiceComponent) {
         this.runtimePropertiesService = runtimePropertiesService;
         this.userService = userService;
         this.largeObjectsServiceComponent = largeObjectsServiceComponent;
-        this.messageUtils = messageUtils;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
     }
 
     private String generatePropertyString(ConfigurationProperty<Serializable> p) {
-        return "## " + messageUtils.getMessage(p.getProperty().getKey()) + "\n"
+        return "## " + MessageUtils.getMessage(p.getProperty().getKey()) + "\n"
                 + p.getProperty().getKey() + "="
                 + (p.getValue() == null ? RuntimePropertiesServiceImpl.NULL_VALUE_PLACE_HOLDER : p.getValue());
     }
@@ -92,7 +94,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
         try (final InputStream is = new ByteArrayInputStream(data.getBytes())) {
             final UpsertUserEventRequestContext upsertUserEventRequestContext =
                     configExportUserEvent
-                            .content(messageUtils.getMessage(CONFIG_EXPORT_SUCCESS))
+                            .content(MessageUtils.getMessage(CONFIG_EXPORT_SUCCESS))
                             .build();
             final UserEventDTO userEventDTO = userService.upsert(upsertUserEventRequestContext);
             final SaveLargeObjectRequestContext saveLargeObjectRequestContext =
@@ -108,7 +110,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
             LOGGER.error("Can't export backend configuration file", e);
             final UpsertUserEventRequestContext upsertUserEventRequestContext =
                     configExportUserEvent
-                            .content(messageUtils.getMessage(CONFIG_EXPORT_FAIL))
+                            .content(MessageUtils.getMessage(CONFIG_EXPORT_FAIL))
                             .build();
             userService.upsert(upsertUserEventRequestContext);
         }
@@ -137,7 +139,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
                         .type("CONFIG_IMPORT");
         final UpsertUserEventRequestContext upsertUserEventRequestContext =
                 configImportUserEvent
-                        .content(messageUtils.getMessage(importFile(path)))
+                        .content(MessageUtils.getMessage(importFile(path)))
                         .build();
         userService.upsert(upsertUserEventRequestContext);
     }
