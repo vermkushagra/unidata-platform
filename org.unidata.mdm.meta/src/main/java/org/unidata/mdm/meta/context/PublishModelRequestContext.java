@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import org.unidata.mdm.meta.service.segments.ModelPublishStartExecutor;
 import org.unidata.mdm.system.context.AbstractCompositeRequestContext;
-import org.unidata.mdm.system.context.CommonRequestContext;
 import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
@@ -15,6 +14,9 @@ public class PublishModelRequestContext
         extends AbstractCompositeRequestContext
         implements PipelineInput, Serializable {
 
+    public static PublishModelRequestContext.PublishModelRequestContextBuilder builder() {
+        return new PublishModelRequestContextBuilder();
+    }
     /**
      * Constructor.
      *
@@ -32,8 +34,8 @@ public class PublishModelRequestContext
     public static class PublishModelRequestContextBuilder extends AbstractCompositeRequestContextBuilder<PublishModelRequestContextBuilder> {
 
         @Override
-        public CommonRequestContext build() {
-            return null;
+        public PublishModelRequestContext build() {
+            return new PublishModelRequestContext(this);
         }
     }
 }
