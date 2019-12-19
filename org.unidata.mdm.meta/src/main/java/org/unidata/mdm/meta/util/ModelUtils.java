@@ -40,7 +40,7 @@ import org.unidata.mdm.meta.SimpleAttributeDef;
 import org.unidata.mdm.meta.SimpleAttributesHolderEntityDef;
 import org.unidata.mdm.meta.SourceSystemDef;
 import org.unidata.mdm.meta.type.info.impl.AttributeInfoHolder;
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 /**
  * @author Mikhail Mikhailov
@@ -565,7 +565,7 @@ public class ModelUtils {
                 .withAdmin(true)
                 .withVersion(1L)
                 .withDescription(
-                        MessageUtils.getMessage("app.meta.default.source.system"));
+                        TextUtils.getText("app.meta.default.source.system"));
     }
 
     /**
@@ -576,7 +576,7 @@ public class ModelUtils {
         return MetaJaxbUtils.getMetaObjectFactory().createEntitiesGroupDef()
                 .withGroupName(DEFAULT_GROUP_NAME)
                 .withTitle(
-                        MessageUtils.getMessage("app.meta.default.entities.group.root"))
+                        TextUtils.getText("app.meta.default.entities.group.root"))
                 .withVersion(1L);
     }
     /**

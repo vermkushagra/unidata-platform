@@ -29,7 +29,7 @@ import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.system.service.RuntimePropertiesService;
 import org.unidata.mdm.system.service.impl.RuntimePropertiesServiceImpl;
 import org.unidata.mdm.system.type.configuration.ConfigurationProperty;
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 /**
  * @author Alexander Malyshev
@@ -78,7 +78,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
     }
 
     private String generatePropertyString(ConfigurationProperty<Serializable> p) {
-        return "## " + MessageUtils.getMessage(p.getProperty().getKey()) + "\n"
+        return "## " + TextUtils.getText(p.getProperty().getKey()) + "\n"
                 + p.getProperty().getKey() + "="
                 + (p.getValue() == null ? RuntimePropertiesServiceImpl.NULL_VALUE_PLACE_HOLDER : p.getValue());
     }
@@ -94,7 +94,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
         try (final InputStream is = new ByteArrayInputStream(data.getBytes())) {
             final UpsertUserEventRequestContext upsertUserEventRequestContext =
                     configExportUserEvent
-                            .content(MessageUtils.getMessage(CONFIG_EXPORT_SUCCESS))
+                            .content(TextUtils.getText(CONFIG_EXPORT_SUCCESS))
                             .build();
             final UserEventDTO userEventDTO = userService.upsert(upsertUserEventRequestContext);
             final SaveLargeObjectRequestContext saveLargeObjectRequestContext =
@@ -110,7 +110,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
             LOGGER.error("Can't export backend configuration file", e);
             final UpsertUserEventRequestContext upsertUserEventRequestContext =
                     configExportUserEvent
-                            .content(MessageUtils.getMessage(CONFIG_EXPORT_FAIL))
+                            .content(TextUtils.getText(CONFIG_EXPORT_FAIL))
                             .build();
             userService.upsert(upsertUserEventRequestContext);
         }
@@ -139,7 +139,7 @@ public class RuntimePropertiesImportExportServiceImpl implements RuntimeProperti
                         .type("CONFIG_IMPORT");
         final UpsertUserEventRequestContext upsertUserEventRequestContext =
                 configImportUserEvent
-                        .content(MessageUtils.getMessage(importFile(path)))
+                        .content(TextUtils.getText(importFile(path)))
                         .build();
         userService.upsert(upsertUserEventRequestContext);
     }

@@ -12,7 +12,7 @@ import org.unidata.mdm.system.service.TextService;
  * @author maria.chistyakova
  * @since  05.11.2019
  */
-public class MessageUtils {
+public class TextUtils {
     /**
      * The TT instance.
      */
@@ -20,7 +20,7 @@ public class MessageUtils {
     /**
      * Constructor.
      */
-    private MessageUtils() {
+    private TextUtils() {
         super();
     }
     /**
@@ -49,25 +49,25 @@ public class MessageUtils {
      * @param args optional arguments
      * @return translation
      */
-    public static String getMessage(String code, Object... args) {
+    public static String getText(String code, Object... args) {
         return textService.getText(code, args);
     }
     /**
      * Gets translation for supplied code, returning default value, if the translation was not found.
      * @param code the code
-     * @param defaultMessage fallback to use
+     * @param defaultText fallback to use
      * @param args optional arguments
      * @return translation
      */
-    public static String getMessageWithDefault(String code, String defaultMessage, Object... args) {
-        return textService.getTextWithDefault(code, defaultMessage, args);
+    public static String getTextWithDefault(String code, String defaultText, Object... args) {
+        return textService.getTextWithDefault(code, defaultText, args);
     }
 
-    public static String getMessageWithLocaleAndDefault(Locale locale, String code, String defaultMessage, Object... args) {
+    public static String getTextWithLocaleAndDefault(Locale locale, String code, String defaultMessage, Object... args) {
         return textService.getTextWithLocaleAndDefault(locale, code, defaultMessage, args);
     }
 
-    public static String getEnumTranslationWithLocaleAndDefault(Locale locale, Enum<?> en, String defaultMessage) {
+    public static String getTextWithLocaleAndDefault(Locale locale, Enum<?> en, String defaultMessage) {
         return textService.getTextWithLocaleAndDefault(locale, en, defaultMessage);
     }
     /**
@@ -75,7 +75,7 @@ public class MessageUtils {
      * @param exception the exception to process
      * @return message
      */
-    public static String getExceptionMessage(Exception exception) {
+    public static String getText(Exception exception) {
         return textService.getText(exception);
     }
     /**
@@ -83,7 +83,7 @@ public class MessageUtils {
      * @param en enum label
      * @return translation
      */
-    public static String getEnumTranslation(Enum<?> en) {
+    public static String getText(Enum<?> en) {
         return textService.getText(en);
     }
 }

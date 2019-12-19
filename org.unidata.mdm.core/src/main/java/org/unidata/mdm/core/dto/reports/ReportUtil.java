@@ -2,7 +2,7 @@ package org.unidata.mdm.core.dto.reports;
 
 import javax.annotation.Nonnull;
 
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 public class ReportUtil {
 
@@ -40,13 +40,13 @@ public class ReportUtil {
     @Nonnull
     public static String mapToRecords(long recordCount) {
         if (recordCount == 0) {
-            return MessageUtils.getMessage(JobReportConstants.JOB_REPORT_RECORDS_1);
+            return TextUtils.getText(JobReportConstants.JOB_REPORT_RECORDS_1);
         } else if (recordCount == 1) {
-            return MessageUtils.getMessage(JobReportConstants.JOB_REPORT_RECORD);
+            return TextUtils.getText(JobReportConstants.JOB_REPORT_RECORD);
         } else if (recordCount < 5) {
-            return MessageUtils.getMessage(JobReportConstants.JOB_REPORT_RECORDS_2);
+            return TextUtils.getText(JobReportConstants.JOB_REPORT_RECORDS_2);
         } else {
-            return MessageUtils.getMessage(JobReportConstants.JOB_REPORT_RECORDS_1);
+            return TextUtils.getText(JobReportConstants.JOB_REPORT_RECORDS_1);
         }
     }
 }

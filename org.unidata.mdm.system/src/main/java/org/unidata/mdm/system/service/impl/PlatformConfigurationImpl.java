@@ -14,7 +14,7 @@ import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.PlatformConfiguration;
 import org.unidata.mdm.system.type.format.DumpTargetFormat;
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 import com.fasterxml.uuid.EthernetAddress;
 import com.fasterxml.uuid.Generators;
@@ -160,7 +160,7 @@ public class PlatformConfigurationImpl implements PlatformConfiguration, Initial
         if (StringUtils.isBlank(nodeId)
                 || nodeId.length() != CORRECT_NODE_LENGTH
                 || !StringUtils.containsOnly(nodeId, VALID_CHARS)) {
-            String message = MessageUtils.getMessageWithLocaleAndDefault(Locale.ENGLISH, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED.message(), "");
+            String message = TextUtils.getTextWithLocaleAndDefault(Locale.ENGLISH, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED.message(), "");
             LOGGER.error(message);
             throw new PlatformFailureException(message, SystemExceptionIds.EX_SYSTEM_NODE_ID_UNDEFINED);
         }

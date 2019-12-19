@@ -8,7 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.core.dto.job.JobParameterDTO;
 import org.unidata.mdm.core.service.ext.JobParameterValidator;
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 /**
  * Job parameter validator for positive values
@@ -34,7 +34,7 @@ public class PositiveValueJobParameterValidator implements JobParameterValidator
 
             return jobParameter.getLongValue() != null && jobParameter.getLongValue() > 0
                     ? Collections.emptyList()
-                    : Collections.singletonList(MessageUtils.getMessage(NOT_POSITIVE_PARAMETER_VALUE, jobParameter.getName()));
+                    : Collections.singletonList(TextUtils.getText(NOT_POSITIVE_PARAMETER_VALUE, jobParameter.getName()));
 
         }
 

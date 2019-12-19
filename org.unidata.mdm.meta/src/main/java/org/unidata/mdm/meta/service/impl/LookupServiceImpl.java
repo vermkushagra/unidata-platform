@@ -31,7 +31,7 @@ import org.unidata.mdm.search.service.SearchService;
 import org.unidata.mdm.search.type.form.FormField;
 import org.unidata.mdm.search.type.form.FormFieldsGroup;
 import org.unidata.mdm.search.util.SearchUtils;
-import org.unidata.mdm.system.util.MessageUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -68,7 +68,7 @@ public class LookupServiceImpl implements LookupService {
     public Pair<String, String> getLookupDisplayNameById(String lookupName, Object codeAttrValue, Date validFrom, Date validTo, List<String> toBuildAttrs, boolean useAttributeNameForDisplay) {
 
         if (displayValuesNotFoundMessage == null) {
-            displayValuesNotFoundMessage = MessageUtils.getMessage("app.error.no.display.value");
+            displayValuesNotFoundMessage = TextUtils.getText("app.error.no.display.value");
         }
         List<String> displayAttrs = CollectionUtils.isNotEmpty(toBuildAttrs) ? toBuildAttrs : metaModelService.findMainDisplayableAttrNamesSorted(lookupName);
         Map<String, AttributeModelElement> attrsMap = metaModelService.getAttributesInfoMap(lookupName);
