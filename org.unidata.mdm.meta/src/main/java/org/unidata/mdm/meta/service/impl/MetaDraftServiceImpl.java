@@ -220,7 +220,9 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                     .lookupEntityUpdate(new ArrayList<>(lookups.values()))
                     .relationsUpdate(new ArrayList<>(rels.values())).isForceRecreate(ModelUpsertType.PARTIAL_UPDATE).build();
             uctx = executeUEApply(uctx);
+
             validationComponent.validateUpdateModelContext(uctx, true);
+
             DeleteModelRequestContext dctx = new DeleteModelRequestContext.DeleteModelRequestContextBuilder()
                     .entitiesIds(new ArrayList<>(entsToDelete)).lookupEntitiesIds(new ArrayList<>(lookupsToDelete))
                     .sourceSystemIds(new ArrayList<>(ssToDelete)).relationIds(new ArrayList<>(relsToDelete)).build();
