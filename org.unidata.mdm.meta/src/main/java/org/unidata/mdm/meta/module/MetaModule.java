@@ -24,6 +24,8 @@ import org.unidata.mdm.meta.service.segments.ModelDeleteFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
+import org.unidata.mdm.meta.service.segments.ModelPublishFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelPublishStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelUpsertFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelUpsertStartExecutor;
 import org.unidata.mdm.meta.util.ModelUtils;
@@ -57,6 +59,8 @@ public class MetaModule extends AbstractModule {
             MetaDraftService.class
     };
 
+    // TODO: 20.12.2019 refactor this static array to annotation style and fill on start.
+    //  ex: @PipelineSegmint(moduleLink=MetaModule.class)
     private static final String[] SEGMENTS = {
             // 1. Start segments
             ModelGetStartExecutor.SEGMENT_ID,
@@ -71,6 +75,10 @@ public class MetaModule extends AbstractModule {
             ModelDeleteStartExecutor.SEGMENT_ID,
 
             ModelDeleteFinishExecutor.SEGMENT_ID,
+
+            ModelPublishStartExecutor.SEGMENT_ID,
+
+            ModelPublishFinishExecutor.SEGMENT_ID,
     };
 
     @Autowired

@@ -13,18 +13,5 @@ public interface SearchableModelElement extends AttributedModelElement {
      */
     ModelSearchObject getSearchObject();
 
-    default ModelSearchObject getModelSearchElement() {
-
-        ModelSearchObject modelSearchObject = getSearchObject();
-        Collection<AttributeModelElement> attributes = getAttributes().values();
-        attributes.stream()
-                .map(AttributeModelElement::getName)
-                .forEach(name -> modelSearchObject.addSearchElement(ModelSearchObject.SearchElementType.attributeName, name));
-
-        attributes.stream()
-                .map(AttributeModelElement::getName)
-                .forEach(name -> modelSearchObject.addSearchElement(ModelSearchObject.SearchElementType.attributeDisplayName, name));
-
-        return modelSearchObject;
-    }
+    ModelSearchObject getModelSearchElement();
 }
