@@ -13,17 +13,17 @@ import org.unidata.mdm.system.type.pipeline.PipelineInput;
 public final class NotificationDataUtils {
     private NotificationDataUtils() { }
 
-    public static String auditEventType(PipelineInput pipelineExecutionContext) {
-        if (pipelineExecutionContext instanceof UpsertRequestContext) {
+    public static String eventType(PipelineInput pipelineInput) {
+        if (pipelineInput instanceof UpsertRequestContext) {
             return NotificationDataConstants.RECORD_UPSERT_EVENT_TYPE;
         }
-        if (pipelineExecutionContext instanceof GetRequestContext) {
+        if (pipelineInput instanceof GetRequestContext) {
             return NotificationDataConstants.RECORD_GET_EVENT_TYPE;
         }
-        if (pipelineExecutionContext instanceof DeleteRequestContext) {
+        if (pipelineInput instanceof DeleteRequestContext) {
             return NotificationDataConstants.RECORD_DELETE_EVENT_TYPE;
         }
-        final String contextType = pipelineExecutionContext.getClass().getName();
+        final String contextType = pipelineInput.getClass().getName();
         throw new PlatformFailureException(
                 "Unknown context type " + contextType,
                 DataExceptionIds.EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT,
