@@ -11,16 +11,16 @@ import java.util.Map;
 /**
  * @author Alexander Malyshev
  */
-public interface DataRecordAuditEventBuilder {
+public class DataRecordAuditEventBuilder {
 
-    default Map<String, Object> build(Map<String, Object> body) {
+    public static Map<String, Object> build(Map<String, Object> body) {
         final Map<String, Object> result = new HashMap<>(body);
         final RecordIdentityContext context = (RecordIdentityContext) result.remove(NotificationDataConstants.CONTEXT_FILED);
         result.putAll(extractRecordInfo(context));
         return result;
     }
 
-    default Map<String, Object> extractRecordInfo(final RecordIdentityContext context) {
+    private static Map<String, Object> extractRecordInfo(final RecordIdentityContext context) {
         final Map<String, Object> recordInfo = new HashMap<>();
         RecordKeys keys = context.keys();
         if (keys != null) {

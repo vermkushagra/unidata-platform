@@ -12,15 +12,15 @@
         <choice>
             <when>
                 <simple>${header.type} == 'record-upsert'</simple>
-                <bean beanType="org.unidata.mdm.data.notification.DataRecordUpsertAuditEventBuilder" method="transform"/>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
             </when>
             <when>
                 <simple>${header.type} == 'record-get'</simple>
-                <bean beanType="org.unidata.mdm.data.notification.DataRecordGetAuditEventBuilder" method="transform"/>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
             </when>
             <when>
                 <simple>${header.type} == 'record-delete'</simple>
-                <bean beanType="org.unidata.mdm.data.notification.DataRecordDeleteAuditEventBuilder" method="transform"/>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
             </when>
         </choice>
         <to uri="direct:audit"/>

@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
@@ -79,7 +79,7 @@ public class CoreModule implements Module {
     private AsyncRareTaskExecutor asyncRareTaskExecutor;
 
     @Autowired
-    private BusService busService;
+    private BusConfigurationService busConfigurationService;
 
     /**
      * Lock name.
@@ -172,6 +172,8 @@ public class CoreModule implements Module {
                     EX_MODULE_CANNOT_BE_INSTALLED
             );
         }
+
+        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/core.xml"));
     }
 
     @Override
@@ -226,10 +228,6 @@ public class CoreModule implements Module {
             LOGGER.error(message, e);
             throw new PlatformFailureException(message, e, CoreExceptionIds.EX_SYSTEM_INDEX_LOCK_TIME_OUT);
         }
-
-
-        busService.upsertRoutes(IOUtils.readFromClasspath("routes/core.xml"));
-
 
         LOGGER.info("Started");
     }

@@ -66,6 +66,7 @@ import org.unidata.mdm.meta.dto.GetEntityDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.po.MetaDraftPO;
 import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaDraftServiceExt;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.service.impl.facades.EntitiesGroupModelElementFacade;
@@ -75,6 +76,7 @@ import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
 import org.unidata.mdm.meta.util.MetaJaxbUtils;
 import org.unidata.mdm.system.exception.PlatformBusinessException;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.service.AfterPlatformStartup;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 import com.hazelcast.core.HazelcastInstance;
@@ -86,7 +88,7 @@ import com.hazelcast.core.ISet;
  * The Class MetaDraftServiceImpl.
  */
 @Component
-public class MetaDraftServiceImpl implements  MetaDraftService {
+public class MetaDraftServiceImpl implements MetaDraftServiceExt, AfterPlatformStartup {
 
     public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
     public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";

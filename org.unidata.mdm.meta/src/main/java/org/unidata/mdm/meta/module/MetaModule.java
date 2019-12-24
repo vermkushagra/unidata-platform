@@ -1,17 +1,12 @@
 package org.unidata.mdm.meta.module;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
-import javax.sql.DataSource;
-
+import nl.myndocs.database.migrator.database.Selector;
+import nl.myndocs.database.migrator.database.query.Database;
+import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
@@ -36,11 +31,14 @@ import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.util.DataSourceUtils;
-
-import nl.myndocs.database.migrator.database.Selector;
-import nl.myndocs.database.migrator.database.query.Database;
-import nl.myndocs.database.migrator.processor.Migrator;
 import org.unidata.mdm.system.util.IOUtils;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 public class MetaModule extends AbstractModule {
 
@@ -93,7 +91,7 @@ public class MetaModule extends AbstractModule {
     private MetaConfiguration configuration;
 
     @Autowired
-    private BusService busService;
+    private BusConfigurationService busConfigurationService;
 
     @Override
     public String getId() {
@@ -148,6 +146,7 @@ public class MetaModule extends AbstractModule {
             );
         }
 
+        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/meta.xml"));
     }
 
     @Override
@@ -169,8 +168,6 @@ public class MetaModule extends AbstractModule {
     @Override
     public void start() {
         LOGGER.info("Starting...");
-
-        busService.upsertRoutes(IOUtils.readFromClasspath("routes/meta.xml"));
 
         // Utils and indexes
         ModelUtils.init();

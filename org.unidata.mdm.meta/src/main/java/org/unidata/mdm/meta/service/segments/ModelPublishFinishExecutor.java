@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.unidata.mdm.meta.context.PublishModelRequestContext;
 import org.unidata.mdm.meta.module.MetaModule;
 import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaDraftServiceExt;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.type.pipeline.VoidPipelineOutput;
@@ -27,7 +28,7 @@ public class ModelPublishFinishExecutor extends Finish<PublishModelRequestContex
      * MMS. Cheap and dirty.
      */
     @Autowired
-    private MetaDraftService metaModelService;
+    private MetaDraftServiceExt metaModelService;
     /**
      * Constructor.
      */

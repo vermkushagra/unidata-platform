@@ -51,46 +51,4 @@ public class BusServiceImpl implements BusService {
     public Consumer<BusMessage> sender(@Nonnull final String target) {
         return busMessage -> send(target, busMessage);
     }
-
-    @Override
-    public void upsertRoute(@Nonnull final String routeId, @Nonnull final String routeDefinition) {
-        try {
-            final RoutesDefinition routesDefinition = ModelHelper.loadRoutesDefinition(
-                    camelContext,
-                    new ByteArrayInputStream(routeDefinition.getBytes(StandardCharsets.UTF_8))
-            );
-            if (!routesDefinition.getRoutes().isEmpty()) {
-                upsertRoute(routeId, routesDefinition.getRoutes().get(0));
-            }
-        } catch (Exception e) {
-            LOGGER.error("Can't upsert route {} definition {}", routeId, routeDefinition, e);
-        }
-    }
-
-    @Override
-    public void upsertRoutes(final @Nonnull String routesDefinitions) {
-        try {
-            final RoutesDefinition routesDefinition = ModelHelper.loadRoutesDefinition(
-                    camelContext,
-                    new ByteArrayInputStream(routesDefinitions.getBytes(StandardCharsets.UTF_8))
-            );
-            routesDefinition.getRoutes().forEach(r -> upsertRoute(r.getId(), r));
-        } catch (Exception e) {
-            LOGGER.error("Can't upsert routes {}", routesDefinitions, e);
-        }
-    }
-
-    private void upsertRoute(final String routeId, RouteDefinition routeDefinition) {
-        try {
-            final Route oldRoute = camelContext.getRoute(routeId);
-            if (oldRoute != null) {
-                final RouteController routeController = camelContext.getRouteController();
-                routeController.stopRoute(routeId);
-                camelContext.removeRoute(routeId);
-            }
-            camelContext.addRouteDefinition(routeDefinition);
-        } catch (Exception e) {
-            LOGGER.error("Can't upsert route {} definition {}", routeId, routeDefinition, e);
-        }
-    }
 }

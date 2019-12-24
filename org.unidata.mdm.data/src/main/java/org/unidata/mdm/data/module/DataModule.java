@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.data.notification.DataSendNotificationFallback;
 import org.unidata.mdm.data.notification.DataNotificationSegment;
@@ -261,7 +262,7 @@ public class DataModule extends AbstractModule {
     private PipelineService pipelineService;
 
     @Autowired
-    private BusService busService;
+    private BusConfigurationService busConfigurationService;
 
     /**
      * {@inheritDoc}
@@ -388,6 +389,8 @@ public class DataModule extends AbstractModule {
                 );
             }
         }
+
+        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/data.xml"));
     }
 
     @Override
@@ -434,8 +437,6 @@ public class DataModule extends AbstractModule {
 //                NotificationDataConstants.RECORD_DELETE_EVENT_TYPE,
 //                DataRecordDeleteAuditEventBuilder.INSTANCE
 //        );
-
-        busService.upsertRoutes(IOUtils.readFromClasspath("routes/data.xml"));
 
         LOGGER.info("Started.");
     }

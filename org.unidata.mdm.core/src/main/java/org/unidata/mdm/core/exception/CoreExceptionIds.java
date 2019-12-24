@@ -475,6 +475,9 @@ public class CoreExceptionIds {
     public static final ExceptionId EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE
             = new ExceptionId("EX_META_VALIDITY_PERIODS_CANNOT_PARSE_DATE", "app.data.cannotParseDate");
 
+    public static final ExceptionId EX_FAIL_ROUTE_DUMP =
+            new ExceptionId("EX_FAIL_ROUTE_DUMP", "app.bus.fail.dump.route");
+
     /**
      * Constructor.
      */
