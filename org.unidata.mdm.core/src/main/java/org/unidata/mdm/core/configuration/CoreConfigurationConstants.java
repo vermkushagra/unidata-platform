@@ -14,6 +14,9 @@ public final class CoreConfigurationConstants {
      * This module schema name.
      */
     public static final String CORE_SCHEMA_NAME = "org_unidata_mdm_core";
+
+    public static final String CORE_TARGET = "direct:core";
+
     /**
      * Constructor.
      */

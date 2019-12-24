@@ -29,6 +29,13 @@ dependencyManagement {
             entry 'hazelcast-spring'
         }
 
+        dependencySet(group: 'org.apache.camel', version: '3.0.0') {
+            entry 'camel-core'
+            entry 'camel-spring'
+            entry 'camel-management'
+            entry 'camel-jmx'
+        }
+
         dependencySet(group: 'com.sun.xml.bind', version: '2.2.11') {
             entry 'jaxb-xjc'
             entry 'jaxb-core'

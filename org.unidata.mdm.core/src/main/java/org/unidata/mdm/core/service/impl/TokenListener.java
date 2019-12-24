@@ -5,11 +5,12 @@ import com.hazelcast.map.listener.EntryEvictedListener;
 import com.hazelcast.map.listener.EntryExpiredListener;
 import com.hazelcast.map.listener.EntryRemovedListener;
 import org.unidata.mdm.core.dao.UserDao;
-import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.notification.NotificationSystemConstants;
+import org.unidata.mdm.core.notification.SecurityEventTypeConstants;
 import org.unidata.mdm.core.type.security.SecurityToken;
 import org.unidata.mdm.core.util.Maps;
-import org.unidata.mdm.core.audit.SecurityAuditConstants;
-// import com.unidata.mdm.backend.service.audit.AuditActions;
+
+import java.util.function.BiConsumer;
 // import com.unidata.mdm.backend.service.audit.AuditLocalizationConstants;
 
 /**
@@ -19,7 +20,6 @@ import org.unidata.mdm.core.audit.SecurityAuditConstants;
  * component's <code>addTokenListener<code> method. When the token event occurs,
  * that object's appropriate method is invoked.
  *
- * @see TokenEvent
  * @author ilya.bykov
  */
 public class TokenListener implements
@@ -27,7 +27,7 @@ public class TokenListener implements
     EntryExpiredListener<String, SecurityToken>,
     EntryEvictedListener<String, SecurityToken> {
 
-    private final AuditService auditService;
+    private final BiConsumer<String, Object> coreSender;
 
     /** The user dao. */
     private final UserDao userDao;
@@ -35,11 +35,11 @@ public class TokenListener implements
     /**
      * Instantiates a new token listener.
      *
-     * @param auditService the audit service
+     * @param coreSender the core notification sender
      * @param userDao           the user dao
      */
-    public TokenListener(final AuditService auditService, final UserDao userDao) {
-        this.auditService = auditService;
+    public TokenListener(final BiConsumer<String, Object> coreSender, final UserDao userDao) {
+        this.coreSender = coreSender;
         this.userDao = userDao;
     }
 
@@ -72,11 +72,9 @@ public class TokenListener implements
     public void entryExpired(EntryEvent<String, SecurityToken> event) {
         // No need to delete token. It is already done above in entryEvicted()
         final String userName = event.getOldValue().getUser().getLogin();
-        auditService.writeEvent(
-                SecurityAuditConstants.LOGOUT_EVENT_TYPE,
-                Maps.of(
-                        "login", userName, "reason", ""/*MessageUtils.getMessage(AuditLocalizationConstants.LOGOUT_BY_TIMEOUT)*/
-                )
+        coreSender.accept(
+                SecurityEventTypeConstants.LOGOUT_TYPE,
+                Maps.of(NotificationSystemConstants.LOGIN, userName, "reason", ""/*MessageUtils.getMessage(AuditLocalizationConstants.LOGOUT_BY_TIMEOUT)*/)
         );
     }
 }

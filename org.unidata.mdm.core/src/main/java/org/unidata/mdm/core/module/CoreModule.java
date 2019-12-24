@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
@@ -38,6 +39,7 @@ import org.unidata.mdm.system.type.configuration.ApplicationConfigurationPropert
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
+import org.unidata.mdm.system.util.IOUtils;
 import org.unidata.mdm.system.util.JsonUtils;
 
 import com.hazelcast.core.Hazelcast;
@@ -75,6 +77,9 @@ public class CoreModule implements Module {
 
     @Autowired
     private AsyncRareTaskExecutor asyncRareTaskExecutor;
+
+    @Autowired
+    private BusService busService;
 
     /**
      * Lock name.
@@ -218,9 +223,13 @@ public class CoreModule implements Module {
             }
         } catch (InterruptedException e) {
             final String message = "Cannot aquire audit index create lock.";
-            LOGGER.error(message);
+            LOGGER.error(message, e);
             throw new PlatformFailureException(message, e, CoreExceptionIds.EX_SYSTEM_INDEX_LOCK_TIME_OUT);
         }
+
+
+        busService.upsertRoutes(IOUtils.readFromClasspath("routes/core.xml"));
+
 
         LOGGER.info("Started");
     }

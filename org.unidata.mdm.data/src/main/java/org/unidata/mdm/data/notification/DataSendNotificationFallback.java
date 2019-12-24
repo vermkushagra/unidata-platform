@@ -1,19 +1,20 @@
-package org.unidata.mdm.data.audit;
+package org.unidata.mdm.data.notification;
 
 import org.springframework.stereotype.Component;
-import org.unidata.mdm.core.audit.AuditConstants;
-import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.notification.NotificationSystemConstants;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.data.module.DataModule;
 import org.unidata.mdm.system.type.pipeline.Fallback;
 import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Start;
 
+import java.util.function.BiConsumer;
+
 /**
  * @author Alexander Malyshev
  */
-@Component(AuditDataFallback.SEGMENT_ID)
-public class AuditDataFallback extends Fallback<PipelineInput> {
+@Component(DataSendNotificationFallback.SEGMENT_ID)
+public class DataSendNotificationFallback extends Fallback<PipelineInput> {
     /**
      * This segment ID.
      */
@@ -24,20 +25,20 @@ public class AuditDataFallback extends Fallback<PipelineInput> {
      */
     public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".audit.data.fallback";
 
-    private final AuditService auditService;
+    private BiConsumer<String, Object> dataSender;
 
-    public AuditDataFallback(AuditService auditService) {
+    public DataSendNotificationFallback(final BiConsumer<String, Object> dataSender) {
         super(SEGMENT_ID, SEGMENT_DESCRIPTION);
-        this.auditService = auditService;
+        this.dataSender = dataSender;
     }
 
     @Override
     public void accept(PipelineInput pipelineExecutionContext, Throwable throwable) {
-        auditService.writeEvent(
-                AuditDataUtils.auditEventType(pipelineExecutionContext),
+        dataSender.accept(
+                NotificationDataUtils.eventType(pipelineExecutionContext),
                 Maps.of(
-                        AuditDataConstants.CONTEXT_FILED, pipelineExecutionContext,
-                        AuditConstants.EXCEPTION_FIELD, throwable
+                        NotificationDataConstants.CONTEXT_FILED, pipelineExecutionContext,
+                        NotificationSystemConstants.EXCEPTION, throwable
                 )
         );
     }

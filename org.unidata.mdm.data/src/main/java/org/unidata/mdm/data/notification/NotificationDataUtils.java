@@ -1,4 +1,4 @@
-package org.unidata.mdm.data.audit;
+package org.unidata.mdm.data.notification;
 
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
@@ -10,18 +10,18 @@ import org.unidata.mdm.system.type.pipeline.PipelineInput;
 /**
  * @author Alexander Malyshev
  */
-public final class AuditDataUtils {
-    private AuditDataUtils() { }
+public final class NotificationDataUtils {
+    private NotificationDataUtils() { }
 
     public static String auditEventType(PipelineInput pipelineExecutionContext) {
         if (pipelineExecutionContext instanceof UpsertRequestContext) {
-            return AuditDataConstants.RECORD_UPSERT_EVENT_TYPE;
+            return NotificationDataConstants.RECORD_UPSERT_EVENT_TYPE;
         }
         if (pipelineExecutionContext instanceof GetRequestContext) {
-            return AuditDataConstants.RECORD_GET_EVENT_TYPE;
+            return NotificationDataConstants.RECORD_GET_EVENT_TYPE;
         }
         if (pipelineExecutionContext instanceof DeleteRequestContext) {
-            return AuditDataConstants.RECORD_DELETE_EVENT_TYPE;
+            return NotificationDataConstants.RECORD_DELETE_EVENT_TYPE;
         }
         final String contextType = pipelineExecutionContext.getClass().getName();
         throw new PlatformFailureException(

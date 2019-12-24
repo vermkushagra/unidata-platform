@@ -29,7 +29,6 @@ configurations {
 dependencies {
     implementation project(':org.unidata.mdm.system')
     implementation project(':org.unidata.mdm.search')
-//    implementation project(':org.unidata.mdm.rest')
 
     implementation 'org.springframework:spring-context'
     implementation 'org.springframework:spring-context-support'
@@ -52,10 +51,17 @@ dependencies {
     compile group: 'com.github.marcus-nl.btm', name: 'btm-tomcat55-lifecycle', version: '3.0.0-mk1'
     compile group: 'com.github.marcus-nl.btm', name: 'btm-spring', version: '3.0.0-mk1'
 
+    implementation 'org.apache.camel:camel-spring'
+    implementation 'org.apache.camel:camel-management'
+    implementation 'org.apache.camel:camel-jmx'
+
     compile 'com.thoughtworks.xstream:xstream:1.4.11.1'
 
     implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+
+    implementation 'org.apache.camel:camel-core'
+    implementation 'org.apache.camel:camel-spring'
 
     // Monitoring
     compile 'io.dropwizard.metrics5:metrics-servlets'
@@ -65,8 +71,6 @@ dependencies {
     compile 'io.prometheus:simpleclient_hotspot'
 
     compile 'net.logstash.logback:logstash-logback-encoder:5.2'
-
-    implementation 'io.vavr:vavr:0.10.0'
 
     implementation 'com.google.guava:guava:27.0.1-jre'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'

@@ -1,10 +1,8 @@
-package org.unidata.mdm.data.audit;
-
-import java.util.Collections;
+package org.unidata.mdm.data.notification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetRequestContext;
 import org.unidata.mdm.data.context.UpsertRequestContext;
@@ -13,11 +11,14 @@ import org.unidata.mdm.system.type.pipeline.PipelineInput;
 import org.unidata.mdm.system.type.pipeline.Point;
 import org.unidata.mdm.system.type.pipeline.Start;
 
+import java.util.Collections;
+import java.util.function.BiConsumer;
+
 /**
  * @author Alexander Malyshev
  */
-@Component(AuditDataSegment.SEGMENT_ID)
-public class AuditDataSegment extends Point<PipelineInput> {
+@Component(DataNotificationSegment.SEGMENT_ID)
+public class DataNotificationSegment extends Point<PipelineInput> {
 
     /**
      * This segment ID.
@@ -30,20 +31,20 @@ public class AuditDataSegment extends Point<PipelineInput> {
     public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".audit.data.segment";
 
     @Autowired
-    private AuditService auditService;
+    private BiConsumer<String, Object> dataSender;
 
     /**
      * Constructor.
      */
-    public AuditDataSegment() {
+    public DataNotificationSegment() {
         super(SEGMENT_ID, SEGMENT_DESCRIPTION);
     }
 
     @Override
     public void point(PipelineInput ctx) {
-        auditService.writeEvent(
-                AuditDataUtils.auditEventType(ctx),
-                Collections.singletonMap(AuditDataConstants.CONTEXT_FILED, ctx)
+        dataSender.accept(
+                NotificationDataUtils.eventType(ctx),
+                Collections.singletonMap(NotificationDataConstants.CONTEXT_FILED, ctx)
         );
     }
 

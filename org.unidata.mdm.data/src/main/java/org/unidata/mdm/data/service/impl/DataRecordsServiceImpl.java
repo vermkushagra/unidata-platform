@@ -23,7 +23,7 @@ import org.unidata.mdm.core.context.SaveLargeObjectRequestContext;
 import org.unidata.mdm.core.dto.LargeObjectDTO;
 import org.unidata.mdm.core.service.LargeObjectsServiceComponent;
 import org.unidata.mdm.core.type.timeline.Timeline;
-import org.unidata.mdm.data.audit.AuditDataFallback;
+import org.unidata.mdm.data.notification.DataSendNotificationFallback;
 import org.unidata.mdm.data.context.DeleteRequestContext;
 import org.unidata.mdm.data.context.GetMultipleRequestContext;
 import org.unidata.mdm.data.context.GetRecordTimelineRequestContext;
@@ -105,7 +105,7 @@ public class DataRecordsServiceImpl implements DataRecordsService {
 //    private ConfigurationServiceExt configurationService;
 
     @Autowired
-    private AuditDataFallback auditDataFallback;
+    private DataSendNotificationFallback dataSendNotificationFallback;
 
     @Value("${unidata.search.index.refresh_interval:1000}")
     long rollBackDelay;

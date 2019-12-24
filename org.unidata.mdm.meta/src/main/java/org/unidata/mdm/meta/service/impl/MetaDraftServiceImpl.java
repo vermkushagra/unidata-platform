@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,7 +35,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.type.measurement.MeasurementUnit;
 import org.unidata.mdm.core.type.measurement.MeasurementValue;
 import org.unidata.mdm.core.util.Maps;
@@ -88,6 +88,10 @@ import com.hazelcast.core.ISet;
 @Component
 public class MetaDraftServiceImpl implements  MetaDraftService {
 
+    public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
+    public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";
+    public static final String META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE = "meta-draft-upsert";
+
     /** The meta model service. */
     @Autowired
     public MetaModelService metaModelService;
@@ -127,7 +131,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 //    private RegistrationService registrationService;
 
     @Autowired
-    private AuditService auditService;
+    private BiConsumer<String, Object> metaSender;
 
     @Autowired
     @Qualifier("asyncRareTaskExecutor")
@@ -259,7 +263,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 
         }
 
-        auditService.writeEvent("META_DRAFT_APPLY");
+        metaSender.accept(META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE, null);
 
         executor.execute(this::afterModelUpsert);
     }
@@ -370,7 +374,8 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 .map(MeasurementValueXmlConverter::convert).collect(Collectors.toList());
         measurementValues.add(new MeasurementValues().withValue(measurementValue));
         metaDraftDao.delete(new MetaDraftPO());
-        auditService.writeEvent("META_DRAFT_REMOVE");
+
+        metaSender.accept(META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE, null);
     }
 
     /**
@@ -718,7 +723,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
         if (ctx.hasSourceSystemsUpdate()) {
             ctx.getSourceSystemsUpdate().forEach(s -> ss.put(s.getName(), s));
         }
-        auditService.writeEvent("META_DRAFT_UPSERT", Maps.of("context", ctx));
+        metaSender.accept(META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE, Maps.of("context", ctx));
         addVersion(true);
     }
 
@@ -941,7 +946,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 enums.remove(s);
             });
         }
-        auditService.writeEvent("META_DRAFT_DELETE", Maps.of("context", ctx));
+        metaSender.accept("META_DRAFT_DELETE", Maps.of("context", ctx));
     }
 
     /*
