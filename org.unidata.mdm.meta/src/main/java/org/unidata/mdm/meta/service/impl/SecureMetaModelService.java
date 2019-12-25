@@ -55,6 +55,7 @@ import org.unidata.mdm.meta.dto.GetModelRelationDTO;
 import org.unidata.mdm.meta.dto.GetModelSourceSystemDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaDraftServiceExt;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelValidationComponent;
 import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
@@ -67,7 +68,7 @@ public class SecureMetaModelService extends BaseMetaModelService  {
      * The MDS.
      */
     @Autowired
-    private MetaDraftService metaDraftService;
+    private MetaDraftServiceExt metaDraftService;
     /**
      * Logger.
      */

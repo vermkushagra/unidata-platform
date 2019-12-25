@@ -820,7 +820,7 @@ public class UserServiceImpl implements UserService {
                     VIOLATION_USER_NAME_EMPTY));
         } else if (user.getLogin().length() > USER_FIELD_LIMIT) {
             validationResult.add(new ValidationResult("User name is larger than the field limit.",
-                    VIOLATION_USER_NAME_LENGTH, user.getLogin(), Integer.valueOf(USER_FIELD_LIMIT)));
+                    VIOLATION_USER_NAME_LENGTH, user.getLogin(), USER_FIELD_LIMIT));
         }
 
         // 2. Password
@@ -829,25 +829,25 @@ public class UserServiceImpl implements UserService {
                 validationResult.add(new ValidationResult("Supplied password is empty.", VIOLATION_PASSWORD_EMPTY));
             } else if (user.getPassword().length() > USER_FIELD_LIMIT) {
                 validationResult.add(new ValidationResult("Supplied password is larger than the field limit.",
-                        VIOLATION_PASSWORD_LENGTH, Integer.valueOf(USER_FIELD_LIMIT)));
+                        VIOLATION_PASSWORD_LENGTH, USER_FIELD_LIMIT));
             }
         }
 
         // 3. Email
         if (!StringUtils.isEmpty(user.getEmail()) && user.getEmail().length() > USER_FIELD_LIMIT) {
             validationResult.add(new ValidationResult("Email is larger than the field limit.",
-                    VIOLATION_EMAIL_LENGTH, user.getEmail(), Integer.valueOf(USER_FIELD_LIMIT)));
+                    VIOLATION_EMAIL_LENGTH, user.getEmail(), USER_FIELD_LIMIT));
         }
 
         if (!StringUtils.isEmpty(user.getFirstName()) && user.getFirstName().length() > USER_FIELD_LIMIT) {
             validationResult.add(new ValidationResult("First name is larger than the field limit.",
-                    VIOLATION_FIRSTNAME_LENGTH,  user.getFirstName(), Integer.valueOf(USER_FIELD_LIMIT)));
+                    VIOLATION_FIRSTNAME_LENGTH,  user.getFirstName(), USER_FIELD_LIMIT));
         }
 
         // 5. Last name
         if (!StringUtils.isEmpty(user.getLastName()) && user.getLastName().length() > USER_FIELD_LIMIT) {
             validationResult.add(new ValidationResult("Last name is larger than the field limit.",
-                    VIOLATION_LASTNAME_LENGTH,  user.getLastName(), Integer.valueOf(USER_FIELD_LIMIT)));
+                    VIOLATION_LASTNAME_LENGTH,  user.getLastName(), USER_FIELD_LIMIT));
         }
 
         if (!CollectionUtils.isEmpty(validationResult)) {

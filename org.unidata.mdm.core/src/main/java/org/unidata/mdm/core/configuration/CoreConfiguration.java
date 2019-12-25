@@ -4,20 +4,24 @@ import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileUrlResource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.core.service.SecurityService;
 import org.unidata.mdm.core.service.impl.StandardSecurityInterceptionProvider;
+import org.unidata.mdm.core.util.BusUtils;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
 
@@ -163,5 +167,10 @@ public class CoreConfiguration extends AbstractConfiguration {
         PropertiesFactoryBean bean = new PropertiesFactoryBean();
         bean.setLocation(new ClassPathResource("db/binary-data-sql.xml"));
         return bean;
+    }
+
+    @Bean("coreSender")
+    public BiConsumer<String, Object> coreSender(final BusService busService) {
+        return BusUtils.senderWithType(busService.sender(CoreConfigurationConstants.CORE_TARGET));
     }
 }

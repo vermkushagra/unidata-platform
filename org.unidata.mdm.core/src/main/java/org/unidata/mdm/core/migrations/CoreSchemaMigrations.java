@@ -2,6 +2,7 @@ package org.unidata.mdm.core.migrations;
 
 import nl.myndocs.database.migrator.MigrationScript;
 import org.unidata.mdm.core.migrations.audit.UN11979InitAuditTables;
+import org.unidata.mdm.core.migrations.bus.InitBusConfigurationTables;
 import org.unidata.mdm.core.migrations.event.meta.UN12296InitializationEventCoreSchema;
 import org.unidata.mdm.core.migrations.job.meta.InitializationQuartzJobSchema;
 import org.unidata.mdm.core.migrations.job.meta.UN12296InitializationJobCoreSchema;
@@ -22,7 +23,8 @@ public final class CoreSchemaMigrations {
             new UN12296InitializationJobCoreSchema(),
             new UN12296InitializationEventCoreSchema(),
             new UN11979InitAuditTables(),
-            new InitializationQuartzJobSchema()
+            new InitializationQuartzJobSchema(),
+            new InitBusConfigurationTables()
     };
 
     /**

@@ -3,6 +3,7 @@ package org.unidata.mdm.meta.configuration;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
@@ -14,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.core.util.BusUtils;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
 
@@ -22,7 +25,7 @@ import org.unidata.mdm.system.util.DataSourceUtils;
  */
 @Configuration
 public class MetaConfiguration extends AbstractConfiguration {
-	/**
+    /**
 	 * This id.
 	 */
 	private static final ConfigurationId ID = () -> "META_CONFIGURATION";
@@ -102,5 +105,10 @@ public class MetaConfiguration extends AbstractConfiguration {
         final PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
         propertiesFactoryBean.setLocation(new ClassPathResource("/db/meta-draft-sql.xml"));
         return propertiesFactoryBean;
+    }
+
+    @Bean
+    public BiConsumer<String, Object> metaSender(final BusService busService) {
+        return BusUtils.senderWithType(busService.sender(MetaConfigurationConstants.META_TARGET));
     }
 }

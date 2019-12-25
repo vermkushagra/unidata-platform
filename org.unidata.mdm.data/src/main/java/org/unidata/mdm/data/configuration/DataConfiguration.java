@@ -1,18 +1,20 @@
 package org.unidata.mdm.data.configuration;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.core.util.BusUtils;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
+
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.BiConsumer;
 
 /**
  * @author Alexander Malyshev
@@ -93,5 +95,10 @@ public class DataConfiguration extends AbstractConfiguration {
     public DataSource storageDataSource() {
     	Properties properties = getAllPropertiesWithPrefix(DataConfigurationConstants.DATA_DATASOURCE_PROPERTIES_PREFIX, true);
     	return DataSourceUtils.newPoolingNonXADataSource(properties);
+    }
+
+    @Bean
+    public BiConsumer<String, Object> dataSender(final BusService busService) {
+        return BusUtils.senderWithType(busService.sender(DataConfigurationConstants.DATA_TARGET));
     }
 }

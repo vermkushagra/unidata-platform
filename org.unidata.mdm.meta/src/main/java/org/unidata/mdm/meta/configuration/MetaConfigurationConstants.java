@@ -24,4 +24,6 @@ public final class MetaConfigurationConstants {
      * Meta storage schema name.
      */
     public static final String META_SCHEMA_NAME = "org_unidata_mdm_meta";
+
+	public static final String META_TARGET = "direct:meta";
 }

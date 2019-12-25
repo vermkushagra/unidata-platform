@@ -1,19 +1,7 @@
 package org.unidata.mdm.core.service.impl;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +20,9 @@ import org.unidata.mdm.core.context.AuthenticationRequestContext;
 import org.unidata.mdm.core.dao.UserDao;
 import org.unidata.mdm.core.dto.UserWithPasswordDTO;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
-import org.unidata.mdm.core.service.AuditService;
+import org.unidata.mdm.core.notification.NotificationSystemConstants;
+import org.unidata.mdm.core.notification.SecurityEventTypeConstants;
+import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.core.service.PasswordPolicyService;
 import org.unidata.mdm.core.service.RoleService;
 import org.unidata.mdm.core.service.SecurityConfigurationService;
@@ -48,8 +38,6 @@ import org.unidata.mdm.core.type.security.User;
 import org.unidata.mdm.core.type.security.impl.BearerToken;
 import org.unidata.mdm.core.type.security.impl.SecurityDataSource;
 import org.unidata.mdm.core.type.security.impl.UserInfo;
-import org.unidata.mdm.core.audit.AuditConstants;
-import org.unidata.mdm.core.audit.SecurityAuditConstants;
 import org.unidata.mdm.core.util.Maps;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.core.util.TransactionUtils;
@@ -58,10 +46,21 @@ import org.unidata.mdm.system.exception.PlatformRuntimeException;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 import org.unidata.mdm.system.util.IdUtils;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-
 import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Service contains methods for authentication and authorization. User and role
@@ -81,9 +80,8 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @Autowired
     private UserNotificationService userNotificationService;
     */
-
     @Autowired
-    private AuditService auditService;
+    private BiConsumer<String, Object> coreSender;
 
     /**
      * User service. Contains methods for user management.
@@ -292,9 +290,9 @@ public class SecurityServiceImpl implements SecurityServiceExt {
 
         final Map<String, Object> auditParams = new HashMap<>();
         auditParams.put(LOGIN_AUDIT_EVENT_PARAMETER, params.get(AuthenticationSystemParameter.PARAM_USER_NAME));
-        auditParams.put(AuditConstants.CLIENT_IP_FIELD, params.get(AuthenticationSystemParameter.PARAM_CLIENT_IP));
-        auditParams.put(AuditConstants.SERVER_IP_FIELD, params.get(AuthenticationSystemParameter.PARAM_SERVER_IP));
-        auditParams.put(AuditConstants.ENDPOINT_FIELD, params.get(AuthenticationSystemParameter.PARAM_ENDPOINT));
+        auditParams.put(NotificationSystemConstants.CLIENT_IP, params.get(AuthenticationSystemParameter.PARAM_CLIENT_IP));
+        auditParams.put(NotificationSystemConstants.SERVER_IP, params.get(AuthenticationSystemParameter.PARAM_SERVER_IP));
+        auditParams.put(NotificationSystemConstants.ENDPOINT, params.get(AuthenticationSystemParameter.PARAM_ENDPOINT));
 
         MeasurementPoint.start();
         try {
@@ -359,15 +357,14 @@ public class SecurityServiceImpl implements SecurityServiceExt {
             tokenCache.set(token.getToken(), token);
 
             params.put(AuthenticationSystemParameter.PARAM_USER_TOKEN, token.getToken());
-            // TODO Fix audit event
-            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, auditParams);
+            coreSender.accept(SecurityEventTypeConstants.LOGIN_TYPE, auditParams);
             /*
             userNotificationService.onLogin(result, (String) params.get(AuthenticationSystemParameter.PARAM_USER_LOCALE));
             */
             return token;
         } catch (Exception e) {
-            auditParams.put(AuditConstants.EXCEPTION_FIELD, e);
-            auditService.writeEvent(SecurityAuditConstants.LOGIN_EVENT_TYPE, auditParams);
+            auditParams.put(NotificationSystemConstants.EXCEPTION, e);
+            coreSender.accept(SecurityEventTypeConstants.LOGIN_TYPE, auditParams);
             throw e;
         } finally {
             MeasurementPoint.stop();
@@ -579,9 +576,8 @@ public class SecurityServiceImpl implements SecurityServiceExt {
             if (token != null) {
 
                 tokenCache.delete(tokenString);
-                auditService.writeEvent(
-                        SecurityAuditConstants.LOGOUT_EVENT_TYPE, Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName)
-                );
+
+                coreSender.accept(SecurityEventTypeConstants.LOGOUT_TYPE, Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName));
                 /*
                 userNotificationService.onLogout(token.getUser());
                 */
@@ -589,9 +585,9 @@ public class SecurityServiceImpl implements SecurityServiceExt {
 
             return isTokenValid;
         } catch (Exception e) {
-            auditService.writeEvent(
-                    SecurityAuditConstants.LOGOUT_EVENT_TYPE,
-                    Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName, AuditConstants.EXCEPTION_FIELD, e)
+            coreSender.accept(
+                    SecurityEventTypeConstants.LOGOUT_TYPE,
+                    Maps.of(LOGIN_AUDIT_EVENT_PARAMETER, userName, NotificationSystemConstants.EXCEPTION, e)
             );
             throw e;
         }
@@ -776,7 +772,7 @@ public class SecurityServiceImpl implements SecurityServiceExt {
     @PostConstruct
     public void afterContextRefresh() {
         this.tokenCache = cache.getMap(getMapName());
-        this.tokenCache.addEntryListener(new TokenListener(auditService, userDao), true);
+        this.tokenCache.addEntryListener(new TokenListener(coreSender, userDao), true);
     }
 
     /* (non-Javadoc)

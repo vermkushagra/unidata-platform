@@ -1,16 +1,12 @@
 package org.unidata.mdm.meta.module;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-
-import javax.sql.DataSource;
-
+import nl.myndocs.database.migrator.database.Selector;
+import nl.myndocs.database.migrator.database.query.Database;
+import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
@@ -24,6 +20,8 @@ import org.unidata.mdm.meta.service.segments.ModelDeleteFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
+import org.unidata.mdm.meta.service.segments.ModelPublishFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelPublishStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelUpsertFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelUpsertStartExecutor;
 import org.unidata.mdm.meta.util.ModelUtils;
@@ -33,10 +31,14 @@ import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.util.DataSourceUtils;
+import org.unidata.mdm.system.util.IOUtils;
 
-import nl.myndocs.database.migrator.database.Selector;
-import nl.myndocs.database.migrator.database.query.Database;
-import nl.myndocs.database.migrator.processor.Migrator;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 public class MetaModule extends AbstractModule {
 
@@ -57,6 +59,8 @@ public class MetaModule extends AbstractModule {
             MetaDraftService.class
     };
 
+    // TODO: 20.12.2019 refactor this static array to annotation style and fill on start.
+    //  ex: @PipelineSegmint(moduleLink=MetaModule.class)
     private static final String[] SEGMENTS = {
             // 1. Start segments
             ModelGetStartExecutor.SEGMENT_ID,
@@ -71,6 +75,10 @@ public class MetaModule extends AbstractModule {
             ModelDeleteStartExecutor.SEGMENT_ID,
 
             ModelDeleteFinishExecutor.SEGMENT_ID,
+
+            ModelPublishStartExecutor.SEGMENT_ID,
+
+            ModelPublishFinishExecutor.SEGMENT_ID,
     };
 
     @Autowired
@@ -81,6 +89,9 @@ public class MetaModule extends AbstractModule {
 
     @Autowired
     private MetaConfiguration configuration;
+
+    @Autowired
+    private BusConfigurationService busConfigurationService;
 
     @Override
     public String getId() {
@@ -135,6 +146,7 @@ public class MetaModule extends AbstractModule {
             );
         }
 
+        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/meta.xml"));
     }
 
     @Override

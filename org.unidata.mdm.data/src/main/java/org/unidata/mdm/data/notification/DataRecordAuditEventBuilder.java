@@ -1,34 +1,27 @@
-package org.unidata.mdm.data.audit;
+package org.unidata.mdm.data.notification;
 
 import org.apache.commons.lang3.StringUtils;
-import org.unidata.mdm.core.audit.AuditConstants;
-import org.unidata.mdm.core.audit.AuditUtils;
-import org.unidata.mdm.core.type.audit.AuditEvent;
 import org.unidata.mdm.data.context.RecordIdentityContext;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RecordOriginKey;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * @author Alexander Malyshev
  */
-public interface DataRecordAuditEventBuilder extends BiFunction<String, Map<String, Object>, AuditEvent> {
+public class DataRecordAuditEventBuilder {
 
-    @Override
-    default AuditEvent apply(String eventType, Map<String, Object> parameters) {
-        final Map<String, String> params = buildParameters(parameters);
-        return parameters.containsKey(AuditConstants.EXCEPTION_FIELD) ?
-                AuditUtils.failEvent(eventType, params, (Throwable) parameters.get(AuditConstants.EXCEPTION_FIELD)) :
-                AuditUtils.successEvent(eventType, params);
+    public static Map<String, Object> build(Map<String, Object> body) {
+        final Map<String, Object> result = new HashMap<>(body);
+        final RecordIdentityContext context = (RecordIdentityContext) result.remove(NotificationDataConstants.CONTEXT_FILED);
+        result.putAll(extractRecordInfo(context));
+        return result;
     }
 
-    Map<String, String> buildParameters(Map<String, Object> parameters);
-
-    default Map<String, String> extractRecordInfo(final RecordIdentityContext context) {
-        final Map<String, String> recordInfo = new HashMap<>();
+    private static Map<String, Object> extractRecordInfo(final RecordIdentityContext context) {
+        final Map<String, Object> recordInfo = new HashMap<>();
         RecordKeys keys = context.keys();
         if (keys != null) {
             recordInfo.put("entity", StringUtils.isBlank(keys.getEntityName()) ? context.getEntityName() : keys.getEntityName());

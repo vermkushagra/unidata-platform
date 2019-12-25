@@ -1,0 +1,28 @@
+<routes xmlns="http://camel.apache.org/schema/spring"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <route id="data">
+        <from uri="direct:data"/>
+        <to uri="vm:data"/>
+    </route>
+
+    <route id="data_vm">
+        <from uri="vm:data"/>
+        <choice>
+            <when>
+                <simple>${header.type} == 'record-upsert'</simple>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
+            </when>
+            <when>
+                <simple>${header.type} == 'record-get'</simple>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
+            </when>
+            <when>
+                <simple>${header.type} == 'record-delete'</simple>
+                <bean beanType="org.unidata.mdm.data.notification.DataRecordAuditEventBuilder" method="build"/>
+            </when>
+        </choice>
+        <to uri="direct:audit"/>
+    </route>
+</routes>

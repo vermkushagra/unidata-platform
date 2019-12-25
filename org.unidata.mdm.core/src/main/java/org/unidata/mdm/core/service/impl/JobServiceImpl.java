@@ -29,6 +29,7 @@ import javax.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -98,8 +99,6 @@ import org.unidata.mdm.core.type.job.StepExecutionFilter;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.system.dto.Param;
 import org.unidata.mdm.system.util.IdUtils;
-
-import io.vavr.Tuple2;
 
 /**
  * Job service to manipulate all jobs deployed in system.
@@ -974,8 +973,8 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
     @Override
     public Map<Long, JobExecutionDTO> findLastJobExecutions(List<Long> jobIds) {
         return findLastJobExecutions(jobIds, false).entrySet().stream()
-                .map(e -> new Tuple2<>(e.getKey(), JobConverter.jobExecutionDTOFromJobExecution(null, e.getValue())))
-                .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
+                .map(e -> Pair.of(e.getKey(), JobConverter.jobExecutionDTOFromJobExecution(null, e.getValue())))
+                .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
 

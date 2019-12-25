@@ -10,16 +10,13 @@ import org.unidata.mdm.search.service.SearchService;
 import org.unidata.mdm.search.type.indexing.Indexing;
 import org.unidata.mdm.search.type.indexing.IndexingField;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * @author Alexander Malyshev
  */
-@Service
+@Service("esAuditServiceStorageService")
 public class ESAuditServiceStorageService implements AuditServiceStorageService {
 
     private static final String FIELD_VALUE_DELIMITER = "=>>";
@@ -31,35 +28,32 @@ public class ESAuditServiceStorageService implements AuditServiceStorageService 
     }
 
     @Override
-    public String id() {
-        return "es";
-    }
-
-    @Override
-    public void write(AuditEventWriteContext auditEventWriteContext) {
-        final EnrichedAuditEvent enricheedAuditEvent = auditEventWriteContext.getEnhancedAuditEvent();
-        List<IndexingField> fields = new ArrayList<>();
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.TYPE_FIELD, enricheedAuditEvent.type()));
-        fields.add(IndexingField.ofStrings(
-                AuditIndexType.AUDIT,
-                EnrichedAuditEvent.PARAMETERS_FIELD,
-                toIndexStrings(enricheedAuditEvent.parameters())
-        ));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SUCCESS_FIELD, enricheedAuditEvent.success()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.LOGIN_FIELD, enricheedAuditEvent.getLogin()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.CLIENT_IP_FIELD, enricheedAuditEvent.getClientIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SERVER_IP_FIELD, enricheedAuditEvent.getServerIp()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.ENDPOINT_FIELD, enricheedAuditEvent.getEndpoint()));
-        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.WHEN_HAPPENED_FIELD, enricheedAuditEvent.getWhenwHappened()));
+    public void write(Collection<AuditEventWriteContext> auditEventWriteContexts) {
         final IndexRequestContext indexRequestContext = IndexRequestContext.builder()
-                .storageId(auditEventWriteContext.getCurrentUserStorageId())
                 .entity(AuditIndexType.INDEX_NAME)
-                .index(new Indexing(AuditIndexType.AUDIT, null).withFields(fields))
+                .index(auditEventWriteContexts.stream().map(this::createIndexing).collect(Collectors.toList()))
                 .build();
         searchService.process(indexRequestContext);
     }
 
-    private Collection<String> toIndexStrings(Map<String, String> parameters) {
+    private Indexing createIndexing(AuditEventWriteContext auditEventWriteContext) {
+        List<IndexingField> fields = new ArrayList<>();
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.TYPE_FIELD, auditEventWriteContext.getType()));
+        fields.add(IndexingField.ofStrings(
+                AuditIndexType.AUDIT,
+                EnrichedAuditEvent.PARAMETERS_FIELD,
+                toIndexStrings(auditEventWriteContext.getParameters())
+        ));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SUCCESS_FIELD, auditEventWriteContext.isSuccess()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.LOGIN_FIELD, auditEventWriteContext.getUserLogin()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.CLIENT_IP_FIELD, auditEventWriteContext.getClientIp()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.SERVER_IP_FIELD, auditEventWriteContext.getServerIp()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.ENDPOINT_FIELD, auditEventWriteContext.getEndpoint()));
+        fields.add(IndexingField.of(AuditIndexType.AUDIT, EnrichedAuditEvent.WHEN_HAPPENED_FIELD, auditEventWriteContext.getWhenHappened()));
+        return new Indexing(AuditIndexType.AUDIT, null).withFields(fields);
+    }
+
+    private Collection<String> toIndexStrings(Map<String, Object> parameters) {
         return parameters.entrySet().stream()
                 .map(e -> String.format("%s%s%s", e.getKey(), FIELD_VALUE_DELIMITER, e.getValue()))
                 .collect(Collectors.toList());

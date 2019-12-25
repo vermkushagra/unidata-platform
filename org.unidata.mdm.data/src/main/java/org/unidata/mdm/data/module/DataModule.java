@@ -14,13 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.unidata.mdm.core.service.AuditEventBuildersRegistryService;
-import org.unidata.mdm.data.audit.AuditDataConstants;
-import org.unidata.mdm.data.audit.AuditDataFallback;
-import org.unidata.mdm.data.audit.AuditDataSegment;
-import org.unidata.mdm.data.audit.DataRecordDeleteAuditEventBuilder;
-import org.unidata.mdm.data.audit.DataRecordGetAuditEventBuilder;
-import org.unidata.mdm.data.audit.DataRecordUpsertAuditEventBuilder;
+import org.unidata.mdm.core.service.BusConfigurationService;
+import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.data.notification.DataSendNotificationFallback;
+import org.unidata.mdm.data.notification.DataNotificationSegment;
 import org.unidata.mdm.data.configuration.DataConfiguration;
 import org.unidata.mdm.data.configuration.DataConfigurationConstants;
 import org.unidata.mdm.data.convert.DataClusterConverter;
@@ -91,6 +88,7 @@ import org.unidata.mdm.system.type.module.Dependency;
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
 import nl.myndocs.database.migrator.processor.Migrator;
+import org.unidata.mdm.system.util.IOUtils;
 
 public class DataModule extends AbstractModule {
     /**
@@ -211,7 +209,7 @@ public class DataModule extends AbstractModule {
         RelationDeletePersistenceExecutor.SEGMENT_ID,
 
         // Audit
-        AuditDataSegment.SEGMENT_ID,
+        DataNotificationSegment.SEGMENT_ID,
 
         // 3. Connectors
         // Upsert relations connector
@@ -223,7 +221,7 @@ public class DataModule extends AbstractModule {
 
         // 4. Fallbacks
         // Audit data fallback
-        AuditDataFallback.SEGMENT_ID,
+        DataSendNotificationFallback.SEGMENT_ID,
 
         // 5. Finish
         // Record
@@ -261,10 +259,10 @@ public class DataModule extends AbstractModule {
     private DataStorageDAO dataStorageDAO;
 
     @Autowired
-    private AuditEventBuildersRegistryService auditEventBuildersRegistryService;
+    private PipelineService pipelineService;
 
     @Autowired
-    private PipelineService pipelineService;
+    private BusConfigurationService busConfigurationService;
 
     /**
      * {@inheritDoc}
@@ -391,6 +389,8 @@ public class DataModule extends AbstractModule {
                 );
             }
         }
+
+        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/data.xml"));
     }
 
     @Override
@@ -425,18 +425,18 @@ public class DataModule extends AbstractModule {
         // 3. Add segments
         addSegments(configuration.getBeansByNames(SEGMENTS));
 
-        auditEventBuildersRegistryService.registerEventBuilder(
-                AuditDataConstants.RECORD_UPSERT_EVENT_TYPE,
-                DataRecordUpsertAuditEventBuilder.INSTANCE
-        );
-        auditEventBuildersRegistryService.registerEventBuilder(
-                AuditDataConstants.RECORD_GET_EVENT_TYPE,
-                DataRecordGetAuditEventBuilder.INSTANCE
-        );
-        auditEventBuildersRegistryService.registerEventBuilder(
-                AuditDataConstants.RECORD_DELETE_EVENT_TYPE,
-                DataRecordDeleteAuditEventBuilder.INSTANCE
-        );
+//        auditEventBuildersRegistryService.registerEventBuilder(
+//                NotificationDataConstants.RECORD_UPSERT_EVENT_TYPE,
+//                DataRecordUpsertAuditEventBuilder.INSTANCE
+//        );
+//        auditEventBuildersRegistryService.registerEventBuilder(
+//                NotificationDataConstants.RECORD_GET_EVENT_TYPE,
+//                DataRecordGetAuditEventBuilder.INSTANCE
+//        );
+//        auditEventBuildersRegistryService.registerEventBuilder(
+//                NotificationDataConstants.RECORD_DELETE_EVENT_TYPE,
+//                DataRecordDeleteAuditEventBuilder.INSTANCE
+//        );
 
         LOGGER.info("Started.");
     }

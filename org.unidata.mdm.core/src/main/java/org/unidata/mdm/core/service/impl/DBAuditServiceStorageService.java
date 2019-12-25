@@ -5,25 +5,22 @@ import org.unidata.mdm.core.context.AuditEventWriteContext;
 import org.unidata.mdm.core.dao.AuditDao;
 import org.unidata.mdm.core.service.AuditServiceStorageService;
 
+import java.util.Collection;
+
 /**
  * @author Alexander Malyshev
  */
-@Service
-public class DbAuditServiceStorageService implements AuditServiceStorageService {
+@Service("dbAuditServiceStorageService")
+public class DBAuditServiceStorageService implements AuditServiceStorageService {
 
     private final AuditDao auditDao;
 
-    public DbAuditServiceStorageService(final AuditDao auditDao) {
+    public DBAuditServiceStorageService(final AuditDao auditDao) {
         this.auditDao = auditDao;
     }
 
     @Override
-    public String id() {
-        return "db";
-    }
-
-    @Override
-    public void write(AuditEventWriteContext auditEventWriteContext) {
-        auditDao.insert(auditEventWriteContext.getEnhancedAuditEvent());
+    public void write(Collection<AuditEventWriteContext> auditEventWriteContext) {
+        auditDao.insert(auditEventWriteContext);
     }
 }

@@ -1,0 +1,46 @@
+<routes xmlns="http://camel.apache.org/schema/spring"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <route id="core">
+        <from uri="direct:core"/>
+        <to uri="vm:core"/>
+    </route>
+
+    <route id="core_vm">
+        <from uri="vm:core"/>
+        <choice>
+            <when>
+                <header>type</header>
+                <toD uri="direct:${header.type}"/>
+            </when>
+            <otherwise>
+                <to uri="direct:withoutType"/>
+            </otherwise>
+        </choice>
+    </route>
+
+    <route id="login">
+        <from uri="direct:login"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="logout">
+        <from uri="direct:logout"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="audit">
+        <from uri="direct:audit"/>
+        <bean beanType="org.unidata.mdm.core.notification.AuditEventWriteContextBuilder" method="build"/>
+        <aggregate strategyRef="groupedBodyAggregationStrategy" completionInterval="60000" completionSize="1000">
+            <correlationExpression>
+                <constant>true</constant>
+            </correlationExpression>
+            <multicast>
+                <to uri="bean:esAuditServiceStorageService?method=write"/>
+                <to uri="bean:dbAuditServiceStorageService?method=write"/>
+            </multicast>
+        </aggregate>
+    </route>
+</routes>

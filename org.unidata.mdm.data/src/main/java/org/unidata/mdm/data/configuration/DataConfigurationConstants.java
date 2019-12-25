@@ -28,6 +28,8 @@ public final class DataConfigurationConstants {
      */
     public static final String STORAGE_LOCK_NAME = "DATA_STORAGE_LOCK";
 
+    public static final String DATA_TARGET = "direct:data";
+
     /**
      * Constructor.
      */

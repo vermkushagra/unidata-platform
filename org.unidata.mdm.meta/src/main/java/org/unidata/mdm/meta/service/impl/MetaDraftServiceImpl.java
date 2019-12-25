@@ -1,26 +1,8 @@
 package org.unidata.mdm.meta.service.impl;
 
-import static org.unidata.mdm.meta.service.impl.MeasurementValueXmlConverter.convert;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.stream.Collectors;
-
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.ISet;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -34,7 +16,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.unidata.mdm.core.service.AuditService;
 import org.unidata.mdm.core.type.measurement.MeasurementUnit;
 import org.unidata.mdm.core.type.measurement.MeasurementValue;
 import org.unidata.mdm.core.util.Maps;
@@ -65,7 +46,7 @@ import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.po.MetaDraftPO;
-import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaDraftServiceExt;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.service.impl.facades.EntitiesGroupModelElementFacade;
@@ -75,18 +56,41 @@ import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
 import org.unidata.mdm.meta.util.MetaJaxbUtils;
 import org.unidata.mdm.system.exception.PlatformBusinessException;
 import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.ISet;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import static org.unidata.mdm.meta.service.impl.MeasurementValueXmlConverter.convert;
 
 
 /**
  * The Class MetaDraftServiceImpl.
  */
 @Component
-public class MetaDraftServiceImpl implements  MetaDraftService {
+public class MetaDraftServiceImpl implements MetaDraftServiceExt, AfterContextRefresh {
+
+    public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
+    public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";
+    public static final String META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE = "meta-draft-upsert";
 
     /** The meta model service. */
     @Autowired
@@ -127,7 +131,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 //    private RegistrationService registrationService;
 
     @Autowired
-    private AuditService auditService;
+    private BiConsumer<String, Object> metaSender;
 
     @Autowired
     @Qualifier("asyncRareTaskExecutor")
@@ -220,7 +224,9 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                     .lookupEntityUpdate(new ArrayList<>(lookups.values()))
                     .relationsUpdate(new ArrayList<>(rels.values())).isForceRecreate(ModelUpsertType.PARTIAL_UPDATE).build();
             uctx = executeUEApply(uctx);
+
             validationComponent.validateUpdateModelContext(uctx, true);
+
             DeleteModelRequestContext dctx = new DeleteModelRequestContext.DeleteModelRequestContextBuilder()
                     .entitiesIds(new ArrayList<>(entsToDelete)).lookupEntitiesIds(new ArrayList<>(lookupsToDelete))
                     .sourceSystemIds(new ArrayList<>(ssToDelete)).relationIds(new ArrayList<>(relsToDelete)).build();
@@ -257,7 +263,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
 
         }
 
-        auditService.writeEvent("META_DRAFT_APPLY");
+        metaSender.accept(META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE, null);
 
         executor.execute(this::afterModelUpsert);
     }
@@ -368,7 +374,8 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 .map(MeasurementValueXmlConverter::convert).collect(Collectors.toList());
         measurementValues.add(new MeasurementValues().withValue(measurementValue));
         metaDraftDao.delete(new MetaDraftPO());
-        auditService.writeEvent("META_DRAFT_REMOVE");
+
+        metaSender.accept(META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE, null);
     }
 
     /**
@@ -716,7 +723,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
         if (ctx.hasSourceSystemsUpdate()) {
             ctx.getSourceSystemsUpdate().forEach(s -> ss.put(s.getName(), s));
         }
-        auditService.writeEvent("META_DRAFT_UPSERT", Maps.of("context", ctx));
+        metaSender.accept(META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE, Maps.of("context", ctx));
         addVersion(true);
     }
 
@@ -939,7 +946,7 @@ public class MetaDraftServiceImpl implements  MetaDraftService {
                 enums.remove(s);
             });
         }
-        auditService.writeEvent("META_DRAFT_DELETE", Maps.of("context", ctx));
+        metaSender.accept("META_DRAFT_DELETE", Maps.of("context", ctx));
     }
 
     /*

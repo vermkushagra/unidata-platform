@@ -142,7 +142,7 @@ public class LookupInfoHolder extends AbstractBvtMapInfoHolder
     @Override
     public ModelSearchObject getModelSearchElement() {
 
-        ModelSearchObject modelSearchObject = getModelSearchElement();
+        ModelSearchObject modelSearchObject = getSearchObject();
 
         modelSearchObject.addSearchElement(ModelSearchObject.SearchElementType.entityDescription, entity.getDescription());
         modelSearchObject.addSearchElement(ModelSearchObject.SearchElementType.dashboardVisible, String.valueOf(entity.isDashboardVisible()));
