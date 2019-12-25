@@ -1,19 +1,19 @@
 package org.unidata.mdm.core.service;
 
-import org.unidata.mdm.core.dto.PaginatedResultDTO;
-import org.unidata.mdm.core.dto.job.JobDTO;
-import org.unidata.mdm.core.dto.job.JobExecutionDTO;
-import org.unidata.mdm.core.dto.job.JobParameterDTO;
-import org.unidata.mdm.core.dto.job.JobTriggerDTO;
-import org.unidata.mdm.core.dto.job.StepExecutionDTO;
-import org.unidata.mdm.core.exception.JobException;
-import org.unidata.mdm.core.service.ext.JobTemplateParameters;
-import org.unidata.mdm.core.type.job.JobFilter;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import org.unidata.mdm.core.dto.PaginatedResultDTO;
+import org.unidata.mdm.core.dto.job.JobDTO;
+import org.unidata.mdm.core.dto.job.JobExecutionDTO;
+import org.unidata.mdm.core.dto.job.JobExecutionStepDTO;
+import org.unidata.mdm.core.dto.job.JobParameterDTO;
+import org.unidata.mdm.core.dto.job.JobTriggerDTO;
+import org.unidata.mdm.core.exception.JobException;
+import org.unidata.mdm.core.service.job.JobTemplateParameters;
+import org.unidata.mdm.core.type.job.JobFilter;
 
 public interface JobService {
 
@@ -152,7 +152,7 @@ public interface JobService {
      */
     PaginatedResultDTO<JobExecutionDTO> findJobExecutions(long jobId, long fromInd, int itemCount);
 
-    PaginatedResultDTO<StepExecutionDTO> searchStepExecutions(long jobExecutionId, long fromInd, int itemCount);
+    PaginatedResultDTO<JobExecutionStepDTO> searchStepExecutions(long jobExecutionId, long fromInd, int itemCount);
 
     /**
      * @param jobIds

@@ -7,7 +7,7 @@ import org.unidata.mdm.core.context.MutableValidityRangeContext;
 import org.unidata.mdm.core.type.audit.AuditLevel;
 import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.RecordStatus;
-import org.unidata.mdm.data.service.segments.RecordDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.system.type.pipeline.PipelineInput;
 

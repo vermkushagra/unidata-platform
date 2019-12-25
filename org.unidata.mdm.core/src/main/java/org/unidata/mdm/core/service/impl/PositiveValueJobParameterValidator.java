@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.core.dto.job.JobParameterDTO;
-import org.unidata.mdm.core.service.ext.JobParameterValidator;
+import org.unidata.mdm.core.service.job.JobParameterValidator;
 import org.unidata.mdm.system.util.TextUtils;
 
 /**

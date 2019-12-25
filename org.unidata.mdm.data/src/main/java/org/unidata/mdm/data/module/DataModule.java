@@ -31,30 +31,30 @@ import org.unidata.mdm.data.migrations.data.DataMigrations.DataMigrationContext;
 import org.unidata.mdm.data.migrations.meta.MetaMigrations;
 import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.service.DataStorageService;
-import org.unidata.mdm.data.service.segments.RecordDeleteDataConsistencyExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeleteFinishExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeleteIndexingExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeletePeriodCheckExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeletePersistenceExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeleteSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordDeleteStartExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetAttributesPostProcessingExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetDiffExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetFinishExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertFinishExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertIndexingExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertLobSubmitExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertMeasuredAttributesExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertMergeTimelineExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertModboxExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertPeriodCheckExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertPersistenceExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertResolveCodePointersExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertSecurityExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
-import org.unidata.mdm.data.service.segments.RecordUpsertValidateExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteDataConsistencyExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteFinishExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteIndexingExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeletePeriodCheckExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeletePersistenceExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteAccessExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetAttributesPostProcessingExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetDiffExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetFinishExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetAccessExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertIndexingExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertLobSubmitExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertMeasuredAttributesExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertTimelineExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertModboxExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertPeriodCheckExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertPersistenceExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertResolveCodePointersExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertAccessExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertValidateExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationCommonPeriodCheckExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteContainmentExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteFinishExecutor;
@@ -138,7 +138,7 @@ public class DataModule extends AbstractModule {
         // Validate
         RecordUpsertValidateExecutor.SEGMENT_ID,
         // Security
-        RecordUpsertSecurityExecutor.SEGMENT_ID,
+        RecordUpsertAccessExecutor.SEGMENT_ID,
         // Period check and possibly fix
         RecordUpsertPeriodCheckExecutor.SEGMENT_ID,
         // Resolve right code attribute by code pointer, if used
@@ -150,7 +150,7 @@ public class DataModule extends AbstractModule {
         // Submit pending LOB values, if used (generates persistent objects)
         RecordUpsertLobSubmitExecutor.SEGMENT_ID,
         // Merges mod box to the NEXT timeline (former etalon phase start)
-        RecordUpsertMergeTimelineExecutor.SEGMENT_ID,
+        RecordUpsertTimelineExecutor.SEGMENT_ID,
         // Generates indexing information
         RecordUpsertIndexingExecutor.SEGMENT_ID,
         // Generates persistemnce objects
@@ -158,7 +158,7 @@ public class DataModule extends AbstractModule {
 
         // Get record
         // Security checker
-        RecordGetSecurityExecutor.SEGMENT_ID,
+        RecordGetAccessExecutor.SEGMENT_ID,
         // Attributes post processing (enum / lookup titles etc.)
         RecordGetAttributesPostProcessingExecutor.SEGMENT_ID,
         // Adds diff to draft to the context
@@ -166,7 +166,7 @@ public class DataModule extends AbstractModule {
 
         // Delete record
         // Security check
-        RecordDeleteSecurityExecutor.SEGMENT_ID,
+        RecordDeleteAccessExecutor.SEGMENT_ID,
         // Period check
         RecordDeletePeriodCheckExecutor.SEGMENT_ID,
         // Data (records and rels consistency check)

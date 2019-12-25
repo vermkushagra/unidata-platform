@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 import org.unidata.mdm.core.dao.DaoHelper;
 import org.unidata.mdm.core.dto.PaginatedResultDTO;
 import org.unidata.mdm.core.dto.job.JobExecutionPaginatedResultDTO;
-import org.unidata.mdm.core.service.ext.CustomJobParameter;
+import org.unidata.mdm.core.type.job.CustomJobParameter;
 import org.unidata.mdm.core.type.job.JobExecutionFilter;
 
 import java.sql.Array;

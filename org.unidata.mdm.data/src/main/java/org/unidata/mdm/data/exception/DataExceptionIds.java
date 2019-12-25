@@ -423,7 +423,7 @@ public final class DataExceptionIds {
 
     public static final ExceptionId EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT =
             new ExceptionId("EX_DATA_AUDIT_UNKNOW_PIPELINE_EXECUTION_CONTEXT", "app.data.audit.unknow.pipeline.execution.context");
-    
+
     public static final ExceptionId EX_DATA_PIPELINE_LOADING_ERROR =
             new ExceptionId("EX_DATA_PIPELINE_LOADING_ERROR", "app.data.pipeline.loading.error");
 
@@ -507,6 +507,11 @@ public final class DataExceptionIds {
      */
     public static final ExceptionId EX_DATA_RELATIONS_DELETE_NO_RIGHTS =
             new ExceptionId("EX_DATA_RELATIONS_DELETE_NO_RIGHTS", "app.data.relations.noDeleteRights");
+    /**
+     * Input filters cannot be processed while partitioning.
+     */
+    public static final ExceptionId EX_DATA_PARTITION_FILTERS_FAILED =
+            new ExceptionId("EX_DATA_PARTITION_FILTERS_FAILED", "app.data.partition.filters.failed");
     /**
      * Constructor.
      */

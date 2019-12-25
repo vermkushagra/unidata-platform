@@ -1,9 +1,10 @@
 package org.unidata.mdm.core.migrations.job.meta;
 
-import nl.myndocs.database.migrator.MigrationScript;
-import nl.myndocs.database.migrator.definition.Migration;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.migration.util.MigrationUtil;
+
+import nl.myndocs.database.migrator.MigrationScript;
+import nl.myndocs.database.migrator.definition.Migration;
 
 /**
  * migration for create tables
@@ -46,7 +47,8 @@ public class UN12296InitializationJobCoreSchema implements MigrationScript {
 
         migration.raw()
                 .sql(MigrationUtil.loadRawResources(mctx.getApplicationContext(),
-                        "UN-12296-job-meta-structure"))
+                        "UN-12296-job-meta-structure",
+                        "UN-12012-batch-schema"))
                 .save();
 
 

@@ -5,8 +5,8 @@ import java.util.Date;
 
 import org.springframework.batch.core.JobParametersBuilder;
 import org.unidata.mdm.core.dto.job.JobParameterDTO;
-import org.unidata.mdm.core.service.ext.CustomJobParameter;
-import org.unidata.mdm.core.service.ext.JobParameterProcessor;
+import org.unidata.mdm.core.service.job.JobParameterProcessor;
+import org.unidata.mdm.core.type.job.CustomJobParameter;
 
 /**
  * @author Mikhail Mikhailov

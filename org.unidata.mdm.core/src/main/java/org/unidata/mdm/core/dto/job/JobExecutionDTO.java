@@ -1,15 +1,17 @@
 package org.unidata.mdm.core.dto.job;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.unidata.mdm.core.type.job.JobExecutionBatchStatus;
-
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.unidata.mdm.core.type.job.JobExecutionBatchStatus;
+
 public class JobExecutionDTO {
+
+    private final Long id;
 
     private final JobDTO jobDTO;
 
@@ -30,6 +32,7 @@ public class JobExecutionDTO {
     private final List<JobExecutionStepDTO> jobExecutionSteps = new ArrayList<>();
 
     public JobExecutionDTO(
+            final Long id,
             final JobDTO jobDTO,
             final Collection<JobParameterDTO> jobParameters,
             final ZonedDateTime startTime,
@@ -40,6 +43,7 @@ public class JobExecutionDTO {
             final JobExecutionExitStatusDTO jobExecutionExitStatus,
             final Collection<JobExecutionStepDTO> jobExecutionSteps
     ) {
+        this.id = id;
         this.jobDTO = jobDTO;
         this.jobParameters = jobParameters;
         this.startTime = startTime;
@@ -51,6 +55,13 @@ public class JobExecutionDTO {
         if (!CollectionUtils.isEmpty(jobExecutionSteps)) {
             this.jobExecutionSteps.addAll(jobExecutionSteps);
         }
+    }
+
+    /**
+     * @return the id
+     */
+    public Long getId() {
+        return id;
     }
 
     public JobDTO getJobDTO() {

@@ -17,7 +17,7 @@ import org.unidata.mdm.core.type.data.ApprovalState;
 import org.unidata.mdm.core.type.data.DataRecord;
 import org.unidata.mdm.core.type.data.RecordStatus;
 import org.unidata.mdm.core.type.keys.ExternalId;
-import org.unidata.mdm.data.service.segments.RecordUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 
 /**
@@ -35,7 +35,8 @@ public class UpsertRequestContext
         UpsertIndicatorContext,
         OperationTypeContext,
         AccessRightContext,
-        BatchAwareContext {
+        BatchAwareContext,
+        SetupAwareContext {
 
     /**
      * Generated SVUID.
@@ -291,6 +292,14 @@ public class UpsertRequestContext
      */
     public boolean isIncludeDraftVersions() {
         return flags.get(DataContextFlags.FLAG_INCLUDE_DRAFTS);
+    }
+
+    /**
+     * Skips drop operation upon index info creation.
+     * @return
+     */
+    public boolean isSkipIndexDrop() {
+        return flags.get(DataContextFlags.FLAG_SKIP_INDEX_DROP);
     }
 
     /**

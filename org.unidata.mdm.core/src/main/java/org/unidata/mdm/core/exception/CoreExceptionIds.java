@@ -366,6 +366,8 @@ public class CoreExceptionIds {
     public static final ExceptionId EX_JOB_TRIGGER_RECURSIVE_CALL = new ExceptionId("EX_JOB_TRIGGER_RECURSIVE_CALL", "app.job.trigger.recursiveCall");
     public static final ExceptionId EX_JOB_TRIGGER_PARAMETER_VALIDATION_ERROR = new ExceptionId("EX_JOB_TRIGGER_PARAMETER_VALIDATION_ERROR", "app.job.trigger.parameter.validationError");
     public static final ExceptionId EX_JOB_BATCH_STOP_FAILED = new ExceptionId("EX_JOB_BATCH_STOP_FAILED", "app.job.batch.stop.failed");
+    public static final ExceptionId EX_JOB_STEP_SUBMIT_FAILED = new ExceptionId("EX_JOB_STEP_SUBMIT_FAILED", "app.job.general.step.submit.failed");
+    public static final ExceptionId EX_JOB_BAD_CREDENTIALS = new ExceptionId("EX_JOB_BAD_CREDENTIALS", "app.job.authenticationFailed.badCredentials");
     /**
      * Impossible convert to required type.
      */

@@ -130,10 +130,101 @@ public class RelationUpsertStartExecutor extends Start<UpsertRelationRequestCont
         // Possibly setup change set
         setupChangeSet(ctx);
 
+        // Fetch or create timeline and keys
+        setupKeys(ctx);
+
+        // Action
+        RelationKeys relationKeys = ctx.relationKeys();
+        UpsertAction action = relationKeys.isNew() ? UpsertAction.INSERT : UpsertAction.UPDATE;
+        ctx.upsertAction(action);
+
+        // All calculations done on the record services side for containments.
+        if (action == UpsertAction.INSERT || ctx.relationType() == RelationType.CONTAINS) {
+            ctx.currentTimeline(new RelationTimeline(relationKeys));
+        } // setupKeys sets the timeline already for UPDATE action
+
+        ctx.setUp(true);
+    }
+
+    private void setupChangeSet(UpsertRelationRequestContext ctx) {
+
+        // May be already set by batch
+        if (Objects.isNull(ctx.changeSet())) {
+            RelationUpsertChangeSet set = new RelationUpsertChangeSet();
+            set.setRelationType(ctx.relationType());
+            ctx.changeSet(set);
+        }
+    }
+
+    private void setupPointers(UpsertRelationRequestContext uCtx) {
+
+        ReferenceAliasKey referenceResolver = uCtx.getReferenceAliasKey();
+        if (referenceResolver == null || referenceResolver.getValue() == null || referenceResolver.getEntityAttributeName() == null) {
+            //skip if we doesn't have all necessary information about alias key
+            return;
+        }
+
+        if (uCtx.relationType() != RelationType.REFERENCES && uCtx.relationType() != RelationType.MANY_TO_MANY) {
+            //skip if relation is not exist or if it is contains
+            return;
+        }
+
+        String aliasAttrName = referenceResolver.getEntityAttributeName();
+        RelationDef def = metaModelService.getRelationById(uCtx.relationName());
+
+        AttributeModelElement attrInfo = metaModelService.getEntityAttributeInfoByPath(def.getToEntity(), aliasAttrName);
+
+        // skip if alias key use complex attribute as a key
+        // skip if alias attribute is not unique
+        if (attrInfo.isComplex() || !attrInfo.isUnique()) {
+            return;
+        }
+
+        FormField formField = strictValue(FieldType.fromValue(attrInfo.getValueType().name()), aliasAttrName, referenceResolver.getValue());
+        Date asOf = uCtx.getValidFrom() == null ? uCtx.getValidTo() : uCtx.getValidFrom();
+
+        SearchRequestContext searchContext = SearchRequestContext.builder(EntityIndexType.RECORD, def.getToEntity(), SecurityUtils.getCurrentUserStorageId())
+                .asOf(asOf)
+                .form(FormFieldsGroup.createAndGroup(formField))
+                .returnFields(Collections.singletonList(RecordHeaderField.FIELD_ETALON_ID.getName()))
+                .facets(Collections.singletonList(FacetName.FACET_NAME_ACTIVE_ONLY))
+                .count(10)
+                .page(0)
+                .build();
+
+        SearchResultDTO searchResultDTO = searchService.search(searchContext);
+
+        String etalonId = searchResultDTO.getHits().stream()
+                .map(hit -> hit.getFieldValue(RecordHeaderField.FIELD_ETALON_ID.getName()))
+                .filter(Objects::nonNull)
+                .filter(SearchResultHitFieldDTO::isNonNullField)
+                .filter(SearchResultHitFieldDTO::isSingleValue)
+                .map(field-> field.getFirstValue().toString())
+                .findAny()
+                .orElse(null);
+
+        if (etalonId == null) {
+            // Considered supplementary. Just warn and continue.
+            LOGGER.warn("Relation reference didn't resolved by reference alias key {}.", referenceResolver);
+            return;
+        }
+
+        RecordKeys keys = commonRecordsComponent.identify(RecordEtalonKey.builder().id(etalonId).build());
+        if (keys == null) {
+            // Considered supplementary. Just warn and continue.
+            LOGGER.warn("Relation reference didn't resolved by reference alias key {}.", referenceResolver);
+            return;
+        }
+
+        uCtx.keys(keys);
+    }
+
+    private void setupKeys(UpsertRelationRequestContext ctx) {
+
         Timeline<OriginRelation> timeline = commonRelationsComponent.ensureAndGetRelationTimeline(ctx);
         RelationKeys relationKeys = timeline != null ? timeline.getKeys() : null;
-        UpsertAction action = relationKeys == null ? UpsertAction.INSERT : UpsertAction.UPDATE;
         RelationUpsertChangeSet set = ctx.changeSet();
+        boolean isInsert = relationKeys == null;
 
         // Both keys must be already resolved. Check for presence
         RecordKeys from = ctx.fromKeys();
@@ -142,11 +233,10 @@ public class RelationUpsertStartExecutor extends Start<UpsertRelationRequestCont
         String user = SecurityUtils.getCurrentUserName();
         Date ts = new Date(System.currentTimeMillis());
 
-        ctx.upsertAction(action);
         ctx.timestamp(ts);
 
         // 1. Handle a possibly new object
-        if (relationKeys == null) {
+        if (isInsert) {
 
             // 1.1 Fail upsert. Etalon / LSN supplied for identity, but the rel couldn't be found
             if (ctx.isValidRelationKey()) {
@@ -229,7 +319,7 @@ public class RelationUpsertStartExecutor extends Start<UpsertRelationRequestCont
                         from.getOriginKey(), to.getOriginKey(), RecordStatus.ACTIVE);
 
             String adminSourceSystem = metaModelService.getAdminSourceSystem().getName();
-            if (action == UpsertAction.INSERT && !adminSourceSystem.equals(origin.getSourceSystem())) {
+            if (isInsert && !adminSourceSystem.equals(origin.getSourceSystem())) {
 
                 fromSysKey = from.findBySourceSystemWithoutEnrichments(adminSourceSystem);
                 toSysKey = to.findBySourceSystemWithoutEnrichments(adminSourceSystem);
@@ -323,87 +413,5 @@ public class RelationUpsertStartExecutor extends Start<UpsertRelationRequestCont
         }
 
         ctx.relationKeys(relationKeys);
-
-        // 5. All calculations done on the record services side for containments.
-        if (action == UpsertAction.INSERT || ctx.relationType() == RelationType.CONTAINS) {
-            ctx.currentTimeline(new RelationTimeline(relationKeys));
-        } else if (action == UpsertAction.UPDATE) {
-            ctx.currentTimeline(timeline);
-        }
-
-        ctx.setUp(true);
-    }
-
-    private void setupChangeSet(UpsertRelationRequestContext ctx) {
-
-        // May be already set by batch
-        if (Objects.isNull(ctx.changeSet())) {
-            RelationUpsertChangeSet set = new RelationUpsertChangeSet();
-            set.setRelationType(ctx.relationType());
-            ctx.changeSet(set);
-        }
-    }
-
-    private void setupPointers(UpsertRelationRequestContext uCtx) {
-
-        ReferenceAliasKey referenceResolver = uCtx.getReferenceAliasKey();
-        if (referenceResolver == null || referenceResolver.getValue() == null || referenceResolver.getEntityAttributeName() == null) {
-            //skip if we doesn't have all necessary information about alias key
-            return;
-        }
-
-        if (uCtx.relationType() != RelationType.REFERENCES && uCtx.relationType() != RelationType.MANY_TO_MANY) {
-            //skip if relation is not exist or if it is contains
-            return;
-        }
-
-        String aliasAttrName = referenceResolver.getEntityAttributeName();
-        RelationDef def = metaModelService.getRelationById(uCtx.relationName());
-
-        AttributeModelElement attrInfo = metaModelService.getEntityAttributeInfoByPath(def.getToEntity(), aliasAttrName);
-
-        // skip if alias key use complex attribute as a key
-        // skip if alias attribute is not unique
-        if (attrInfo.isComplex() || !attrInfo.isUnique()) {
-            return;
-        }
-
-        FormField formField = strictValue(FieldType.fromValue(attrInfo.getValueType().name()), aliasAttrName, referenceResolver.getValue());
-        Date asOf = uCtx.getValidFrom() == null ? uCtx.getValidTo() : uCtx.getValidFrom();
-
-        SearchRequestContext searchContext = SearchRequestContext.builder(EntityIndexType.RECORD, def.getToEntity(), SecurityUtils.getCurrentUserStorageId())
-                .asOf(asOf)
-                .form(FormFieldsGroup.createAndGroup(formField))
-                .returnFields(Collections.singletonList(RecordHeaderField.FIELD_ETALON_ID.getName()))
-                .facets(Collections.singletonList(FacetName.FACET_NAME_ACTIVE_ONLY))
-                .count(10)
-                .page(0)
-                .build();
-
-        SearchResultDTO searchResultDTO = searchService.search(searchContext);
-
-        String etalonId = searchResultDTO.getHits().stream()
-                .map(hit -> hit.getFieldValue(RecordHeaderField.FIELD_ETALON_ID.getName()))
-                .filter(Objects::nonNull)
-                .filter(SearchResultHitFieldDTO::isNonNullField)
-                .filter(SearchResultHitFieldDTO::isSingleValue)
-                .map(field-> field.getFirstValue().toString())
-                .findAny()
-                .orElse(null);
-
-        if (etalonId == null) {
-            // Considered supplementary. Just warn and continue.
-            LOGGER.warn("Relation reference didn't resolved by reference alias key {}.", referenceResolver);
-            return;
-        }
-
-        RecordKeys keys = commonRecordsComponent.identify(RecordEtalonKey.builder().id(etalonId).build());
-        if (keys == null) {
-            // Considered supplementary. Just warn and continue.
-            LOGGER.warn("Relation reference didn't resolved by reference alias key {}.", referenceResolver);
-            return;
-        }
-
-        uCtx.keys(keys);
     }
 }

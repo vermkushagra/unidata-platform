@@ -71,27 +71,26 @@ import org.unidata.mdm.core.dto.PaginatedResultDTO;
 import org.unidata.mdm.core.dto.job.JobDTO;
 import org.unidata.mdm.core.dto.job.JobExecutionDTO;
 import org.unidata.mdm.core.dto.job.JobExecutionPaginatedResultDTO;
+import org.unidata.mdm.core.dto.job.JobExecutionStepDTO;
 import org.unidata.mdm.core.dto.job.JobPaginatedResultDTO;
 import org.unidata.mdm.core.dto.job.JobParameterDTO;
 import org.unidata.mdm.core.dto.job.JobTemplateParameterDTO;
 import org.unidata.mdm.core.dto.job.JobTriggerDTO;
-import org.unidata.mdm.core.dto.job.StepExecutionDTO;
 import org.unidata.mdm.core.dto.job.StepExecutionPaginatedResultDTO;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.exception.JobException;
 import org.unidata.mdm.core.po.job.JobPO;
 import org.unidata.mdm.core.po.job.JobParameterPO;
 import org.unidata.mdm.core.po.job.JobTriggerPO;
-import org.unidata.mdm.core.rest.ro.JobRO;
 import org.unidata.mdm.core.service.JobService;
 import org.unidata.mdm.core.service.UserService;
-import org.unidata.mdm.core.service.ext.ComplexJobParameterHolder;
-import org.unidata.mdm.core.service.ext.JobCommonParameters;
-import org.unidata.mdm.core.service.ext.JobEnumParamExtractor;
-import org.unidata.mdm.core.service.ext.JobParameterProcessor;
-import org.unidata.mdm.core.service.ext.JobParameterValidator;
-import org.unidata.mdm.core.service.ext.JobTemplateParameters;
-import org.unidata.mdm.core.service.ext.JobWithParamsRegistry;
+import org.unidata.mdm.core.service.job.ComplexJobParameterHolder;
+import org.unidata.mdm.core.service.job.JobCommonParameters;
+import org.unidata.mdm.core.service.job.JobEnumParamExtractor;
+import org.unidata.mdm.core.service.job.JobParameterProcessor;
+import org.unidata.mdm.core.service.job.JobParameterValidator;
+import org.unidata.mdm.core.service.job.JobTemplateParameters;
+import org.unidata.mdm.core.service.job.JobWithParamsRegistry;
 import org.unidata.mdm.core.type.job.JobEnumType;
 import org.unidata.mdm.core.type.job.JobExecutionFilter;
 import org.unidata.mdm.core.type.job.JobFilter;
@@ -99,8 +98,6 @@ import org.unidata.mdm.core.type.job.StepExecutionFilter;
 import org.unidata.mdm.core.util.SecurityUtils;
 import org.unidata.mdm.system.dto.Param;
 import org.unidata.mdm.system.util.IdUtils;
-
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.vavr.Tuple2;
 
@@ -117,10 +114,6 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobServiceImpl.class);
 
     private static final String QUARTZ_GROUP = "quartz-batch";
-    private static final String ERROR_WHILE_EXPORTING_JOBS_LOG_MESSAGE = "Error while exporting jobs.";
-    private static final String ERROR_WHILE_IMPORTING_JOBS_LOG_MESSAGE = "Error while importing jobs.";
-    private static final TypeReference<List<JobRO>> JOB_RO_LIST_TYPE_REFERENCE = new TypeReference<List<JobRO>>() {
-    };
 
     @Autowired
     private JobLauncher jobLauncher;
@@ -174,7 +167,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
     public void setOperations(Map<String, JobParameterProcessor> parameterProcessors) {
         this.parameterProcessors = parameterProcessors;
     }
- 
+
     private static boolean isCronJob(JobPO job) {
         return StringUtils.hasText(job.getCronExpression());
     }
@@ -185,7 +178,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      * @throws JobException
      */
     @Override
-    public JobExecutionDTO run(String jobName) throws JobException {
+    public JobExecutionDTO run(String jobName) {
         return run(jobName, Collections.emptyList());
     }
 
@@ -223,9 +216,12 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
 
     @Override
     public JobExecutionDTO runJob(final long jobId, final Collection<JobParameterDTO> jobParameters) {
+
         final JobPO job = jobDao.findJob(jobId);
         if (job == null) {
-            throw new JobException("Job with id [" + jobId + "] not found", CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
+            final String message = "Job with id [{}] not found";
+            LOGGER.warn(message, jobId);
+            throw new JobException(message, CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
         }
 
         validateJobParameters(job.getJobNameReference(), jobParameters, true);
@@ -252,7 +248,9 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
         JobPO job = jobDao.findJob(jobId);
 
         if (job == null) {
-            throw new JobException("Job with id [" + jobId + "] not found", CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
+            final String message = "Job with id [{}] not found";
+            LOGGER.warn(message, jobId);
+            throw new JobException(message, CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
         }
 
         final JobExecution jobExecution = start(job, Collections.singletonList(new JobParameterDTO("jobName", job.getName())));
@@ -272,7 +270,9 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
         JobPO job = jobDao.findJob(jobId);
 
         if (job == null) {
-            throw new JobException("Job with id [" + jobId + "] not found", CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
+            final String message = "Job with id [{}] not found";
+            LOGGER.warn(message, jobId);
+            throw new JobException(message, CoreExceptionIds.EX_JOB_NOT_FOUND, jobId);
         }
 
         return JobConverter.jobExecutionDTOFromJobExecution(
@@ -283,13 +283,17 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
     }
 
     private JobExecution start(final JobPO job, final Collection<JobParameterDTO> jobParameters) throws JobException {
+
         if (!job.isEnabled() || job.isError()) {
-            throw new JobException("Job with id [" + job.getId() + "] not enabled", CoreExceptionIds.EX_JOB_DISABLED, job.getId());
+            final String message = "Job with id [{}] not enabled";
+            LOGGER.warn(message, job.getId());
+            throw new JobException(message, CoreExceptionIds.EX_JOB_DISABLED, job.getId());
         }
 
         if (findLastRunningJobExecutionId(job.getId()) != null) {
-            throw new JobException("Job with id [" + job.getId() + "] is already running",
-                    CoreExceptionIds.EX_JOB_ALREADY_RUNNING, job.getName());
+            final String message = "Job with name [{}] is already running";
+            LOGGER.warn(message, job.getName());
+            throw new JobException(message, CoreExceptionIds.EX_JOB_ALREADY_RUNNING, job.getName());
         }
 
         final List<JobParameterPO> jobParams = jobDao.getJobParameters(job.getId());
@@ -314,11 +318,13 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
 
             jobDao.saveBatchJobInstance(job.getId(), jobExecution.getJobId(), SecurityUtils.getCurrentUserName(), new Date());
 
-            LOGGER.debug("Started job [jobId={}, jobInstanceId={}, jobExecutionId={}]", job.getId(),
-                    jobExecution.getJobId(), jobExecution.getId());
+            LOGGER.debug("Started job [jobId={}, jobInstanceId={}, jobExecutionId={}]",
+                    job.getId(), jobExecution.getJobId(), jobExecution.getId());
+
         } catch (final JobExecutionException e) {
-            throw new JobException("Failed to execute job [" + job.getName() + "] with jobReference [" +
-                    job.getJobNameReference() + ']', e, CoreExceptionIds.EX_JOB_BATCH_EXECUTION_FAILED, job.getName());
+            throw new JobException("Failed to execute job [{}] with jobReference [{}]",
+                    e, CoreExceptionIds.EX_JOB_BATCH_EXECUTION_FAILED,
+                    job.getName(), job.getJobNameReference());
         }
 
         return jobExecution;
@@ -351,8 +357,9 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
                     jobLauncher.run(batchJob, parameters)
             );
         } catch (final JobExecutionException e) {
-            throw new JobException("Failed to execute job [" + jobDto.getName() + "] with jobReference [" +
-                    jobDto.getJobNameReference() + ']', e, CoreExceptionIds.EX_JOB_BATCH_EXECUTION_FAILED, jobDto.getName());
+            throw new JobException("Failed to execute job [{}] with jobReference [{}]",
+                    e, CoreExceptionIds.EX_JOB_BATCH_EXECUTION_FAILED,
+                    jobDto.getName(), jobDto.getJobNameReference());
         }
     }
 
@@ -404,7 +411,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      * @throws JobException
      */
     @Override
-    public Long stop(long jobId) throws JobException {
+    public Long stop(long jobId) {
         JobPO job = jobDao.findJob(jobId);
 
         if (job == null) {
@@ -420,7 +427,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      */
     @Override
     @Transactional
-    public void enableJob(long jobId) throws JobException {
+    public void enableJob(long jobId) {
         JobPO job = jobDao.findJob(jobId);
 
         if (job == null) {
@@ -440,7 +447,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      */
     @Override
     @Transactional
-    public void disableJob(long jobId) throws JobException {
+    public void disableJob(long jobId) {
         JobPO job = jobDao.findJob(jobId);
 
         if (job == null) {
@@ -461,7 +468,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      */
     @Override
     @Transactional
-    public void markErrorJobs(Collection<JobDTO> jobs, boolean error) throws JobException {
+    public void markErrorJobs(Collection<JobDTO> jobs, boolean error) {
         Set<Long> jobIds = jobs.stream().map(JobDTO::getId).collect(Collectors.toSet());
 
         if (error) {
@@ -615,20 +622,20 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
 
     @Override
     @Transactional
-    public PaginatedResultDTO<StepExecutionDTO> searchStepExecutions(long jobExecutionId, long fromInd, int itemCount) {
+    public PaginatedResultDTO<JobExecutionStepDTO> searchStepExecutions(long jobExecutionId, long fromInd, int itemCount) {
+
         StepExecutionFilter filter = new StepExecutionFilter();
         filter.setJobExecutionId(jobExecutionId);
         filter.setFromInd(fromInd);
         filter.setItemCount(itemCount);
 
         final PaginatedResultDTO<StepExecution> stepExecutions = getJobExplorer().searchStepExecutions(filter);
-        PaginatedResultDTO<StepExecutionDTO> result = new StepExecutionPaginatedResultDTO<>();
+        PaginatedResultDTO<JobExecutionStepDTO> result = new StepExecutionPaginatedResultDTO<>();
         result.setTotalCount(stepExecutions.getTotalCount());
-        result.setPage(
-                stepExecutions.getPage().stream()
-                        .map(JobConverter::convertStepExecutionToDTO)
-                        .collect(Collectors.toList())
-        );
+        result.setPage(stepExecutions.getPage().stream()
+            .map(JobConverter::stepExecutionDTOFromStepExecution)
+            .collect(Collectors.toList()));
+
         return result;
     }
 

@@ -38,6 +38,13 @@ dependencies {
     implementation 'org.springframework:spring-web'
     implementation 'org.springframework.security:spring-security-core'
     implementation 'org.springframework.batch:spring-batch-core:4.1.2.RELEASE'
+    implementation 'org.springframework.batch:spring-batch-infrastructure'
+    implementation 'org.springframework.batch:spring-batch-integration'
+    
+    implementation 'org.springframework.integration:spring-integration-core'
+    implementation 'org.springframework.integration:spring-integration-jms'
+    implementation 'org.springframework.integration:spring-integration-jmx'
+    implementation 'org.springframework.integration:spring-integration-http'
 
 //    implementation 'nl.myndocs:database-migrator:1.2-SNAPSHOT'
     compile files('../extlib/database-migrator-1.2-SNAPSHOT.jar') //20190821.164456-1

@@ -21,8 +21,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.util.Assert;
-import org.unidata.mdm.core.service.ext.JobTemplateParameters;
-import org.unidata.mdm.core.service.ext.JobWithParamsRegistry;
+import org.unidata.mdm.core.service.job.JobTemplateParameters;
+import org.unidata.mdm.core.service.job.JobWithParamsRegistry;
 
 /**
  * FIXDOC: add file description.

@@ -222,6 +222,15 @@ public class ConvertUtils {
     }
 
     /**
+     * Converts to zoned DT from {@linkplain Date}.
+     * @param date the {@link Date}
+     * @return ZDT
+     */
+    public static ZonedDateTime zonedDateTimeFromDate(final Date date) {
+        return date == null ? null : ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    }
+
+    /**
      * LocalTime 2 LocalDateTime.
      *
      * @param d the local time

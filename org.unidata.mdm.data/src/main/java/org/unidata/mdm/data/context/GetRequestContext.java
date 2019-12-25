@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.unidata.mdm.core.type.audit.AuditLevel;
-import org.unidata.mdm.data.service.segments.RecordGetStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetStartExecutor;
 import org.unidata.mdm.data.type.data.OriginRecord;
 import org.unidata.mdm.system.type.pipeline.PipelineInput;
 

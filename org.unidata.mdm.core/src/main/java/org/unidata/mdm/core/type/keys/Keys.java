@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -248,6 +249,24 @@ public abstract class Keys<E extends EtalonKey, O extends OriginKey> {
      */
     public boolean isPublished() {
         return published;
+    }
+    /**
+     * Tells whether this keys are in the "new" state (i. e. all origins have no valid revisons).
+     * @return true, for "new" state keys, false otherwise
+     */
+    public boolean isNew() {
+
+        if (supplementaryKeys.isEmpty()) {
+            return false;
+        }
+
+        for (Entry<String, O> key : supplementaryKeys.entrySet()) {
+            if (key.getValue().getRevision() != 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
     /**
      * Gets the shard number, where this record reside together with its keys and data.

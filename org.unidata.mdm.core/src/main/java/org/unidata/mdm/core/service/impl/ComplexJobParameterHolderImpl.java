@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.Nonnull;
 
 import org.springframework.stereotype.Service;
-import org.unidata.mdm.core.service.ext.ComplexJobParameterHolder;
+import org.unidata.mdm.core.service.job.ComplexJobParameterHolder;
 
 /**
  * Object responsible fot containing complex parameters for job execution.

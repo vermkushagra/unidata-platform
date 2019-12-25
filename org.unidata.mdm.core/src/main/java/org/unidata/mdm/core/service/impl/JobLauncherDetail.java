@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.unidata.mdm.core.service.JobService;
-import org.unidata.mdm.core.service.ext.JobCommonParameters;
+import org.unidata.mdm.core.service.job.JobCommonParameters;
 
 /**
  * FIXDOC: add file description.
