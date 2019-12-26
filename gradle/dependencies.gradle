@@ -34,6 +34,7 @@ dependencyManagement {
             entry 'camel-spring'
             entry 'camel-management'
             entry 'camel-jmx'
+            entry 'camel-jms'
         }
 
         dependencySet(group: 'com.sun.xml.bind', version: '2.2.11') {

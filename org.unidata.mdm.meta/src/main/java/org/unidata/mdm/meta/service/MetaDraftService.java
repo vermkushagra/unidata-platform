@@ -17,11 +17,12 @@ import org.unidata.mdm.meta.dto.GetEntitiesByRelationSideDTO;
 import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
 import org.unidata.mdm.meta.type.RelationSide;
+import org.unidata.mdm.system.service.AfterContextRefresh;
 
 /**
  * The Interface MetaDraftService.
  */
-public interface MetaDraftService {
+public interface MetaDraftService extends AfterContextRefresh {
 	/**
 	 * Apply.
 	 */

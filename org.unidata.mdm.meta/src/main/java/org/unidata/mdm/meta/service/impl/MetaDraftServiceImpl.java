@@ -1,8 +1,27 @@
 package org.unidata.mdm.meta.service.impl;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-import com.hazelcast.core.ISet;
+import static org.unidata.mdm.meta.service.impl.MeasurementValueXmlConverter.convert;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -56,37 +75,18 @@ import org.unidata.mdm.meta.type.info.impl.EntitiesGroupWrapper;
 import org.unidata.mdm.meta.util.MetaJaxbUtils;
 import org.unidata.mdm.system.exception.PlatformBusinessException;
 import org.unidata.mdm.system.exception.PlatformFailureException;
-import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import static org.unidata.mdm.meta.service.impl.MeasurementValueXmlConverter.convert;
+import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IMap;
+import com.hazelcast.core.ISet;
 
 
 /**
  * The Class MetaDraftServiceImpl.
  */
 @Component
-public class MetaDraftServiceImpl implements MetaDraftService, AfterContextRefresh {
+public class MetaDraftServiceImpl implements MetaDraftService {
 
     public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
     public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";
