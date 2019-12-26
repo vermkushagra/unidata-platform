@@ -46,7 +46,7 @@ import org.unidata.mdm.meta.dto.GetEntitiesGroupsDTO;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.po.MetaDraftPO;
-import org.unidata.mdm.meta.service.MetaDraftServiceExt;
+import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.service.impl.facades.EntitiesGroupModelElementFacade;
@@ -86,7 +86,7 @@ import static org.unidata.mdm.meta.service.impl.MeasurementValueXmlConverter.con
  * The Class MetaDraftServiceImpl.
  */
 @Component
-public class MetaDraftServiceImpl implements MetaDraftServiceExt, AfterContextRefresh {
+public class MetaDraftServiceImpl implements MetaDraftService, AfterContextRefresh {
 
     public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
     public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";
@@ -1284,7 +1284,7 @@ public class MetaDraftServiceImpl implements MetaDraftServiceExt, AfterContextRe
     }
 
     /* (non-Javadoc)
-     * @see com.unidata.mdm.backend.common.service.MetaDraftServiceExt#removeRefsToClsf(java.lang.String)
+     * @see com.unidata.mdm.backend.common.service.MetaDraftService#removeRefsToClsf(java.lang.String)
      */
     @Override
     public void removeRefsToClsf(String clsfName) {
