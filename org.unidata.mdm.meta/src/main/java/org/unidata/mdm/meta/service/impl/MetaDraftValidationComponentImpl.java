@@ -56,7 +56,7 @@ import org.unidata.mdm.meta.context.UpdateModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext.ModelUpsertType;
 import org.unidata.mdm.meta.dto.FullModelDTO;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
-import org.unidata.mdm.meta.service.MetaDraftServiceExt;
+import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.impl.facades.AbstractModelElementFacade;
 import org.unidata.mdm.meta.service.impl.facades.EntitiesGroupModelElementFacade;
 import org.unidata.mdm.meta.type.ie.MetaEdge;
@@ -170,7 +170,7 @@ public class MetaDraftValidationComponentImpl implements MetaDraftValidationComp
      */
     // todo separate metaModelService to modelCache and service!
     @Autowired
-    private MetaDraftServiceExt metaDraftService;
+    private MetaDraftService metaDraftService;
 
     // TODO: @Modules
 //    /** The graph creator. */

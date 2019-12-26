@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.v1.ObjectFactory;
 import org.unidata.mdm.core.service.SecurityService;
 import org.unidata.mdm.error_handling.v1.ApiFaultType;
@@ -17,7 +18,6 @@ import org.unidata.mdm.meta.api.v1.MetaImpl;
 import org.unidata.mdm.meta.context.DeleteModelRequestContext;
 import org.unidata.mdm.meta.context.UpdateModelRequestContext.UpdateModelRequestContextBuilder;
 import org.unidata.mdm.meta.dto.GetEntityDTO;
-import org.unidata.mdm.meta.service.MetaDraftServiceExt;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.v1.ApplyDraftRequest;
 import org.unidata.mdm.meta.v1.ApplyDraftResponse;
@@ -62,7 +62,7 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
 
 	/** The draft service. */
 	@Autowired
-	private MetaDraftServiceExt draftService;
+	private MetaDraftService draftService;
 
 	private ObjectFactory factory = new ObjectFactory();
 
