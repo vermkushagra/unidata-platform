@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
@@ -173,7 +174,12 @@ public class CoreModule implements Module {
             );
         }
 
-        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/core.xml"));
+        busConfigurationService.upsertBusRoutesDefinition(
+                new BusRoutesDefinition(
+                        "core",
+                        IOUtils.readFromClasspath("routes/core.xml")
+                )
+        );
     }
 
     @Override

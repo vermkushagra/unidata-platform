@@ -21,9 +21,9 @@ public class InitBusConfigurationTables implements MigrationScript {
 
     @Override
     public void migrate(Migration migration) {
-        migration.table("bus_routes")
-                .addColumn("route_id", Column.TYPE.VARCHAR, cb -> cb.primary(true).notNull(true).size(255))
-                .addColumn("route_definition", Column.TYPE.TEXT, cb -> cb.notNull(true))
+        migration.table("bus_routes_definitions")
+                .addColumn("routes_definition_id", Column.TYPE.VARCHAR, cb -> cb.primary(true).notNull(true).size(255))
+                .addColumn("routes_definition", Column.TYPE.TEXT, cb -> cb.notNull(true))
                 .save();
     }
 }
