@@ -10,19 +10,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.unidata.mdm.core.dao.RouteDao;
-import org.unidata.mdm.core.exception.CoreExceptionIds;
+import org.unidata.mdm.core.dao.BusRouteDao;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
-import org.unidata.mdm.core.util.Maps;
-import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.service.AfterPlatformStartup;
 
 import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class BusConfigurationServiceImpl implements BusConfigurationService, AfterPlatformStartup {
@@ -31,91 +28,102 @@ public class BusConfigurationServiceImpl implements BusConfigurationService, Aft
 
     private final ModelCamelContext camelContext;
 
-    private final RouteDao routeDao;
+    private final BusRouteDao busRouteDao;
 
     public BusConfigurationServiceImpl(
             final ModelCamelContext camelContext,
-            final RouteDao routeDao
+            final BusRouteDao busRouteDao
     ) {
         this.camelContext = camelContext;
-        this.routeDao = routeDao;
+        this.busRouteDao = busRouteDao;
     }
 
     @Transactional
     @Override
-    public void upsertRoute(@Nonnull final String routeId, @Nonnull final String routeDefinition) {
-        routeDao.upsertRoutes(Maps.of(routeId, routeDefinition));
+    public void upsertBusRoutesDefinition(@Nonnull BusRoutesDefinition busRoutesDefinition) {
+        busRouteDao.upsertBusRoutesDefinitions(Collections.singleton(busRoutesDefinition));
     }
 
-    @Transactional
-    @Override
-    public void upsertRoutes(final @Nonnull String routesDefinitions) {
+//    @Transactional
+//    @Override
+//    public void upsertRoutes(final @Nonnull String routesDefinitions) {
+//        try {
+//            final RoutesDefinition routesDefinition = ModelHelper.loadRoutesDefinition(
+//                    camelContext,
+//                    new ByteArrayInputStream(routesDefinitions.getBytes(StandardCharsets.UTF_8))
+//            );
+//            routeDao.upsertBusRoutesDefinitions(
+//                routesDefinition.getRoutes().stream()
+//                        .collect(Collectors.toMap(RouteDefinition::getRouteId, this::dumpRoute))
+//            );
+//        } catch (Exception e) {
+//            LOGGER.error("Can't upsert routes {}", routesDefinitions, e);
+//        }
+//    }
+
+//    private String dumpRoute(@Nonnull final RouteDefinition routeDefinition) {
+//        try {
+//            return ModelHelper.dumpModelAsXml(camelContext, routeDefinition);
+//        } catch (JAXBException e) {
+//            LOGGER.error("Can't dump route definition {}", routeDefinition, e);
+//            throw new PlatformFailureException(
+//                    "Can't dump route definition " + routeDefinition.getRouteId(),
+//                    e,
+//                    CoreExceptionIds.EX_FAIL_ROUTE_DUMP,
+//                    routeDefinition.getRouteId()
+//            );
+//        }
+//    }
+
+    private void addToContext(final RouteDefinition routeDefinition) {
         try {
-            final RoutesDefinition routesDefinition = ModelHelper.loadRoutesDefinition(
-                    camelContext,
-                    new ByteArrayInputStream(routesDefinitions.getBytes(StandardCharsets.UTF_8))
-            );
-            routeDao.upsertRoutes(
-                routesDefinition.getRoutes().stream()
-                        .collect(Collectors.toMap(RouteDefinition::getRouteId, this::dumpRoute))
-            );
+            final Route oldRoute = camelContext.getRoute(routeDefinition.getRouteId());
+            if (oldRoute != null) {
+                final RouteController routeController = camelContext.getRouteController();
+                routeController.stopRoute(routeDefinition.getRouteId());
+                camelContext.removeRoute(routeDefinition.getRouteId());
+            }
+            camelContext.addRouteDefinition(routeDefinition);
         } catch (Exception e) {
-            LOGGER.error("Can't upsert routes {}", routesDefinitions, e);
+            throw new RuntimeException(e);
         }
-    }
-
-    private String dumpRoute(@Nonnull final RouteDefinition routeDefinition) {
-        try {
-            return ModelHelper.dumpModelAsXml(camelContext, routeDefinition);
-        } catch (JAXBException e) {
-            LOGGER.error("Can't dump route definition {}", routeDefinition, e);
-            throw new PlatformFailureException(
-                    "Can't dump route definition " + routeDefinition.getRouteId(),
-                    e,
-                    CoreExceptionIds.EX_FAIL_ROUTE_DUMP,
-                    routeDefinition.getRouteId()
-            );
-        }
-    }
-
-    private void addToContext(final String routeId, final RouteDefinition routeDefinition) throws Exception {
-        final Route oldRoute = camelContext.getRoute(routeId);
-        if (oldRoute != null) {
-            final RouteController routeController = camelContext.getRouteController();
-            routeController.stopRoute(routeId);
-            camelContext.removeRoute(routeId);
-        }
-        camelContext.addRouteDefinition(routeDefinition);
     }
 
     @Transactional
     @Override
-    public void installRoutes(@Nonnull final Map<String, String> routes) {
-        routeDao.upsertRoutes(routes);
-        routes.forEach(this::addToContext);
+    public void installBusRoutesDefinition(@Nonnull final BusRoutesDefinition busRoutesDefinition) {
+        upsertBusRoutesDefinition(busRoutesDefinition);
+        addToContext(busRoutesDefinition);
     }
 
-    private void addToContext(final String routeId, final String routeDefinition) {
+    private void addToContext(final BusRoutesDefinition busRoutesDefinition) {
         try {
             final RoutesDefinition routesDefinition = ModelHelper.loadRoutesDefinition(
                     camelContext,
-                    new ByteArrayInputStream(routeDefinition.getBytes(StandardCharsets.UTF_8))
+                    new ByteArrayInputStream(
+                            busRoutesDefinition.getRoutesDefinition().getBytes(StandardCharsets.UTF_8)
+                    )
             );
             if (!routesDefinition.getRoutes().isEmpty()) {
-                addToContext(routeId, routesDefinition.getRoutes().get(0));
+                routesDefinition.getRoutes().forEach(this::addToContext);
             }
         } catch (Exception e) {
-            LOGGER.error("Can't add route {} definition {} to context", routeId, routeDefinition, e);
+            LOGGER.error(
+                    "Can't add bus routes {} definition {} to context",
+                    busRoutesDefinition.getRoutesDefinitionId(),
+                    busRoutesDefinition.getRoutesDefinition(),
+                    e
+            );
         }
     }
 
     @Override
-    public Map<String, String> routesDefinitions() {
-        return routeDao.routesDefinitions();
+    public List<BusRoutesDefinition> busRoutesDefinitions() {
+        return busRouteDao.fetchBusRoutesDefinitions();
     }
 
     @Override
     public void afterPlatformStartup() {
-        routeDao.routesDefinitions().forEach(this::addToContext);
+        busRouteDao.fetchBusRoutesDefinitions().forEach(this::addToContext);
     }
 }

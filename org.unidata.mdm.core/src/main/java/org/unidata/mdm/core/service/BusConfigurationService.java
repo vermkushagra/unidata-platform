@@ -1,13 +1,14 @@
 package org.unidata.mdm.core.service;
 
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
+
 import javax.annotation.Nonnull;
-import java.util.Map;
+import java.util.List;
 
 public interface BusConfigurationService {
-    void upsertRoute(@Nonnull String routeId, @Nonnull String routeDefinition);
-    void upsertRoutes(@Nonnull String routesDefinitions);
+    void upsertBusRoutesDefinition(@Nonnull BusRoutesDefinition busRoutesDefinition);
 
-    void installRoutes(@Nonnull Map<String, String> routes);
+    void installBusRoutesDefinition(@Nonnull BusRoutesDefinition busRoutesDefinition);
 
-    Map<String, String> routesDefinitions();
+    List<BusRoutesDefinition> busRoutesDefinitions();
 }
