@@ -1,5 +1,12 @@
 package org.unidata.mdm.core.configuration.job;
 
+import static org.springframework.batch.support.DatabaseType.SYBASE;
+
+import java.lang.reflect.Field;
+import java.sql.Types;
+
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.repository.ExecutionContextSerializer;
@@ -25,13 +32,8 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.unidata.mdm.core.dao.CustomJobDaoSupport;
 import org.unidata.mdm.core.dao.impl.CustomJdbcJobExecutionDao;
-
-import javax.sql.DataSource;
-import java.lang.reflect.Field;
-import java.sql.Types;
-
-import static org.springframework.batch.support.DatabaseType.SYBASE;
 
 /**
  * @author Aleksandr Magdenko
@@ -205,6 +207,9 @@ public class CustomJobRepositoryFactoryBean extends AbstractJobRepositoryFactory
     @Override
     protected JobExecutionDao createJobExecutionDao() throws Exception {
         // Custom implementation which supports arrays in parameters.
+        CustomJobDaoSupport daoHelper = new CustomJobDaoSupport();
+        daoHelper.setDataSource(dataSource);
+
         CustomJdbcJobExecutionDao dao = new CustomJdbcJobExecutionDao();
         dao.setJdbcTemplate(jdbcOperations);
         dao.setJobExecutionIncrementer(incrementerFactory.getIncrementer(databaseType, tablePrefix
@@ -213,6 +218,7 @@ public class CustomJobRepositoryFactoryBean extends AbstractJobRepositoryFactory
         dao.setClobTypeToUse(determineClobTypeToUse(this.databaseType));
         dao.setExitMessageLength(maxVarCharLength);
         dao.setNamedJdbcOperations(namedJdbcOperations);
+        dao.setDaoHelper(daoHelper);
         dao.afterPropertiesSet();
         return dao;
     }

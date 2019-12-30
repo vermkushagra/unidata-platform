@@ -14,14 +14,17 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.scope.JobScope;
+import org.springframework.batch.core.scope.StepScope;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
+import org.unidata.mdm.core.configuration.job.CustomJobRegistryBeanPostProcessor;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.migrations.CoreSchemaMigrations;
 import org.unidata.mdm.core.migrations.UninstallCoreSchemaMigrations;
+import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.service.impl.AsyncRareTaskExecutor;
 import org.unidata.mdm.core.type.search.AuditHeaderField;
 import org.unidata.mdm.core.type.search.AuditIndexType;
@@ -35,6 +38,7 @@ import org.unidata.mdm.search.type.mapping.impl.StringMappingField;
 import org.unidata.mdm.search.type.mapping.impl.TimestampMappingField;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
+import org.unidata.mdm.system.service.ModularPostProcessingRegistrar;
 import org.unidata.mdm.system.type.configuration.ApplicationConfigurationProperty;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
@@ -80,6 +84,18 @@ public class CoreModule implements Module {
 
     @Autowired
     private BusConfigurationService busConfigurationService;
+
+    @Autowired
+    private CustomJobRegistryBeanPostProcessor customJobRegistryBeanPostProcessor;
+
+    @Autowired
+    private JobScope jobScope;
+
+    @Autowired
+    private StepScope stepScope;
+
+    @Autowired
+    private ModularPostProcessingRegistrar modularPostProcessingRegistrar;
 
     /**
      * Lock name.
@@ -228,6 +244,11 @@ public class CoreModule implements Module {
             LOGGER.error(message, e);
             throw new PlatformFailureException(message, e, CoreExceptionIds.EX_SYSTEM_INDEX_LOCK_TIME_OUT);
         }
+
+        // Register custom job post-processor
+        modularPostProcessingRegistrar.registerBeanPostProcessor(customJobRegistryBeanPostProcessor);
+        modularPostProcessingRegistrar.registerBeanFactoryPostProcessor(jobScope);
+        modularPostProcessingRegistrar.registerBeanFactoryPostProcessor(stepScope);
 
         LOGGER.info("Started");
     }

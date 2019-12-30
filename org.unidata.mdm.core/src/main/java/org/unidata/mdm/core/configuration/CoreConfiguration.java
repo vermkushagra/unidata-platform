@@ -1,6 +1,5 @@
 package org.unidata.mdm.core.configuration;
 
-import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
@@ -8,13 +7,13 @@ import java.util.function.BiConsumer;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileUrlResource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,6 +31,26 @@ import org.unidata.mdm.system.util.DataSourceUtils;
 public class CoreConfiguration extends AbstractConfiguration {
 
     private static final ConfigurationId ID = () -> "CORE_CONFIGURATION";
+
+    /**
+     * Custom table prefix.
+     */
+    public static final String UNIDATA_BATCH_JOB_BATCH_TABLE_PREFIX = "BATCH_";
+//    /**
+//     * Minimal pool size.
+//     */
+//    @Value("${" + CoreConfigurationConstants.PROP_NAME_MIN_THREAD_POOL_SIZE + "?:4}")
+//    private int coreJobPoolSize;
+//    /**
+//     * Maximum pool size.
+//     */
+//    @Value("${" + CoreConfigurationConstants.PROP_NAME_MAX_THREAD_POOL_SIZE + "?:32}")
+//    private int maxJobPoolSize;
+//    /**
+//     * Queue capacity.
+//     */
+//    @Value("${" + CoreConfigurationConstants.PROP_NAME_QUEUE_SIZE + "?:100}")
+//    private int jobQueueCapacity;
 
     public CoreConfiguration() {
         super();
@@ -97,17 +116,9 @@ public class CoreConfiguration extends AbstractConfiguration {
         return propertiesFactoryBean;
     }
 
-    @Bean("backendProperties")
-    public PropertiesFactoryBean backendProperties() throws MalformedURLException {
-        final PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        propertiesFactoryBean.setLocation(new FileUrlResource("file:///${unidata.conf}/backend.properties"));
-        propertiesFactoryBean.setIgnoreResourceNotFound(true);
-        return propertiesFactoryBean;
-    }
-
     @Bean(name = "coreTransactionManager")
-    public PlatformTransactionManager platformTransactionManager() {
-        return new bitronix.tm.integration.spring.PlatformTransactionManager();
+    public PlatformTransactionManager platformTransactionManager(@Autowired DataSource coreDataSource) {
+        return new DataSourceTransactionManager(coreDataSource);
     }
 
     @Bean

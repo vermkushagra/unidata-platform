@@ -30,12 +30,16 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.CustomEditorConfigurer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Service;
 import org.unidata.mdm.system.dao.ModuleDao;
 import org.unidata.mdm.system.dto.ModuleInfo;
@@ -56,13 +60,21 @@ import org.unidata.mdm.system.type.support.IdentityHashSet;
  * Simple implementation of the module service.
  */
 @Service
-public class ModuleServiceImpl implements ModuleService, ApplicationListener<ContextRefreshedEvent>, BeanPostProcessor {
+public class ModuleServiceImpl implements ModuleService, ApplicationListener<ContextRefreshedEvent> {
 
     private static final Logger logger = LoggerFactory.getLogger(ModuleServiceImpl.class);
 
-    private final AtomicBoolean init = new AtomicBoolean(false);
-
     private static final String MODULE_CLASS_ATTRIBUTE = "Unidata-Module-Class";
+
+    /**
+     * Needed for inclusion of parent post processor classes.
+     */
+    private static final Class<?>[] INITIAL_BEAN_FACTORY_POST_PROCESSORS = {
+        PropertySourcesPlaceholderConfigurer.class,
+        CustomEditorConfigurer.class
+    };
+
+    private final AtomicBoolean init = new AtomicBoolean(false);
 
     private final RuntimePropertiesService runtimePropertiesService;
 
@@ -73,13 +85,16 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private final Map<String, Module> startedModules = new HashMap<>();
 
     private final Map<String, AbstractApplicationContext> modulesContexts = new HashMap<>();
+    // Only singletones are actually accepted
+    private final Set<BeanPostProcessor> beanPostProcessors = new IdentityHashSet<>();
+    // Only singletones are actually accepted
+    private final Set<BeanFactoryPostProcessor> beanFactoryPostProcessors = new IdentityHashSet<>();
 
     private ApplicationContext mainApplicationContext;
 
     public ModuleServiceImpl(
             final RuntimePropertiesService runtimePropertiesService,
-            final ModuleDao moduleDao
-    ) {
+            final ModuleDao moduleDao) {
         this.runtimePropertiesService = runtimePropertiesService;
         this.moduleDao = moduleDao;
     }
@@ -95,6 +110,19 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
         final Map<String, ModuleInfo> installedModules = moduleDao.fetchModulesInfo().stream()
                         .collect(Collectors.toMap(mi -> mi.getModule().getId(), Function.identity()));
 
+        // 1. Prepare post-processors
+        for (Class<?> ppc : INITIAL_BEAN_FACTORY_POST_PROCESSORS) {
+            try {
+                BeanFactoryPostProcessor bfpp = (BeanFactoryPostProcessor) mainApplicationContext.getBean(ppc);
+                beanFactoryPostProcessors.add(bfpp);
+            } catch (BeansException e) {
+                // Nothing
+            }
+        }
+
+        beanPostProcessors.add(this);
+
+        // 2. Load stuff
         logger.info("Starting loading modules...");
         try {
             final Enumeration<URL> resources = getClass().getClassLoader().getResources("META-INF/MANIFEST.MF");
@@ -319,7 +347,8 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
         AnnotationConfigApplicationContext result = ModularContextBuilder.builder((AbstractApplicationContext) mainApplicationContext)
             .customClassLoader(null) // Just for a possible future use
             .module(module)
-            .postProcessors(Collections.singletonList(this))
+            .beanPostProcessors(beanPostProcessors)
+            .beanFactoryPostProcessors(beanFactoryPostProcessors)
             .build();
 
         autowireModuleInstance(module, result);
@@ -408,5 +437,21 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
         }
 
         return bean;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        beanPostProcessors.add(beanPostProcessor);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void registerBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor) {
+        beanFactoryPostProcessors.add(beanFactoryPostProcessor);
     }
 }

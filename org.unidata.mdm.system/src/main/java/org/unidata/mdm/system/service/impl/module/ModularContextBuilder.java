@@ -4,16 +4,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.CustomEditorConfigurer;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.unidata.mdm.system.configuration.SystemConfiguration;
 import org.unidata.mdm.system.type.module.Module;
@@ -23,20 +20,6 @@ import org.unidata.mdm.system.type.module.Module;
  * @author Mikhail Mikhailov on Oct 25, 2019
  */
 public class ModularContextBuilder {
-    /**
-     * Include parent post processor classes.
-     */
-    private static final Class<?> INCLUDE_POST_PROCESSORS[] = {
-        PropertyPlaceholderConfigurer.class,
-        PropertySourcesPlaceholderConfigurer.class,
-        CustomEditorConfigurer.class
-    };
-    /**
-     * Exclude parent post processor classes.
-     */
-    private static final Class<?> EXCLUDE_POST_PROCESSORS[] = {
-        BeanFactoryAware.class
-    };
     /**
      * The parent context to use.
      */
@@ -53,6 +36,10 @@ public class ModularContextBuilder {
      * Non-default post processors to run on children contexts.
      */
     private Collection<BeanPostProcessor> postProcessors;
+    /**
+     * BF post-processors.
+     */
+    private Collection<BeanFactoryPostProcessor> beanFactoryPostProcessors;
     /**
      * Builder method.
      * @param parent the parent (system) context
@@ -92,8 +79,17 @@ public class ModularContextBuilder {
      * @param postProcessors the post processors
      * @return self
      */
-    public ModularContextBuilder postProcessors(Collection<BeanPostProcessor> postProcessors) {
+    public ModularContextBuilder beanPostProcessors(Collection<BeanPostProcessor> postProcessors) {
         this.postProcessors = postProcessors;
+        return this;
+    }
+    /**
+     * Sets non-default bean factory post processors to run on children contexts.
+     * @param beanFactoryPostProcessors the post processors
+     * @return self
+     */
+    public ModularContextBuilder beanFactoryPostProcessors(Collection<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
+        this.beanFactoryPostProcessors = beanFactoryPostProcessors;
         return this;
     }
     /**
@@ -106,7 +102,8 @@ public class ModularContextBuilder {
         Objects.requireNonNull(this.module, "Module must not be null");
 
         ModularAnnotationConfigApplicationContext result
-            = new ModularAnnotationConfigApplicationContext(customClassLoader, new ModularListableBeanFactory(this));
+            = new ModularAnnotationConfigApplicationContext(
+                    this, customClassLoader, new ModularListableBeanFactory(this));
 
         // 2. Set parent and subcontext ID
         result.setParent(parent);
@@ -128,7 +125,8 @@ public class ModularContextBuilder {
             SystemConfiguration configuration = parent.getBean(SystemConfiguration.class);
             ResourceBundleMessageSource rbms = configuration.getSystemMessageSource();
             String[] basenames = Arrays.stream(module.getResourceBundleBasenames())
-                .map(v -> "classpath:" + v)
+                .filter(Objects::nonNull)
+                .map(v -> v.startsWith("classpath:") ? v : "classpath:" + v)
                 .toArray(sz -> new String[sz]);
             rbms.addBasenames(basenames);
         }
@@ -142,20 +140,15 @@ public class ModularContextBuilder {
      */
     private class ModularListableBeanFactory extends DefaultListableBeanFactory {
         /**
-         * PPs from parent and siblings.
-         */
-        private transient Collection<BeanPostProcessor> postProcessors;
-        /**
          * Constructor.
          * @param parentBeanFactory
          */
         public ModularListableBeanFactory(ModularContextBuilder builder) {
             super();
-            postProcessors = builder.postProcessors;
-        }
-
-        public void modularPostProcess() {
-            getBeanPostProcessors().addAll(postProcessors);
+            // Non-default global post-processors
+            if (CollectionUtils.isNotEmpty(builder.postProcessors)) {
+                getBeanPostProcessors().addAll(builder.postProcessors);
+            }
         }
     }
     /**
@@ -167,20 +160,16 @@ public class ModularContextBuilder {
          * Constructor.
          * @param beanFactory
          */
-        public ModularAnnotationConfigApplicationContext(ClassLoader customClassLoader, DefaultListableBeanFactory beanFactory) {
+        public ModularAnnotationConfigApplicationContext(ModularContextBuilder builder, ClassLoader customClassLoader, DefaultListableBeanFactory beanFactory) {
             super(beanFactory);
             if (Objects.nonNull(customClassLoader)) {
                 setClassLoader(customClassLoader);
             }
-        }
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-            super.postProcessBeanFactory(beanFactory);
-            ModularListableBeanFactory modularFactory = (ModularListableBeanFactory) beanFactory;
-            modularFactory.modularPostProcess();
+
+            // Non-default global post-processors
+            if (CollectionUtils.isNotEmpty(builder.beanFactoryPostProcessors)) {
+                getBeanFactoryPostProcessors().addAll(builder.beanFactoryPostProcessors);
+            }
         }
     }
 }

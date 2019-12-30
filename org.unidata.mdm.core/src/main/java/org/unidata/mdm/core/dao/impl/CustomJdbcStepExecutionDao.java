@@ -22,7 +22,7 @@ import org.springframework.batch.core.repository.dao.JdbcStepExecutionDao;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
 
-import org.unidata.mdm.core.dao.DaoHelper;
+import org.unidata.mdm.core.dao.CustomJobDaoSupport;
 import org.unidata.mdm.core.dto.PaginatedResultDTO;
 import org.unidata.mdm.core.dto.job.StepExecutionPaginatedResultDTO;
 import org.unidata.mdm.core.type.job.StepExecutionFilter;
@@ -55,13 +55,13 @@ public class CustomJdbcStepExecutionDao extends JdbcStepExecutionDao {
                 " where JOB_EXECUTION_ID = ?" +
                 " group by status";
 
-    private DaoHelper daoHelper;
+    private CustomJobDaoSupport daoHelper;
 
     private static final RowMapper<Pair<Integer, BatchStatus>> COUNT_MAPPER = (rs, pos) -> {
         return new ImmutablePair<>(rs.getInt("cnt"), BatchStatus.valueOf(rs.getString("status")));
     };
 
-    public void setDaoHelper(DaoHelper daoHelper) {
+    public void setDaoHelper(CustomJobDaoSupport daoHelper) {
         this.daoHelper = daoHelper;
     }
 

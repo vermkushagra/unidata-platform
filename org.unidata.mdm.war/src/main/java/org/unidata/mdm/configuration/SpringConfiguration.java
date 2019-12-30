@@ -1,8 +1,6 @@
 package org.unidata.mdm.configuration;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 import org.apache.cxf.bus.spring.SpringBus;
-import org.apache.cxf.jaxb.JAXBDataBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +11,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
 
 @Configuration
 @ComponentScan({"org.unidata.mdm.system"})
@@ -26,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SpringConfiguration {
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         final PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer =
                 new PropertySourcesPlaceholderConfigurer();
         propertySourcesPlaceholderConfigurer.setEnvironment(new StandardServletEnvironment());

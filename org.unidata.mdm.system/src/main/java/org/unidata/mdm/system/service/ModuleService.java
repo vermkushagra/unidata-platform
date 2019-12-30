@@ -3,6 +3,7 @@ package org.unidata.mdm.system.service;
 import java.util.Collection;
 import java.util.Optional;
 
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.unidata.mdm.system.dto.ModuleInfo;
 import org.unidata.mdm.system.type.module.Module;
 
@@ -10,7 +11,7 @@ import org.unidata.mdm.system.type.module.Module;
  * @author Alexander Malyshev
  * Basic functionality around business modules.
  */
-public interface ModuleService {
+public interface ModuleService extends BeanPostProcessor, ModularPostProcessingRegistrar {
 
     void init();
 

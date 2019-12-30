@@ -728,6 +728,7 @@ public class JobServiceImpl implements JobService, ApplicationContextAware {
      * @param jobDto
      */
     private void validateAndResolveImportedJobParameters(final JobDTO jobDto) {
+
         final String jobNameReference = jobDto.getJobNameReference();
         final Collection<JobParameterDTO> jobParameters = jobDto.getParameters();
 

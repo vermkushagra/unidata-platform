@@ -4,6 +4,23 @@
 
 package org.unidata.mdm.core.dao.impl;
 
+import java.sql.Array;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.BatchStatus;
@@ -28,28 +45,11 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.incrementer.DataFieldMaxValueIncrementer;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
-import org.unidata.mdm.core.dao.DaoHelper;
+import org.unidata.mdm.core.dao.CustomJobDaoSupport;
 import org.unidata.mdm.core.dto.PaginatedResultDTO;
 import org.unidata.mdm.core.dto.job.JobExecutionPaginatedResultDTO;
 import org.unidata.mdm.core.type.job.CustomJobParameter;
 import org.unidata.mdm.core.type.job.JobExecutionFilter;
-
-import java.sql.Array;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * FIXDOC: add file description.
@@ -155,7 +155,7 @@ public class CustomJdbcJobExecutionDao extends AbstractJdbcBatchMetadataDao impl
 
     private DataFieldMaxValueIncrementer jobExecutionIncrementer;
 
-    private DaoHelper daoHelper;
+    private CustomJobDaoSupport daoHelper;
 
     private NamedParameterJdbcTemplate namedJdbcOperations;
 
@@ -178,7 +178,7 @@ public class CustomJdbcJobExecutionDao extends AbstractJdbcBatchMetadataDao impl
         this.jobExecutionIncrementer = jobExecutionIncrementer;
     }
 
-    public void setDaoHelper(DaoHelper daoHelper) {
+    public void setDaoHelper(CustomJobDaoSupport daoHelper) {
         this.daoHelper = daoHelper;
     }
 
@@ -411,7 +411,7 @@ public class CustomJdbcJobExecutionDao extends AbstractJdbcBatchMetadataDao impl
 
         String identifyingFlag = identifying ? "Y" : "N";
 
-        try (Connection con = daoHelper.getDataSource().getConnection()) {
+        try (Connection con = namedJdbcOperations.getJdbcTemplate().getDataSource().getConnection()) {
             boolean isArray = value != null && value.getClass().isArray();
 
             if (type == ParameterType.STRING) {
@@ -741,9 +741,7 @@ public class CustomJdbcJobExecutionDao extends AbstractJdbcBatchMetadataDao impl
 
         Map<Long, JobParameters> result = new HashMap<>();
 
-        jobExecutionParamsMap.entrySet().stream().forEach(entry -> {
-            result.put(entry.getKey(), new JobParameters(entry.getValue()));
-        });
+        jobExecutionParamsMap.entrySet().stream().forEach(entry -> result.put(entry.getKey(), new JobParameters(entry.getValue())));
 
         return result;
     }

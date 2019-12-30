@@ -89,3 +89,9 @@ UPDATE BATCH_JOB_EXECUTION_PARAMS SET STRING_VAL_TEXT = STRING_VAL;
 ALTER TABLE BATCH_JOB_EXECUTION_PARAMS DROP COLUMN STRING_VAL;
 ALTER TABLE BATCH_JOB_EXECUTION_PARAMS RENAME STRING_VAL_TEXT TO STRING_VAL;
 
+-- V1.0.912
+ALTER TABLE batch_job_execution_params ADD COLUMN string_val_arr text[];
+ALTER TABLE batch_job_execution_params ADD COLUMN date_val_arr timestamp without time zone[];
+ALTER TABLE batch_job_execution_params ADD COLUMN long_val_arr bigint[];
+ALTER TABLE batch_job_execution_params ADD COLUMN double_val_arr double precision[];
+

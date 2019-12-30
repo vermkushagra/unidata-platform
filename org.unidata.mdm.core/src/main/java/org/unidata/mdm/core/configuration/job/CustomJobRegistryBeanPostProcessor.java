@@ -85,7 +85,7 @@ public class CustomJobRegistryBeanPostProcessor implements BeanPostProcessor, In
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof JobTemplateParameters) {
-            JobTemplateParameters parameters = (JobTemplateParameters)bean;
+            JobTemplateParameters parameters = (JobTemplateParameters) bean;
 
             try {
                 if (logger.isDebugEnabled()) {
@@ -102,14 +102,13 @@ public class CustomJobRegistryBeanPostProcessor implements BeanPostProcessor, In
 
             Job job = (Job) bean;
             try {
-                String groupName = this.groupName;
 
-                job = groupName==null ? job : new GroupAwareJob(groupName, job);
+                job = this.groupName == null ? job : new GroupAwareJob(this.groupName, job);
                 ReferenceJobFactory jobFactory = new ReferenceJobFactory(job);
                 String name = jobFactory.getJobName();
                 if (logger.isDebugEnabled()) {
                     logger.debug("Registering job: " + name);
-                }                
+                }
                 jobRegistry.register(jobFactory);
                 jobNames.add(name);
             }

@@ -18,7 +18,7 @@ import org.springframework.core.serializer.Serializer;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.util.Assert;
-import org.unidata.mdm.core.dao.DaoHelper;
+import org.unidata.mdm.core.dao.CustomJobDaoSupport;
 
 /**
  * FIXDOC: add file description.
@@ -36,11 +36,11 @@ public class CustomJdbcExecutionContextDao extends JdbcExecutionContextDao {
             "FROM %PREFIX%STEP_EXECUTION_CONTEXT " +
             "WHERE STEP_EXECUTION_ID in (select tmp.id from t_tmp_id tmp where tmp.list_id = ?)";
 
-    private DaoHelper daoHelper;
+    private CustomJobDaoSupport daoHelper;
     private ExecutionContextSerializer serializer;
 
 
-    public void setDaoHelper(DaoHelper daoHelper) {
+    public void setDaoHelper(CustomJobDaoSupport daoHelper) {
         this.daoHelper = daoHelper;
     }
 
