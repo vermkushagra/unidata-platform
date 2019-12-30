@@ -53,4 +53,12 @@ public class BusRouteDaoImpl extends BaseDAOImpl implements BusRouteDao {
                         new BusRoutesDefinition(rs.getString(ROUTES_DEFINITION_ID_COLUMN), rs.getString(ROUTES_DEFINITION_COLUMN))
         );
     }
+
+    @Override
+    public void deleteBusRoutesDefinition(String busRoutesDefinitionId) {
+        namedJdbcTemplate.update(
+                "delete from bus_routes_definitions where routes_definition_id = :routes_definition_id",
+                Maps.of("routes_definition_id", busRoutesDefinitionId)
+        );
+    }
 }

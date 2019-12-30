@@ -8,5 +8,8 @@ import java.util.List;
 
 public interface BusRouteDao {
     boolean upsertBusRoutesDefinitions(@Nonnull Collection<BusRoutesDefinition> busRoutesDefinitions);
+
     List<BusRoutesDefinition> fetchBusRoutesDefinitions();
+
+    void deleteBusRoutesDefinition(String busRoutesDefinitionId);
 }

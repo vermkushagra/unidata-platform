@@ -14,4 +14,6 @@ public interface BusConfigurationService {
 
 
     void loadBusRoutesDefinitions();
+
+    void deleteBusRoutesDefinition(String busRoutesDefinitionId);
 }

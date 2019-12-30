@@ -125,4 +125,9 @@ public class BusConfigurationServiceImpl implements BusConfigurationService {
     public void loadBusRoutesDefinitions() {
         busRouteDao.fetchBusRoutesDefinitions().forEach(this::addToContext);
     }
+
+    @Override
+    public void deleteBusRoutesDefinition(String busRoutesDefinitionId) {
+        busRouteDao.deleteBusRoutesDefinition(busRoutesDefinitionId);
+    }
 }
