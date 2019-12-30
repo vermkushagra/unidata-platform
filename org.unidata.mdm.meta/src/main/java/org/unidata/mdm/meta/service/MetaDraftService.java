@@ -22,7 +22,7 @@ import org.unidata.mdm.system.service.AfterContextRefresh;
 /**
  * The Interface MetaDraftService.
  */
-public interface MetaDraftService extends AfterContextRefresh {
+public interface MetaDraftService {
 	/**
 	 * Apply.
 	 */
@@ -214,10 +214,7 @@ public interface MetaDraftService extends AfterContextRefresh {
 	 * @return the nested entity by id
 	 */
 	NestedEntityDef getNestedEntityById(String elementName);
-	/**
-	 * Removes refs to classifier
-	 * @param clsfName classifier name
-	 */
-	void removeRefsToClsf(String clsfName);
+
+	void initDraftService();
 
 }

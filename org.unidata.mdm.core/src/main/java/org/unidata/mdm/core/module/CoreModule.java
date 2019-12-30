@@ -239,6 +239,11 @@ public class CoreModule implements Module {
     }
 
     @Override
+    public void ready() {
+        busConfigurationService.loadBusRoutesDefinitions();
+    }
+
+    @Override
     public void stop() {
         LOGGER.info("Stopping...");
         asyncRareTaskExecutor.shutdown();

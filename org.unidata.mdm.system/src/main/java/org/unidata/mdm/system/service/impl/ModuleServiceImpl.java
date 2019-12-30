@@ -1,5 +1,28 @@
 package org.unidata.mdm.system.service.impl;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.stereotype.Service;
+import org.unidata.mdm.system.dao.ModuleDao;
+import org.unidata.mdm.system.dto.ModuleInfo;
+import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.module.SystemModule;
+import org.unidata.mdm.system.module.annotation.ModuleRef;
+import org.unidata.mdm.system.service.ModuleService;
+import org.unidata.mdm.system.service.RuntimePropertiesService;
+import org.unidata.mdm.system.service.impl.module.ModularContextBuilder;
+import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
+import org.unidata.mdm.system.type.module.Dependency;
+import org.unidata.mdm.system.type.module.Module;
+
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -23,34 +46,6 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.PreDestroy;
-
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.stereotype.Service;
-import org.unidata.mdm.system.dao.ModuleDao;
-import org.unidata.mdm.system.dto.ModuleInfo;
-import org.unidata.mdm.system.exception.PlatformFailureException;
-import org.unidata.mdm.system.module.SystemModule;
-import org.unidata.mdm.system.module.annotation.ModuleRef;
-import org.unidata.mdm.system.service.AfterPlatformStartup;
-import org.unidata.mdm.system.service.ModuleService;
-import org.unidata.mdm.system.service.RuntimePropertiesService;
-import org.unidata.mdm.system.service.impl.module.ModularContextBuilder;
-import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
-import org.unidata.mdm.system.type.module.Dependency;
-import org.unidata.mdm.system.type.module.Module;
-import org.unidata.mdm.system.type.support.IdentityHashSet;
-
 /**
  * @author Alexander Malyshev
  * Simple implementation of the module service.
@@ -71,6 +66,10 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private final List<ModuleInfo> modulesInfo = new ArrayList<>();
 
     private final Map<String, Module> startedModules = new HashMap<>();
+
+    private final Map<String, Module> readyModules = new HashMap<>();
+
+    private final Set<String> readyFailedModules = new HashSet<>();
 
     private final Map<String, AbstractApplicationContext> modulesContexts = new HashMap<>();
 
@@ -107,14 +106,44 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
                     modulesClasses.add(moduleClass);
                 }
             }
-            Collection<ModuleInfo> modulesInfo = loadModules(modulesClasses, installedModules);
-            moduleDao.saveModulesInfo(modulesInfo);
-            this.modulesInfo.addAll(modulesInfo);
+            final Collection<ModuleInfo> loadedModulesInfo = loadModules(modulesClasses, installedModules);
+            moduleDao.saveModulesInfo(loadedModulesInfo);
+            this.modulesInfo.addAll(loadedModulesInfo);
             initConfigurationPropertiesSystem();
+            callReady();
             logger.info("Modules were loaded");
         } catch (IOException e) {
             logger.error("Error while loading modules", e);
             throw new PlatformFailureException("Can't load modules", e, null);
+        }
+    }
+
+    private void callReady() {
+        startedModules.values().forEach(this::callReady);
+    }
+
+    private void callReady(Module module) {
+        final String moduleId = module.getId();
+        if (readyFailedModules.contains(moduleId)) {
+            return;
+        }
+        if (module.getDependencies() != null) {
+            module.getDependencies()
+                    .stream()
+                    .filter(d -> !readyModules.containsKey(d.getModuleId()) || !readyFailedModules.contains(d.getModuleId()))
+                    .forEach(d -> callReady(startedModules.get(d.getModuleId())));
+            if (module.getDependencies().stream().anyMatch(d -> readyFailedModules.contains(d.getModuleId()))) {
+                readyFailedModules.add(moduleId);
+                return;
+            }
+        }
+        try {
+            module.ready();
+            readyModules.put(moduleId, module);
+        }
+        catch (Exception e) {
+            logger.error("Error happened while call ready() on {}", moduleId, e);
+            readyFailedModules.add(moduleId);
         }
     }
 
@@ -140,22 +169,11 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     }
 
     private Collection<ModuleInfo> loadModules(final Set<String> modulesClasses, final Map<String, ModuleInfo> installedModules) {
-
-        Set<AfterPlatformStartup> platformStartupListeners = new IdentityHashSet<>();
-
         final Map<String, ModuleInfo> modules = loadModulesInfo(modulesClasses);
 
         modules.values().forEach(moduleInfo ->
-            loadModule(moduleInfo, modules, installedModules, platformStartupListeners)
+            loadModule(moduleInfo, modules, installedModules)
         );
-
-        for (AfterPlatformStartup listener : platformStartupListeners) {
-            try {
-                listener.afterPlatformStartup();
-            } catch (Exception e) {
-                logger.warn("Exception caught while executing platform startup listener.", e);
-            }
-        }
         return modules.values();
     }
 
@@ -176,8 +194,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private void loadModule(
             final ModuleInfo moduleInfo,
             final Map<String, ModuleInfo> modules,
-            final Map<String, ModuleInfo> installedModules,
-            final Set<AfterPlatformStartup> platformStartupListeners
+            final Map<String, ModuleInfo> installedModules
     ) {
         final String moduleId = moduleInfo.getModule().getId();
         logger.info("Starting loading module {}", moduleId);
@@ -188,14 +205,8 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
             logger.info("Module {} was loaded early", moduleId);
             return;
         }
-        if (moduleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.LOADING) {
-            moduleInfo.setModuleStatus(ModuleInfo.ModuleStatus.FAILED);
-            moduleInfo.setError("Cyclic loading module " + moduleId);
-            logger.error("Module {} has cyclic dependencies", moduleId);
-            return;
-        }
         moduleInfo.setModuleStatus(ModuleInfo.ModuleStatus.LOADING);
-        if (!loadModuleDependencies(moduleInfo, modules, installedModules, platformStartupListeners)) {
+        if (!loadModuleDependencies(moduleInfo, modules, installedModules)) {
             return;
         }
         final Module module = moduleInfo.getModule();
@@ -206,18 +217,12 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
             // Save context
             autowireModuleInstance(module, (AbstractApplicationContext) mainApplicationContext);
             modulesContexts.put(module.getId(), (AbstractApplicationContext) mainApplicationContext);
-
-            // Collect platform start listeners
-            platformStartupListeners.addAll(collectPlatformStartupListeners(mainApplicationContext));
         } else {
             final AnnotationConfigApplicationContext moduleContext = initModuleSpringConfigs(module);
             if (moduleContext != null) {
 
                 // Save context
                 modulesContexts.put(module.getId(), moduleContext);
-
-                // Collect platform start listeners
-                platformStartupListeners.addAll(collectPlatformStartupListeners(moduleContext));
             }
         }
 
@@ -261,8 +266,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private boolean loadModuleDependencies(
             final ModuleInfo moduleInfo,
             final Map<String, ModuleInfo> modules,
-            final Map<String, ModuleInfo> installedModules,
-            final Set<AfterPlatformStartup> platformStartupListeners
+            final Map<String, ModuleInfo> installedModules
     ) {
         final Collection<Dependency> dependencies = moduleInfo.getModule().getDependencies();
         if (dependencies == null || dependencies.isEmpty()) {
@@ -289,13 +293,20 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
                 logger.error("Module {} has unknown dependency version {}", moduleId, dependency);
                 return false;
             }
-            if (dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.NOT_LOADED) {
-                loadModule(dependencyModuleInfo, modules, installedModules, platformStartupListeners);
+            if (dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.LOADING) {
+                moduleInfo.setModuleStatus(ModuleInfo.ModuleStatus.FAILED);
+                moduleInfo.setError("Cyclic loading module " + moduleId);
+                logger.error("Module {} has cyclic dependencies", moduleId);
+                return false;
             }
-            if (dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.FAILED) {
+            if (dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.NOT_LOADED) {
+                loadModule(dependencyModuleInfo, modules, installedModules);
+            }
+            if (dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.FAILED
+                    || dependencyModuleInfo.getModuleStatus() == ModuleInfo.ModuleStatus.START_FAILED) {
                 moduleInfo.setModuleStatus(ModuleInfo.ModuleStatus.FAILED);
                 moduleInfo.setError("Dependency has failed status " + dependency);
-                logger.error("Module {} has failed dependency {}", moduleId, dependency);
+                logger.error("Module {} has failed dependency {}", moduleId, dependency.getModuleId());
                 return false;
             }
         }
@@ -332,17 +343,6 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
             // Inject stuff, but don't call any callbacks such as @PostConstruct etc.
             context.getAutowireCapableBeanFactory().autowireBean(module);
         }
-    }
-
-    @Nonnull
-    private Collection<AfterPlatformStartup> collectPlatformStartupListeners(ApplicationContext context) {
-
-        Map<String, AfterPlatformStartup> beans = context.getBeansOfType(AfterPlatformStartup.class);
-        if (MapUtils.isNotEmpty(beans)) {
-            return beans.values();
-        }
-
-        return Collections.emptyList();
     }
 
     @Override

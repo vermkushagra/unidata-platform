@@ -95,11 +95,12 @@ public class PipelineServiceImpl implements PipelineService, EventReceiver {
     public PipelineServiceImpl() {
         super();
     }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void afterPlatformStartup() {
+    public void loadPipelines() {
 
         // 1. Collect points
         for (Module m : moduleService.getModules()) {

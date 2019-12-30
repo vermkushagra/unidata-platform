@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.unidata.mdm.core.dao.BusRouteDao;
 import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
-import org.unidata.mdm.system.service.AfterPlatformStartup;
 
 import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
@@ -22,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
-public class BusConfigurationServiceImpl implements BusConfigurationService, AfterPlatformStartup {
+public class BusConfigurationServiceImpl implements BusConfigurationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BusConfigurationServiceImpl.class);
 
@@ -123,7 +122,7 @@ public class BusConfigurationServiceImpl implements BusConfigurationService, Aft
     }
 
     @Override
-    public void afterPlatformStartup() {
+    public void loadBusRoutesDefinitions() {
         busRouteDao.fetchBusRoutesDefinitions().forEach(this::addToContext);
     }
 }

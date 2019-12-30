@@ -11,4 +11,7 @@ public interface BusConfigurationService {
     void installBusRoutesDefinition(@Nonnull BusRoutesDefinition busRoutesDefinition);
 
     List<BusRoutesDefinition> busRoutesDefinitions();
+
+
+    void loadBusRoutesDefinitions();
 }

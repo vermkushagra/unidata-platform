@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.migration.SystemMigrations;
+import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
@@ -35,6 +36,9 @@ public class SystemModule implements Module {
 
     @Autowired
     private DataSource systemDataSource;
+
+    @Autowired
+    private PipelineService pipelineService;
 
     /**
      * This module id.
@@ -94,6 +98,11 @@ public class SystemModule implements Module {
         IdUtils.init();
         PipelineUtils.init();
         TextUtils.init();
+    }
+
+    @Override
+    public void ready() {
+        pipelineService.loadPipelines();
     }
 
     @Override

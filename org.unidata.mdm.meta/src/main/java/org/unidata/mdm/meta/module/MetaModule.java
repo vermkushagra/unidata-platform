@@ -56,8 +56,7 @@ public class MetaModule extends AbstractModule {
      */
     private static final Class<?>[] REFRESH_ON_STARTUP_CLASSES = {
             MetaMeasurementService.class,
-            MetaModelService.class,
-            MetaDraftService.class
+            MetaModelService.class
     };
 
     // TODO: 20.12.2019 refactor this static array to annotation style and fill on start.
@@ -90,6 +89,9 @@ public class MetaModule extends AbstractModule {
 
     @Autowired
     private MetaConfiguration configuration;
+
+    @Autowired
+    private MetaDraftService metaDraftService;
 
     @Autowired
     private BusConfigurationService busConfigurationService;
@@ -191,6 +193,11 @@ public class MetaModule extends AbstractModule {
         addSegments(configuration.getBeansByNames(SEGMENTS));
 
         LOGGER.info("Started.");
+    }
+
+    @Override
+    public void ready() {
+        metaDraftService.initDraftService();
     }
 
     @Override
