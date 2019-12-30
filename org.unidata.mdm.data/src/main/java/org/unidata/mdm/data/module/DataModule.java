@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.data.notification.DataSendNotificationFallback;
@@ -390,7 +391,12 @@ public class DataModule extends AbstractModule {
             }
         }
 
-        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/data.xml"));
+        busConfigurationService.upsertBusRoutesDefinition(
+                new BusRoutesDefinition(
+                        "data",
+                        IOUtils.readFromClasspath("routes/data.xml")
+                )
+        );
     }
 
     @Override

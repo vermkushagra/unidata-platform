@@ -429,7 +429,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
      * afterContextRefresh()
      */
     @Override
-    public void afterContextRefresh() {
+    public void initDraftService() {
         this.ents = hazelcastInstance.getMap("draft_ents");
         this.lookups = hazelcastInstance.getMap("draft_lookups");
         this.rels = hazelcastInstance.getMap("draft_rels");
@@ -1281,53 +1281,6 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         } finally {
             MeasurementPoint.stop();
         }
-    }
-
-    /* (non-Javadoc)
-     * @see com.unidata.mdm.backend.common.service.MetaDraftService#removeRefsToClsf(java.lang.String)
-     */
-    @Override
-    public void removeRefsToClsf(String clsfName) {
-        // TODO: @Modules
-//        Set<LookupEntityDef> lookupsToUpdate = new HashSet<>();
-//        lookups.forEach((k, v) -> {
-//            if(v.getClassifiers().contains(clsfName)) {
-//                List<String> classifiers = v.getClassifiers().stream().filter(c->!StringUtils.equals(clsfName, c)).collect(Collectors.toList());
-//                List<ClassifierPropertyDef> classifierProperties =  v.getClassifierProperties().stream().filter(c->!StringUtils.equals(clsfName, c.getName())).collect(Collectors.toList());
-//                v.getClassifierProperties().clear();
-//                v.withClassifierProperties(classifierProperties);
-//                v.getClassifiers().clear();
-//                v.withClassifiers(classifiers);
-//                lookupsToUpdate.add(v);
-//            }
-//        });
-//        Set<EntityDef> entsToUpdate = new HashSet<>();
-//        ents.forEach((k, v) -> {
-//            if(v.getClassifiers().contains(clsfName)) {
-//                List<String> classifiers = v.getClassifiers().stream().filter(c->!StringUtils.equals(clsfName, c)).collect(Collectors.toList());
-//                List<ClassifierPropertyDef> classifierProperties =  v.getClassifierProperties().stream().filter(c->!StringUtils.equals(clsfName, c.getName())).collect(Collectors.toList());
-//                v.getClassifierProperties().clear();
-//                v.withClassifierProperties(classifierProperties);
-//                v.getClassifiers().clear();
-//                v.withClassifiers(classifiers);
-//                entsToUpdate.add(v);
-//            }
-//        });
-//        Set<NestedEntityDef> nesToUpdate = new HashSet<>();
-//        nestedEntities.forEach((k, v) -> {
-//            if(v.getClassifiers().contains(clsfName)) {
-//                List<String> classifiers = v.getClassifiers().stream().filter(c->!StringUtils.equals(clsfName, c)).collect(Collectors.toList());
-//                List<ClassifierPropertyDef> classifierProperties =  v.getClassifierProperties().stream().filter(c->!StringUtils.equals(clsfName, c.getName())).collect(Collectors.toList());
-//                v.getClassifierProperties().clear();
-//                v.withClassifierProperties(classifierProperties);
-//                v.getClassifiers().clear();
-//                v.withClassifiers(classifiers);
-//                nesToUpdate.add(v);
-//            }
-//        });
-//        lookupsToUpdate.forEach(v -> lookups.put(v.getName(), v));
-//        entsToUpdate.forEach(v -> ents.put(v.getName(), v));
-//        nesToUpdate.forEach(v -> nestedEntities.put(v.getName(), v));
     }
 
     /**

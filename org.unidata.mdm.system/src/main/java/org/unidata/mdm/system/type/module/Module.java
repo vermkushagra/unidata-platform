@@ -71,12 +71,21 @@ public interface Module {
     default void uninstall() {
         // Override
     }
+
     /**
      * Runs module's start procedure. Happens upon each application startup.
      */
     default void start() {
         // Override
     }
+
+    /**
+     * Runs after all modules execute method start in same order as dependencies
+     */
+    default void ready() {
+        // Override
+    }
+
     /**
      * Runs module's stop procedure. Happens upon each application shutdown.
      */

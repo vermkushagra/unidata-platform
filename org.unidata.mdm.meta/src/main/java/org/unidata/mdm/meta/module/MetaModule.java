@@ -6,6 +6,7 @@ import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
@@ -55,8 +56,7 @@ public class MetaModule extends AbstractModule {
      */
     private static final Class<?>[] REFRESH_ON_STARTUP_CLASSES = {
             MetaMeasurementService.class,
-            MetaModelService.class,
-            MetaDraftService.class
+            MetaModelService.class
     };
 
     // TODO: 20.12.2019 refactor this static array to annotation style and fill on start.
@@ -89,6 +89,9 @@ public class MetaModule extends AbstractModule {
 
     @Autowired
     private MetaConfiguration configuration;
+
+    @Autowired
+    private MetaDraftService metaDraftService;
 
     @Autowired
     private BusConfigurationService busConfigurationService;
@@ -146,7 +149,12 @@ public class MetaModule extends AbstractModule {
             );
         }
 
-        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/meta.xml"));
+        busConfigurationService.upsertBusRoutesDefinition(
+                new BusRoutesDefinition(
+                        "meta",
+                        IOUtils.readFromClasspath("routes/meta.xml")
+                )
+        );
     }
 
     @Override
@@ -185,6 +193,11 @@ public class MetaModule extends AbstractModule {
         addSegments(configuration.getBeansByNames(SEGMENTS));
 
         LOGGER.info("Started.");
+    }
+
+    @Override
+    public void ready() {
+        metaDraftService.initDraftService();
     }
 
     @Override

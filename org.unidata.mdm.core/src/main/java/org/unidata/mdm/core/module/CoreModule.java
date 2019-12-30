@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.scope.JobScope;
 import org.springframework.batch.core.scope.StepScope;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
@@ -189,7 +190,12 @@ public class CoreModule implements Module {
             );
         }
 
-        busConfigurationService.upsertRoutes(IOUtils.readFromClasspath("routes/core.xml"));
+        busConfigurationService.upsertBusRoutesDefinition(
+                new BusRoutesDefinition(
+                        "core",
+                        IOUtils.readFromClasspath("routes/core.xml")
+                )
+        );
     }
 
     @Override
@@ -251,6 +257,11 @@ public class CoreModule implements Module {
         modularPostProcessingRegistrar.registerBeanFactoryPostProcessor(stepScope);
 
         LOGGER.info("Started");
+    }
+
+    @Override
+    public void ready() {
+        busConfigurationService.loadBusRoutesDefinitions();
     }
 
     @Override

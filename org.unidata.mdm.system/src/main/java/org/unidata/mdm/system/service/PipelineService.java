@@ -23,7 +23,7 @@ import org.unidata.mdm.system.type.pipeline.Start;
  * The service, responsible for pipeline management.
  * @author Mikhail Mikhailov on Nov 1, 2019
  */
-public interface PipelineService extends AfterPlatformStartup {
+public interface PipelineService {
     /**
      * Gets all pipelines, known to the service.
      * @return collection of pipelines
@@ -155,4 +155,9 @@ public interface PipelineService extends AfterPlatformStartup {
     void load(String startId, String subject, InputStream fileInputStream) throws IOException;
 
     void load(String startId, String subject, File file) throws IOException;
+
+    /**
+     * Load pipelines after modules started
+     */
+    void loadPipelines();
 }
