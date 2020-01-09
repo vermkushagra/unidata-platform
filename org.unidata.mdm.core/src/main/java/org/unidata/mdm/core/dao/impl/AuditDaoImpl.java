@@ -15,6 +15,7 @@ import org.unidata.mdm.system.exception.PlatformFailureException;
 import javax.sql.DataSource;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -73,14 +74,18 @@ public class AuditDaoImpl extends BaseDAOImpl implements AuditDao {
     }
 
     private String convertParameters(final AuditEventWriteContext auditEventWriteContext) {
+        final Map<String, Object> parameters = new HashMap<>(auditEventWriteContext.getParameters());
+        parameters.entrySet().stream()
+                .filter(e -> e.getValue() instanceof Throwable)
+                .forEach(e -> parameters.put(e.getKey(), e.getValue().toString()));
         try {
-            return objectMapper.writeValueAsString(auditEventWriteContext.getParameters());
+            return objectMapper.writeValueAsString(parameters);
         } catch (JsonProcessingException e) {
             throw new PlatformFailureException(
-                    "Can't serialize audit event parameters " + auditEventWriteContext.getParameters(),
+                    "Can't serialize audit event parameters " + parameters,
                     e,
                     CoreExceptionIds.EX_AUDIT_EVENT_JSON_SERIALIZATION_EXCEPTION,
-                    auditEventWriteContext.getParameters()
+                    parameters
             );
         }
     }
