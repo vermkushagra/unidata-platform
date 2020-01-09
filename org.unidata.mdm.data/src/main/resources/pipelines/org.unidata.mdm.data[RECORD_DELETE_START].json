@@ -9,7 +9,7 @@
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_DELETE_SECURITY_CHECK]"
+      "id": "org.unidata.mdm.data[RECORD_DELETE_ACCESS]"
     },
     {
       "segmentType": "POINT",
@@ -17,7 +17,7 @@
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_DELETE_CONSISTENCY_CHECK]"
+      "id": "org.unidata.mdm.data[RECORD_DELETE_DATA_CONSISTENCY]"
     },
     {
       "segmentType": "POINT",

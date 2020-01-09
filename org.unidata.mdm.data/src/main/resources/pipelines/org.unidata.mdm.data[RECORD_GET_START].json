@@ -9,7 +9,7 @@
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_GET_SECURITY]"
+      "id": "org.unidata.mdm.data[RECORD_GET_ACCESS]"
     },
     {
       "segmentType": "POINT",
@@ -17,7 +17,7 @@
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_GET_POSTPROCESS]"
+      "id": "org.unidata.mdm.data[RECORD_GET_ATTRIBUTES_POSTPROCESSING]"
     },
     {
       "segmentType": "FINISH",

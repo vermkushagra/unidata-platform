@@ -21,11 +21,11 @@
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_UPSERT_MODBOX_INIT]"
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_MODBOX]"
     },
     {
       "segmentType": "POINT",
-      "id": "org.unidata.mdm.data[RECORD_UPSERT_MERGE_TIMELINE]"
+      "id": "org.unidata.mdm.data[RECORD_UPSERT_TIMELINE]"
     },
     {
       "segmentType": "POINT",
