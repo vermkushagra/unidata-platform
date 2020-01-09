@@ -10,6 +10,7 @@ import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
+import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
 import org.unidata.mdm.meta.migration.UninstallMetaSchemaMigrations;
@@ -29,12 +30,14 @@ import org.unidata.mdm.meta.util.ModelUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.AfterContextRefresh;
+import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IOUtils;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -96,6 +99,16 @@ public class MetaModule extends AbstractModule {
     @Autowired
     private BusConfigurationService busConfigurationService;
 
+    @Autowired
+    private PipelineService pipelineService;
+
+    private static final String[] PIPELINES = {
+            "org.unidata.mdm.meta[MODEL_UPSERT_START]",
+            "org.unidata.mdm.meta[MODEL_PUBLISH_START]",
+            "org.unidata.mdm.meta[MODEL_GET_START]",
+            "org.unidata.mdm.meta[MODEL_DELETE_START]"
+    };
+
     @Override
     public String getId() {
         return MODULE_ID;
@@ -155,6 +168,25 @@ public class MetaModule extends AbstractModule {
                         IOUtils.readFromClasspath("routes/meta.xml")
                 )
         );
+
+        for (String pipeline : PIPELINES) {
+            try {
+                pipelineService.load(
+                        pipeline,
+                        "",
+                        Thread.currentThread()
+                                .getContextClassLoader()
+                                .getResourceAsStream("pipelines/" + pipeline + ".json")
+                );
+            } catch (IOException e) {
+                throw new PlatformFailureException(
+                        "Error while loading pipeline" + pipeline,
+                        e,
+                        MetaExceptionIds.EX_META_PIPELINE_LOADING_ERROR,
+                        pipeline
+                );
+            }
+        }
     }
 
     @Override

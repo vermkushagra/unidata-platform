@@ -1,0 +1,15 @@
+{
+  "startId": "org.unidata.mdm.meta[MODEL_UPSERT_START]",
+  "subjectId": "",
+  "description": "org.unidata.mdm.meta.model.get.start.description",
+  "segments": [
+    {
+      "segmentType": "START",
+      "id": "org.unidata.mdm.data[MODEL_UPSERT_START]"
+    },
+    {
+      "segmentType": "FINISH",
+      "id": "org.unidata.mdm.meta[MODEL_UPSERT_FINISH]"
+    }
+  ]
+}

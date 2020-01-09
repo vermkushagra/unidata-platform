@@ -1,0 +1,15 @@
+{
+  "startId": "org.unidata.mdm.meta[MODEL_PUBLISH_START]",
+  "subjectId": "",
+  "description": "org.unidata.mdm.meta.model.publish.start.description",
+  "segments": [
+    {
+      "segmentType": "START",
+      "id": "org.unidata.mdm.meta[MODEL_PUBLISH_START]"
+    },
+    {
+      "segmentType": "FINISH",
+      "id": "org.unidata.mdm.meta[MODEL_PUBLISH_FINISH]"
+    }
+  ]
+}

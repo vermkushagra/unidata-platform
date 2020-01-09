@@ -153,13 +153,11 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
 
     private void callReady(Module module) {
         final String moduleId = module.getId();
-        if (readyFailedModules.contains(moduleId)) {
+        if (readyModules.containsKey(moduleId) || readyFailedModules.contains(moduleId)) {
             return;
         }
         if (module.getDependencies() != null) {
             module.getDependencies()
-                    .stream()
-                    .filter(d -> !readyModules.containsKey(d.getModuleId()) || !readyFailedModules.contains(d.getModuleId()))
                     .forEach(d -> callReady(startedModules.get(d.getModuleId())));
             if (module.getDependencies().stream().anyMatch(d -> readyFailedModules.contains(d.getModuleId()))) {
                 readyFailedModules.add(moduleId);

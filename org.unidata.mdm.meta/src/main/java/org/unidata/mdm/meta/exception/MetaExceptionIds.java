@@ -330,6 +330,10 @@ public final class MetaExceptionIds {
      */
     public static final ExceptionId EX_META_NOT_SYS_NO_ROOT_GROUP
         = new ExceptionId("EX_META_NOT_SYS_NO_ROOT_GROUP", "app.meta.not.sys.no.root.group");
+
+    public static final ExceptionId EX_META_PIPELINE_LOADING_ERROR =
+            new ExceptionId("EX_META_PIPELINE_LOADING_ERROR", "app.meta.pipeline.loading.error");
+
     /**
      * Constructor.
      */
