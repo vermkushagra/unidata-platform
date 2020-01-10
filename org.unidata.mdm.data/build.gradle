@@ -36,13 +36,13 @@ dependencies {
 
     implementation 'io.projectreactor:reactor-core'
 
-    implementation 'com.hazelcast:hazelcast:3.12'
+    implementation 'com.hazelcast:hazelcast'
 
     implementation 'io.protostuff:protostuff-api:1.5.9'
     implementation 'io.protostuff:protostuff-core:1.5.9'
 
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'org.apache.commons:commons-collections4:4.3'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-beanutils:commons-beanutils:1.9.2'
 

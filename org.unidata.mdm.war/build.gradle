@@ -42,8 +42,8 @@ dependencies {
     compile 'org.apache.poi:poi-ooxml'
     compile 'org.apache.poi:poi-ooxml-schemas'
 //
-//    implementation 'org.apache.commons:commons-lang3:3.9'
-//    implementation 'org.apache.commons:commons-collections4:4.3'
+//    implementation 'org.apache.commons:commons-lang3'
+//    implementation 'org.apache.commons:commons-collections4'
 
     compile 'org.slf4j:slf4j-api:1.7.26'
     compile 'ch.qos.logback:logback-classic:1.2.3'

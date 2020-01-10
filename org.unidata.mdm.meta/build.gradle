@@ -32,14 +32,14 @@ dependencies {
 
     implementation 'io.projectreactor:reactor-core'
 
-    implementation 'com.hazelcast:hazelcast:3.12'
+    implementation 'com.hazelcast:hazelcast'
 
     implementation 'io.vavr:vavr:0.10.0'
     
     implementation 'com.google.guava:guava:27.0.1-jre'
 
-    implementation 'org.apache.commons:commons-lang3:3.9'
-    implementation 'org.apache.commons:commons-collections4:4.3'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.apache.commons:commons-collections4'
 
     implementation 'org.elasticsearch:elasticsearch:5.6.16'
     implementation 'org.elasticsearch.client:transport:5.6.16'

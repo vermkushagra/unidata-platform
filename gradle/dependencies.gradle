@@ -24,7 +24,7 @@ dependencyManagement {
             entry 'poi-ooxml-schemas'
         }
 
-        dependencySet(group: 'com.hazelcast', version: '3.12') {
+        dependencySet(group: 'com.hazelcast', version: '3.12.5') {
             entry 'hazelcast'
             entry 'hazelcast-spring'
         }
@@ -47,6 +47,14 @@ dependencyManagement {
             entry 'simpleclient_servlet'
             entry 'simpleclient_dropwizard'
             entry 'simpleclient_hotspot'
+        }
+
+        dependencySet(group: 'org.apache.commons', version: '3.9') {
+            entry 'commons-lang3'
+        }
+
+        dependencySet(group: 'org.apache.commons', version: '4.3') {
+            entry 'commons-collections4'
         }
     }
 }

@@ -8,7 +8,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.unidata.mdm.data.context.MergeRequestContext;
 import org.unidata.mdm.data.po.data.RelationEtalonRemapFromPO;
 import org.unidata.mdm.data.po.data.RelationEtalonRemapToPO;
