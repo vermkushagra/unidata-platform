@@ -5,6 +5,8 @@ dependencies {
 
     implementation platform('io.projectreactor:reactor-bom:Dysprosium-SR1')
 
+    implementation platform('com.fasterxml.jackson:jackson-bom:2.10.2')
+
     implementation platform('io.dropwizard.metrics5:metrics-bom:5.0.0')
 
     implementation platform('org.junit:junit-bom:5.5.1')

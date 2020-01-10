@@ -35,8 +35,8 @@ dependencies {
 //    compile 'org.jboss.spec.javax.xml.ws:jboss-jaxws-api_2.3_spec:2.0.0.Final'
     compile 'javax:javaee-api:7.0'
 
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.10'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.10'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider'
 
     compile 'org.apache.poi:poi'
     compile 'org.apache.poi:poi-ooxml'

@@ -55,8 +55,8 @@ dependencies {
 
     compile 'com.thoughtworks.xstream:xstream:1.4.11.1'
 
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.9.8'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.8'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     implementation 'org.apache.camel:camel-core'
     implementation 'org.apache.camel:camel-spring'
