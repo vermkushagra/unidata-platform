@@ -26,12 +26,12 @@ public interface MetaDraftDao {
 	boolean update(MetaDraftPO source);
 
 	/**
-	 * Delete.
+	 * Delete all active drafts
 	 *
-	 * @param source the source
+	 * @param storageId the storage id - UNUSABLE now
 	 * @return true, if successful
 	 */
-	boolean delete(MetaDraftPO source);
+	boolean deleteActiveDraft(String storageId);
 
 	/**
 	 * Read.
@@ -44,7 +44,7 @@ public interface MetaDraftDao {
 	/**
 	 * Current draft.
 	 *
-	 * @param storageId the storage id
+	 * @param storageId the storage id is unused now
 	 * @return the list
 	 */
 	List<MetaDraftPO> currentDraft(String storageId);
@@ -60,7 +60,7 @@ public interface MetaDraftDao {
 	/**
 	 * Gets the last version.
 	 *
-	 * @param storageId the storage id
+	 * @param storageId the storage id - UNUSABLE now
 	 * @return the last version
 	 */
 	long getLastVersion(String storageId);

@@ -105,6 +105,18 @@ public interface MetaDraftService {
 	List<RelationDef> getRelationsList();
 
 	/**
+	 * Create new draft
+	 * if changeActive, then copy from meta model cached, status "active"
+	 * else
+	 * draft in status "false" and copy from the version for DEFAULT draft storage
+	 *
+	 * one time - one active draft
+	 *
+	 * @param changeActive the is active
+	 */
+	void refreshDraft(boolean changeActive);
+
+	/**
 	 * Gets the entities filtered by relation side.
 	 *
 	 * @param entityName the entity name

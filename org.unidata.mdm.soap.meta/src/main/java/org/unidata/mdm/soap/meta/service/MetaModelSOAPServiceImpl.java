@@ -262,7 +262,7 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
         MeasurementPoint.start();
         try {
     		validateRequest(security);
-    		return ToSOAP.convert(metamodelService.exportModel(null));
+    		return ToSOAP.convert(metamodelService.exportEmptyModel());
         } finally {
             MeasurementPoint.stop();
         }

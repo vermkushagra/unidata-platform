@@ -67,6 +67,13 @@ public interface MetaModelService extends AfterContextRefresh {
     Model exportModel(String storageId);
 
     /**
+     * generate empty metamodel
+     *
+     * @return
+     */
+    Model exportEmptyModel();
+
+    /**
      * Gets list of active storage ids.
      *
      * @return list
@@ -590,4 +597,6 @@ public interface MetaModelService extends AfterContextRefresh {
      *            cached type
      */
     <T extends ModelElement> void putValue(String id, T cached, Class<T> cachedType);
+
+
 }

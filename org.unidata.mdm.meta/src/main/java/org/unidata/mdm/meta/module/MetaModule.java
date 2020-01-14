@@ -18,8 +18,12 @@ import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelMappingService;
 import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.meta.service.segments.ModelCreateDraftFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelCreateDraftStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelDeleteFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelDeleteStartExecutor;
+import org.unidata.mdm.meta.service.segments.ModelDropDraftFinishExecutor;
+import org.unidata.mdm.meta.service.segments.ModelDropDraftStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetFinishExecutor;
 import org.unidata.mdm.meta.service.segments.ModelGetStartExecutor;
 import org.unidata.mdm.meta.service.segments.ModelPublishFinishExecutor;
@@ -62,8 +66,6 @@ public class MetaModule extends AbstractModule {
             MetaModelService.class
     };
 
-    // TODO: 20.12.2019 refactor this static array to annotation style and fill on start.
-    //  ex: @PipelineSegmint(moduleLink=MetaModule.class)
     private static final String[] SEGMENTS = {
             // 1. Start segments
             ModelGetStartExecutor.SEGMENT_ID,
@@ -82,6 +84,18 @@ public class MetaModule extends AbstractModule {
             ModelPublishStartExecutor.SEGMENT_ID,
 
             ModelPublishFinishExecutor.SEGMENT_ID,
+
+            ModelPublishStartExecutor.SEGMENT_ID,
+
+            ModelPublishFinishExecutor.SEGMENT_ID,
+
+            ModelCreateDraftStartExecutor.SEGMENT_ID,
+
+            ModelCreateDraftFinishExecutor.SEGMENT_ID,
+
+            ModelDropDraftStartExecutor.SEGMENT_ID,
+
+            ModelDropDraftFinishExecutor.SEGMENT_ID,
     };
 
     @Autowired
@@ -141,8 +155,6 @@ public class MetaModule extends AbstractModule {
     public String[] getResourceBundleBasenames() {
         return new String[]{ "meta_messages" };
     }
-
-    private Migrator migrator;
 
     @Override
     public void install() {
@@ -242,9 +254,6 @@ public class MetaModule extends AbstractModule {
     }
 
     private Migrator getMigrator() throws SQLException {
-        if (migrator != null) {
-            return migrator;
-        }
 
         Connection connection = metaDataSource.getConnection();
         Database database = new Selector()

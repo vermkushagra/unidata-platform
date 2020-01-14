@@ -14,7 +14,7 @@ We use
 - Hazelcast (3.12) for distributed computations and caching support
 - Spring (5.2.x) for managing the application
 - Apache Tomcat (7.x) for running the application 
-- Apache Camel (2.23) for integration with customer messaging systems
+- Apache Camel (3.3) for integration with customer messaging systems
 - Apache POI (3.17) for generation of OOXML output
 - Elasticsearch (5.6.x) for indexing and searching
 - Many other open source libraries

@@ -91,6 +91,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
     public static final String META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE = "meta-draft-remove";
     public static final String META_DRAFT_APPLY_NOTIFICATION_EVENT_TYPE = "meta-draft-apply";
     public static final String META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE = "meta-draft-upsert";
+    public static final String DEFAULT_STORAGE_ID = "DEFAULT";
 
     /** The meta model service. */
     @Autowired
@@ -233,28 +234,32 @@ public class MetaDraftServiceImpl implements MetaDraftService {
 
             metaModelService.deleteModel(dctx);
 
-            if (measurementValues != null && measurementValues.stream().findFirst().isPresent()
-                    && measurementValues.stream().findFirst().orElse(null).getValue() != null) {
-                measurementService.batchRemove(measurementService.getAllValues().stream().map(MeasurementValue::getId)
-                        .collect(Collectors.toSet()), false, true);
-                List<MeasurementValueDef> valueDefs = measurementValues.stream().findFirst().orElse(null).getValue();
-                List<MeasurementValue> values = new ArrayList<>();
-                for (MeasurementValueDef value : valueDefs) {
-                    values.add(convert(value));
+            if (measurementValues != null) {
+                Optional<MeasurementValues> firstMeasurementValues = this.measurementValues.stream().findFirst();
+
+                if (firstMeasurementValues.isPresent() && firstMeasurementValues.get().getValue() != null) {
+                    measurementService.batchRemove(measurementService.getAllValues().stream().map(MeasurementValue::getId)
+                            .collect(Collectors.toSet()), false, true);
+                    List<MeasurementValueDef> valueDefs = firstMeasurementValues.orElse(null).getValue();
+                    List<MeasurementValue> values = new ArrayList<>();
+                    for (MeasurementValueDef value : valueDefs) {
+                        values.add(convert(value));
+                    }
+                    measurementService.saveValues(values);
                 }
-                measurementService.saveValues(values);
             }
+
             metaModelService.upsertModel(uctx);
-            addVersion(false);
-        }catch(Exception e) {
+            refreshDraft(false);
+        } catch (Exception e) {
             isExc = true;
             throw e;
-        }finally {
+        } finally {
             // end of maintenance mode
             try {
                 refresh(isExc);
             } finally {
-                if(!isExc) {
+                if (!isExc) {
                     removeDraft();
                 }
                 // TODO: @Modules
@@ -294,15 +299,19 @@ public class MetaDraftServiceImpl implements MetaDraftService {
 
     /**
      * Load active draft.
-     *
      */
     @Override
     public synchronized void loadActiveDraft() {
-        if (!metaDraftDao.isDraftExist("DEFAULT")) {
+
+        // TODO: 13.01.2020 вынести это пост-платформа старт метод, через папалайн, чтобы захватывалось классификаторами
+
+        if (!metaDraftDao.isDraftExist(DEFAULT_STORAGE_ID)) {
+
             removeDraft();
-            addVersion(true);
+            refreshDraft(true);
+
         } else {
-            List<MetaDraftPO> currentDraft = metaDraftDao.currentDraft("DEFAULT");
+            List<MetaDraftPO> currentDraft = metaDraftDao.currentDraft(DEFAULT_STORAGE_ID);
             for (MetaDraftPO metaDraftPO : currentDraft) {
                 if (metaDraftPO.getType() == MetaDraftPO.Type.MODEL) {
                     try (ByteArrayInputStream bas = new ByteArrayInputStream(metaDraftPO.getValue())) {
@@ -373,49 +382,68 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         Collection<MeasurementValueDef> measurementValue = measurementService.getAllValues().stream()
                 .map(MeasurementValueXmlConverter::convert).collect(Collectors.toList());
         measurementValues.add(new MeasurementValues().withValue(measurementValue));
-        metaDraftDao.delete(new MetaDraftPO());
+
+        metaDraftDao.deleteActiveDraft(null);
 
         metaSender.accept(META_DRAFT_REMOVE_NOTIFICATION_EVENT_TYPE, null);
     }
 
-    /**
-     * Adds the version.
+    /*
+     * (non-Javadoc)
      *
-     * @param isActive
-     *            the is active
+     * @see com.unidata.mdm.backend.service.model.MetaDraftService#reCreateDraftFromCache()
      */
-    private synchronized void addVersion(boolean isActive) {
+    public synchronized void refreshDraft(boolean changeActive) {
 
-        Model modelToSave = null;
-        if (isActive) {
+        // temporary sugar, need refactoring, only for logic's understanding only
+        boolean copyCache = changeActive;
+
+        MeasurementValues measurementValuesCached = this.measurementValues.stream().findFirst().orElse(null);
+        EntitiesGroupDef entitiesGroupCached = this.entitiesGroup.stream().findFirst().orElse(null);
+
+        Model modelToSave;
+
+
+        if (copyCache) {
+            // generate model from cache
             modelToSave = new Model()
                     .withEntities(this.ents.values())
                     .withEnumerations(this.enums.values())
-                    .withMeasurementValues(this.measurementValues.stream().findFirst().orElse(null))
+                    .withMeasurementValues(measurementValuesCached)
                     .withLookupEntities(this.lookups.values())
                     .withNestedEntities(this.nestedEntities.values())
-                    .withEntitiesGroup(this.entitiesGroup.stream().findFirst().orElse(null))
+                    .withEntitiesGroup(entitiesGroupCached)
                     .withRelations(this.rels.values())
                     .withSourceSystems(this.ss.values());
         } else {
-            modelToSave = metaModelService.exportModel(null);
-            modelToSave.setMeasurementValues(measurementValues.stream().findFirst().orElse(null));
+            modelToSave = metaModelService.exportEmptyModel();
+            // save external measurement values
+            modelToSave.setMeasurementValues(measurementValuesCached);
         }
 
         byte[] modelAsByte = MetaJaxbUtils.marshalMetaModel(modelToSave).getBytes(StandardCharsets.UTF_8);
+
         MetaDraftPO modelDraft = new MetaDraftPO();
-        modelDraft.setActive(isActive);
         modelDraft.setCreatedAt(new java.sql.Date(new Date().getTime()));
         modelDraft.setCreatedBy(SecurityUtils.getCurrentUserName());
         modelDraft.setUpdatedAt(new java.sql.Date(new Date().getTime()));
         modelDraft.setType(MetaDraftPO.Type.MODEL);
         modelDraft.setValue(modelAsByte);
         modelDraft.setName(name);
-        if (isActive) {
-            metaDraftDao.delete(modelDraft);
+
+        if(changeActive){
+            modelDraft.setActive(true);
+        }
+
+        if (changeActive) {
+
+            metaDraftDao.deleteActiveDraft(null);
             metaDraftDao.create(modelDraft);
+
         } else {
-            long version = metaDraftDao.getLastVersion("DEFAULT");
+            // incrementDraftVersion
+            long version = metaDraftDao.getLastVersion(DEFAULT_STORAGE_ID);
+
             modelDraft.setVersion(version + 1);
             metaDraftDao.create(modelDraft);
         }
@@ -452,7 +480,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
                 loadActiveDraft();
             } catch (Exception e) {
                 removeDraft();
-                LOGGER.error("Exception while loading draft from database.",e);
+                LOGGER.error("Exception while loading draft from database.", e);
             }
         }
 
@@ -500,18 +528,33 @@ public class MetaDraftServiceImpl implements MetaDraftService {
      */
     private Map<String, EntitiesGroupWrapper> parse() {
         if (this.entitiesGroup == null) {
-            this.entitiesGroup.clear();
+            // it's very strange situation, so service cached reloaded
+            initDraftService();
             this.entitiesGroup.add(EntitiesGroupModelElementFacade.DEFAULT_ROOT_GROUP);
         }
 
+
+        Optional<EntitiesGroupDef> first = entitiesGroup.stream().findFirst();
+
+        if (!first.isPresent()) {
+            return new HashMap<>();
+        }
+
+        EntitiesGroupDef firstGroup = first.get();
+
         Map<String, EntitiesGroupWrapper> groups = recursiveParse(
-                entitiesGroup.stream().findFirst().orElse(null).getInnerGroups(),
-                entitiesGroup.stream().findFirst().orElse(null).getGroupName());
+                firstGroup.getInnerGroups(),
+                firstGroup.getGroupName()
+        );
 
-        EntitiesGroupWrapper rootWrapper = new EntitiesGroupWrapper(entitiesGroup.stream().findFirst().orElse(null),
-                entitiesGroup.stream().findFirst().orElse(null).getGroupName());
+        EntitiesGroupWrapper rootWrapper = new EntitiesGroupWrapper(
+                firstGroup,
+                firstGroup.getGroupName()
+        );
 
-        groups.put(entitiesGroup.stream().findFirst().orElse(null).getGroupName(), rootWrapper);
+        groups.put(
+                firstGroup.getGroupName(), rootWrapper
+        );
 
         this.ents.values().stream()
                 .filter(entity -> entity.getGroupName() != null && groups.get(entity.getGroupName()) != null)
@@ -532,10 +575,8 @@ public class MetaDraftServiceImpl implements MetaDraftService {
     /**
      * Recursive parse.
      *
-     * @param groups
-     *            the groups
-     * @param parentPath
-     *            the parent path
+     * @param groups the groups
+     * @param parentPath the parent path
      * @return the map
      */
     private Map<String, EntitiesGroupWrapper> recursiveParse(List<EntitiesGroupDef> groups, String parentPath) {
@@ -566,22 +607,22 @@ public class MetaDraftServiceImpl implements MetaDraftService {
     private void checkDuplicates(UpdateModelRequestContext ctx) {
         // TODO: @Modules
 //        final Set<String> classifierNames = clsfService.findAllClassifierNames();
-        if(ctx.hasEntityUpdate()) {
+        if (ctx.hasEntityUpdate()) {
             ctx.getEntityUpdate().forEach(e -> {
 
                 if (isDuplicateName(lookups.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.ENTITY,e.getName(),MetaType.LOOKUP
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.ENTITY, e.getName(), MetaType.LOOKUP
                     );
                 }
                 if (isDuplicateName(rels.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.ENTITY,e.getName(),MetaType.RELATION
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.ENTITY, e.getName(), MetaType.RELATION
                     );
                 }
                 if (isDuplicateName(enums.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.ENTITY,e.getName(),MetaType.ENUM
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.ENTITY, e.getName(), MetaType.ENUM
                     );
                 }
                 // TODO: @Modules
@@ -601,17 +642,17 @@ public class MetaDraftServiceImpl implements MetaDraftService {
             ctx.getLookupEntityUpdate().forEach(e -> {
                 if (isDuplicateName(ents.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.LOOKUP,e.getName(),MetaType.ENTITY
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.LOOKUP, e.getName(), MetaType.ENTITY
                     );
                 }
                 if (isDuplicateName(rels.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.LOOKUP,e.getName(),MetaType.RELATION
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.LOOKUP, e.getName(), MetaType.RELATION
                     );
                 }
                 if (isDuplicateName(enums.keySet(), e.getName())) {
                     throw new PlatformBusinessException(
-                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.RELATION,e.getName(),MetaType.ENUM
+                            "Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.RELATION, e.getName(), MetaType.ENUM
                     );
                 }
                 // TODO: @Modules
@@ -630,13 +671,13 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         if (ctx.hasRelationsUpdate()) {
             ctx.getRelationsUpdate().forEach(e -> {
                 if (isDuplicateName(ents.keySet(), e.getName())) {
-                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.RELATION,e.getName(),MetaType.ENTITY);
+                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.RELATION, e.getName(), MetaType.ENTITY);
                 }
                 if (isDuplicateName(lookups.keySet(), e.getName())) {
-                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.RELATION,e.getName(),MetaType.LOOKUP);
+                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.RELATION, e.getName(), MetaType.LOOKUP);
                 }
                 if (isDuplicateName(enums.keySet(), e.getName())) {
-                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(),MetaType.RELATION,e.getName(),MetaType.ENUM);
+                    throw new PlatformBusinessException("Duplicate found", MetaExceptionIds.EX_META_IMPORT_MODEL_EL_DUPLICATE, e.getName(), MetaType.RELATION, e.getName(), MetaType.ENUM);
                 }
             });
         }
@@ -724,7 +765,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
             ctx.getSourceSystemsUpdate().forEach(s -> ss.put(s.getName(), s));
         }
         metaSender.accept(META_DRAFT_UPSERT_NOTIFICATION_EVENT_TYPE, Maps.of("context", ctx));
-        addVersion(true);
+        refreshDraft(true);
     }
 
     /**
@@ -849,10 +890,8 @@ public class MetaDraftServiceImpl implements MetaDraftService {
     /**
      * Nested parse.
      *
-     * @param ne
-     *            the ne
-     * @param nes
-     *            the nes
+     * @param ne the ne
+     * @param nes the nes
      */
     private void nestedParse(NestedEntityDef ne, Set<NestedEntityDef> nes) {
         if (ne == null) {
@@ -1094,7 +1133,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         validationComponent.checkReferencesToMeasurementValues(Collections.singletonList(measureValueId));
         MeasurementValues mv = measurementValues.stream().findFirst().orElse(null);
         List<MeasurementValueDef> values = mv.getValue();
-        for (Iterator<MeasurementValueDef> iterator = values.iterator(); iterator.hasNext();) {
+        for (Iterator<MeasurementValueDef> iterator = values.iterator(); iterator.hasNext(); ) {
             MeasurementValueDef value = iterator.next();
             if (StringUtils.equals(value.getId(), measureValueId)) {
                 iterator.remove();
@@ -1120,7 +1159,7 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         MeasurementValues mv = measurementValues.stream().findFirst().orElse(null);
         List<MeasurementValueDef> values = mv.getValue();
         boolean result = false;
-        for (Iterator<MeasurementValueDef> iterator = values.iterator(); iterator.hasNext();) {
+        for (Iterator<MeasurementValueDef> iterator = values.iterator(); iterator.hasNext(); ) {
             MeasurementValueDef value = iterator.next();
             if (measureValueIds.contains(value.getId())) {
                 iterator.remove();

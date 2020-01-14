@@ -173,6 +173,16 @@ public abstract class BaseMetaModelService implements MetaModelService, EventRec
         }
     }
 
+    @Override
+    public Model exportEmptyModel(){
+        MeasurementPoint.start();
+        try {
+            return assembleModel(null, false);
+        } finally {
+            MeasurementPoint.stop();
+        }
+    }
+
     /* (non-Javadoc)
      * @see com.unidata.mdm.backend.service.model.MetaModelServiceExt#getStorageIdsList()
      */
