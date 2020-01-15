@@ -1,11 +1,14 @@
 package org.unidata.mdm.meta.service.segments;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.meta.context.CreateDraftModelRequestContext;
 import org.unidata.mdm.meta.module.MetaModule;
 import org.unidata.mdm.meta.service.MetaDraftService;
 import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.meta.service.impl.MetaDraftServiceImpl;
 import org.unidata.mdm.system.type.pipeline.Finish;
 import org.unidata.mdm.system.type.pipeline.Start;
 import org.unidata.mdm.system.type.pipeline.VoidPipelineOutput;
@@ -16,6 +19,12 @@ import org.unidata.mdm.system.type.pipeline.VoidPipelineOutput;
  */
 @Component(ModelCreateDraftFinishExecutor.SEGMENT_ID)
 public class ModelCreateDraftFinishExecutor extends Finish<CreateDraftModelRequestContext, VoidPipelineOutput> {
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelCreateDraftFinishExecutor.class);
+
     /**
      * This segment ID.
      */
@@ -39,7 +48,12 @@ public class ModelCreateDraftFinishExecutor extends Finish<CreateDraftModelReque
      */
     @Override
     public VoidPipelineOutput finish(CreateDraftModelRequestContext ctx) {
-        metaDraftService.refreshDraft(ctx.isChangeActive());
+        try {
+            metaDraftService.loadActiveDraft();
+        } catch (Exception e) {
+            metaDraftService.removeDraft();
+            LOGGER.error("Exception while loading draft from database.", e);
+        }
         return VoidPipelineOutput.INSTANCE;
     }
     /**

@@ -44,7 +44,7 @@ public class DropDraftModelRequestContext
 
         private boolean changeActive;
 
-        public DropDraftModelRequestContextBuilder setChangeActive(boolean changeActive) {
+        public DropDraftModelRequestContextBuilder changeActive(boolean changeActive) {
             this.changeActive = changeActive;
             return this;
         }

@@ -10,6 +10,7 @@ import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
 import org.unidata.mdm.meta.configuration.MetaConfigurationConstants;
+import org.unidata.mdm.meta.context.CreateDraftModelRequestContext;
 import org.unidata.mdm.meta.exception.MetaExceptionIds;
 import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
@@ -34,6 +35,7 @@ import org.unidata.mdm.meta.util.ModelUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.exception.SystemExceptionIds;
 import org.unidata.mdm.system.service.AfterContextRefresh;
+import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
@@ -115,6 +117,9 @@ public class MetaModule extends AbstractModule {
 
     @Autowired
     private PipelineService pipelineService;
+
+    @Autowired
+    private ExecutionService executionService;
 
     private static final String[] PIPELINES = {
             "org.unidata.mdm.meta[MODEL_UPSERT_START]",
@@ -242,6 +247,18 @@ public class MetaModule extends AbstractModule {
     @Override
     public void ready() {
         metaDraftService.initDraftService();
+
+        CreateDraftModelRequestContext createDraftModelRequestContext = CreateDraftModelRequestContext
+                .builder()
+                .changeActive(true)
+                .build();
+
+        executionService.execute(
+                CreateDraftModelRequestContext
+                        .builder()
+                        .changeActive(true)
+                        .fragment(createDraftModelRequestContext)
+                        .build());
     }
 
     @Override

@@ -303,8 +303,6 @@ public class MetaDraftServiceImpl implements MetaDraftService {
     @Override
     public synchronized void loadActiveDraft() {
 
-        // TODO: 13.01.2020 вынести это пост-платформа старт метод, через папалайн, чтобы захватывалось классификаторами
-
         if (!metaDraftDao.isDraftExist(DEFAULT_STORAGE_ID)) {
 
             removeDraft();
@@ -474,15 +472,6 @@ public class MetaDraftServiceImpl implements MetaDraftService {
         this.egToDelete = hazelcastInstance.getSet("draft_egToDelete");
         this.entitiesGroup = hazelcastInstance.getSet("draft_entitiesGroup");
         this.measurementValues = hazelcastInstance.getSet("draft_measurementValues");
-
-        if (this.ss.size() == 0) {
-            try {
-                loadActiveDraft();
-            } catch (Exception e) {
-                removeDraft();
-                LOGGER.error("Exception while loading draft from database.", e);
-            }
-        }
 
     }
 
