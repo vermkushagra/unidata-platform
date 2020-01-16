@@ -6,13 +6,13 @@ package org.unidata.mdm.core.notification;
 public final class SecurityEventTypeConstants {
     private SecurityEventTypeConstants() {}
 
-    public static final String ROLE_CREATE_EVENT_TYPE = "ROLE_CREATE";
-    public static final String ROLE_DELETE_EVENT_TYPE = "ROLE_DELETE";
-    public static final String ROLE_UPDATE_EVENT_TYPE = "ROLE_UPDATE";
-    public static final String ROLE_LABEL_ATTACH_EVENT_TYPE = "ROLE_LABEL_ATTACH";
-    public static final String LABEL_CREATE_EVENT_TYPE = "LABEL_CREATE";
-    public static final String LABEL_UPDATE_EVENT_TYPE = "LABEL_UPDATE";
-    public static final String LABEL_DELETE_EVENT_TYPE = "LABEL_DELETE";
+    public static final String ROLE_CREATE_EVENT_TYPE = "role_create";
+    public static final String ROLE_DELETE_EVENT_TYPE = "role_delete";
+    public static final String ROLE_UPDATE_EVENT_TYPE = "role_update";
+    public static final String ROLE_LABEL_ATTACH_EVENT_TYPE = "role_label_attach";
+    public static final String LABEL_CREATE_EVENT_TYPE = "label_create";
+    public static final String LABEL_UPDATE_EVENT_TYPE = "label_update";
+    public static final String LABEL_DELETE_EVENT_TYPE = "label_delete";
 
 
     public static final String LOGIN_TYPE = "login";

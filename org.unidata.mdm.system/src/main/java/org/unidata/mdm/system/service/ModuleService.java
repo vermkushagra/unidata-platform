@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.ApplicationContext;
 import org.unidata.mdm.system.dto.ModuleInfo;
 import org.unidata.mdm.system.type.module.Module;
 
@@ -12,6 +13,8 @@ import org.unidata.mdm.system.type.module.Module;
  * Basic functionality around business modules.
  */
 public interface ModuleService extends BeanPostProcessor, ModularPostProcessingRegistrar {
+
+    void setCurrentContext(ApplicationContext applicationContext);
 
     void init();
 

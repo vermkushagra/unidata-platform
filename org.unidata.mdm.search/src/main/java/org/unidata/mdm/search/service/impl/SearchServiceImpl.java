@@ -63,7 +63,7 @@ import org.unidata.mdm.system.type.runtime.MeasurementPoint;
  * @author Mikhail Mikhailov Search service aggregate, containing all the
  */
 @Service
-public class SearchServiceImpl implements SearchService{
+public class SearchServiceImpl implements SearchService {
     /**
      * The logger.
      */

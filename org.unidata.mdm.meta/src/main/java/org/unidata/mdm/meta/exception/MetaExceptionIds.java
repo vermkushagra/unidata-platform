@@ -334,6 +334,21 @@ public final class MetaExceptionIds {
     public static final ExceptionId EX_META_PIPELINE_LOADING_ERROR =
             new ExceptionId("EX_META_PIPELINE_LOADING_ERROR", "app.meta.pipeline.loading.error");
 
+    public static final ExceptionId EX_META_IMPORT_MODEL_UNABLE_TO_PARSE =
+            new ExceptionId("EX_META_IMPORT_MODEL_UNABLE_TO_PARSE", "");
+
+    public static final ExceptionId EX_META_IMPORT_MODEL_EL_NOT_FOUND =
+            new ExceptionId("EX_META_IMPORT_MODEL_EL_NOT_FOUND", "");
+
+    public static final ExceptionId EX_META_IMPORT_MODEL_FILE_UNKNOWN_ONLY_DIRS =
+            new ExceptionId("EX_META_IMPORT_MODEL_FILE_UNKNOWN_ONLY_DIRS", "");
+
+    public static final ExceptionId EX_META_IMPORT_MODEL_FILE_STRUCTURE_INVALID =
+            new ExceptionId("EX_META_IMPORT_MODEL_FILE_STRUCTURE_INVALID", "");
+
+    public static final ExceptionId EX_META_CANNOT_ASSEMBLE_MODEL =
+            new ExceptionId("EX_META_CANNOT_ASSEMBLE_MODEL", "");
+
     /**
      * Constructor.
      */

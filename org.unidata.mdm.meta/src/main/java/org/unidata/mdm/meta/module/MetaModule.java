@@ -3,9 +3,11 @@ package org.unidata.mdm.meta.module;
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
 import nl.myndocs.database.migrator.processor.Migrator;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
 import org.unidata.mdm.meta.configuration.MetaConfiguration;
@@ -16,6 +18,7 @@ import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
 import org.unidata.mdm.meta.migration.UninstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.service.MetaDraftService;
+import org.unidata.mdm.meta.service.MetaModelImportService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
 import org.unidata.mdm.meta.service.MetaModelMappingService;
 import org.unidata.mdm.meta.service.MetaModelService;
@@ -43,7 +46,11 @@ import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IOUtils;
 
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -117,6 +124,15 @@ public class MetaModule extends AbstractModule {
 
     @Autowired
     private PipelineService pipelineService;
+
+    @Autowired
+    private MetaModelImportService metaModelImportService;
+
+    @Value("${unidata.smoke.measureunits}")
+    private String measureUnitsFilePath;
+
+    @Value("${unidata.smoke.model}")
+    private String metaModelFilePath;
 
     @Autowired
     private ExecutionService executionService;
@@ -240,6 +256,24 @@ public class MetaModule extends AbstractModule {
 
         // Publish segments
         addSegments(configuration.getBeansByNames(SEGMENTS));
+
+        if (StringUtils.isNoneBlank(measureUnitsFilePath)) {
+            try (final InputStream metaModelInputStream = new URL(measureUnitsFilePath).openStream()) {
+                metaModelImportService.importMeasureUnits(metaModelInputStream);
+            }
+            catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+
+        if (StringUtils.isNoneBlank(metaModelFilePath)) {
+            try (final InputStream metaModelInputStream = new URL(metaModelFilePath).openStream()) {
+                metaModelImportService.importModel(metaModelInputStream, true);
+            }
+            catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
 
         LOGGER.info("Started.");
     }
