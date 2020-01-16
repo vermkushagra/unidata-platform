@@ -37,8 +37,8 @@ import org.unidata.mdm.meta.migration.InstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.migration.MetaMigrationContext;
 import org.unidata.mdm.meta.migration.UninstallMetaSchemaMigrations;
 import org.unidata.mdm.meta.service.MetaDraftService;
-import org.unidata.mdm.meta.service.MetaModelImportService;
 import org.unidata.mdm.meta.service.MetaMeasurementService;
+import org.unidata.mdm.meta.service.MetaModelImportService;
 import org.unidata.mdm.meta.service.MetaModelMappingService;
 import org.unidata.mdm.meta.service.MetaModelService;
 import org.unidata.mdm.meta.service.segments.ModelCreateDraftFinishExecutor;
@@ -65,8 +65,6 @@ import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IOUtils;
 
 import javax.sql.DataSource;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
