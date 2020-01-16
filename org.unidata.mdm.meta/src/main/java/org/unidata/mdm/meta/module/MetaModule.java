@@ -125,7 +125,8 @@ public class MetaModule extends AbstractModule {
             "org.unidata.mdm.meta[MODEL_UPSERT_START]",
             "org.unidata.mdm.meta[MODEL_PUBLISH_START]",
             "org.unidata.mdm.meta[MODEL_GET_START]",
-            "org.unidata.mdm.meta[MODEL_DELETE_START]"
+            "org.unidata.mdm.meta[MODEL_DELETE_START]",
+            "org.unidata.mdm.meta[MODEL_CREATE_DRAFT_START]"
     };
 
     @Override
