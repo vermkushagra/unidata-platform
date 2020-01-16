@@ -1,11 +1,8 @@
 package org.unidata.mdm.system.module;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.annotation.Nullable;
-import javax.sql.DataSource;
-
+import nl.myndocs.database.migrator.database.Selector;
+import nl.myndocs.database.migrator.database.query.Database;
+import nl.myndocs.database.migrator.processor.Migrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +14,13 @@ import org.unidata.mdm.system.service.PipelineService;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
-import org.unidata.mdm.system.util.TextUtils;
 import org.unidata.mdm.system.util.PipelineUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
-import nl.myndocs.database.migrator.database.Selector;
-import nl.myndocs.database.migrator.database.query.Database;
-import nl.myndocs.database.migrator.processor.Migrator;
+import javax.annotation.Nullable;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * @author Alexander Malyshev

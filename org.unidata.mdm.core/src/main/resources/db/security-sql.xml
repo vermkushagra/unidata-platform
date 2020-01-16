@@ -337,16 +337,14 @@
 
     <entry key="INSERT_ROLE_PROPERTY_VALUE">
         <![CDATA[
-        INSERT INTO s_role_property_value (id,
-                                           role_id,
+        INSERT INTO s_role_property_value (role_id,
                                            property_id,
                                            value,
                                            created_at,
                                            updated_at,
                                            created_by,
                                            updated_by)
-        VALUES (:id,
-                :role_id,
+        VALUES (:role_id,
                 :property_id,
                 :value,
                 :created_at,
@@ -474,16 +472,14 @@
 
     <entry key="INSERT_USER_PROPERTY_VALUE">
         <![CDATA[
-        INSERT INTO s_user_property_value (id,
-                                           user_id,
+        INSERT INTO s_user_property_value (user_id,
                                            property_id,
                                            value,
                                            created_at,
                                            updated_at,
                                            created_by,
                                            updated_by)
-        VALUES (:id,
-                :user_id,
+        VALUES (:user_id,
                 :property_id,
                 :value,
                 :created_at,

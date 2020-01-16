@@ -18,10 +18,12 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.unidata.mdm.core.util.FileUtils;
 import org.unidata.mdm.meta.EntitiesGroupDef;
 import org.unidata.mdm.meta.EntityDef;
 import org.unidata.mdm.meta.EnumerationDataType;
 import org.unidata.mdm.meta.LookupEntityDef;
+import org.unidata.mdm.meta.MeasurementValues;
 import org.unidata.mdm.meta.Model;
 import org.unidata.mdm.meta.NestedEntityDef;
 import org.unidata.mdm.meta.RelationDef;
@@ -571,5 +573,32 @@ public final class MetaJaxbUtils extends AbstractJaxbUtils {
         }
 
         return model;
+    }
+
+    public static MeasurementValues createMeasurementValuesFromInputStream(InputStream is) throws IOException, JAXBException {
+
+        MeasurementValues measurementValues = null;
+        // Reset stream, if it was already closed by CXF (string recognized)
+        int available = is.available();
+        if (available == 0) {
+            is.reset();
+            available = is.available();
+        }
+
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream(available)) {
+            byte[] buf = new byte[FileUtils.DEFAULT_BUFFER_SIZE];
+            int count = -1;
+            while ((count = is.read(buf, 0, buf.length)) != -1) {
+                os.write(buf, 0, count);
+            }
+
+            JAXBContext context = getMetaContext();
+            measurementValues = context.createUnmarshaller().unmarshal(
+                    new StreamSource(new StringReader(os.toString(StandardCharsets.UTF_8.name()))),
+                    MeasurementValues.class)
+                    .getValue();
+        }
+
+        return measurementValues;
     }
 }

@@ -158,8 +158,8 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn(NAME, Column.TYPE.VARCHAR, cb -> cb.size(2044).notNull(Boolean.TRUE))
                 .addColumn(DISPLAY_NAME, Column.TYPE.VARCHAR, cb -> cb.size(2044).notNull(Boolean.TRUE))
                 .addColumn("required", Column.TYPE.BOOLEAN, cb -> cb.defaultValue(Boolean.FALSE.toString()))
-                .addColumn("s_roles_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
-                .addColumn("s_label_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+//                .addColumn("s_roles_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+//                .addColumn("s_label_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)
                 .addColumn(CREATED_BY, Column.TYPE.VARCHAR, cb -> cb.size(255))
@@ -433,7 +433,7 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn(ID, Column.TYPE.INTEGER, cb -> cb.notNull(true).autoIncrement(Boolean.TRUE))
                 .addColumn("user_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn("property_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
-                .addColumn("value", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+                .addColumn("value", Column.TYPE.VARCHAR, cb -> cb.notNull(Boolean.TRUE).size(2044))
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)
                 .addColumn(CREATED_BY, Column.TYPE.VARCHAR, cb -> cb.size(2044))
@@ -472,7 +472,7 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn("role_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn("property_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
 
-                .addColumn("value", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+                .addColumn("value", Column.TYPE.VARCHAR, cb -> cb.notNull(Boolean.TRUE).size(2044))
 
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)

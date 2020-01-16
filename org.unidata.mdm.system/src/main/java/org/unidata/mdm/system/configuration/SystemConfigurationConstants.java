@@ -8,6 +8,9 @@ import org.unidata.mdm.system.module.SystemModule;
  * This module contsants.
  */
 public final class SystemConfigurationConstants {
+
+    public static final String CONFIGURATION_PATH_PROPERTY = "unidata.conf";
+
     /**
      * Current main platform version.
      */
