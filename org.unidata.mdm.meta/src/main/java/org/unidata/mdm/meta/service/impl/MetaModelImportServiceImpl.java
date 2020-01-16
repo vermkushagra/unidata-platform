@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.unidata.mdm.meta.service.impl;
 
 import org.apache.commons.collections4.CollectionUtils;
