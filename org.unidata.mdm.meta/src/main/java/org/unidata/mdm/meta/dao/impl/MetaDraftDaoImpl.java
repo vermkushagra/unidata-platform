@@ -1,3 +1,22 @@
+/*
+ * Unidata Platform Community Edition
+ * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
+ * This file is part of the Unidata Platform Community Edition software.
+ * 
+ * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Unidata Platform Community Edition is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.unidata.mdm.meta.dao.impl;
 
 import java.util.HashMap;
@@ -34,7 +53,7 @@ public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 	private String READ_SQL;
 
 	/** The read sql active draft. */
-	private String READ_SQL_ACTIVE_DRAFT;
+	private String READ_ACTIVE_DRAFT_SQL;
 
 	/** The read max version. */
 	private String READ_MAX_VERSION;
@@ -60,7 +79,7 @@ public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 		this.UPDATE_SQL = sql.getProperty("UPDATE_SQL");
 		this.DELETE_SQL = sql.getProperty("DELETE_SQL");
 		this.READ_SQL = sql.getProperty("READ_SQL");
-		this.READ_SQL_ACTIVE_DRAFT = sql.getProperty("READ_SQL_ACTIVE_DRAFT");
+		this.READ_ACTIVE_DRAFT_SQL = sql.getProperty("READ_SQL_ACTIVE_DRAFT");
 		this.READ_MAX_VERSION = sql.getProperty("READ_MAX_VERSION");
 		this.IS_DRAFT_EXISTS = sql.getProperty("IS_DRAFT_EXISTS");
 	}
@@ -125,13 +144,8 @@ public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 	 * MetaDraftPO)
 	 */
 	@Override
-	public boolean delete(MetaDraftPO source) {
-		if (source == null) {
-			return false;
-		}
-		Map<String, Object> params = new HashMap<>();
-		params.put(MetaDraftPO.Field.ID, source.getId());
-		namedJdbcTemplate.update(DELETE_SQL, params);
+	public boolean deleteActiveDraft(String storageId) {
+		namedJdbcTemplate.update(DELETE_SQL, new HashMap<>());
 		return true;
 	}
 
@@ -152,8 +166,7 @@ public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 		params.put(MetaDraftPO.Field.NAME, source.getName());
 		params.put(MetaDraftPO.Field.TYPE, source.getType());
 		params.put(MetaDraftPO.Field.VERSION, source.getVersion());
-		List<MetaDraftPO> result = namedJdbcTemplate.query(READ_SQL, params, ROW_MAPPER);
-		return result;
+		return namedJdbcTemplate.query(READ_SQL, params, ROW_MAPPER);
 	}
 
 	/*
@@ -165,8 +178,7 @@ public class MetaDraftDaoImpl extends BaseDAOImpl implements MetaDraftDao {
 	public List<MetaDraftPO> currentDraft(String storageId) {
 		Map<String, Object> params = new HashMap<>();
 		params.put(MetaDraftPO.Field.STORAGE_ID, storageId);
-		List<MetaDraftPO> result = namedJdbcTemplate.query(READ_SQL_ACTIVE_DRAFT, params, ROW_MAPPER);
-		return result;
+		return namedJdbcTemplate.query(READ_ACTIVE_DRAFT_SQL, params, ROW_MAPPER);
 	}
 
 	/*

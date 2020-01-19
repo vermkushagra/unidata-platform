@@ -30,6 +30,41 @@
         <to uri="direct:audit"/>
     </route>
 
+    <route id="role_create">
+        <from uri="direct:role_create"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="role_delete">
+        <from uri="direct:role_delete"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="role_update">
+        <from uri="direct:role_update"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="role_label_attach">
+        <from uri="direct:role_label_attach"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="label_create">
+        <from uri="direct:label_create"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="label_update">
+        <from uri="direct:label_update"/>
+        <to uri="direct:audit"/>
+    </route>
+
+    <route id="label_delete">
+        <from uri="direct:label_delete"/>
+        <to uri="direct:audit"/>
+    </route>
+
     <route id="audit">
         <from uri="direct:audit"/>
         <bean beanType="org.unidata.mdm.core.notification.AuditEventWriteContextBuilder" method="build"/>

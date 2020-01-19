@@ -1,3 +1,21 @@
+/*
+ * Unidata Platform Community Edition
+ * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
+ * This file is part of the Unidata Platform Community Edition software.
+ * 
+ * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Unidata Platform Community Edition is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package org.unidata.mdm.core.migrations.security.meta;
 
 import nl.myndocs.database.migrator.MigrationScript;
@@ -158,8 +176,8 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn(NAME, Column.TYPE.VARCHAR, cb -> cb.size(2044).notNull(Boolean.TRUE))
                 .addColumn(DISPLAY_NAME, Column.TYPE.VARCHAR, cb -> cb.size(2044).notNull(Boolean.TRUE))
                 .addColumn("required", Column.TYPE.BOOLEAN, cb -> cb.defaultValue(Boolean.FALSE.toString()))
-                .addColumn("s_roles_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
-                .addColumn("s_label_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+//                .addColumn("s_roles_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+//                .addColumn("s_label_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)
                 .addColumn(CREATED_BY, Column.TYPE.VARCHAR, cb -> cb.size(255))
@@ -433,7 +451,7 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn(ID, Column.TYPE.INTEGER, cb -> cb.notNull(true).autoIncrement(Boolean.TRUE))
                 .addColumn("user_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn("property_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
-                .addColumn("value", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+                .addColumn("value", Column.TYPE.VARCHAR, cb -> cb.notNull(Boolean.TRUE).size(2044))
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)
                 .addColumn(CREATED_BY, Column.TYPE.VARCHAR, cb -> cb.size(2044))
@@ -472,7 +490,7 @@ public class UN12296InitializationSecuritySchema implements MigrationScript {
                 .addColumn("role_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
                 .addColumn("property_id", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
 
-                .addColumn("value", Column.TYPE.INTEGER, cb -> cb.notNull(Boolean.TRUE))
+                .addColumn("value", Column.TYPE.VARCHAR, cb -> cb.notNull(Boolean.TRUE).size(2044))
 
                 .addColumn(CREATED_AT, Column.TYPE.TIMESTAMPTZ, cb -> cb.defaultValue(DB_DEFAULT_CURRENT_TIME))
                 .addColumn(UPDATED_AT, Column.TYPE.TIMESTAMPTZ, Column.Builder::build)

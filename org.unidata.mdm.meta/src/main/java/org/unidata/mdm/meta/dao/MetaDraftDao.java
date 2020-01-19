@@ -1,3 +1,22 @@
+/*
+ * Unidata Platform Community Edition
+ * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
+ * This file is part of the Unidata Platform Community Edition software.
+ * 
+ * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Unidata Platform Community Edition is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.unidata.mdm.meta.dao;
 
 import java.util.List;
@@ -26,12 +45,12 @@ public interface MetaDraftDao {
 	boolean update(MetaDraftPO source);
 
 	/**
-	 * Delete.
+	 * Delete all active drafts
 	 *
-	 * @param source the source
+	 * @param storageId the storage id - UNUSABLE now
 	 * @return true, if successful
 	 */
-	boolean delete(MetaDraftPO source);
+	boolean deleteActiveDraft(String storageId);
 
 	/**
 	 * Read.
@@ -44,7 +63,7 @@ public interface MetaDraftDao {
 	/**
 	 * Current draft.
 	 *
-	 * @param storageId the storage id
+	 * @param storageId the storage id is unused now
 	 * @return the list
 	 */
 	List<MetaDraftPO> currentDraft(String storageId);
@@ -60,7 +79,7 @@ public interface MetaDraftDao {
 	/**
 	 * Gets the last version.
 	 *
-	 * @param storageId the storage id
+	 * @param storageId the storage id - UNUSABLE now
 	 * @return the last version
 	 */
 	long getLastVersion(String storageId);

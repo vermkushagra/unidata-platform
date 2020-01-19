@@ -1,5 +1,50 @@
+/*
+ * Unidata Platform Community Edition
+ * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
+ * This file is part of the Unidata Platform Community Edition software.
+ * 
+ * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Unidata Platform Community Edition is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.unidata.mdm.system.service.impl;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.CustomEditorConfigurer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.stereotype.Service;
+import org.unidata.mdm.system.dao.ModuleDao;
+import org.unidata.mdm.system.dto.ModuleInfo;
+import org.unidata.mdm.system.exception.PlatformFailureException;
+import org.unidata.mdm.system.module.SystemModule;
+import org.unidata.mdm.system.service.ModuleService;
+import org.unidata.mdm.system.service.RuntimePropertiesService;
+import org.unidata.mdm.system.service.impl.module.ModularContextBuilder;
+import org.unidata.mdm.system.type.annotation.ModuleRef;
+import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
+import org.unidata.mdm.system.type.module.Dependency;
+import org.unidata.mdm.system.type.module.Module;
+import org.unidata.mdm.system.type.support.IdentityHashSet;
+
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -22,41 +67,12 @@ import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
 
-import javax.annotation.PreDestroy;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.CustomEditorConfigurer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.stereotype.Service;
-import org.unidata.mdm.system.dao.ModuleDao;
-import org.unidata.mdm.system.dto.ModuleInfo;
-import org.unidata.mdm.system.exception.PlatformFailureException;
-import org.unidata.mdm.system.module.SystemModule;
-import org.unidata.mdm.system.service.ModuleService;
-import org.unidata.mdm.system.service.RuntimePropertiesService;
-import org.unidata.mdm.system.service.impl.module.ModularContextBuilder;
-import org.unidata.mdm.system.type.annotation.ModuleRef;
-import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
-import org.unidata.mdm.system.type.module.Dependency;
-import org.unidata.mdm.system.type.module.Module;
-import org.unidata.mdm.system.type.support.IdentityHashSet;
-
 /**
  * @author Alexander Malyshev
  * Simple implementation of the module service.
  */
 @Service
-public class ModuleServiceImpl implements ModuleService, ApplicationListener<ContextRefreshedEvent> {
+public class ModuleServiceImpl implements ModuleService {
 
     private static final Logger logger = LoggerFactory.getLogger(ModuleServiceImpl.class);
 
@@ -90,7 +106,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     // Only singletones are actually accepted
     private final Set<BeanFactoryPostProcessor> beanFactoryPostProcessors = new IdentityHashSet<>();
 
-    private ApplicationContext mainApplicationContext;
+    private ApplicationContext currentContext;
 
     public ModuleServiceImpl(
             final RuntimePropertiesService runtimePropertiesService,
@@ -101,19 +117,14 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
 
     @Override
     public void init() {
-
-        if (!init.compareAndSet(false, true)) {
-            return;
-        }
-
-        Objects.requireNonNull(mainApplicationContext, "Main application context must be set");
+        Objects.requireNonNull(currentContext, "Current application context must be set");
         final Map<String, ModuleInfo> installedModules = moduleDao.fetchModulesInfo().stream()
                         .collect(Collectors.toMap(mi -> mi.getModule().getId(), Function.identity()));
 
         // 1. Prepare post-processors
         for (Class<?> ppc : INITIAL_BEAN_FACTORY_POST_PROCESSORS) {
             try {
-                BeanFactoryPostProcessor bfpp = (BeanFactoryPostProcessor) mainApplicationContext.getBean(ppc);
+                BeanFactoryPostProcessor bfpp = (BeanFactoryPostProcessor) currentContext.getBean(ppc);
                 beanFactoryPostProcessors.add(bfpp);
             } catch (BeansException e) {
                 // Nothing
@@ -186,7 +197,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
                 subscribeToConfigurationUpdates(modulesContexts.get(id));
             }
         });
-        subscribeToConfigurationUpdates(mainApplicationContext);
+        subscribeToConfigurationUpdates(currentContext);
         modulesContexts.clear();
     }
 
@@ -242,8 +253,8 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
         if (SystemModule.MODULE_ID.equals(moduleId)) {
 
             // Save context
-            autowireModuleInstance(module, (AbstractApplicationContext) mainApplicationContext);
-            modulesContexts.put(module.getId(), (AbstractApplicationContext) mainApplicationContext);
+            autowireModuleInstance(module, (AbstractApplicationContext) currentContext);
+            modulesContexts.put(module.getId(), (AbstractApplicationContext) currentContext);
         } else {
             final AnnotationConfigApplicationContext moduleContext = initModuleSpringConfigs(module);
             if (moduleContext != null) {
@@ -354,7 +365,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private AnnotationConfigApplicationContext initModuleSpringConfigs(Module module) {
 
         // Create context
-        AnnotationConfigApplicationContext result = ModularContextBuilder.builder((AbstractApplicationContext) mainApplicationContext)
+        AnnotationConfigApplicationContext result = ModularContextBuilder.builder((AbstractApplicationContext) currentContext)
             .customClassLoader(null) // Just for a possible future use
             .module(module)
             .beanPostProcessors(beanPostProcessors)
@@ -388,12 +399,6 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     @Override
     public Optional<Module> findModuleById(String moduleId) {
         return Optional.ofNullable(startedModules.get(moduleId));
-    }
-
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent event) {
-        mainApplicationContext = event.getApplicationContext();
-        init();
     }
 
     @PreDestroy
@@ -452,5 +457,10 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     @Override
     public void registerBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor) {
         beanFactoryPostProcessors.add(beanFactoryPostProcessor);
+    }
+
+    @Override
+    public void setCurrentContext(ApplicationContext applicationContext) {
+        this.currentContext = applicationContext;
     }
 }
