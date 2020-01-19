@@ -5,16 +5,16 @@ import java.util.Collection;
 import java.util.List;
 
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.batch.BatchSetAccumulator;
 import org.unidata.mdm.system.type.batch.BatchSetSize;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Basic accumulator.
  */
-public abstract class AbstractBatchSetAccumulator<T extends CommonRequestContext, O extends PipelineOutput>
+public abstract class AbstractBatchSetAccumulator<T extends CommonRequestContext, O extends ExecutionResult>
     implements BatchSetAccumulator<T, O> {
     /**
      * The working copy.

@@ -143,6 +143,15 @@ public class VendorUtils {
      * @return array string
      */
     public static String textArray(Collection<? extends CharSequence> elements) {
+        return typeArray(elements, "text");
+    }
+    /**
+     * Constructs text array from input.
+     * @param elements the elements
+     * @param array value type
+     * @return array string
+     */
+    public static String typeArray(Collection<? extends CharSequence> elements, String type) {
         return "array[" + (CollectionUtils.isEmpty(elements)
                 ? ""
                 : String.join(",",
@@ -150,9 +159,8 @@ public class VendorUtils {
                             .map(CharSequence::toString)
                             .map(str -> StringUtils.wrapIfMissing(str, "'"))
                             .collect(Collectors.toList())
-                        )) + "]::text[]";
+                        )) + "]::" + type + "[]";
     }
-
     /**
      * Colaesce from date.
      * @param ts the time stamp

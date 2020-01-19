@@ -5,13 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.batch.BatchSetStatistics;
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov on Dec 13, 2019
  */
-public abstract class AbstractBatchSetStatistics<T extends PipelineOutput> implements BatchSetStatistics<T> {
+public abstract class AbstractBatchSetStatistics<T extends ExecutionResult> implements BatchSetStatistics<T> {
     /**
      * Updated count. Delete period writes to this variable.
      */

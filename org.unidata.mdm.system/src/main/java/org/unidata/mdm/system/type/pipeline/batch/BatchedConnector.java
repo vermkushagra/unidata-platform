@@ -1,14 +1,12 @@
 package org.unidata.mdm.system.type.pipeline.batch;
 
 import org.unidata.mdm.system.type.pipeline.Connector;
-import org.unidata.mdm.system.type.pipeline.PipelineInput;
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  * Batched connector segment.
  */
-public abstract class BatchedConnector<I extends PipelineInput, O extends PipelineOutput> extends Connector<I, O> {
+public abstract class BatchedConnector<I extends BatchedPipelineInput, O extends BatchedPipelineOutput> extends Connector<I, O> {
     /**
      * Constructor.
      * @param id the id

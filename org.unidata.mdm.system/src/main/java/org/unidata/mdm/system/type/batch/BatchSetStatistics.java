@@ -2,13 +2,13 @@ package org.unidata.mdm.system.type.batch;
 
 import java.util.List;
 
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.dto.ExecutionResult;
 
 /**
  * Batch statistics base.
  * @author Mikhail Mikhailov on Dec 13, 2019
  */
-public interface BatchSetStatistics<T extends PipelineOutput> {
+public interface BatchSetStatistics<T extends ExecutionResult> {
     /**
      * Clear state.
      */

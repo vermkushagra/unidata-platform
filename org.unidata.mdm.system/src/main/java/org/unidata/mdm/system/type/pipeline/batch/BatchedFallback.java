@@ -1,12 +1,11 @@
 package org.unidata.mdm.system.type.pipeline.batch;
 
 import org.unidata.mdm.system.type.pipeline.Fallback;
-import org.unidata.mdm.system.type.pipeline.PipelineInput;
 
 /**
  * @author Alexander Malyshev
  */
-public abstract class BatchedFallback<C extends PipelineInput> extends Fallback<C> {
+public abstract class BatchedFallback<C extends BatchedPipelineInput> extends Fallback<C> {
     /**
      * Constructor.
      * @param id

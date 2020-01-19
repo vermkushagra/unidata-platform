@@ -513,6 +513,11 @@ public final class DataExceptionIds {
     public static final ExceptionId EX_DATA_PARTITION_FILTERS_FAILED =
             new ExceptionId("EX_DATA_PARTITION_FILTERS_FAILED", "app.data.partition.filters.failed");
     /**
+     * Failed to partition records for shard [{}].
+     */
+    public static final ExceptionId EX_DATA_FAILED_TO_PARTITION_RECORDS
+            = new ExceptionId("EX_DATA_FAILED_TO_PARTITION_RECORDS", "app.data.failed.to.partition.records");
+    /**
      * Constructor.
      */
     private DataExceptionIds() {

@@ -8,7 +8,7 @@ import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
  * @author Mikhail Mikhailov
  * The fragments holder.
  */
-final class InputFragmentHolder {
+public final class InputFragmentHolder {
     /**
      * Single context was supplied for id.
      */

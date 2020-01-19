@@ -24,7 +24,7 @@ import org.unidata.mdm.system.type.batch.BatchIterator;
  * @author Mikhail Mikhailov
  * Delete accumulator.
  */
-public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<DeleteRequestContext, DeleteRecordDTO> {
+public class RecordDeleteBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<DeleteRequestContext, DeleteRecordDTO, RecordDeleteBatchSetAccumulator> {
     /**
      * Record wipe deletes.
      */

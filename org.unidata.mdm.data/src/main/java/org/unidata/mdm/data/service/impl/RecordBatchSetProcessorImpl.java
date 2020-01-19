@@ -178,7 +178,7 @@ public class RecordBatchSetProcessorImpl extends RecordChangeSetProcessorImpl im
      * Applies etalons updates.
      * @param accumulator the accumulator
      */
-    private void applyUpdateEtalons(AbstractRecordBatchSetAccumulator<?, ?> accumulator) {
+    private void applyUpdateEtalons(AbstractRecordBatchSetAccumulator<?, ?, ?> accumulator) {
 
         for (Entry<Integer, List<RecordEtalonPO>> entry : accumulator.getEtalonUpdates().entrySet()) {
 
@@ -198,7 +198,7 @@ public class RecordBatchSetProcessorImpl extends RecordChangeSetProcessorImpl im
      * Applies origins updates.
      * @param accumulator the accumulator
      */
-    private void applyUpdateOrigins(AbstractRecordBatchSetAccumulator<?, ?> accumulator) {
+    private void applyUpdateOrigins(AbstractRecordBatchSetAccumulator<?, ?, ?> accumulator) {
 
         for (Entry<Integer, List<RecordOriginPO>> entry : accumulator.getOriginUpdates().entrySet()) {
 
@@ -298,7 +298,7 @@ public class RecordBatchSetProcessorImpl extends RecordChangeSetProcessorImpl im
      * Applies vistory updates.
      * @param accumulator the accumulator
      */
-    private void applyInsertVistory(AbstractRecordBatchSetAccumulator<?, ?> accumulator) {
+    private void applyInsertVistory(AbstractRecordBatchSetAccumulator<?, ?, ?> accumulator) {
 
         for (Entry<Integer, List<RecordVistoryPO>> entry : accumulator.getVistory().entrySet()) {
 

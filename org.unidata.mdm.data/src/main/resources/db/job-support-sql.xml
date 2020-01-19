@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="collectRecordBlocksSQL">
+        <![CDATA[
+            do
+            $$
+            declare
+                exec_sql text;
+                cur_lsn bigint := -9223372036854775808;
+                cur_block int := 0;
+                cur_name text;
+                cur_shard int := ?shard;
+                block_sz int := coalesce (?block, 5000);
+                names text []:= ?names;
+                statuses record_status []:= ?statuses;
+            begin
+
+                exec_sql := ' WITH _block AS (SELECT lsn, shard, name, status
+                                   FROM record_etalons_p${#}
+                                   WHERE shard = $2 and lsn >= $1
+                                   ORDER BY shard, lsn LIMIT $3), ';
+
+                exec_sql := exec_sql || ' _block_start AS (( SELECT lsn FROM _block ';
+
+                if (array_length(names, 1) > 0 or array_length(statuses, 1) > 0) then
+                    exec_sql := exec_sql || 'WHERE ';
+                end if;
+
+                if (array_length(names, 1) > 0) then 
+                    exec_sql := exec_sql || 'name = $5 '; 
+                end if;
+
+                if (array_length(statuses, 1) > 0) then -- ARRAY []::record_status[]
+                    if (array_length(names, 1) > 0) then
+                        exec_sql := exec_sql || 'and ';
+                    end if;
+                    exec_sql := exec_sql || 'status = ANY ($6) ';
+                end if;  
+
+                exec_sql := exec_sql || 'ORDER BY lsn ASC LIMIT 1) union select null limit 1)'; 
+                exec_sql := exec_sql || ', _block_end AS ( SELECT lsn FROM _block ORDER BY lsn DESC LIMIT 1) 
+                                   INSERT INTO __result (block_num, start_lsn, end_lsn, shard, name) 
+                                   SELECT $4, _block_start.lsn, _block_end.lsn, $2, $5 
+                                   FROM _block_start, _block_end'; 
+
+                if (array_length(names, 1) > 0) then
+                    foreach cur_name in array names loop 
+                        cur_lsn := -9223372036854775808; 
+                        while true loop 
+                            execute exec_sql using  cur_lsn, cur_shard, block_sz, cur_block, cur_name, statuses; 
+                            cur_lsn := ( select __result.end_lsn from __result where __result.block_num = cur_block); 
+                            if cur_lsn is null then 
+                                exit; 
+                            end if; 
+                            cur_lsn := cur_lsn + 1; 
+                            cur_block := cur_block + 1; 
+                        end loop; 
+                    end loop; 
+                else 
+                    while true loop 
+                        execute exec_sql using cur_lsn, cur_shard, block_sz, cur_block, cur_name, statuses; 
+                        cur_lsn := (select __result.end_lsn from __result where __result.block_num = cur_block); 
+                        if cur_lsn is null then 
+                            exit; 
+                        end if; 
+                        cur_lsn := cur_lsn + 1; 
+                        cur_block := cur_block + 1; 
+                    end loop; 
+                end if; 
+                delete  from __result where start_lsn is null;
+            end 
+            $$
+        ]]>
+    </entry>
+    <entry key="selectRecordBlocksSQL">
+        <![CDATA[
+            select block_num, start_lsn, end_lsn, shard, name from __result
+        ]]>
+    </entry>
+    <entry key="createTemporaryTableSQL">
+        <![CDATA[
+            create temporary table if not exists __result (
+                block_num int not null primary key,
+                start_lsn bigint,
+                end_lsn   bigint,
+                shard     int,
+                name      text 
+            )
+        ]]>
+    </entry>
+    <entry key="dropTemporaryTableSQL">
+        <![CDATA[
+            drop table if exists __result
+        ]]>
+    </entry>
+</properties>

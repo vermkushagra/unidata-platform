@@ -4,13 +4,14 @@ package org.unidata.mdm.data.dto;
 import java.util.List;
 
 import org.unidata.mdm.data.type.keys.RecordKeys;
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  *
  */
-public class MergeRecordsDTO implements PipelineOutput {
+public class MergeRecordsDTO implements PipelineOutput, ExecutionResult {
 
     /**
      * Operation successful, winner id is set.

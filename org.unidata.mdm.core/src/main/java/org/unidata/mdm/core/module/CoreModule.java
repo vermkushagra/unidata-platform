@@ -17,11 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.scope.JobScope;
 import org.springframework.batch.core.scope.StepScope;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.unidata.mdm.core.dto.BusRoutesDefinition;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.unidata.mdm.core.configuration.CoreConfiguration;
 import org.unidata.mdm.core.configuration.CoreConfigurationConstants;
 import org.unidata.mdm.core.configuration.CoreConfigurationProperty;
 import org.unidata.mdm.core.configuration.job.CustomJobRegistryBeanPostProcessor;
+import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.migrations.CoreSchemaMigrations;
 import org.unidata.mdm.core.migrations.UninstallCoreSchemaMigrations;
@@ -84,6 +85,9 @@ public class CoreModule implements Module {
     private AsyncRareTaskExecutor asyncRareTaskExecutor;
 
     @Autowired
+    private ThreadPoolTaskExecutor jobThreadPoolTaskExecutor;
+
+    @Autowired
     private BusConfigurationService busConfigurationService;
 
     @Autowired
@@ -97,7 +101,6 @@ public class CoreModule implements Module {
 
     @Autowired
     private ModularPostProcessingRegistrar modularPostProcessingRegistrar;
-
     /**
      * Lock name.
      */
@@ -137,7 +140,7 @@ public class CoreModule implements Module {
     }
 
     @Override
-    public ApplicationConfigurationProperty[] configurationProperties() {
+    public ApplicationConfigurationProperty[] getConfigurationProperties() {
         return CoreConfigurationProperty.values();
     }
 
@@ -268,6 +271,7 @@ public class CoreModule implements Module {
     public void stop() {
         LOGGER.info("Stopping...");
         asyncRareTaskExecutor.shutdown();
+        jobThreadPoolTaskExecutor.shutdown();
         Hazelcast.shutdownAll();
         DataSourceUtils.shutdown(coreDataSource);
         LOGGER.info("Stopped.");

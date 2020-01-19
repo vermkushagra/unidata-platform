@@ -17,12 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.core.util.SecurityUtils;
-import org.unidata.mdm.data.context.DeleteRelationRequestContext;
-import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
-import org.unidata.mdm.data.dto.DeleteRelationDTO;
-import org.unidata.mdm.data.dto.DeleteRelationsDTO;
+import org.unidata.mdm.data.context.UpsertRelationRequestContext;
+import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.dto.RelationStateDTO;
+import org.unidata.mdm.data.dto.UpsertRelationDTO;
+import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.exception.DataExceptionIds;
 import org.unidata.mdm.data.exception.DataProcessingException;
 import org.unidata.mdm.data.module.DataModule;
@@ -41,20 +41,20 @@ import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 /**
  * @author Mikhail Mikhailov on Nov 24, 2019
  */
-@Component(RelationsDeleteConnectorExecutor.SEGMENT_ID)
-public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, DeleteRelationsDTO> {
+@Component(RelationUpsertConnectorExecutor.SEGMENT_ID)
+public class RelationUpsertConnectorExecutor extends Connector<PipelineInput, UpsertRelationsDTO> {
     /**
      * This segment ID.
      */
-    public static final String SEGMENT_ID = DataModule.MODULE_ID + "[RELATIONS_DELETE_CONNECTOR]";
+    public static final String SEGMENT_ID = DataModule.MODULE_ID + "[RELATIONS_UPSERT_CONNECTOR]";
     /**
      * Localized message code.
      */
-    public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".relations.delete.connector.description";
+    public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".relations.upsert.connector.description";
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RelationsDeleteConnectorExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelationUpsertConnectorExecutor.class);
     /**
      * The ES instance.
      */
@@ -75,17 +75,17 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
      * @param id
      * @param description
      */
-    public RelationsDeleteConnectorExecutor() {
+    public RelationUpsertConnectorExecutor() {
         super(SEGMENT_ID, SEGMENT_DESCRIPTION);
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public DeleteRelationsDTO connect(PipelineInput ctx) {
+    public UpsertRelationsDTO connect(PipelineInput ctx) {
 
         InputFragmentContainer target = (InputFragmentContainer) ctx;
-        DeleteRelationsRequestContext payload = target.fragment(DeleteRelationsRequestContext.FRAGMENT_ID);
+        UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
         }
@@ -101,10 +101,10 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
      * {@inheritDoc}
      */
     @Override
-    public DeleteRelationsDTO connect(PipelineInput ctx, Pipeline p) {
+    public UpsertRelationsDTO connect(PipelineInput ctx, Pipeline p) {
 
         InputFragmentContainer target = (InputFragmentContainer) ctx;
-        DeleteRelationsRequestContext payload = target.fragment(DeleteRelationsRequestContext.FRAGMENT_ID);
+        UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
         }
@@ -116,7 +116,7 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
         return execute(payload, p);
     }
 
-    public DeleteRelationsDTO execute(@Nonnull DeleteRelationsRequestContext ctx, @Nullable Pipeline p) {
+    public UpsertRelationsDTO execute(@Nonnull UpsertRelationsRequestContext ctx, @Nullable Pipeline p) {
 
         MeasurementPoint.start();
         try {
@@ -125,7 +125,7 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
             commonRelationsComponent.ensureAndGetFromRecordKeys(ctx);
 
             // 2. Check input. Return on no input, what is not a crime
-            Map<String, List<DeleteRelationRequestContext>> input = ctx.getRelations();
+            Map<String, List<UpsertRelationRequestContext>> input = ctx.getRelations();
             if (MapUtils.isEmpty(input)) {
                 return null;
             }
@@ -133,8 +133,8 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
             // 3. Process stuff
             RecordKeys fromKeys = ctx.keys();
 
-            Map<RelationStateDTO, List<DeleteRelationDTO>> result = new HashMap<>();
-            for (Entry<String, List<DeleteRelationRequestContext>> entry : input.entrySet()) {
+            Map<RelationStateDTO, List<UpsertRelationDTO>> result = new HashMap<>();
+            for (Entry<String, List<UpsertRelationRequestContext>> entry : input.entrySet()) {
 
                 if (CollectionUtils.isEmpty(entry.getValue())) {
                     continue;
@@ -146,7 +146,7 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
                     final String message = "Relation {} not found. Stopping.";
                     LOGGER.warn(message, entry.getKey());
                     throw new DataProcessingException(message,
-                            DataExceptionIds.EX_DATA_RELATIONS_DELETE_RELATION_NOT_FOUND,
+                            DataExceptionIds.EX_DATA_RELATIONS_UPSERT_RELATION_NOT_FOUND,
                             entry.getKey());
                 }
 
@@ -155,21 +155,21 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
                 final RelationType resolvedType = RelationType.fromValue(relation.getRelType().name());
 
                 RelationStateDTO state = new RelationStateDTO(resolvedName, resolvedType);
-                List<DeleteRelationDTO> collected = new ArrayList<>(entry.getValue().size());
-                for (DeleteRelationRequestContext dCtx : entry.getValue()) {
+                List<UpsertRelationDTO> collected = new ArrayList<>(entry.getValue().size());
+                for (UpsertRelationRequestContext uCtx : entry.getValue()) {
 
                     String entityName = fromKeys != null ? fromKeys.getEntityName() : relation.getFromEntity();
 
-                    dCtx.accessRight(SecurityUtils.getRightsForResourceWithDefault(entityName));
-                    dCtx.relationName(resolvedName);
-                    dCtx.relationType(resolvedType);
-                    dCtx.fromKeys(fromKeys);
+                    uCtx.accessRight(SecurityUtils.getRightsForResourceWithDefault(entityName));
+                    uCtx.relationName(resolvedName);
+                    uCtx.relationType(resolvedType);
+                    uCtx.fromKeys(fromKeys);
 
-                    DeleteRelationDTO interim;
+                    UpsertRelationDTO interim;
                     if (Objects.isNull(p)) {
-                        interim = executionService.execute(dCtx);
+                        interim = executionService.execute(uCtx);
                     } else {
-                        interim = executionService.execute(p, dCtx);
+                        interim = executionService.execute(p, uCtx);
                     }
 
                     if (Objects.nonNull(interim)) {
@@ -180,7 +180,7 @@ public class RelationsDeleteConnectorExecutor extends Connector<PipelineInput, D
                 result.put(state, collected);
             }
 
-            return new DeleteRelationsDTO(result);
+            return new UpsertRelationsDTO(result);
         } finally {
             MeasurementPoint.stop();
         }

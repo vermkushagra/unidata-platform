@@ -386,14 +386,14 @@ public class RecordUpsertStartExecutor
         }
 
         // 3. Origin is inactive, discard updates
-        if (keys != null && keys.getOriginKey() != null && keys.getOriginKey().getStatus() == RecordStatus.INACTIVE) {
+        if (keys != null && keys.getOriginKey() != null && keys.getOriginKey().getStatus() == RecordStatus.INACTIVE && !ctx.isRecalculateWholeTimeline()) {
             final String message = "Origin [Ext. ID: {}, Source system: {}, Entity name: {}] is inactive. Upsert rejected.";
             LOGGER.warn(message, ctx);
             throw new DataProcessingException(message, DataExceptionIds.EX_DATA_UPSERT_ORIGIN_INACTIVE,
                     keys.getOriginKey().getExternalId(),
                     keys.getOriginKey().getSourceSystem(),
                     keys.getOriginKey().getEntityName());
-        } else if (keys != null && keys.getEtalonKey() != null && keys.getEtalonKey().getStatus() == RecordStatus.INACTIVE) {
+        } else if (keys != null && keys.getEtalonKey() != null && keys.getEtalonKey().getStatus() == RecordStatus.INACTIVE && !ctx.isRecalculateWholeTimeline()) {
             final String message = "Etalon [ID: {}] is inactive. Upsert rejected.";
             LOGGER.warn(message, ctx);
             throw new DataProcessingException(message, DataExceptionIds.EX_DATA_UPSERT_ETALON_INACTIVE, keys.getEtalonKey().getId());

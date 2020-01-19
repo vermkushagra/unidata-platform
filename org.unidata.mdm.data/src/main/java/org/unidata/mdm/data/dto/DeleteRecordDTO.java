@@ -6,12 +6,13 @@ import java.util.Objects;
 import org.unidata.mdm.data.type.keys.RecordEtalonKey;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RecordOriginKey;
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 
 /**
  * @author Mikhail Mikhailov
  */
-public class DeleteRecordDTO implements RecordDTO, PipelineOutput {
+public class DeleteRecordDTO implements RecordDTO, PipelineOutput, ExecutionResult {
     /**
      * Record keys for short upsert.
      */

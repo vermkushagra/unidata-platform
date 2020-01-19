@@ -21,6 +21,10 @@ import org.unidata.mdm.system.exception.SystemExceptionIds;
  */
 public final class Pipeline {
     /**
+     * Empty pipeline instance.
+     */
+    private static final Pipeline EMPTY = new Pipeline(null, null, null, false);
+    /**
      * The start segment id.
      */
     private final String startId;
@@ -220,6 +224,13 @@ public final class Pipeline {
         return this;
     }
     /**
+     * Tells whether this pipeline is empty.
+     * @return true, if empty, false otherwise
+     */
+    public boolean isEmpty() {
+        return segments.isEmpty();
+    }
+    /**
      * Throws if this PL is already closed.
      */
     private void throwIfPipelineClosed() {
@@ -235,6 +246,13 @@ public final class Pipeline {
             throw new PipelineException("Attempt to add a non batched segment to a batched pipeline or vice versa.",
                     SystemExceptionIds.EX_PIPELINE_BATCHED_MISMATCH);
         }
+    }
+    /**
+     * Returns the empty pipeline singleton.
+     * @return empty pipeline
+     */
+    public static Pipeline empty() {
+        return EMPTY;
     }
     /**
      * Starts a pipeline from starting point with no subject.

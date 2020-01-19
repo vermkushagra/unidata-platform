@@ -40,7 +40,7 @@ import org.unidata.mdm.system.type.batch.BatchIterator;
  * Simple record batch set accumulator.
  * FIXME: remove origin/etalon phases code. Upsert now works in a single step.
  */
-public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<UpsertRequestContext, UpsertRecordDTO> {
+public class RecordUpsertBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<UpsertRequestContext, UpsertRecordDTO, RecordUpsertBatchSetAccumulator> {
     /**
      * Record etalon inserts.
      */

@@ -6,9 +6,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import org.unidata.mdm.system.context.CommonRequestContext;
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
-import org.unidata.mdm.system.type.pipeline.PipelineInput;
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.type.pipeline.batch.BatchedPipelineInput;
 
 /**
  * @author Mikhail Mikhailov
@@ -16,7 +16,7 @@ import org.unidata.mdm.system.type.pipeline.PipelineOutput;
  * If accumulator is used in a job for processing and modifying of multiversion record sets,
  * it *must* exist during the lifetime of the step, since it holds id cache for multiversion batches.
  */
-public interface BatchSetAccumulator<I extends CommonRequestContext, O extends PipelineOutput> extends PipelineInput {
+public interface BatchSetAccumulator<I extends CommonRequestContext, O extends ExecutionResult> extends BatchedPipelineInput {
     /**
      * Charge with new block.
      * @param charge the payload
@@ -48,6 +48,7 @@ public interface BatchSetAccumulator<I extends CommonRequestContext, O extends P
     boolean isAbortOnFailure();
     /**
      * Gets a pipeline, possibly supplied for this batch set.
+     * This pipeline is intended for execution on input objects, not on the {@link BatchSetAccumulator}.
      * @return pipeline or null
      */
     @Nullable

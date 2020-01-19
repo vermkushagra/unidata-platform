@@ -2,12 +2,16 @@ package org.unidata.mdm.data.type.apply.batch.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.unidata.mdm.data.po.data.RecordEtalonPO;
 import org.unidata.mdm.data.po.data.RecordOriginPO;
 import org.unidata.mdm.data.po.data.RecordVistoryPO;
@@ -15,14 +19,20 @@ import org.unidata.mdm.data.type.apply.batch.AbstractBatchSetAccumulator;
 import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.search.context.IndexRequestContext;
 import org.unidata.mdm.system.context.CommonRequestContext;
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.context.InputFragmentHolder;
+import org.unidata.mdm.system.dto.ExecutionResult;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentCollector;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 
 /**
  * @author Mikhail Mikhailov
  * Basic stuff.
  */
-public abstract class AbstractRecordBatchSetAccumulator<T extends CommonRequestContext, O extends PipelineOutput>
-    extends AbstractBatchSetAccumulator<T, O> {
+public abstract class AbstractRecordBatchSetAccumulator<T extends CommonRequestContext, O extends ExecutionResult, X extends AbstractRecordBatchSetAccumulator<T, O, X>>
+    extends AbstractBatchSetAccumulator<T, O>
+    implements InputFragmentCollector<X>, InputFragmentContainer {
     /**
      * Record etalon updates. Key is the target shard number.
      */
@@ -39,6 +49,10 @@ public abstract class AbstractRecordBatchSetAccumulator<T extends CommonRequestC
      * Index updates.
      */
     protected final List<IndexRequestContext> indexUpdates;
+    /**
+     * Fragments map.
+     */
+    protected Map<FragmentId<? extends InputFragment<?>>, InputFragmentHolder> fragments;
     /**
      * Constructor.
      * @param commitSize the commit size
@@ -114,6 +128,14 @@ public abstract class AbstractRecordBatchSetAccumulator<T extends CommonRequestC
         }
     }
     /**
+     * This cast trick.
+     * @return self
+     */
+    @SuppressWarnings("unchecked")
+    protected X self() {
+        return (X) this;
+    }
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -153,5 +175,93 @@ public abstract class AbstractRecordBatchSetAccumulator<T extends CommonRequestC
      */
     public List<IndexRequestContext> getIndexUpdates() {
         return indexUpdates;
+    }
+    /**
+     * Adds a singleton fragment for an ID using a supplier.
+     * @param s the supplier
+     * @return self
+     */
+    @Override
+    public X fragment(Supplier<? extends InputFragment<?>> s) {
+
+        InputFragment<?> f = s.get();
+        if (Objects.nonNull(f)) {
+
+            if (fragments == null) {
+                fragments = new IdentityHashMap<>();
+            }
+
+            fragments.put(f.fragmentId(), InputFragmentHolder.of(f));
+        }
+        return self();
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public X fragment(InputFragment<?> f) {
+        return fragment(() -> f);
+    }
+    /**
+     * Adds a fragment collection for an ID using a supplier.
+     * @param s the supplier
+     * @return self
+     */
+    @Override
+    public X fragments(Supplier<Collection<? extends InputFragment<?>>> s) {
+
+        Collection<? extends InputFragment<?>> fs = s.get();
+        if (Objects.nonNull(fs) && CollectionUtils.isNotEmpty(fs)) {
+
+            if (fragments == null) {
+                fragments = new IdentityHashMap<>();
+            }
+
+            fragments.put(fs.iterator().next().fragmentId(), InputFragmentHolder.of(fs));
+        }
+        return self();
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public X fragments(Collection<? extends InputFragment<?>> f) {
+        return fragments(() -> f);
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C extends InputFragment<C>> C fragment(FragmentId<C> f) {
+
+        if (MapUtils.isEmpty(fragments)) {
+            return null;
+        }
+
+        InputFragmentHolder h = fragments.get(f);
+        if (Objects.isNull(h) || !h.isSingle()) {
+            return null;
+        }
+
+        return (C) h.getSingle();
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <C extends InputFragment<C>> Collection<C> fragments(FragmentId<C> f) {
+
+        if (MapUtils.isEmpty(fragments)) {
+            return Collections.emptyList();
+        }
+
+        InputFragmentHolder h = fragments.get(f);
+        if (Objects.isNull(h) || !h.isMultiple()) {
+            return Collections.emptyList();
+        }
+
+        return (Collection<C>) h.getMultiple();
     }
 }

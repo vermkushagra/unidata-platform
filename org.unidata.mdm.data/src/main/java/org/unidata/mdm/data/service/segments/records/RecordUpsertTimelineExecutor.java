@@ -105,6 +105,11 @@ public class RecordUpsertTimelineExecutor extends Point<UpsertRequestContext> {
         // - Peek last modified OV from box and reset the box (we can store all abject in the future, if required)
         // - Check approval state and reset keys if needed
         ModificationBox<OriginRecord> box = ctx.modificationBox();
+        if (Objects.isNull(box)) {
+            // This might be recalculate call
+            return;
+        }
+
         CalculableHolder<OriginRecord> top = null;
         if (box.modifications(ctx.toBoxKey()) > 1) {
 

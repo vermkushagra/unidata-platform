@@ -14,11 +14,12 @@ import org.unidata.mdm.system.configuration.SystemConfigurationConstants;
 import org.unidata.mdm.system.migration.SpringContextAwareMigrationContext;
 import org.unidata.mdm.system.migration.SystemMigrations;
 import org.unidata.mdm.system.service.PipelineService;
+import org.unidata.mdm.system.service.RenderingService;
 import org.unidata.mdm.system.type.module.Module;
 import org.unidata.mdm.system.util.DataSourceUtils;
 import org.unidata.mdm.system.util.IdUtils;
-import org.unidata.mdm.system.util.TextUtils;
 import org.unidata.mdm.system.util.PipelineUtils;
+import org.unidata.mdm.system.util.TextUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
@@ -39,6 +40,9 @@ public class SystemModule implements Module {
 
     @Autowired
     private PipelineService pipelineService;
+
+    @Autowired
+    private RenderingService renderingService;
 
     /**
      * This module id.
@@ -103,6 +107,7 @@ public class SystemModule implements Module {
     @Override
     public void ready() {
         pipelineService.loadPipelines();
+        renderingService.loadRendrerers();
     }
 
     @Override

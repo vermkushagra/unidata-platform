@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.unidata.mdm.data.context.DeleteRelationsRequestContext;
 import org.unidata.mdm.data.dto.DeleteRelationsDTO;
 import org.unidata.mdm.data.module.DataModule;
-import org.unidata.mdm.data.service.segments.relations.RelationsDeleteConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteConnectorExecutor;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSetStatistics;
 import org.unidata.mdm.system.type.batch.BatchIterator;
@@ -38,7 +38,7 @@ public class RelationsDeleteProcessExecutor extends BatchedPoint<RelationDeleteB
      * Connector.
      */
     @Autowired
-    private RelationsDeleteConnectorExecutor relationsDeleteConnectorExecutor;
+    private RelationDeleteConnectorExecutor relationsDeleteConnectorExecutor;
     /**
      * Constructor.
      */

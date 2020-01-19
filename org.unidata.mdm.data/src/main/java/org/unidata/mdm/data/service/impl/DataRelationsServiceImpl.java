@@ -57,9 +57,9 @@ import org.unidata.mdm.data.po.data.RelationOriginRemapPO;
 import org.unidata.mdm.data.po.keys.RelationExternalKeyPO;
 import org.unidata.mdm.data.service.DataRelationsService;
 import org.unidata.mdm.data.service.RelationBatchSetProcessor;
-import org.unidata.mdm.data.service.segments.relations.RelationsDeleteConnectorExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsGetConnectorExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationGetConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.apply.RelationMergeChangeSet;
 import org.unidata.mdm.data.type.apply.batch.AbstractBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationDeleteBatchSetAccumulator;
@@ -97,20 +97,20 @@ public class DataRelationsServiceImpl implements DataRelationsService {
      * Get multiple connector/executor component.
      */
     @Autowired
-    @Qualifier(RelationsGetConnectorExecutor.SEGMENT_ID)
-    private RelationsGetConnectorExecutor relationsGetConnectorExecutor;
+    @Qualifier(RelationGetConnectorExecutor.SEGMENT_ID)
+    private RelationGetConnectorExecutor relationsGetConnectorExecutor;
     /**
      * Upsert multiple connector/executor component.
      */
     @Autowired
-    @Qualifier(RelationsUpsertConnectorExecutor.SEGMENT_ID)
-    private RelationsUpsertConnectorExecutor relationsUpsertConnectorExecutor;
+    @Qualifier(RelationUpsertConnectorExecutor.SEGMENT_ID)
+    private RelationUpsertConnectorExecutor relationsUpsertConnectorExecutor;
     /**
      * Delete multiple connector/executor component.
      */
     @Autowired
-    @Qualifier(RelationsDeleteConnectorExecutor.SEGMENT_ID)
-    private RelationsDeleteConnectorExecutor relationsDeleteConnectorExecutor;
+    @Qualifier(RelationDeleteConnectorExecutor.SEGMENT_ID)
+    private RelationDeleteConnectorExecutor relationsDeleteConnectorExecutor;
     /**
      * Relations vistory DAO.
      */

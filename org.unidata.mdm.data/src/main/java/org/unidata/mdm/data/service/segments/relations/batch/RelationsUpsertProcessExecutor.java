@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
 import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.module.DataModule;
-import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertConnectorExecutor;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationUpsertBatchSetAccumulator;
 import org.unidata.mdm.data.type.apply.batch.impl.RelationUpsertBatchSetStatistics;
 import org.unidata.mdm.data.type.data.UpsertAction;
@@ -39,7 +39,7 @@ public class RelationsUpsertProcessExecutor extends BatchedPoint<RelationUpsertB
      * Connector.
      */
     @Autowired
-    private RelationsUpsertConnectorExecutor relationsUpsertConnectorExecutor;
+    private RelationUpsertConnectorExecutor relationsUpsertConnectorExecutor;
     /**
      * Constructor.
      */

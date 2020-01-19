@@ -1,5 +1,12 @@
 package org.unidata.mdm.data.configuration;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Properties;
+import java.util.function.BiConsumer;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -9,12 +16,6 @@ import org.unidata.mdm.core.service.BusService;
 import org.unidata.mdm.core.util.BusUtils;
 import org.unidata.mdm.system.configuration.AbstractConfiguration;
 import org.unidata.mdm.system.util.DataSourceUtils;
-
-import javax.sql.DataSource;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Properties;
-import java.util.function.BiConsumer;
 
 /**
  * @author Alexander Malyshev
@@ -88,6 +89,13 @@ public class DataConfiguration extends AbstractConfiguration {
     public PropertiesFactoryBean relationsSql() {
         final PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
         propertiesFactoryBean.setLocation(new ClassPathResource("/db/relations-sql.xml"));
+        return propertiesFactoryBean;
+    }
+
+    @Bean("job-support-sql")
+    public PropertiesFactoryBean jobSupportSql() {
+        final PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+        propertiesFactoryBean.setLocation(new ClassPathResource("/db/job-support-sql.xml"));
         return propertiesFactoryBean;
     }
 

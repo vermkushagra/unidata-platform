@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.unidata.mdm.system.dto.ExecutionResult;
 import org.unidata.mdm.system.type.pipeline.PipelineOutput;
 import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
 import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
@@ -15,7 +16,7 @@ import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
  * @author Mikhail Mikhailov
  *
  */
-public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, OutputFragment<UpsertRelationsDTO>, PipelineOutput {
+public class UpsertRelationsDTO implements RelationsDTO<UpsertRelationDTO>, OutputFragment<UpsertRelationsDTO>, PipelineOutput, ExecutionResult {
     /**
      * This fragment ID.
      */

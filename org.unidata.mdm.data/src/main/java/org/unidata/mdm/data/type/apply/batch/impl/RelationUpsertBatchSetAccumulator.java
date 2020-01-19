@@ -27,13 +27,20 @@ import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.data.type.keys.RelationKeys;
 import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.system.type.batch.BatchIterator;
+import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
+import org.unidata.mdm.system.type.pipeline.fragment.InputFragment;
 
 /**
  * @author Mikhail Mikhailov
  * Relation batch set accumulator.
  */
 public class RelationUpsertBatchSetAccumulator
-    extends AbstractRelationBatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO> {
+    extends AbstractRelationBatchSetAccumulator<UpsertRelationsRequestContext, UpsertRelationsDTO>
+    implements InputFragment<RelationUpsertBatchSetAccumulator> {
+
+    public static final FragmentId<RelationUpsertBatchSetAccumulator> ID
+        = new FragmentId<>("RELATION_UPSERT_BATCH_SET", () -> new RelationUpsertBatchSetAccumulator(0, false, false));
+
     /**
      * Collected rel. etalons.
      */
@@ -86,6 +93,13 @@ public class RelationUpsertBatchSetAccumulator
         } else {
             ids = null;
         }
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public FragmentId<RelationUpsertBatchSetAccumulator> fragmentId() {
+        return ID;
     }
     /**
      * Adds a single etalon record update.

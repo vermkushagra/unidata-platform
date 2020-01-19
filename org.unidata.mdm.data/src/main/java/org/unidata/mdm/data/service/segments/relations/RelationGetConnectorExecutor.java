@@ -1,11 +1,14 @@
 package org.unidata.mdm.data.service.segments.relations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,12 +20,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.unidata.mdm.core.util.SecurityUtils;
+import org.unidata.mdm.data.context.GetRelationRequestContext;
+import org.unidata.mdm.data.context.GetRelationsRequestContext;
 import org.unidata.mdm.data.context.RecordIdentityContext;
-import org.unidata.mdm.data.context.UpsertRelationRequestContext;
-import org.unidata.mdm.data.context.UpsertRelationsRequestContext;
+import org.unidata.mdm.data.dao.RelationsDao;
+import org.unidata.mdm.data.dto.GetRelationDTO;
+import org.unidata.mdm.data.dto.GetRelationsDTO;
 import org.unidata.mdm.data.dto.RelationStateDTO;
-import org.unidata.mdm.data.dto.UpsertRelationDTO;
-import org.unidata.mdm.data.dto.UpsertRelationsDTO;
 import org.unidata.mdm.data.exception.DataExceptionIds;
 import org.unidata.mdm.data.exception.DataProcessingException;
 import org.unidata.mdm.data.module.DataModule;
@@ -31,6 +35,7 @@ import org.unidata.mdm.data.type.data.RelationType;
 import org.unidata.mdm.data.type.keys.RecordKeys;
 import org.unidata.mdm.meta.RelationDef;
 import org.unidata.mdm.meta.service.MetaModelService;
+import org.unidata.mdm.meta.type.RelationSide;
 import org.unidata.mdm.system.service.ExecutionService;
 import org.unidata.mdm.system.type.pipeline.Connector;
 import org.unidata.mdm.system.type.pipeline.Pipeline;
@@ -39,24 +44,24 @@ import org.unidata.mdm.system.type.pipeline.fragment.InputFragmentContainer;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
 /**
- * @author Mikhail Mikhailov on Nov 24, 2019
+ * @author Mikhail Mikhailov on Dec 4, 2019
  */
-@Component(RelationsUpsertConnectorExecutor.SEGMENT_ID)
-public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, UpsertRelationsDTO> {
+@Component(RelationGetConnectorExecutor.SEGMENT_ID)
+public class RelationGetConnectorExecutor extends Connector<PipelineInput, GetRelationsDTO> {
     /**
      * This segment ID.
      */
-    public static final String SEGMENT_ID = DataModule.MODULE_ID + "[RELATIONS_UPSERT_CONNECTOR]";
+    public static final String SEGMENT_ID = DataModule.MODULE_ID + "[RELATIONS_GET_CONNECTOR]";
     /**
      * Localized message code.
      */
-    public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".relations.upsert.connector.description";
+    public static final String SEGMENT_DESCRIPTION = DataModule.MODULE_ID + ".relations.get.connector.description";
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(RelationsUpsertConnectorExecutor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RelationGetConnectorExecutor.class);
     /**
-     * The ES instance.
+     * The execution service.
      */
     @Autowired
     private ExecutionService executionService;
@@ -66,26 +71,29 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
     @Autowired
     private MetaModelService metaModelService;
     /**
-     * CRC instance.
+     * The CRC.
      */
     @Autowired
     private CommonRelationsComponent commonRelationsComponent;
     /**
-     * Constructor.
-     * @param id
-     * @param description
+     * Relations vistory DAO.
      */
-    public RelationsUpsertConnectorExecutor() {
+    @Autowired
+    private RelationsDao relationsDao;
+    /**
+     * Constructor.
+     */
+    public RelationGetConnectorExecutor() {
         super(SEGMENT_ID, SEGMENT_DESCRIPTION);
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public UpsertRelationsDTO connect(PipelineInput ctx) {
+    public GetRelationsDTO connect(PipelineInput ctx) {
 
         InputFragmentContainer target = (InputFragmentContainer) ctx;
-        UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
+        GetRelationsRequestContext payload = target.fragment(GetRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
         }
@@ -101,10 +109,10 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
      * {@inheritDoc}
      */
     @Override
-    public UpsertRelationsDTO connect(PipelineInput ctx, Pipeline p) {
+    public GetRelationsDTO connect(PipelineInput ctx, Pipeline p) {
 
         InputFragmentContainer target = (InputFragmentContainer) ctx;
-        UpsertRelationsRequestContext payload = target.fragment(UpsertRelationsRequestContext.FRAGMENT_ID);
+        GetRelationsRequestContext payload = target.fragment(GetRelationsRequestContext.FRAGMENT_ID);
         if (Objects.isNull(payload)) {
             return null;
         }
@@ -115,17 +123,21 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
 
         return execute(payload, p);
     }
-
-    public UpsertRelationsDTO execute(@Nonnull UpsertRelationsRequestContext ctx, @Nullable Pipeline p) {
+    /**
+     * Does the actual context processing.
+     * @param ctx the context
+     * @param p the pipeline
+     * @return result
+     */
+    public GetRelationsDTO execute(@Nonnull GetRelationsRequestContext ctx, @Nullable Pipeline p) {
 
         MeasurementPoint.start();
         try {
-
             // 1. First of all check side's keys
             commonRelationsComponent.ensureAndGetFromRecordKeys(ctx);
 
             // 2. Check input. Return on no input, what is not a crime
-            Map<String, List<UpsertRelationRequestContext>> input = ctx.getRelations();
+            Map<String, List<GetRelationRequestContext>> input = ensureInput(ctx);
             if (MapUtils.isEmpty(input)) {
                 return null;
             }
@@ -133,8 +145,8 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
             // 3. Process stuff
             RecordKeys fromKeys = ctx.keys();
 
-            Map<RelationStateDTO, List<UpsertRelationDTO>> result = new HashMap<>();
-            for (Entry<String, List<UpsertRelationRequestContext>> entry : input.entrySet()) {
+            Map<RelationStateDTO, List<GetRelationDTO>> result = new HashMap<>();
+            for (Entry<String, List<GetRelationRequestContext>> entry : input.entrySet()) {
 
                 if (CollectionUtils.isEmpty(entry.getValue())) {
                     continue;
@@ -143,10 +155,10 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
                 // 3.1 Check rel's existance. Fail if not found
                 final RelationDef relation = metaModelService.getRelationById(entry.getKey());
                 if (relation == null) {
-                    final String message = "Relation {} not found. Stopping.";
+                    final String message = "Relation [{}] not found. Stopping.";
                     LOGGER.warn(message, entry.getKey());
                     throw new DataProcessingException(message,
-                            DataExceptionIds.EX_DATA_RELATIONS_UPSERT_RELATION_NOT_FOUND,
+                            DataExceptionIds.EX_DATA_RELATIONS_GET_RELATION_NOT_FOUND,
                             entry.getKey());
                 }
 
@@ -155,21 +167,21 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
                 final RelationType resolvedType = RelationType.fromValue(relation.getRelType().name());
 
                 RelationStateDTO state = new RelationStateDTO(resolvedName, resolvedType);
-                List<UpsertRelationDTO> collected = new ArrayList<>(entry.getValue().size());
-                for (UpsertRelationRequestContext uCtx : entry.getValue()) {
+                List<GetRelationDTO> collected = new ArrayList<>(entry.getValue().size());
+                for (GetRelationRequestContext gCtx : entry.getValue()) {
 
                     String entityName = fromKeys != null ? fromKeys.getEntityName() : relation.getFromEntity();
 
-                    uCtx.accessRight(SecurityUtils.getRightsForResourceWithDefault(entityName));
-                    uCtx.relationName(resolvedName);
-                    uCtx.relationType(resolvedType);
-                    uCtx.fromKeys(fromKeys);
+                    gCtx.accessRight(SecurityUtils.getRightsForResourceWithDefault(entityName));
+                    gCtx.relationName(resolvedName);
+                    gCtx.relationType(resolvedType);
+                    gCtx.fromKeys(fromKeys);
 
-                    UpsertRelationDTO interim;
+                    GetRelationDTO interim;
                     if (Objects.isNull(p)) {
-                        interim = executionService.execute(uCtx);
+                        interim = executionService.execute(gCtx);
                     } else {
-                        interim = executionService.execute(p, uCtx);
+                        interim = executionService.execute(p, gCtx);
                     }
 
                     if (Objects.nonNull(interim)) {
@@ -180,9 +192,46 @@ public class RelationsUpsertConnectorExecutor extends Connector<PipelineInput, U
                 result.put(state, collected);
             }
 
-            return new UpsertRelationsDTO(result);
+            return new GetRelationsDTO(result);
         } finally {
             MeasurementPoint.stop();
         }
+    }
+
+    private Map<String, List<GetRelationRequestContext>> ensureInput(GetRelationsRequestContext ctx) {
+
+        if (MapUtils.isNotEmpty(ctx.getRelations())) {
+            return ctx.getRelations();
+        } else if (CollectionUtils.isEmpty(ctx.getRelationNames()) && !ctx.isFetchAllRelations()) {
+            return Collections.emptyMap();
+        }
+
+        RecordKeys keys = ctx.keys();
+
+        Map<String, List<UUID>> relationEtalonIds = relationsDao.loadMappedRelationEtalonIds(
+                UUID.fromString(keys.getEtalonKey().getId()),
+                ctx.getRelationNames(), RelationSide.FROM);
+
+        if (MapUtils.isEmpty(relationEtalonIds)) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, List<GetRelationRequestContext>> result = new HashMap<>(relationEtalonIds.size());
+        relationEtalonIds.forEach((k, v) ->
+            result.put(k, v.stream()
+                    .map(id ->
+                        GetRelationRequestContext.builder()
+                            .fetchTimelineData(ctx.isFetchTimelineData())
+                            .forDate(ctx.getForDate())
+                            .forDatesFrame(ctx.getForDatesFrame())
+                            .forLastUpdate(ctx.getForLastUpdate())
+                            .forOperationId(ctx.getForOperationId())
+                            .includeDrafts(ctx.isIncludeDrafts())
+                            .relationEtalonKey(id.toString())
+                            .build()
+                    )
+                    .collect(Collectors.toList())));
+
+        return result;
     }
 }

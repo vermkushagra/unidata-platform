@@ -42,10 +42,10 @@ import org.unidata.mdm.system.dao.ModuleDao;
 import org.unidata.mdm.system.dto.ModuleInfo;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.module.SystemModule;
-import org.unidata.mdm.system.module.annotation.ModuleRef;
 import org.unidata.mdm.system.service.ModuleService;
 import org.unidata.mdm.system.service.RuntimePropertiesService;
 import org.unidata.mdm.system.service.impl.module.ModularContextBuilder;
+import org.unidata.mdm.system.type.annotation.ModuleRef;
 import org.unidata.mdm.system.type.configuration.ConfigurationUpdatesConsumer;
 import org.unidata.mdm.system.type.module.Dependency;
 import org.unidata.mdm.system.type.module.Module;
@@ -177,7 +177,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
     private void initConfigurationPropertiesSystem() {
         runtimePropertiesService.addConfigurationProperties(
                 startedModules.values().stream()
-                        .map(Module::configurationProperties)
+                        .map(Module::getConfigurationProperties)
                         .flatMap(Arrays::stream)
                         .collect(Collectors.toList())
         );
@@ -416,7 +416,7 @@ public class ModuleServiceImpl implements ModuleService, ApplicationListener<Con
                 Module hit = null;
                 // 1. We need the id
                 if (fieldType == Module.class) {
-                    String requestedId = f.getAnnotation(ModuleRef.class).name();
+                    String requestedId = f.getAnnotation(ModuleRef.class).value();
                     hit = startedModules.get(requestedId);
                 // 2. Exact type was given. Select one.
                 } else {

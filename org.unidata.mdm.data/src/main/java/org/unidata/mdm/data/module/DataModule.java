@@ -2,6 +2,7 @@ package org.unidata.mdm.data.module;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +17,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.unidata.mdm.core.dto.BusRoutesDefinition;
 import org.unidata.mdm.core.service.BusConfigurationService;
-import org.unidata.mdm.core.service.BusService;
-import org.unidata.mdm.data.notification.DataSendNotificationFallback;
-import org.unidata.mdm.data.notification.DataNotificationSegment;
 import org.unidata.mdm.data.configuration.DataConfiguration;
 import org.unidata.mdm.data.configuration.DataConfigurationConstants;
 import org.unidata.mdm.data.convert.DataClusterConverter;
@@ -27,33 +25,46 @@ import org.unidata.mdm.data.exception.DataExceptionIds;
 import org.unidata.mdm.data.migrations.data.DataMigrations;
 import org.unidata.mdm.data.migrations.data.DataMigrations.DataMigrationContext;
 import org.unidata.mdm.data.migrations.meta.MetaMigrations;
+import org.unidata.mdm.data.notification.DataNotificationSegment;
+import org.unidata.mdm.data.notification.DataSendNotificationFallback;
 import org.unidata.mdm.data.po.storage.DataClusterPO;
 import org.unidata.mdm.data.service.DataStorageService;
+import org.unidata.mdm.data.service.impl.DataRenderingHandler;
+import org.unidata.mdm.data.service.job.ReindexRelationsAccumulatorPostProcessor;
+import org.unidata.mdm.data.service.segments.records.RecordDeleteAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeleteDataConsistencyExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeleteFinishExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeleteIndexingExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeletePeriodCheckExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeletePersistenceExecutor;
-import org.unidata.mdm.data.service.segments.records.RecordDeleteAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordGetAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordGetAttributesPostProcessingExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordGetDiffExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordGetFinishExecutor;
-import org.unidata.mdm.data.service.segments.records.RecordGetAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordGetStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertFinishExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertIndexingExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertLobSubmitExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertMeasuredAttributesExecutor;
-import org.unidata.mdm.data.service.segments.records.RecordUpsertTimelineExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertModboxExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertPeriodCheckExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertPersistenceExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertResolveCodePointersExecutor;
-import org.unidata.mdm.data.service.segments.records.RecordUpsertAccessExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertStartExecutor;
+import org.unidata.mdm.data.service.segments.records.RecordUpsertTimelineExecutor;
 import org.unidata.mdm.data.service.segments.records.RecordUpsertValidateExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsDeleteFinishExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsDeletePersistenceExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsDeleteProcessExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsUpsertPersistenceExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsUpsertProcessExecutor;
+import org.unidata.mdm.data.service.segments.records.batch.RecordsUpsertStartExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationCommonPeriodCheckExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationDeleteConnectorExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteContainmentExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteFinishExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteIndexingExecutor;
@@ -61,9 +72,11 @@ import org.unidata.mdm.data.service.segments.relations.RelationDeletePersistence
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteSecurityExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteStartExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationDeleteTimelineExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationGetConnectorExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationGetFinishExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationGetSecurityExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationGetStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.RelationUpsertConnectorExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertContainmentExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertFinishExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertIndexingExecutor;
@@ -73,9 +86,16 @@ import org.unidata.mdm.data.service.segments.relations.RelationUpsertSecurityExe
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertStartExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertTimelineExecutor;
 import org.unidata.mdm.data.service.segments.relations.RelationUpsertValidateExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsDeleteConnectorExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsGetConnectorExecutor;
-import org.unidata.mdm.data.service.segments.relations.RelationsUpsertConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsDeleteFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsDeletePersistenceExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsDeleteProcessExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsDeleteStartExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsUpsertConnectorExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsUpsertFinishExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsUpsertPersistenceExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsUpsertProcessExecutor;
+import org.unidata.mdm.data.service.segments.relations.batch.RelationsUpsertStartExecutor;
+import org.unidata.mdm.data.type.rendering.DataRenderingAction;
 import org.unidata.mdm.data.type.storage.DataCluster;
 import org.unidata.mdm.data.util.DataDiffUtils;
 import org.unidata.mdm.data.util.RecordFactoryUtils;
@@ -83,13 +103,16 @@ import org.unidata.mdm.data.util.StorageUtils;
 import org.unidata.mdm.system.exception.PlatformFailureException;
 import org.unidata.mdm.system.service.AfterContextRefresh;
 import org.unidata.mdm.system.service.PipelineService;
+import org.unidata.mdm.system.type.batch.BatchSetPostProcessor;
 import org.unidata.mdm.system.type.module.AbstractModule;
 import org.unidata.mdm.system.type.module.Dependency;
+import org.unidata.mdm.system.type.rendering.RenderingAction;
+import org.unidata.mdm.system.type.rendering.RenderingResolver;
+import org.unidata.mdm.system.util.IOUtils;
 
 import nl.myndocs.database.migrator.database.Selector;
 import nl.myndocs.database.migrator.database.query.Database;
 import nl.myndocs.database.migrator.processor.Migrator;
-import org.unidata.mdm.system.util.IOUtils;
 
 public class DataModule extends AbstractModule {
     /**
@@ -104,6 +127,10 @@ public class DataModule extends AbstractModule {
      * This module id.
      */
     public static final String MODULE_ID = "org.unidata.mdm.data";
+
+    @SuppressWarnings("rawtypes")
+    private static final Collection<Class<? extends BatchSetPostProcessor>> JOB_POST_PROCESSORS =
+            Collections.singletonList(ReindexRelationsAccumulatorPostProcessor.class);
     /**
      * Classes, implementing {@link AfterContextRefresh} must to be executed on startup.
      */
@@ -214,11 +241,11 @@ public class DataModule extends AbstractModule {
 
         // 3. Connectors
         // Upsert relations connector
-        RelationsUpsertConnectorExecutor.SEGMENT_ID,
+        RelationUpsertConnectorExecutor.SEGMENT_ID,
         // Get relations connector
-        RelationsGetConnectorExecutor.SEGMENT_ID,
+        RelationGetConnectorExecutor.SEGMENT_ID,
         // Delete relations connector
-        RelationsDeleteConnectorExecutor.SEGMENT_ID,
+        RelationDeleteConnectorExecutor.SEGMENT_ID,
 
         // 4. Fallbacks
         // Audit data fallback
@@ -239,7 +266,36 @@ public class DataModule extends AbstractModule {
         // Get finish
         RelationGetFinishExecutor.SEGMENT_ID,
         // Delete finish
-        RelationDeleteFinishExecutor.SEGMENT_ID
+        RelationDeleteFinishExecutor.SEGMENT_ID,
+
+        // 6. Batched segments
+        // Records
+        // Upsert
+        RecordsUpsertStartExecutor.SEGMENT_ID,
+        RecordsUpsertProcessExecutor.SEGMENT_ID,
+        RecordsUpsertPersistenceExecutor.SEGMENT_ID,
+        RecordsUpsertFinishExecutor.SEGMENT_ID,
+
+        // Delete
+        RecordsDeleteStartExecutor.SEGMENT_ID,
+        RecordsDeleteProcessExecutor.SEGMENT_ID,
+        RecordsDeletePersistenceExecutor.SEGMENT_ID,
+        RecordsDeleteFinishExecutor.SEGMENT_ID,
+
+        // Relations
+        // Upsert
+        RelationsUpsertStartExecutor.SEGMENT_ID,
+        RelationsUpsertConnectorExecutor.SEGMENT_ID,
+        RelationsUpsertProcessExecutor.SEGMENT_ID,
+        RelationsUpsertPersistenceExecutor.SEGMENT_ID,
+        RelationsUpsertFinishExecutor.SEGMENT_ID,
+
+        // Delete
+        RelationsDeleteStartExecutor.SEGMENT_ID,
+        // RelationsDeleteConnectorExecutor.SEGMENT_ID,
+        RelationsDeleteProcessExecutor.SEGMENT_ID,
+        RelationsDeletePersistenceExecutor.SEGMENT_ID,
+        RelationsDeleteFinishExecutor.SEGMENT_ID
     };
 
     private static final String[] PIPELINES = {
@@ -264,6 +320,9 @@ public class DataModule extends AbstractModule {
 
     @Autowired
     private BusConfigurationService busConfigurationService;
+
+    @Autowired
+    private DataRenderingHandler dataRenderingHandler;
 
     /**
      * {@inheritDoc}
@@ -306,6 +365,28 @@ public class DataModule extends AbstractModule {
     @Override
     public String[] getResourceBundleBasenames() {
         return new String[]{ "data_messages" };
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Collection<RenderingAction> getRenderingActions() {
+        return Arrays.asList(DataRenderingAction.values());
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public RenderingResolver getRenderingResolver() {
+        return dataRenderingHandler;
+    }
+    /**
+     * {@inheritDoc}
+     */
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Collection<Class<? extends BatchSetPostProcessor>> getBatchSetPostProcessors() {
+        return JOB_POST_PROCESSORS;
     }
     /**
      * Initialization logic is quite complicated:

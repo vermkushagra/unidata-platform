@@ -79,6 +79,8 @@ public class UpsertRelationRequestContext
         flags.set(DataContextFlags.FLAG_BATCH_OPERATION, b.batchOperation);
         flags.set(DataContextFlags.FLAG_EMPTY_STORAGE, b.emptyStorage);
         flags.set(DataContextFlags.FLAG_BYPASS_EXTENSION_POINTS, b.bypassExtensionPoints);
+        flags.set(DataContextFlags.FLAG_RECALCULATE_WHOLE_TIMELINE, b.recalculateWholeTimeline);
+        flags.set(DataContextFlags.FLAG_SKIP_INDEX_DROP, b.skipIndexDrop);
         flags.set(DataContextFlags.FLAG_SUPPRESS_WORKFLOW, b.suppressWorkflow);
     }
 
@@ -167,6 +169,21 @@ public class UpsertRelationRequestContext
     }
 
     /**
+     * @return the recalculateWholeTimeline
+     */
+    public boolean isRecalculateWholeTimeline() {
+        return flags.get(DataContextFlags.FLAG_RECALCULATE_WHOLE_TIMELINE);
+    }
+
+    /**
+     * Skips drop operation upon index info creation.
+     * @return
+     */
+    public boolean isSkipIndexDrop() {
+        return flags.get(DataContextFlags.FLAG_SKIP_INDEX_DROP);
+    }
+
+    /**
      * @return the approvalState
      */
     @Override
@@ -240,6 +257,15 @@ public class UpsertRelationRequestContext
          * Bypass extension points during upsert relation.
          */
         private boolean bypassExtensionPoints;
+        /**
+         * Tells the etalon calculation routine,
+         * that the whole time line must be completely recalculated.
+         */
+        private boolean recalculateWholeTimeline;
+        /**
+         * Skip or perform index drop. This might be true for reindex job, which did explicit cleanup before run.
+         */
+        private boolean skipIndexDrop;
         /**
          * suppress Workflow
          */
@@ -325,7 +351,6 @@ public class UpsertRelationRequestContext
             this.batchOperation = batchUpsert;
             return this;
         }
-
         /**
          * @param emptyStorage the flag
          * @return self
@@ -334,7 +359,6 @@ public class UpsertRelationRequestContext
             this.emptyStorage = emptyStorage;
             return this;
         }
-
         /**
          * @param bypassExtensionPoints bypass extension points or not
          */
@@ -342,7 +366,24 @@ public class UpsertRelationRequestContext
             this.bypassExtensionPoints = bypassExtensionPoints;
             return this;
         }
-
+        /**
+         * Re-index whole timeline _WITHOUT_ any save actions.
+         * @param recalculateWholeTimeline the flag
+         * @return self
+         */
+        public UpsertRelationRequestContextBuilder recalculateWholeTimeline(boolean recalculateWholeTimeline) {
+            this.recalculateWholeTimeline = recalculateWholeTimeline;
+            return this;
+        }
+        /**
+        *
+        * @param skipIndexDrop - skip index drop or not
+        * @return self
+        */
+       public UpsertRelationRequestContextBuilder skipIndexDrop(boolean skipIndexDrop) {
+           this.skipIndexDrop = skipIndexDrop;
+           return this;
+       }
         /**
          *
          * @param auditLevel - sets the audit level for this context

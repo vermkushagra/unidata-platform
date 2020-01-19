@@ -705,16 +705,6 @@ public class UpsertRequestContext
         }
 
         /**
-         * Sppress audt events emission during upsert.
-         * @param suppressAudit flag
-         * @return self
-         */
-        public UpsertRequestContextBuilder suppressAudit(boolean suppressAudit) {
-            this.suppressAudit = suppressAudit;
-            return this;
-        }
-
-        /**
          * @param bypassExtensionPoints bypass extension points or not
          */
         public UpsertRequestContextBuilder bypassExtensionPoints(boolean bypassExtensionPoints) {
@@ -729,6 +719,16 @@ public class UpsertRequestContext
          */
         public UpsertRequestContextBuilder recalculateWholeTimeline(boolean recalculateWholeTimeline) {
             this.recalculateWholeTimeline = recalculateWholeTimeline;
+            return this;
+        }
+
+        /**
+         * Sppress audt events emission during upsert.
+         * @param suppressAudit flag
+         * @return self
+         */
+        public UpsertRequestContextBuilder suppressAudit(boolean suppressAudit) {
+            this.suppressAudit = suppressAudit;
             return this;
         }
 

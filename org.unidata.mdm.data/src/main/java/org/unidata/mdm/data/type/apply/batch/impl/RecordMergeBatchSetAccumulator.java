@@ -22,7 +22,7 @@ import org.unidata.mdm.system.type.batch.BatchIterator;
  * @author Mikhail Mikhailov
  * Merge accumulator for records.
  */
-public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<MergeRequestContext, MergeRecordsDTO> {
+public class RecordMergeBatchSetAccumulator extends AbstractRecordBatchSetAccumulator<MergeRequestContext, MergeRecordsDTO, RecordMergeBatchSetAccumulator> {
     /**
      * Relation merge acc.
      */

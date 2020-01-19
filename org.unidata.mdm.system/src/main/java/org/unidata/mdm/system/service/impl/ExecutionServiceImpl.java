@@ -89,7 +89,7 @@ public class ExecutionServiceImpl implements ExecutionService {
     @Override
     public <C extends PipelineInput, R extends PipelineOutput> R execute(Pipeline p, C ctx) {
 
-        if (Objects.isNull(p) || Objects.isNull(ctx)) {
+        if (Objects.isNull(p) || p.isEmpty() || Objects.isNull(ctx)) {
             return null;
         }
 

@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.unidata.mdm.system.type.pipeline.PipelineOutput;
+import org.unidata.mdm.system.type.pipeline.batch.BatchedPipelineOutput;
 import org.unidata.mdm.system.type.pipeline.fragment.FragmentId;
 import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
 
@@ -12,7 +12,7 @@ import org.unidata.mdm.system.type.pipeline.fragment.OutputFragment;
  * The all-in-one bulk ops result transfer object.
  * @author Dmitry Kopin on 14.02.2019.
  */
-public class RecordsBulkResultDTO extends AbstractBulkResultDTO implements PipelineOutput, OutputFragment<RecordsBulkResultDTO> {
+public class RecordsBulkResultDTO extends AbstractBulkResultDTO implements BatchedPipelineOutput, OutputFragment<RecordsBulkResultDTO> {
     /**
      * The id.
      */
