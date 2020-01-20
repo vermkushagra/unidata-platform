@@ -45,8 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.unidata.mdm.core.dto.SecuredResourceDTO;
+import org.unidata.mdm.core.service.RoleService;
 import org.unidata.mdm.core.service.SecurityService;
-import org.unidata.mdm.core.service.impl.RoleServiceExt;
 import org.unidata.mdm.core.type.measurement.MeasurementValue;
 import org.unidata.mdm.core.type.model.AttributeModelElement;
 import org.unidata.mdm.core.type.security.Right;
@@ -108,7 +108,7 @@ public class SecureMetaModelService extends BaseMetaModelService  {
      * Role service. Contains methods for role management.
      */
     @Autowired
-    private RoleServiceExt roleServiceExt;
+    private RoleService roleServiceExt;
     /**
      * Measured values service.
      */

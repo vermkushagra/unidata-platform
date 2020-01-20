@@ -45,6 +45,7 @@ import org.unidata.mdm.core.exception.CoreExceptionIds;
 import org.unidata.mdm.core.migrations.CoreSchemaMigrations;
 import org.unidata.mdm.core.migrations.UninstallCoreSchemaMigrations;
 import org.unidata.mdm.core.service.BusConfigurationService;
+import org.unidata.mdm.core.service.RoleService;
 import org.unidata.mdm.core.service.impl.AsyncRareTaskExecutor;
 import org.unidata.mdm.core.type.search.AuditHeaderField;
 import org.unidata.mdm.core.type.search.AuditIndexType;
@@ -116,6 +117,9 @@ public class CoreModule implements Module {
 
     @Autowired
     private ModularPostProcessingRegistrar modularPostProcessingRegistrar;
+
+    @Autowired
+    private RoleService roleService;
 
     /**
      * Lock name.
@@ -274,6 +278,8 @@ public class CoreModule implements Module {
         modularPostProcessingRegistrar.registerBeanPostProcessor(customJobRegistryBeanPostProcessor);
         modularPostProcessingRegistrar.registerBeanFactoryPostProcessor(jobScope);
         modularPostProcessingRegistrar.registerBeanFactoryPostProcessor(stepScope);
+
+        roleService.init();
 
         LOGGER.info("Started");
     }

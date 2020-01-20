@@ -223,7 +223,7 @@ public class LookupInfoHolder extends AbstractBvtMapInfoHolder
      */
     @Override
     public boolean isBvtCapable() {
-        return false;
+        return true;
     }
     /**
      * {@inheritDoc}
