@@ -44,6 +44,7 @@ import org.unidata.mdm.core.po.security.RolePO;
 import org.unidata.mdm.core.po.security.RolePropertyPO;
 import org.unidata.mdm.core.po.security.RolePropertyValuePO;
 import org.unidata.mdm.core.service.BusService;
+import org.unidata.mdm.core.service.RoleService;
 import org.unidata.mdm.core.service.SecurityService;
 import org.unidata.mdm.core.type.security.CustomProperty;
 import org.unidata.mdm.core.type.security.Right;
@@ -59,6 +60,7 @@ import org.unidata.mdm.system.exception.PlatformValidationException;
 import org.unidata.mdm.system.exception.ValidationResult;
 import org.unidata.mdm.system.type.runtime.MeasurementPoint;
 
+import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -76,7 +78,7 @@ import java.util.stream.Collectors;
  * @author ilya.bykov
  */
 @Component
-public class RoleServiceImpl implements RoleServiceExt {
+public class RoleServiceImpl implements RoleService {
     /**
      * Logger instance.
      */
@@ -737,7 +739,7 @@ public class RoleServiceImpl implements RoleServiceExt {
      * @see com.unidata.mdm.backend.service.security.IRoleService#afterContextRefresh()
      */
     @Override
-    public void afterContextRefresh() {
+    public void init() {
         this.CREATE = roleDAO.findRightByName("CREATE");
         this.UPDATE = roleDAO.findRightByName("UPDATE");
         this.DELETE = roleDAO.findRightByName("DELETE");

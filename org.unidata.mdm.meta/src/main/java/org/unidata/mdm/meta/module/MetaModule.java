@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.unidata.mdm.meta.module;
 
 import nl.myndocs.database.migrator.database.Selector;
@@ -299,6 +298,7 @@ public class MetaModule extends AbstractModule {
     @Override
     public void ready() {
         metaDraftService.initDraftService();
+        metaDraftService.removeDraft();
 
         CreateDraftModelRequestContext createDraftModelRequestContext = CreateDraftModelRequestContext
                 .builder()

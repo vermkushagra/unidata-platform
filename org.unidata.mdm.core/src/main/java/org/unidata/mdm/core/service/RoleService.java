@@ -30,6 +30,9 @@ import org.unidata.mdm.core.type.security.SecuredResourceCategory;
 import org.unidata.mdm.core.type.security.SecurityLabel;
 
 public interface RoleService {
+
+    void init();
+
     /**
      * Gets the role by name.
      *
