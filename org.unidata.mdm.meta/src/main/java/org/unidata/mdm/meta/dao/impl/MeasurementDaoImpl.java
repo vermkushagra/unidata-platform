@@ -117,7 +117,7 @@ public class MeasurementDaoImpl extends BaseDAOImpl implements MeasurementDao {
         insertUnits(value.getMeasurementUnits());
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public void update(@Nonnull MeasurementValuePO value) {
         MapSqlParameterSource valueMap = new MapSqlParameterSource();

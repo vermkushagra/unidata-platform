@@ -19,6 +19,7 @@
 
 package org.unidata.mdm.meta.type.info.impl;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -202,7 +203,8 @@ public class AttributeInfoHolder implements AttributeModelElement, MeasuredModel
      */
     @Override
     public int getMaxCount() {
-        return ((ComplexAttributeDef) attribute).getMaxCount().intValue();
+        final BigInteger maxCount = ((ComplexAttributeDef) attribute).getMaxCount();
+        return maxCount != null ? maxCount.intValue() : Integer.MAX_VALUE;
     }
     /**
      * {@inheritDoc}

@@ -16,10 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
-/**
- *
- */
 package org.unidata.mdm.meta.type.search;
 
 import org.unidata.mdm.search.type.FieldType;
@@ -96,7 +92,7 @@ public enum RecordHeaderField implements IndexField {
      */
     FIELD_EXTERNAL_KEYS("$external_keys", FieldType.STRING);
 
-    private RecordHeaderField(String field, FieldType type) {
+    RecordHeaderField(String field, FieldType type) {
         this.field = field;
         this.type = type;
     }

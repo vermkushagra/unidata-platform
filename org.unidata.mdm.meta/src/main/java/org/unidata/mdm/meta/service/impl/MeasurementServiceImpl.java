@@ -211,6 +211,8 @@ public class MeasurementServiceImpl implements MetaMeasurementService {
             throw new PlatformBusinessException("value is already removed", MetaExceptionIds.EX_MEASUREMENT_SOMEONE_ALREADY_REMOVE_VALUE);
         }
 
+        measureValueIds.forEach(cachedValues::remove);
+
         return true;
     }
 
