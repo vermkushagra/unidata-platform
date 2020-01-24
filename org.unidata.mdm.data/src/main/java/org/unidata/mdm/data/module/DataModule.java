@@ -140,7 +140,7 @@ public class DataModule extends AbstractModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(DataModule.class);
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
-            new Dependency("org.unidata.mdm.meta", "5.2")
+            new Dependency("org.unidata.mdm.meta", "6.0")
     );
     /**
      * This module id.

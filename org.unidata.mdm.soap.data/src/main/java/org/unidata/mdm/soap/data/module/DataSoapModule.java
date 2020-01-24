@@ -32,7 +32,7 @@ import org.unidata.mdm.system.type.module.Module;
 public class DataSoapModule implements Module {
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
-            new Dependency("org.unidata.mdm.data", "5.2")
+            new Dependency("org.unidata.mdm.data", "6.0")
     );
 
     @Override

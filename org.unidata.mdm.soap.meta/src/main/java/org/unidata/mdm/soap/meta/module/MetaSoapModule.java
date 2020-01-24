@@ -32,7 +32,7 @@ import org.unidata.mdm.system.type.module.Module;
 public class MetaSoapModule implements Module {
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
-            new Dependency("org.unidata.mdm.core", "5.2")
+            new Dependency("org.unidata.mdm.core", "6.0")
     );
 
     @Override

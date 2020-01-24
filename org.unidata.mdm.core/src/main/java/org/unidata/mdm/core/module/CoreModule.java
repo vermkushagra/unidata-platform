@@ -85,8 +85,8 @@ public class CoreModule implements Module {
     public static final String MODULE_ID = "org.unidata.mdm.core";
 
     private static final List<Dependency> DEPENDENCIES = Arrays.asList(
-            new Dependency("org.unidata.mdm.system", "5.2"),
-            new Dependency("org.unidata.mdm.search", "5.2")
+            new Dependency("org.unidata.mdm.system", "6.0"),
+            new Dependency("org.unidata.mdm.search", "6.0")
     );
 
     @Autowired

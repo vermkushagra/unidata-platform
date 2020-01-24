@@ -80,7 +80,7 @@ public class MetaModule extends AbstractModule {
     public static final String MODULE_ID = "org.unidata.mdm.meta";
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
-            new Dependency("org.unidata.mdm.core", "5.2")
+            new Dependency("org.unidata.mdm.core", "6.0")
     );
 
     /**

@@ -33,7 +33,7 @@ import java.util.Set;
 public class CoreSoapModule implements Module {
 
     private static final Set<Dependency> DEPENDENCIES = Collections.singleton(
-            new Dependency("org.unidata.mdm.core", "5.2")
+            new Dependency("org.unidata.mdm.core", "6.0")
     );
 
     @Override

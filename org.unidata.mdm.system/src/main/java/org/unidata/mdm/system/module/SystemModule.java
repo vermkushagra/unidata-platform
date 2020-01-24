@@ -73,7 +73,7 @@ public class SystemModule implements Module {
 
     @Override
     public String getVersion() {
-        return "5.2";
+        return "6.0";
     }
 
     @Override
