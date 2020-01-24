@@ -355,7 +355,7 @@ public class DataModule extends AbstractModule {
      */
     @Override
     public String getVersion() {
-        return "5.2";
+        return "6.0";
     }
     /**
      * {@inheritDoc}

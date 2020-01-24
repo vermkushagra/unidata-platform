@@ -192,8 +192,8 @@ Right now Unidata uses single configuration file, called __backend.properties__ 
 
 ```properties
 # Versions - platform and SOAP
-unidata.api.version = 5.2
-unidata.platform.version = 5.2
+unidata.api.version = 6.0
+unidata.platform.version = 6.0
 
 # This node id. Must be unique across cluster (TODO generate!).
 unidata.node.id = 87ba01ce01e0
