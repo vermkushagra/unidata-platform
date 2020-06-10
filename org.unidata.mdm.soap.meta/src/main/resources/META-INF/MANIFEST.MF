@@ -1,2 +1,0 @@
-Manifest-Version: 1.0
-Unidata-Module-Class: org.unidata.mdm.soap.meta.module.MetaSoapModule
