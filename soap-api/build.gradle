@@ -1,0 +1,282 @@
+buildscript {
+
+    ext {
+        xjcVersion= '3.0.5'
+        jaxbOutputDir = "$buildDir/generated/cxf"
+        jaxb2BasicsVersion = '0.11.0'
+        cxfVersion= '3.1.0'
+        camelVersion = '2.16.1'
+    }
+
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+    cxf
+    providedCompile
+}
+
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${project.rootDir}/gradle/dependencies.gradle"
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+apply plugin: 'eclipse'
+
+sourceSets {
+    main {
+        java {
+            srcDirs += "$jaxbOutputDir"
+        }
+    }
+}
+
+task wsdl2javaV3(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v3/unidata-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v3/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v3/unidata-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+
+task wsdl2javaV4(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v4/unidata-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v4/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v4/unidata-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+task wsdl2javaV4DQ(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-exsh', true
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v4/dq-unidata-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v4/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v4/dq-unidata-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+task wsdl2javaV5(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v5/unidata-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v5/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v5/unidata-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+task wsdl2javaV5DQ(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-exsh', true
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v5/dq-unidata-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v5/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v5/dq-unidata-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+task wsdl2javaV5Meta(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-exsh', true
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v5/unidata-meta.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args '-b',"$projectDir/src/main/resources/api/v5/bindings.xjb"
+    args "$projectDir/src/main/resources/api/v5/unidata-meta.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+task wsdl2javaV5Login(type: JavaExec) {
+    ext {
+        outputDir = file("$jaxbOutputDir")
+    }
+    systemProperties  = ['javax.xml.accessExternalSchema': 'file' , 'file.encoding':'UTF8']
+    outputs.upToDateWhen { false }
+    outputs.dir outputDir
+    main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+    classpath = project.configurations.cxf
+    args '-d', outputDir
+    args '-fe', 'jaxws21'
+    args '-all'
+    args '-exsh', true
+    args '-verbose'
+    args '-validate'
+    args '-mark-generated'
+    args '-wsdlLocation', 'classpath:api/v5/login-api.wsdl'
+    args '-xjc-Xfluent-api'
+    args '-xjc-Xts'
+    args '-xjc-Xannotate'
+    args "$projectDir/src/main/resources/api/v5/login-api.wsdl"
+    doLast {
+        println "----- cxf jaxb2 files generated -----"
+    }
+}
+dependencies {
+
+    compile project(':common')
+
+    // Java Servlet API
+    providedCompile "javax.servlet:javax.servlet-api:3.0.1"
+
+    // Springframework - Apache License, v.2.0
+    compile 'org.springframework:spring-beans'
+    compile 'org.springframework.security:spring-security-core'
+
+    cxf "org.apache.cxf:cxf-tools-wsdlto-core:$cxfVersion"
+    cxf "org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:$cxfVersion"
+    cxf "org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:$cxfVersion"
+    cxf "org.jvnet.jaxb2_commons:jaxb2-basics-annotate:1.0.2"
+    cxf "org.jvnet.jaxb2_commons:jaxb2-fluent-api:3.0"
+    cxf "org.apache.cxf.xjcplugins:cxf-xjc-ts:$xjcVersion"
+
+    compile "org.apache.cxf.xjc-utils:cxf-xjc-runtime:$xjcVersion"
+    compile "org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion"
+
+    compile 'commons-lang:commons-lang:2.6'
+    compile group: 'com.google.guava', name: 'guava', version: '21.0'
+
+    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+}
+
+sourceSets.main.compileClasspath += configurations.providedCompile
+sourceSets.test.compileClasspath += configurations.providedCompile
+sourceSets.test.runtimeClasspath += configurations.providedCompile
+
+compileJava.dependsOn wsdl2javaV3, wsdl2javaV4, wsdl2javaV4DQ,  wsdl2javaV5Meta, wsdl2javaV5Login, wsdl2javaV5, wsdl2javaV5DQ
+
+tasks.withType(Jar) { // Common for Jars
+    destinationDir = new File(project.rootDir, '/target')
+}
+
+/**
+ * Create and push maven module for maven repository
+ */
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId "com.unidata-platform"
+            artifactId project.name
+            version "${project.version}-${versionFullWithBranch}"
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'server1.local'
+            credentials {
+                username 'admin'
+                password 'TaskData2015'
+            }
+            url 'http://maven.taskdata.work:8081/artifactory/libs-release-local/'
+        }
+    }
+}

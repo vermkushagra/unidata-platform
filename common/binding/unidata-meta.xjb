@@ -1,0 +1,21 @@
+<jxb:bindings 
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb" 
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd" 
+    version="2.1">
+    
+    <jxb:bindings schemaLocation="../src/main/resources/schemas/unidata-meta-3.0.xsd">
+        <jxb:bindings node="//xsd:complexType[@name='ConstantValueDef']//xsd:sequence//xsd:element[@name='dateValue']">
+            <xjc:javaType adapter="com.unidata.mdm.backend.common.types.impl.LocalDateAdapter" name="java.time.LocalDate"/>
+        </jxb:bindings>
+        <jxb:bindings node="//xsd:complexType[@name='ConstantValueDef']//xsd:sequence//xsd:element[@name='timeValue']">
+            <xjc:javaType adapter="com.unidata.mdm.backend.common.types.impl.LocalTimeAdapter" name="java.time.LocalTime"/>
+        </jxb:bindings>
+        <jxb:bindings node="//xsd:complexType[@name='ConstantValueDef']//xsd:sequence//xsd:element[@name='timestampValue']">
+            <xjc:javaType adapter="com.unidata.mdm.backend.common.types.impl.LocalDateTimeAdapter" name="java.time.LocalDateTime"/>
+        </jxb:bindings>
+    </jxb:bindings>
+    
+</jxb:bindings>

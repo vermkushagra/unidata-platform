@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:conf="http://conf.mdm.unidata.com/"
+           targetNamespace="http://conf.mdm.unidata.com/"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:simpleType name="FQCN">
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="WorkflowProcessType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RecordEdit"/>
+            <xs:enumeration value="RecordDelete"/>
+            <xs:enumeration value="RecordRestore"/>
+            <xs:enumeration value="RecordMerge"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="WorkflowProcessDefinition">
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="type" type="conf:WorkflowProcessType"/>
+        <xs:attribute name="path" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="conf:FQCN" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="WorkflowProcessDefinitions">
+        <xs:sequence>
+            <xs:element name="process" type="conf:WorkflowProcessDefinition" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Workflow">
+        <xs:sequence>
+            <xs:element name="processes" type="conf:WorkflowProcessDefinitions" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Listener">
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="class" type="conf:FQCN" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListenerRef">
+        <xs:attribute name="listener" type="xs:IDREF" use="required"/>
+        <xs:attribute name="entity" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfListeners">
+        <xs:sequence>
+            <xs:element name="listeners" type="conf:Listener" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfListenerRefs">
+        <xs:sequence>
+            <xs:element name="listenerRef" type="conf:ListenerRef" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Upsert">
+        <xs:sequence>
+            <xs:element name="beforeOriginUpsert" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterOriginUpsert" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterEtalonComposition" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="beforeOriginRelationUpsert" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterOriginRelationUpsert" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterComplete" type="conf:ListOfListenerRefs" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Merge">
+        <xs:sequence>
+            <xs:element name="beforeMerge" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterMerge" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Delete">
+        <xs:sequence>
+            <xs:element name="beforeEtalonDeactivation" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterEtalonDeactivation" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="beforeRelationDeactivation" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterRelationDeactivation" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Search">
+        <xs:sequence>
+            <xs:element name="beforeSearch" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="afterSearch" type="conf:ListOfListenerRefs" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Join">
+        <xs:sequence>
+            <xs:element name="beforeJoin" type="conf:ListOfListenerRefs"/>
+            <xs:element name="afterJoin" type="conf:ListOfListenerRefs"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Split">
+        <xs:sequence>
+            <xs:element name="beforeSplit" type="conf:ListOfListenerRefs"/>
+            <xs:element name="afterSplit" type="conf:ListOfListenerRefs"/>
+        </xs:sequence>
+    </xs:complexType>
+    
+    <xs:complexType name="Model">
+        <xs:sequence>
+            <xs:element name="upsertDraft" type="conf:ListOfListenerRefs"/>
+            <xs:element name="applyModel" type="conf:ListOfListenerRefs"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="Exits">
+        <xs:sequence>
+            <xs:element name="listeners" type="conf:ListOfListeners" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="upsert" type="conf:Upsert" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="merge" type="conf:Merge" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="delete" type="conf:Delete" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="search" type="conf:Search" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="join" type="conf:Join"/>
+            <xs:element name="split" type="conf:Split"/>
+            <xs:element name="model" type="conf:Model"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- Pluggable authentication -->
+    <xs:complexType name="Provider">
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="class" type="conf:FQCN" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfProviders">
+        <xs:sequence>
+            <xs:element name="provider" type="conf:Provider" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SecurityDataProviderSource">
+        <xs:attribute name="name" type="xs:ID" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="authenticationProvider" type="xs:IDREF" use="optional"/>
+        <xs:attribute name="authorizationProvider" type="xs:IDREF" use="optional"/>
+        <xs:attribute name="profileProvider" type="xs:IDREF" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfSecurityDataProviderSources">
+        <xs:sequence>
+            <xs:element name="source" type="conf:SecurityDataProviderSource" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SecurityDataProviders">
+        <xs:sequence>
+            <xs:element name="providers" type="conf:ListOfProviders" minOccurs="1" maxOccurs="1"/>
+            <xs:element name="sources" type="conf:ListOfSecurityDataProviderSources" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- End of pluggable authentication -->
+
+    <!-- Notifications -->
+    <xs:complexType name="Notifications">
+        <xs:sequence>
+            <xs:element name="notification" type="conf:Notification" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Notification">
+        <xs:sequence>
+            <xs:element name="routeRawDefinition" type="xs:string" maxOccurs="1" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="uri" type="xs:string" use="required"/>
+        <xs:attribute name="enabled" type="xs:boolean" use="required"/>
+    </xs:complexType>
+    <!-- EOF Notifications -->
+
+    <!-- Sinks -->
+    <xs:complexType name="Sinks">
+        <xs:sequence>
+            <xs:element name="sink" type="conf:Sink" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="Sink">
+        <xs:sequence>
+            <xs:element name="property" type="conf:SinkProperty" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:ID" use="required"/>
+        <xs:attribute name="uri" type="xs:string" use="required"/>
+        <xs:attribute name="class" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="SinkProperty">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
+    </xs:complexType>
+    <!-- EOF Sinks -->
+
+    <xs:complexType name="SecurityInterceptionProviders">
+        <xs:annotation>
+            <xs:documentation>
+                Список провайдеров интерсепторов для проведения аутентификации и авторизации
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence maxOccurs="unbounded">
+            <xs:element name="provider" type="conf:SecurityInterceptionProvider"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="SecurityInterceptionProvider">
+        <xs:attribute name="id" type="xs:string"/>
+        <xs:attribute name="class" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:element name="configuration">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="exits" type="conf:Exits" maxOccurs="1" minOccurs="1"/>
+                <xs:element name="securityDataProviders" type="conf:SecurityDataProviders" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="workflow" type="conf:Workflow" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="notifications" type="conf:Notifications" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="sinks" type="conf:Sinks" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="securityInterceptionProviders" type="conf:SecurityInterceptionProviders"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

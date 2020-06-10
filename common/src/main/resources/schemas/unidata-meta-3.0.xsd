@@ -1,0 +1,1012 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:meta="http://meta.mdm.unidata.com/" targetNamespace="http://meta.mdm.unidata.com/"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+    jaxb:version="2.0">
+
+    <xs:annotation>
+        <xs:appinfo>
+            <jaxb:globalBindings>
+                <jaxb:serializable uid="0987654321"/>
+            </jaxb:globalBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
+    <!-- Data types allowed arrays. -->
+    <xs:simpleType name="AttributeType">
+        <xs:restriction base="xs:string">
+            <!-- Simple attribute. -->
+            <xs:enumeration value="Simple"/>
+            <!-- Code attribute. -->
+            <xs:enumeration value="Code"/>
+            <!-- Array attribute. -->
+            <xs:enumeration value="Array"/>
+            <!-- Complext attribute. -->
+            <xs:enumeration value="Complex"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="SimpleDataType">
+        <xs:restriction base="xs:string">
+            <!-- Date without time and timezone. -->
+            <xs:enumeration value="Date"/>
+            <!-- Time without date and timezone. -->
+            <xs:enumeration value="Time"/>
+            <!-- Timestamp without timezone. -->
+            <xs:enumeration value="Timestamp"/>
+            <!-- Plain string. -->
+            <xs:enumeration value="String"/>
+            <!-- 64bit integer -->
+            <xs:enumeration value="Integer"/>
+            <!-- 64bit FP number. -->
+            <xs:enumeration value="Number"/>
+            <!-- Plain boolean -->
+            <xs:enumeration value="Boolean"/>
+            <!-- Binary large object, containing file name, size etc. attributes. Used for attachments. -->
+            <xs:enumeration value="Blob"/>
+            <!-- Character large object, containing file name, size etc. attributes. Used for attachments. -->
+            <xs:enumeration value="Clob"/>
+            <!-- 64bit FP number with measurement value options -->
+            <xs:enumeration value="Measured"/>
+            <!-- Link to a value in a enumeration (EnumerationDataType code value) -->
+            <!--
+            <xs:enumeration value="Enum"/>
+            -->
+            <!-- Special type, containing a template, where attribute names can be replaced with their current values. -->
+            <!--
+            <xs:enumeration value="Link"/>
+            -->
+            <!-- Link to a code/alias attribute(s) value in a lookup entity (LookupEntityDef code/alias attribute(s))-->
+            <!--
+            <xs:enumeration value="Code"/>
+            -->
+            <!-- Guess the type -->
+            <xs:enumeration value="Any"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Data types allowed in DQ constants. -->
+    <xs:simpleType name="ConstantValueType">
+        <xs:restriction base="meta:SimpleDataType">
+            <!-- Date without time and timezone. -->
+            <xs:enumeration value="Date"/>
+            <!-- Time without date and timezone. -->
+            <xs:enumeration value="Time"/>
+            <!-- Timestamp without timezone. -->
+            <xs:enumeration value="Timestamp"/>
+            <!-- Plain string. -->
+            <xs:enumeration value="String"/>
+            <!-- 64bit integer -->
+            <xs:enumeration value="Integer"/>
+            <!-- 64bit FP number. -->
+            <xs:enumeration value="Number"/>
+            <!-- Plain boolean -->
+            <xs:enumeration value="Boolean"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Data types allowed arrays. -->
+    <xs:simpleType name="ArrayValueType">
+        <xs:restriction base="meta:SimpleDataType">
+            <!-- Date without time and timezone. -->
+            <xs:enumeration value="Date"/>
+            <!-- Time without date and timezone. -->
+            <xs:enumeration value="Time"/>
+            <!-- Timestamp without timezone. -->
+            <xs:enumeration value="Timestamp"/>
+            <!-- Plain string. -->
+            <xs:enumeration value="String"/>
+            <!-- 64bit integer -->
+            <xs:enumeration value="Integer"/>
+            <!-- 64bit FP number. -->
+            <xs:enumeration value="Number"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ConstantValueDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.backend.common.types.impl.ConstantValueDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:choice maxOccurs="1">
+                <xs:element name="intValue" type="xs:long" nillable="false"/>
+                <xs:element name="dateValue" type="xs:date" nillable="false"/>
+                <xs:element name="timeValue" type="xs:time" nillable="false"/>
+                <xs:element name="timestampValue" type="xs:dateTime" nillable="false"/>
+                <xs:element name="stringValue" type="xs:string" nillable="false"/>
+                <xs:element name="numberValue" type="xs:double" nillable="false"/>
+                <xs:element name="boolValue" type="xs:boolean" nillable="false"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="type" type="meta:ConstantValueType" use="required"/>
+    </xs:complexType>
+
+    <xs:simpleType name="SeverityType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CRITICAL" />
+            <xs:enumeration value="HIGH" />
+            <xs:enumeration value="NORMAL" />
+            <xs:enumeration value="LOW" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQRPhaseType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BEFORE_UPSERT" />
+            <xs:enumeration value="AFTER_UPSERT" />
+            <xs:enumeration value="AFTER_MERGE" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="DQRuleExecutionContext">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="GLOBAL" /> <!-- allow filtering for input and output of any depth. -->
+            <xs:enumeration value="LOCAL" /> <!-- execute for filtered records, their direct ancestors and their leaves.  -->
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="DQRuleRunType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RUN_ALWAYS" /> <!-- Skip port value validation -->
+            <xs:enumeration value="RUN_NEVER" /> <!-- Disabled -->
+            <xs:enumeration value="RUN_ON_REQUIRED_PRESENT" /> <!-- Run only if required ports have values. Other ports may miss values. -->
+            <xs:enumeration value="RUN_ON_ALL_PRESENT" /> <!-- Run only if all ports have values. Skip run otherwise. -->
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQRActionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CREATE_NEW" />
+            <xs:enumeration value="UPDATE_CURRENT" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQRuleType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="VALIDATE" />
+            <xs:enumeration value="ENRICH" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQRuleClass">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="SYSTEM" />
+            <xs:enumeration value="USER_DEFINED" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQCleanseFunctionPortApplicationMode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MODE_ALL" />
+            <xs:enumeration value="MODE_ALL_WITH_INCOMPLETE" />
+            <xs:enumeration value="MODE_ONCE" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DQApplicableType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ORIGIN" />
+            <xs:enumeration value="ETALON" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="MergeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BVR" />
+            <xs:enumeration value="BVT" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ExternalIdGenerationStrategyType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="RANDOM" />
+            <xs:enumeration value="CONCAT" />
+            <xs:enumeration value="SEQUENCE" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="KeyAttribute">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+            <xs:pattern value=".*[^\s].*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="EnumerationValue">
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="displayName" type="xs:string" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="EnumerationDataType">
+        <xs:complexContent>
+            <xs:extension base="meta:VersionedObjectDef">
+                <xs:sequence>
+                    <xs:element name="enumVal" type="meta:EnumerationValue"
+                        minOccurs="1" maxOccurs="unbounded" />
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="displayName" type="xs:string" use="optional" />
+          </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="MeasurementValueDef">
+        <xs:sequence>
+            <xs:element type="meta:MeasurementUnitDef" name="unit" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="shortName" type="xs:string" use="required"/>
+        <xs:attribute name="displayName" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="MeasurementUnitDef">
+        <xs:attribute name="id" type="xs:string" use="required"/>
+        <xs:attribute name="shortName" type="xs:string" use="required"/>
+        <xs:attribute name="displayName" type="xs:string" use="required"/>
+        <xs:attribute name="base" type="xs:boolean" use="required"/>
+        <xs:attribute name="convectionFunction" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AttributeMeasurementSettingsDef">
+        <xs:attribute name="valueId" type="xs:string" use="required"/>
+        <xs:attribute name="defaultUnitId" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractAttributeDef">
+        <xs:sequence>
+            <xs:element type="meta:CustomPropertyDef" name="customProperties" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="meta:KeyAttribute" use="required"/>
+        <xs:attribute name="displayName" type="xs:string" use="optional" />
+        <xs:attribute name="description" type="xs:string" use="optional" />
+        <xs:attribute name="readOnly" type="xs:boolean" use="optional" default="false"/>
+        <xs:attribute name="hidden" type="xs:boolean" use="optional" default="false"/>
+    </xs:complexType>
+
+    <xs:complexType name="ArrayAttributeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractAttributeDef">
+                <xs:sequence>
+                    <xs:element name="lookupEntityDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="lookupEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                </xs:sequence>
+                <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
+                <!-- Для атрибутов ниже, значение по умолчанию является также единствено
+                    возможнвым -->
+                <xs:attribute name="arrayValueType" type="meta:ArrayValueType"
+                    use="optional"/>
+                <xs:attribute name="searchable" type="xs:boolean" use="optional"
+                    default="false" />
+                <xs:attribute name="nullable" type="xs:boolean" use="required" />
+                <xs:attribute name="searchMorphologically" type="xs:boolean" use="optional"
+                    default="false" />
+                <!--
+                Поле типа строка, являющееся ссылкой на данные некоего справочника.
+                Доступно для редактирования только для типа SimpleDataType.Code.
+                -->
+                <xs:attribute name="lookupEntityType" type="xs:string" use="optional" />
+                <xs:attribute name="lookupEntityCodeAttributeType" type="meta:ArrayValueType"
+                    use="optional" />
+                <xs:attribute name="mask" type="xs:string" default="" />
+                <xs:attribute name="exchangeSeparator" type="xs:string" default="|"/>
+                <!-- Взаимо-исключающий набор атрибутов. Конец объявления -->
+                <xs:attribute name="order" type="xs:integer" default="0" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractSimpleAttributeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractAttributeDef">
+                <!-- Для атрибутов ниже, значение по умолчанию является также единствено
+                    возможнвым -->
+                <xs:attribute name="simpleDataType" type="meta:SimpleDataType"
+                    use="optional"/>
+                <xs:attribute name="searchable" type="xs:boolean" use="optional"
+                    default="false" />
+                <xs:attribute name="displayable" type="xs:boolean" use="optional"
+                    default="false" />
+                <xs:attribute name="mainDisplayable" type="xs:boolean"
+                    use="optional" default="false" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SimpleAttributeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractSimpleAttributeDef">
+                <xs:sequence>
+                    <xs:element name="measureSettings" type="meta:AttributeMeasurementSettingsDef" minOccurs="1" maxOccurs="1"/>
+                    <xs:element name="lookupEntityDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="lookupEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                </xs:sequence>
+                <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
+                <xs:attribute name="nullable" type="xs:boolean" use="required" />
+                <xs:attribute name="unique" type="xs:boolean" default="false" />
+                <xs:attribute name="searchMorphologically" type="xs:boolean" use="optional"
+                    default="false" />
+                <!-- Взаимо-исключающий набор атрибутов. Начало объявления -->
+                <!--
+                Поле типа строка, являющееся ссылкой на данные некоего перечисления.
+                Доступно для редактирования только для типа SimpleDataType.Enum.
+                -->
+                <xs:attribute name="enumDataType" type="xs:string" use="optional" />
+                <!-- Поле типа строка, предусматривающее специальную обработку (подстановку значений других аттрибутов из темплейта при отдаче объекта данных).
+                Например http://www.mycompany.com/{inn}/{okpo}.
+                Доступно для редактирования только для типа SimpleDataType.Link.
+                -->
+                <xs:attribute name="linkDataType" type="xs:string" use="optional" />
+                <!--
+                Поле типа строка, являющееся ссылкой на данные некоего справочника.
+                Доступно для редактирования только для типа SimpleDataType.Code.
+                -->
+                <xs:attribute name="lookupEntityType" type="xs:string"
+                    use="optional" />
+                <xs:attribute name="lookupEntityCodeAttributeType" type="meta:SimpleDataType"
+                    use="optional" />
+                <xs:attribute name="mask" type="xs:string" default="" />
+                <!-- Взаимо-исключающий набор атрибутов. Конец объявления -->
+                <xs:attribute name="order" type="xs:integer" default="0" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="AttributeGroupDef">
+        <xs:sequence>
+            <xs:element name="attributes" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="row" type="xs:int" use="required"/>
+        <xs:attribute name="column" type="xs:int" use="required"/>
+        <xs:attribute name="title" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="RelationGroupDef">
+        <xs:sequence>
+            <xs:element name="relations" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="row" type="xs:int" use="required"/>
+        <xs:attribute name="column" type="xs:int" use="required"/>
+        <xs:attribute name="relType" type="meta:RelType" use="required" />
+        <xs:attribute name="title" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="CodeAttributeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractSimpleAttributeDef">
+                <xs:sequence>
+                    <xs:element name="externalIdGenerationStrategy" type="meta:AbstractExternalIdGenerationStrategyDef" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+                <xs:attribute name="nullable" type="xs:boolean" default="false" />
+                <xs:attribute name="unique" type="xs:boolean" default="true" />
+                <xs:attribute name="mask" type="xs:string" default="" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ComplexAttributeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractAttributeDef">
+                <xs:attribute name="nestedEntityName" type="meta:KeyAttribute" />
+                <xs:attribute name="minCount" type="xs:integer" />
+                <xs:attribute name="maxCount" type="xs:integer" />
+                <!-- Позволяет сказать какой из атрибутов вложенной сущности будет использоваться
+                    как натуральный ключ Например для вложенной сущности 'телефон', ключом может
+                    быть 'тип телефона' - 'рабочий', 'домашний' итд -->
+                <xs:attribute name="subEntityKeyAttribute" type="xs:string"
+                    use="optional" />
+                <xs:attribute name="order" type="xs:integer" default="0" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="VersionedObjectDef">
+        <xs:attribute name="version" type="xs:long"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+        <xs:attribute name="createAt" type="xs:dateTime"/>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractEntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:VersionedObjectDef">
+                <xs:sequence>
+                    <xs:element name="mergeSettings" type="meta:MergeSettingsDef"
+                        minOccurs="0" maxOccurs="1" />
+                    <xs:element name="classifiers" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="validityPeriod" type="meta:PeriodBoundaryDef" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="attributeGroups" type="meta:AttributeGroupDef" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="relationGroups" type="meta:RelationGroupDef" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element name="dataQuality" type="meta:EntityDataQualityDef" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="customProperties" type="meta:CustomPropertyDef" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="name" type="meta:KeyAttribute" use="required" />
+                <xs:attribute name="displayName" type="xs:string" use="optional" />
+                <xs:attribute name="description" type="xs:string" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="CustomPropertyDef">
+        <xs:annotation>
+            <xs:documentation>
+                Дополнительное свойству сущности
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute type="xs:string" name="name"/>
+        <xs:attribute type="xs:string" name="value"/>
+    </xs:complexType>
+
+    <xs:complexType name="SimpleAttributesHolderEntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractEntityDef">
+                <xs:sequence>
+                    <xs:element name="simpleAttribute" type="meta:SimpleAttributeDef"
+                        minOccurs="0" maxOccurs="unbounded" nillable="true" />
+                    <xs:element name="arrayAttribute" type="meta:ArrayAttributeDef"
+                        minOccurs="0" maxOccurs="unbounded" nillable="true" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ComplexAttributesHolderEntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:SimpleAttributesHolderEntityDef">
+                <xs:sequence>
+                    <xs:element name="complexAttribute" type="meta:ComplexAttributeDef"
+                        minOccurs="0" maxOccurs="unbounded" nillable="true" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="NestedEntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:ComplexAttributesHolderEntityDef" />
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="LookupEntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:SimpleAttributesHolderEntityDef">
+                <xs:sequence>
+                    <xs:element name="externalIdGenerationStrategy" type="meta:AbstractExternalIdGenerationStrategyDef" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="codeAttribute" type="meta:CodeAttributeDef"
+                        minOccurs="1" maxOccurs="1" nillable="false" />
+                    <xs:element name="aliasCodeAttributes" type="meta:CodeAttributeDef"
+                        minOccurs="0" maxOccurs="unbounded" nillable="false"/>
+                </xs:sequence>
+                <xs:attribute name="dashboardVisible" type="xs:boolean" default="false"/>
+                <xs:attribute name="groupName" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="PeriodBoundaryDef">
+        <xs:sequence>
+        <xs:element name="start" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="end" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EntityDef">
+        <xs:complexContent>
+            <xs:extension base="meta:NestedEntityDef">
+                <xs:sequence>
+                    <xs:element name="externalIdGenerationStrategy" type="meta:AbstractExternalIdGenerationStrategyDef" minOccurs="0" maxOccurs="1"/>
+                </xs:sequence>
+                <xs:attribute name="dashboardVisible" type="xs:boolean" default="false"/>
+                <xs:attribute name="groupName" type="xs:string"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="RelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="References" /> <!-- Ссылается -->
+            <xs:enumeration value="Contains" /> <!-- Содержит -->
+            <xs:enumeration value="ManyToMany" /> <!-- TODO rename -->
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="DQRMappingDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.backend.common.types.impl.DQRMappingDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="attributeConstantValue" type="meta:ConstantValueDef" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="attributeName" type="meta:KeyAttribute" use="required" />
+        <xs:attribute name="inputPort" type="xs:string" use="optional" />
+        <xs:attribute name="outputPort" type="xs:string" use="optional" />
+    </xs:complexType>
+    
+    <xs:complexType name="DQREnrichDef">
+        <xs:attribute name="sourceSystem" type="xs:string" use="optional" />
+        <xs:attribute name="action" type="meta:DQRActionType"
+            use="optional" />
+        <xs:attribute name="phase" type="meta:DQRPhaseType" use="optional" />
+    </xs:complexType>
+    <xs:complexType name="DQRRaiseDef">
+        <xs:attribute name="functionRaiseErrorPort" type="xs:string"
+            use="required" />
+        <xs:attribute name="messagePort" type="xs:string" use="optional" />
+        <xs:attribute name="messageText" type="xs:string" use="optional" />
+        <xs:attribute name="severityPort" type="xs:string" use="optional" />
+        <xs:attribute name="severityValue" type="meta:SeverityType" use="optional" />
+        <xs:attribute name="categoryPort" type="xs:string" use="optional" />
+        <xs:attribute name="categoryText" type="xs:string" use="optional" />
+        <xs:attribute name="pathsPort" type="xs:string" use="optional" />
+        <xs:attribute name="phase" type="meta:DQRPhaseType" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="DQRSourceSystemRef">
+        <xs:attribute name="name" type="xs:string" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="DQROriginsDef">
+        <xs:sequence>
+            <xs:element name="sourceSystem" type="meta:DQRSourceSystemRef"
+                minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="all" type="xs:boolean" use="required" />
+    </xs:complexType>
+
+    <xs:complexType name="DQRuleDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.backend.common.types.impl.DQRuleDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="dqrMapping" type="meta:DQRMappingDef" minOccurs="1" maxOccurs="unbounded" />
+            <xs:element name="origins" type="meta:DQROriginsDef" minOccurs="1" maxOccurs="1" />
+            <xs:element name="raise" type="meta:DQRRaiseDef" minOccurs="0" maxOccurs="1" />
+            <xs:element name="enrich" type="meta:DQREnrichDef" minOccurs="0" maxOccurs="1" />
+            <xs:element name="type" type="meta:DQRuleType" minOccurs="1" maxOccurs="2" />
+            <xs:element name="rClass" type="meta:DQRuleClass" minOccurs="0" maxOccurs="1" />
+            <xs:element name="applicable" type="meta:DQApplicableType" minOccurs="0" maxOccurs="2" />
+            <xs:element name="customProperties" type="meta:CustomPropertyDef" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="meta:KeyAttribute" use="required" />
+        <xs:attribute name="cleanseFunctionName" type="xs:string" use="required" />
+        <xs:attribute name="description" type="xs:string" use="optional" />
+        <xs:attribute name="order" type="xs:integer" use="required" />
+        <xs:attribute name="special" type="xs:boolean" default="false" />
+        <xs:attribute name="runType" type="meta:DQRuleRunType" default="RUN_ON_REQUIRED_PRESENT"/>
+        <xs:attribute name="executionContextPath" type="xs:string" />
+        <xs:attribute name="executionContext" type="meta:DQRuleExecutionContext" default="GLOBAL"/>
+    </xs:complexType>
+    <xs:simpleType name="PhaseDef">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BEFORE_UPSERT" />
+            <xs:enumeration value="AFTER_UPSERT" />
+            <xs:enumeration value="AFTER_MERGE" />
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name="EntityDataQualityDef">
+        <xs:sequence>
+            <xs:element name="dqRule" type="meta:DQRuleDef" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractMergeTypeDef" />
+
+    <!-- BVR merge type contains source systems set, relevant to a particular entity. -->
+    <xs:complexType name="BVRMergeTypeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractMergeTypeDef">
+                <xs:sequence>
+                    <xs:element name="sourceSystemsConfig" type="meta:ListOfSourceSystems"
+                            minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="MergeAttributeDef">
+        <xs:sequence>
+            <xs:element name="sourceSystemsConfig" type="meta:ListOfSourceSystems"
+                    minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+        <xs:attribute name="name" use="required" type="xs:string"/>
+    </xs:complexType>
+
+    <!-- BVT merge type contains attributes merge settings alone with source systems set, relevant to a particular entity. -->
+    <xs:complexType name="BVTMergeTypeDef">
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractMergeTypeDef">
+                <xs:sequence>
+                    <xs:element name="attribute" type="meta:MergeAttributeDef" minOccurs="1" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:appinfo>
+                                <jaxb:property name="attributes"/>
+                            </xs:appinfo>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="MergeSettingsDef">
+        <xs:sequence>
+            <xs:element name="bvtSettings" type="meta:BVTMergeTypeDef" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="bvrSettings" type="meta:BVRMergeTypeDef" minOccurs="0" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractExternalIdGenerationStrategyDef" abstract="true">
+        <xs:attribute name="strategyType" type="meta:ExternalIdGenerationStrategyType" />
+    </xs:complexType>
+
+    <xs:complexType name="RandomExternalIdGenerationStrategyDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.meta.RandomExternalIdGenerationStrategyDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractExternalIdGenerationStrategyDef"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ConcatenatedExternalIdGenerationStrategyDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.meta.ConcatenatedExternalIdGenerationStrategyDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractExternalIdGenerationStrategyDef">
+                <xs:sequence>
+                    <xs:element name="attributes" type="xs:string" minOccurs="1" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="separator" type="xs:string" minOccurs="1" maxOccurs="1" nillable="true"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SequenceExternalIdGenerationStrategyDef">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.meta.SequenceExternalIdGenerationStrategyDefImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="meta:AbstractExternalIdGenerationStrategyDef"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="Port" >
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="dataType" type="meta:SimpleDataType" use="required" />
+        <xs:attribute name="required" type="xs:boolean" use="required" />
+        <xs:attribute name="description" type="xs:string" use="optional" />
+        <xs:attribute name="applicationMode" type="meta:DQCleanseFunctionPortApplicationMode" default="MODE_ALL"/>
+    </xs:complexType>
+
+    <xs:complexType name="CleansePortList">
+        <xs:sequence>
+            <xs:element name="port" type="meta:Port" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="CompositeCleanseFunctionNodeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Constant" />
+            <xs:enumeration value="ifthenelse" />
+            <xs:enumeration value="OutputTrue" />
+            <xs:enumeration value="OutputFalse" />
+            <xs:enumeration value="Condition" />
+            <xs:enumeration value="Input" />
+            <xs:enumeration value="Output" />
+            <xs:enumeration value="InputPorts" />
+            <xs:enumeration value="OutputPorts" />
+            <xs:enumeration value="Function" />
+            <xs:enumeration value="Switch" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="CleanseFunctionConstant">
+        <!-- Взаимо-исключающий набор атрибутов -->
+        <xs:attribute name="intValue" type="xs:int" use="optional" />
+        <xs:attribute name="dateValue" type="xs:date" use="optional" />
+        <xs:attribute name="stringValue" type="xs:string" use="optional" />
+        <xs:attribute name="numberValue" type="xs:double" use="optional" />
+        <xs:attribute name="boolValue" type="xs:boolean" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="CompositeCleanseFunctionLogic">
+        <xs:sequence>
+            <xs:element name="nodes" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="node" minOccurs="2" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element name="constant" type="meta:CleanseFunctionConstant"
+                                        minOccurs="0" maxOccurs="1" />
+                                    <xs:element name="value" type="meta:ConstantValueDef"
+                                        minOccurs="0" maxOccurs="1" />
+                                </xs:sequence>
+                                <xs:attribute name="nodeId" type="xs:integer" use="required" />
+                                <xs:attribute name="nodeType"
+                                    type="meta:CompositeCleanseFunctionNodeType" use="required" />
+                                <xs:attribute name="functionName" type="xs:string"
+                                    use="optional" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="links" minOccurs="1" maxOccurs="1">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="nodeLink" minOccurs="0" maxOccurs="unbounded">
+                            <xs:complexType>
+                                <xs:attribute name="fromNodeId" type="xs:integer"
+                                    use="required" />
+                                <xs:attribute name="fromPort" type="xs:string" use="required" />
+                                 <xs:attribute name="fromPortType" type="meta:CompositeCleanseFunctionNodeType" use="optional" />
+                                <xs:attribute name="toNodeId" type="xs:integer"
+                                    use="required" />
+                                <xs:attribute name="toPort" type="xs:string" use="required" />
+                                <xs:attribute name="toPortType" type="meta:CompositeCleanseFunctionNodeType" use="optional" />
+                            </xs:complexType>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="CleanseFunctionDef">
+        <xs:sequence>
+            <xs:element name="supportedExecutionContexts" type="meta:DQRuleExecutionContext" default="GLOBAL" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="functionName" type="xs:string" use="required" />
+        <xs:attribute name="javaClass" type="xs:string" use="optional" />
+        <xs:attribute name="description" type="xs:string" use="optional" />
+    </xs:complexType>
+
+    <xs:complexType name="CleanseFunctionExtendedDef">
+        <xs:complexContent>
+            <xs:extension base="meta:CleanseFunctionDef">
+                <xs:sequence>
+                    <xs:element name="inputPorts" type="meta:CleansePortList" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="outputPorts" type="meta:CleansePortList" minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="CompositeCleanseFunctionDef">
+        <xs:complexContent>
+            <xs:extension base="meta:CleanseFunctionExtendedDef">
+                <xs:sequence>
+                    <xs:element name="logic" type="meta:CompositeCleanseFunctionLogic"
+                        minOccurs="1" maxOccurs="1" />
+                </xs:sequence>
+                <!--<xs:attribute name="javaClass" type="xs:string" use="optional"/> -->
+            </xs:extension>
+        </xs:complexContent>
+
+    </xs:complexType>
+
+    <xs:complexType name="CleanseFunctionGroupDef">
+        <xs:complexContent>
+            <xs:extension base="meta:VersionedObjectDef">
+                <xs:choice minOccurs="1" maxOccurs="unbounded">
+                    <xs:element name="group" type="meta:CleanseFunctionGroupDef" />
+                    <xs:element name="cleanseFunction" type="meta:CleanseFunctionDef" />
+                    <xs:element name="compositeCleanseFunction" type="meta:CompositeCleanseFunctionDef" />
+                </xs:choice>
+                <xs:attribute name="groupName" type="xs:string" use="required" />
+                <xs:attribute name="description" type="xs:string" use="optional" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="SourceSystemDef">
+        <xs:complexContent>
+            <xs:extension base="meta:VersionedObjectDef">
+                <xs:sequence>
+                    <xs:element type="meta:CustomPropertyDef" name="customProperties" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="name" type="meta:KeyAttribute" use="required" />
+                <xs:attribute name="weight" type="xs:nonNegativeInteger"
+                    use="required" />
+                <xs:attribute name="description" type="xs:string" use="optional" />
+                <xs:attribute name="admin" type="xs:boolean" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="RelationDef">
+        <xs:complexContent>
+            <xs:extension base="meta:ComplexAttributesHolderEntityDef">
+                <xs:sequence>
+                    <xs:element name="externalIdGenerationStrategy" type="meta:AbstractExternalIdGenerationStrategyDef" minOccurs="0" maxOccurs="1"/>
+                    <xs:element name="toEntityDefaultDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="toEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                </xs:sequence>
+                <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
+                <xs:attribute name="fromEntity" type="meta:KeyAttribute" use="required" />
+                <xs:attribute name="toEntity" type="meta:KeyAttribute" use="required" />
+                <xs:attribute name="relType" type="meta:RelType" use="required" />
+                <xs:attribute name="required" type="xs:boolean" use="optional" default="false" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="ListOfDefaultClassifier">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="defaultClassifier" type="meta:DefaultClassifier" />
+        </xs:choice>
+    </xs:complexType>
+    <xs:complexType name="DefaultClassifier">
+    	<xs:sequence>
+    		<xs:element name="name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    		<xs:element name="displayName" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    		<xs:element name="codePattern" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    		<xs:element name="description" type="xs:string" minOccurs="1" maxOccurs="1"/>
+    	</xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ListOfEnumerations">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="enumeration" type="meta:EnumerationDataType" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfNestedEntities">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="nestedEntity" type="meta:NestedEntityDef" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfLookupEntities">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="lookupEntity" type="meta:LookupEntityDef" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfEntities">
+        <xs:sequence>
+            <xs:element name="entity" type="meta:EntityDef" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfRelations">
+        <xs:sequence>
+            <xs:element name="rel" type="meta:RelationDef" minOccurs="0"
+                maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MeasurementValues">
+        <xs:sequence>
+            <xs:element type="meta:MeasurementValueDef" name="value" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfCleanseFunctions">
+        <xs:sequence>
+            <xs:element name="group" type="meta:CleanseFunctionGroupDef"
+                minOccurs="1" maxOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="ListOfSourceSystems">
+        <xs:choice minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="sourceSystem" type="meta:SourceSystemDef" />
+        </xs:choice>
+    </xs:complexType>
+
+    <xs:complexType name="EntitiesGroupDef">
+        <xs:complexContent>
+            <xs:extension base="meta:VersionedObjectDef">
+                <xs:sequence minOccurs="0" maxOccurs="unbounded">
+                    <xs:element name="innerGroups" type="meta:EntitiesGroupDef" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+                <xs:attribute name="groupName" type="xs:string" use="required"/>
+                <xs:attribute name="title" type="xs:string" use="required"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="MatchingSettings">
+        <xs:sequence>
+            <xs:element name="attributes" type="xs:string" minOccurs="1" maxOccurs="5"/>
+        </xs:sequence>
+        <xs:attribute name="strategyName" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="model">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cleanseFunctions" type="meta:ListOfCleanseFunctions"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="sourceSystems" type="meta:ListOfSourceSystems"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="enumerations" type="meta:ListOfEnumerations"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="lookupEntities" type="meta:ListOfLookupEntities"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="measurementValues" type="meta:MeasurementValues"
+                            minOccurs="1" maxOccurs="1"/>
+                <xs:element name="nestedEntities" type="meta:ListOfNestedEntities"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="entities" type="meta:ListOfEntities"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="relations" type="meta:ListOfRelations"
+                    minOccurs="1" maxOccurs="1" />
+                <xs:element name="entitiesGroup" type="meta:EntitiesGroupDef"
+                    minOccurs="1" maxOccurs="1"/>
+                <xs:element name="defaultClassifiers" type="meta:ListOfDefaultClassifier"
+                    minOccurs="0" maxOccurs="1"/>
+            </xs:sequence>
+            <xs:attribute name="storageId" type="xs:string" use="required" />
+        </xs:complexType>
+
+        <!-- Обеспечиваем уникальность имени всех объектов вида EnumerationDataType -->
+        <xs:key name="keyEnumerationTypeName">
+            <xs:selector xpath="meta:enumerations/meta:enumeration" />
+            <xs:field xpath="@name" />
+        </xs:key>
+
+        <!-- Обеспечиваем уникальность имени всех объектов вида LookupEntityType -->
+        <xs:key name="keyLookupEntityTypeName">
+            <xs:selector xpath="meta:lookupEntities/meta:lookupEntity" />
+            <xs:field xpath="@name" />
+        </xs:key>
+
+        <!-- Обеспечиваем уникальность имени всех объектов вида NestedEntityType -->
+        <xs:key name="keyNestedEntityTypeName">
+            <xs:selector xpath="meta:nestedEntities/meta:nestedEntity" />
+            <xs:field xpath="@name" />
+        </xs:key>
+
+        <!-- Обеспечиваем уникальность имени всех объектов вида EntityType -->
+        <xs:key name="keyEntityTypeName">
+            <xs:selector xpath="meta:entities/meta:entity" />
+            <xs:field xpath="@name" />
+        </xs:key>
+
+        <!-- Обеспечиваем целостность ссылки на имя LookupEntityType -->
+        <xs:keyref name="refLookupTypeName" refer="meta:keyLookupEntityTypeName">
+            <xs:selector xpath=".//meta:simpleAttribute" />
+            <xs:field xpath="@lookupEntityType" />
+        </xs:keyref>
+
+        <!-- Обеспечиваем целостность ссылки на имя EnumerationDataType -->
+        <xs:keyref name="refEnumerationTypeName" refer="meta:keyEnumerationTypeName">
+            <xs:selector xpath=".//meta:simpleAttribute" />
+            <xs:field xpath="@enumDataType" />
+        </xs:keyref>
+
+        <!-- Обеспечиваем целостность ссылки на имя NestedEntityType -->
+        <xs:keyref name="refNestedEntityTypeName" refer="meta:keyNestedEntityTypeName">
+            <xs:selector xpath=".//meta:complexAttribute" />
+            <xs:field xpath="@nestedEntityType" />
+        </xs:keyref>
+
+        <!-- Обеспечиваем целостность ссылок на имя NestedEntityType для RelationDef -->
+        <xs:keyref name="refRelationsFrom" refer="meta:keyEntityTypeName">
+            <xs:selector xpath=".//meta:rel" />
+            <xs:field xpath="@fromEntity" />
+        </xs:keyref>
+        <xs:keyref name="refRelationsTo" refer="meta:keyEntityTypeName">
+            <xs:selector xpath=".//meta:rel" />
+            <xs:field xpath="@toEntity" />
+        </xs:keyref>
+
+    </xs:element>
+
+</xs:schema>

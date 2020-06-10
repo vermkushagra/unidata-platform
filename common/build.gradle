@@ -1,0 +1,141 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.tmatesoft.svnkit:svnkit:1.8.9'
+        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    }
+}
+
+// Common
+ext.camelVersion = '2.16.1'
+
+apply plugin: 'java'
+// enable if you use IDEA
+apply plugin: 'idea'
+// enable if you use Eclipse
+apply plugin: 'eclipse'
+
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${project.rootDir}/gradle/dependencies.gradle"
+
+
+// параметры компилятора
+compileJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    dependsOn 'xsd2Java'
+    source {['src/main/generated', 'src/main/java']}
+
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    dependsOn 'xsd2Java'
+    source {['src/main/generated', 'src/main/java']}
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+idea {
+    /*
+    project {
+        //it should work, but it doesn't
+        languageLevel = '1.8'
+    }
+    */
+    module {
+        sourceDirs += file('src/main/generated')
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+//repositories {
+//    maven {
+//        url 'http://repo.spring.io/libs-milestone'
+//        url 'https://maven.alfresco.com/nexus/content/groups/public'
+//    }
+//}
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+
+    // Apache Commons
+    compile 'org.apache.commons:commons-lang3:3.4', // Apache License, v.2.0
+            'commons-beanutils:commons-beanutils:1.9.2', // Apache License, v.2.0
+            'commons-dbcp:commons-dbcp:1.4' // Apache License, v.2.0
+
+    // Simon inplace performance monitoring
+    compile 'org.javasimon:javasimon-core:4.1.0' // New BSD License
+
+    // Logging
+    compile 'ch.qos.logback:logback-classic:1.2.3' // dual EPL v.1.0 and LGPL 2.1
+    compile 'org.slf4j:jcl-over-slf4j:1.7.25' //dependency from spring-data-commons, also need to fix version
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.apache.logging.log4j:log4j-to-slf4j:2.10.0' // Required by elasticsearch
+
+    compile 'org.apache.camel:camel-core:' + camelVersion
+    compile 'org.apache.camel:camel-spring:' + camelVersion
+
+    // https://mvnrepository.com/artifact/com.google.code.findbugs/jsr305
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+}
+
+jar {
+    from(sourceSets.main.output)
+    manifest {
+        attributes (
+            "Implementation-Title": "UniData Backend Base Types",
+            "Implementation-Version": project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+                + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+tasks.withType(Jar) { // Common for Jars
+    destinationDir = new File(project.rootDir, '/target')
+}
+
+apply from: 'xsd2java.gradle'
+
+/**
+ * Create and push maven module for maven repository
+ */
+apply plugin: 'maven-publish'
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId "com.unidata-platform"
+            artifactId project.name
+            println versioning.info.full
+            version "${project.version}-${versionFullWithBranch}"
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'server1.local'
+            credentials {
+                username 'admin'
+                password 'TaskData2015'
+            }
+            url 'http://maven.taskdata.work:8081/artifactory/libs-release-local/'
+        }
+    }
+}

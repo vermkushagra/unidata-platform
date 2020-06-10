@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap12/"
+	xmlns:tns="http://api.dq.mdm.unidata.com/v5/" xmlns:dq="http://dq.mdm.unidata.com/v5/"
+	xmlns:sec="http://security.mdm.unidata.com/v5/" xmlns:eh="http://error-handling.mdm.unidata.com/v5/"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:uapi="http://api.mdm.unidata.com/v5/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/"
+	targetNamespace="http://api.dq.mdm.unidata.com/v5/">
+	<wsdl:types>
+		<xsd:schema>
+			<xsd:import namespace="http://dq.mdm.unidata.com/v5/"
+				schemaLocation="data-quality.xsd" />
+			<xsd:import namespace="http://security.mdm.unidata.com/v5/"
+				schemaLocation="security/security.xsd" />
+			<xsd:import namespace="http://error-handling.mdm.unidata.com/v5/"
+				schemaLocation="eh/error-handling.xsd" />
+		</xsd:schema>
+	</wsdl:types>
+	<wsdl:message name="applyDQRequestMessage">
+		<wsdl:part name="applyDQRequest" element="dq:applyDQRequest" />
+	</wsdl:message>
+	<wsdl:message name="applyDQResponseMessage">
+		<wsdl:part name="applyDQResponse" element="dq:applyDQResponse" />
+	</wsdl:message>
+	<wsdl:message name="getResultsRequestMessage">
+		<wsdl:part name="getResultsRequest" element="dq:getResultsRequest" />
+	</wsdl:message>
+	<wsdl:message name="getResultsResponseMessage">
+		<wsdl:part name="getResultsResponse" element="dq:getResultsResponse" />
+	</wsdl:message>
+	<wsdl:message name="ApiFault">
+		<wsdl:part name="parameters" element="eh:ApiFault"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="security">
+		<wsdl:part name="security" element="sec:securityHeader" />
+	</wsdl:message>
+	<wsdl:message name="info">
+		<wsdl:part name="info" element="dq:infoHeader" />
+	</wsdl:message>
+	<wsdl:portType name="DataQualityPortType">
+		<wsdl:operation name="applyDQ">
+			<wsdl:input name="applyDQRequest" message="tns:applyDQRequestMessage" />
+			<wsdl:output name="applyDQResponse" message="tns:applyDQResponseMessage"></wsdl:output>
+			<wsdl:fault name="fault" message="tns:ApiFault"></wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getResults">
+			<wsdl:input name="getResultsRequest" message="tns:getResultsRequestMessage" />
+			<wsdl:output name="getResultsResponse" message="tns:getResultsResponseMessage"></wsdl:output>
+			<wsdl:fault name="fault" message="tns:ApiFault"></wsdl:fault>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="DataQualityServiceBinding" type="tns:DataQualityPortType">
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+			style="document" />
+		<wsdl:operation name="applyDQ">
+			<soap:operation soapAction="applyDQ" style="document" />
+			<wsdl:input name="applyDQRequest">
+				<soap:body use="literal" />
+				<soap:header message="tns:security" part="security" />
+				<soap:header message="tns:info" part="info" />
+			</wsdl:input>
+			<wsdl:output name="applyDQResponse">
+				<soap:body use="literal" />
+				<soap:header message="tns:security" part="security" />
+				<soap:header message="tns:info" part="info" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getResults">
+			<soap:operation soapAction="getResults" style="document" />
+			<wsdl:input name="getResultsRequest">
+				<soap:body use="literal" />
+				<soap:header message="tns:security" part="security" />
+				<soap:header message="tns:info" part="info" />
+			</wsdl:input>
+			<wsdl:output name="getResultsResponse">
+				<soap:body use="literal" />
+				<soap:header message="tns:security" part="security" />
+				<soap:header message="tns:info" part="info" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="DataQualitySOAPService">
+		<wsdl:port name="applyDQ" binding="tns:DataQualityServiceBinding">
+			<soap:address location="http://localhost:8080/unidata/dq-api/v5" />
+		</wsdl:port>
+	</wsdl:service>
+
+</wsdl:definitions>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://error-handling.mdm.unidata.com/v5/" 
+	targetNamespace="http://error-handling.mdm.unidata.com/v5/">
+	<xsd:element name="ApiFault" type="tns:ApiFaultType" />
+	<xsd:complexType name="ApiFaultType">
+		<xsd:sequence>
+			<xsd:element name="errorCode" type="xsd:string"
+				minOccurs="1" maxOccurs="1" />
+			<xsd:element name="errorMessage" type="xsd:string"
+				minOccurs="1" maxOccurs="1" />
+			<xsd:element name="stackTrace" type="xsd:string"
+				minOccurs="0" maxOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

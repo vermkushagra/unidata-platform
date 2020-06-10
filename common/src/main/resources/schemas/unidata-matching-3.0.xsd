@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:match="http://match.mdm.unidata.com/"
+           targetNamespace="http://match.mdm.unidata.com/"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:complexType name="MatchingRuleDef">
+        <xs:sequence>
+            <xs:element name="algorithms" type="match:UserMatchingAlgorithmDef" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="key" type="match:MatchingRuleKey" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+        <xs:attribute name="active" type="xs:boolean" use="required"/>
+        <xs:attribute name="autoMerge" type="xs:boolean" default="false"/>
+        <xs:attribute name="withPreprocessing" type="xs:boolean" default="true"/>
+    </xs:complexType>
+
+    <xs:complexType name="MatchingRuleKey">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="entityName" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="MatchingAlgorithmDef">
+        <xs:sequence>
+            <xs:element name="fields" type="match:MatchingFieldDef" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="UserMatchingAlgorithmDef">
+        <xs:sequence>
+            <xs:element name="fields" type="match:MatchingFieldDef" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="algorithmId" type="xs:integer" use="required"/>
+    </xs:complexType>
+
+
+    <xs:complexType name="MatchingFieldDef">
+        <xs:attribute name="attributeName" type="xs:string" use="optional"/>
+        <xs:attribute name="identifier" type="xs:int" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="constantField" type="xs:boolean" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="MatchingSettingsDef">
+        <xs:sequence>
+            <xs:element name="userRules" type="match:MatchingRuleDef" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

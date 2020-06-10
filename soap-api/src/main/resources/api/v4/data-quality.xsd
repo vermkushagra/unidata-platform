@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://dq.mdm.unidata.com/v4/" xmlns:tns="http://dq.mdm.unidata.com/v4/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:d="http://data.mdm.unidata.com/v4/"
+	xmlns:tdapi="http://api.mdm.unidata.com/v4/" elementFormDefault="qualified">
+	<xsd:import namespace="http://data.mdm.unidata.com/v4/"
+		schemaLocation="unidata-data-4.0.xsd" />
+	<xsd:import namespace="http://api.mdm.unidata.com/v4/"
+		schemaLocation="unidata-api-4.0.xsd" />
+
+	<xsd:element name="securityHeader" type="tdapi:SessionTokenDef"></xsd:element>
+	<xsd:element name="infoHeader" type="tns:InfoType"></xsd:element>
+	<xsd:element name="loginRequest" type="tdapi:CredentialsDef" />
+	<xsd:complexType name="LoginRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:loginRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="loginResponse" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LoginResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:loginResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="logoutRequest" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LogoutRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:logoutRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="logoutResponse" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LogoutResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:logoutResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="InfoType">
+		<xsd:sequence minOccurs="1" maxOccurs="1">
+			<xsd:element name="entityName" type="xsd:string"
+				nillable="false" maxOccurs="1" minOccurs="1" />
+			<xsd:element name="requestId" type="xsd:string" nillable="false"
+				maxOccurs="1" minOccurs="1" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:simpleType name="DQApplyModeType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ONLINE" />
+			<xsd:enumeration value="BATCH" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="DQRuleType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ETALON" />
+			<xsd:enumeration value="ORIGIN" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	<xsd:simpleType name="DQApplyStatusType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="ENRICHED" />
+			<xsd:enumeration value="CONTAINS_ERRORS" />
+			<xsd:enumeration value="VALID" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="DQApplyInfoType">
+		<xsd:choice>
+			<xsd:element name="ruleName" type="xsd:string" nillable="false"
+				maxOccurs="unbounded" minOccurs="1" />
+			<xsd:sequence minOccurs="1" maxOccurs="1">
+				<xsd:element name="sourceSystem" type="xsd:string"
+					nillable="false" maxOccurs="unbounded" minOccurs="1" />
+				<xsd:element name="applicable" type="tns:DQRuleType"
+					nillable="false" maxOccurs="unbounded" minOccurs="1" />
+			</xsd:sequence>
+		</xsd:choice>
+		<xsd:attribute name="mode" type="tns:DQApplyModeType"
+			use="required" />
+	</xsd:complexType>
+	<xsd:complexType name="DQRecordType">
+		<xsd:complexContent>
+			<xsd:extension base="d:NestedRecord">
+				<xsd:attribute name="validFrom" type="dateTime" />
+				<xsd:attribute name="validTo" type="dateTime" />
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:element name="applyDQRequest">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="1" maxOccurs="1">
+				<xsd:element name="info" type="tns:DQApplyInfoType"
+					nillable="false" minOccurs="1" maxOccurs="1" />
+				<xsd:element name="payload" nillable="false" minOccurs="1"
+					maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="1" maxOccurs="500">
+							<xsd:element name="record" type="tns:DQRecordType" />
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:element name="applyDQRequestWrapper" type="tns:ApplyDQRequestWrapper" />
+	<xsd:complexType name="ApplyDQRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:applyDQRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="applyDQResponse">
+		<xsd:complexType>
+			<xsd:sequence minOccurs="1" maxOccurs="1">
+				<xsd:element name="info" type="tns:InfoType" nillable="false"
+					minOccurs="1" maxOccurs="1" />
+				<xsd:element name="payload" nillable="false" minOccurs="1"
+					maxOccurs="1">
+					<xsd:complexType>
+						<xsd:sequence minOccurs="1" maxOccurs="500">
+							<xsd:element name="result" type="tns:DataQualityResultType"
+								nillable="false" />
+						</xsd:sequence>
+					</xsd:complexType>
+				</xsd:element>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:complexType name="ApplyDQResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:applyDQResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="DataQualityResultType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:string" />
+			<xsd:element name="status" type="tns:DQApplyStatusType"
+				minOccurs="1" maxOccurs="unbounded" />
+			<xsd:element name="record" type="d:NestedRecord"
+				minOccurs="0" maxOccurs="1" />
+			<xsd:element name="errors" type="d:DataQualityError"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResultsRequestType">
+		<xsd:sequence>
+			<xsd:element name="id" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResultsRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:getResultsRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="getResultsRequest" type="tns:ResultsRequestType" />
+	
+	<xsd:complexType name="ResultsResponseType">
+		<xsd:sequence>
+			<xsd:element name="errors" type="d:DataQualityError"
+				minOccurs="0" maxOccurs="unbounded" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="ResultsResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:infoHeader" />
+			<xsd:element ref="tns:getResultsResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="getResultsResponse" type="tns:ResultsResponseType" />
+</xsd:schema>

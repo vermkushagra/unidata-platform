@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://security.mdm.unidata.com/v5/" xmlns:tns="http://security.mdm.unidata.com/v5/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:tdapi="http://api.mdm.unidata.com/v5/"
+	elementFormDefault="qualified">
+	<xsd:import namespace="http://api.mdm.unidata.com/v5/"
+		schemaLocation="../unidata-api-5.0.xsd" />
+
+	<xsd:element name="securityHeader" type="tdapi:SessionTokenDef"></xsd:element>
+	<xsd:element name="loginRequest" type="tdapi:CredentialsDef" />
+	<xsd:complexType name="LoginRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:loginRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="loginResponse" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LoginResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:loginResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="logoutRequest" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LogoutRequestWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:logoutRequest" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="logoutResponse" type="tdapi:SessionTokenDef" />
+	<xsd:complexType name="LogoutResponseWrapper">
+		<xsd:sequence>
+			<xsd:element ref="tns:securityHeader" />
+			<xsd:element ref="tns:logoutResponse" />
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:element name="info" type="tns:InfoType" />
+	<xsd:complexType name="InfoType">
+		<xsd:sequence>
+			<xsd:element name="requestId" type="xsd:string" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

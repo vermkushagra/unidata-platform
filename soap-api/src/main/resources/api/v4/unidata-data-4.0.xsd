@@ -1,0 +1,816 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:data="http://data.mdm.unidata.com/v4/"
+           targetNamespace="http://data.mdm.unidata.com/v4/"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified"
+           xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+           xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+           jaxb:version="2.1" 
+           jaxb:extensionBindingPrefixes="xjc">
+
+    <xs:annotation>
+        <xs:documentation>Набор элементов и типов для данных платформы Unidata;</xs:documentation>
+        <xs:appinfo>
+            <!-- generateElementProperty="true" -->
+            <jaxb:globalBindings>
+                <xjc:serializable uid="12345"/>
+            </jaxb:globalBindings>
+        </xs:appinfo>
+    </xs:annotation>
+
+	<!-- Elements -->
+    <xs:element name="etalonRecord" type="data:EtalonRecord" />
+    <xs:element name="originRecord" type="data:OriginRecord" />
+    <xs:element name="relationTo" type="data:RelationTo" />
+    <xs:element name="originClassifierRecord" type="data:OriginClassifierRecord" />
+    <xs:element name="etalonClassifierRecord" type="data:EtalonClassifierRecord" />
+
+    <!-- Do not remove! This enumeration is used internally. -->
+	<xs:simpleType name="ValueDataType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Date"/>
+            <xs:enumeration value="Time"/>
+            <xs:enumeration value="Timestamp"/>
+            <xs:enumeration value="String"/>
+            <xs:enumeration value="Integer"/>
+            <xs:enumeration value="Number"/>
+            <xs:enumeration value="Boolean"/>
+            <xs:enumeration value="Blob"/>
+            <xs:enumeration value="Clob"/>
+            <xs:enumeration value="Measured"/>
+            <!--  
+            <xs:enumeration value="Enum"/>
+            <xs:enumeration value="Link"/>
+            <xs:enumeration value="Code"/>
+            -->
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Do not remove! This enumeration is used internally. -->
+    <xs:simpleType name="ArrayDataType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Date"/>
+            <xs:enumeration value="Time"/>
+            <xs:enumeration value="Timestamp"/>
+            <xs:enumeration value="String"/>
+            <xs:enumeration value="Integer"/>
+            <xs:enumeration value="Number"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <!-- Do not remove! This enumeration is used internally. -->
+    <xs:simpleType name="CodeDataType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="String"/>
+            <xs:enumeration value="Integer"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="RecordStatus">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ACTIVE"/>
+            <xs:enumeration value="INACTIVE"/>
+            <xs:enumeration value="MERGED"/>
+            <xs:enumeration value="PENDING"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="DataShift">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PRISTINE"/>
+            <xs:enumeration value="REVISED"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ApprovalState">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="PENDING"/>
+            <xs:enumeration value="APPROVED"/>
+            <xs:enumeration value="DECLINED"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- Base for search expressions. -->
+    <xs:complexType name="BaseValue"/>
+
+    <!-- BLOB -->
+    <xs:complexType name="BlobValue">    
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">
+                <xs:sequence>
+		            <xs:element name="data" type="xs:base64Binary" maxOccurs="1" nillable="true"/>
+		        </xs:sequence>
+		        <xs:attribute name="id" type="xs:string" use="optional"/>
+		        <xs:attribute name="fileName" type="xs:string" use="optional"/>
+		        <xs:attribute name="mimeType" type="xs:string" use="optional"/>
+		        <xs:attribute name="size" type="xs:long" use="optional" default="0"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- CLOB -->
+    <xs:complexType name="ClobValue">
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">        
+		        <xs:sequence>
+		            <xs:element name="data" type="xs:string" maxOccurs="1" nillable="true"/>
+		        </xs:sequence>
+		        <xs:attribute name="id" type="xs:string" use="optional"/>
+                <xs:attribute name="fileName" type="xs:string" use="optional"/>
+                <xs:attribute name="mimeType" type="xs:string" use="optional"/>
+                <xs:attribute name="size" type="xs:long" use="optional" default="0"/>
+		    </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    <!-- Link to a value in a enumeration (EnumerationDataType code value) -->
+    <!--  
+    <xs:complexType name="EnumValue">
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string" maxOccurs="1" nillable="true"/>
+                    <xs:element name="displayName" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    -->
+    <!-- Special type, containing a template, where attribute names can be replaced with their current values. -->
+    <!--  
+    <xs:complexType name="LinkValue">
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">        
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string" maxOccurs="1" nillable="true"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    -->
+    <!-- Link to a code/alias attribute(s) value in a lookup entity (LookupEntityDef code/alias attribute(s))-->
+    <!--  
+    <xs:complexType name="CodeValue">
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">        
+                <xs:sequence>
+                    <xs:element name="value" type="xs:string" maxOccurs="1" nillable="true"/>
+                    <xs:element name="displayName" type="xs:string" minOccurs="0" maxOccurs="1" nillable="true"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    -->
+
+    <xs:complexType name="MeasuredValue">
+        <xs:complexContent>
+            <xs:extension base="data:BaseValue">
+                <xs:attribute name="value" type="xs:double" use="optional"/>
+                <xs:attribute name="measurementValueId" type="xs:string" use="required"/>
+                <xs:attribute name="measurementUnitId" type="xs:string" use="optional"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <!-- Base for all attributes types. -->
+    <xs:complexType name="AbstractAttribute">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractSingleValueAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Базовая структура, описывающая значение атрибута сущности. Всегда содержит только одно значение в зависимости от типа данных
+            </xs:documentation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.api.wsdl.v4.SingleValueAttributeImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractAttribute">
+                <xs:sequence>
+                    <xs:choice maxOccurs="1">
+		                <xs:element name="blobValue" type="data:BlobValue" nillable="true"/>
+		                <xs:element name="clobValue" type="data:ClobValue" nillable="true"/>
+		                <xs:element name="intValue" type="xs:long" nillable="true"/>
+		                <xs:element name="dateValue" type="xs:date" nillable="true"/>
+		                <xs:element name="timeValue" type="xs:time" nillable="true"/>
+		                <xs:element name="timestampValue" type="xs:dateTime" nillable="true"/>
+		                <xs:element name="stringValue" type="xs:string" nillable="true"/>
+		                <xs:element name="numberValue" type="xs:double" nillable="true"/>
+		                <xs:element name="boolValue" type="xs:boolean" nillable="true"/>
+                        <xs:element name="measuredValue" type="data:MeasuredValue" nillable="true"/>
+                        <!--  
+                        <xs:element name="enumValue" type="data:EnumValue" nillable="true"/>
+                        <xs:element name="linkValue" type="data:LinkValue" nillable="true"/>
+                        <xs:element name="codeValue" type="data:CodeValue" nillable="true"/>
+                        -->
+		            </xs:choice>
+		        </xs:sequence>
+                <xs:attribute name="displayValue" type="xs:string" use="optional"/>
+                <xs:attribute name="linkEtalonId" type="xs:string" use="optional"/>
+                <!-- Взаимо-исключающий набор. Конец объявления -->
+	        </xs:extension>
+        </xs:complexContent>
+        
+    </xs:complexType>
+
+    <xs:complexType name="SimpleAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Базовая структура, описывающая простой атрибут сущности. Состоит из обязательного имени и только одного значения в зависимости от типа данных
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractSingleValueAttribute"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="AbstractArrayAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Базовая структура, описывающая простой атрибут сущности. Состоит из обязательного имени и массива значений в зависимости от типа данных
+            </xs:documentation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.api.wsdl.v4.ArrayAttributeImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractAttribute">
+                <xs:sequence>
+                    <xs:choice maxOccurs="1">
+                        <xs:element name="intValue" type="xs:long" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                        <xs:element name="dateValue" type="xs:date" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                        <xs:element name="timeValue" type="xs:time" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                        <xs:element name="timestampValue" type="xs:dateTime" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                        <xs:element name="stringValue" type="xs:string" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                        <xs:element name="numberValue" type="xs:double" nillable="false" minOccurs="1" maxOccurs="unbounded"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="ArrayAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Массив.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractArrayAttribute"/>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="AbstractCodeAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Базовая структура, описывающая кодовый атрибут справочника. Состоит из обязательного имени, кодового значения и массива значений в зависимости от типа данных
+            </xs:documentation>
+            <xs:appinfo>
+                <jaxb:class implClass="com.unidata.mdm.api.wsdl.v4.CodeAttributeImpl"/>
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractAttribute">
+                <xs:sequence>
+                    <xs:choice maxOccurs="1">
+                        <xs:element name="intValue" type="xs:long" nillable="false"/>
+                        <xs:element name="stringValue" type="xs:string" nillable="false"/>
+                    </xs:choice>
+                    <xs:choice maxOccurs="1">
+                        <xs:element name="supplementaryIntValues" type="xs:long" minOccurs="0" maxOccurs="unbounded"/>
+                        <xs:element name="supplementaryStringValues" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:choice>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+    
+    <xs:complexType name="CodeAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Кодовый атрибут.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractCodeAttribute"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ComplexAttribute">
+        <xs:annotation>
+            <xs:documentation>
+Базовая структура, описывающая сложный атрибут сущности. Состоит из обязательного имени и неограниченного набора вложенных сущностей
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:AbstractAttribute">
+		        <xs:choice minOccurs="0" maxOccurs="unbounded">
+		            <xs:element name="nestedRecord" type="data:NestedRecord"/>
+		        </xs:choice>
+		    </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="EtalonKey">
+        <xs:annotation>
+            <xs:documentation>
+                Структура, представляющая собой значение ключа для идентификации 'EtalonRecord' сущности.
+                Состоит из суррогатного идентификатора основной записи
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="id" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="OriginKey">
+        <xs:annotation>
+            <xs:documentation>
+                Структура, представляющая собой значение ключа для идентификации исходной записи сущности.
+                Представляет собой композитный ключ, всегда состоящий из трёх частей - обязательный идентификатор системы источника, непосредственно строкового ключа.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="id" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Ключ записи в системе UniData</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="externalId" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Натуральный ключ исходной записи в системе источника</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sourceSystem" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Код системы источника</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="entityName" use="required" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Обязательное имя сущности для идентификации по натуральный ключ исходной записи в системе источника</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>        
+    </xs:complexType>
+
+    <xs:complexType name="NestedRecord">
+        <xs:annotation>
+            <xs:documentation>
+Рекурсивная структура, описывающая запись произвольной вложенной сущности. Состоит из произвольного количества простых атрибутов, а также сложных атрибутов, обеспечивающих рекурсивного погружение.
+            </xs:documentation>
+        </xs:annotation>
+
+	<xs:sequence>
+		<xs:element name="id" type="xs:string" minOccurs="0"
+			maxOccurs="1">
+			<xs:annotation>
+				<xs:documentation>ИД сущности</xs:documentation>
+			</xs:annotation>
+		</xs:element>
+		<xs:element name="simpleAttribute" type="data:SimpleAttribute"
+			minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation>Простой атрибут записи - имя плюс значение
+				</xs:documentation>
+				<xs:appinfo>
+					<jaxb:property name="simpleAttributes" />
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:element>
+        <xs:element name="codeAttribute" type="data:CodeAttribute"
+            minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>Кодовый атрибут записи - имя плюс значение
+                </xs:documentation>
+                <xs:appinfo>
+                    <jaxb:property name="codeAttributes" />
+                </xs:appinfo>
+            </xs:annotation>
+        </xs:element>
+        <xs:element name="arrayAttribute" type="data:ArrayAttribute"
+            minOccurs="0" maxOccurs="unbounded">
+            <xs:annotation>
+                <xs:documentation>Массив значений
+                </xs:documentation>
+                <xs:appinfo>
+                    <jaxb:property name="arrayAttributes" />
+                </xs:appinfo>
+            </xs:annotation>
+        </xs:element>
+		<xs:element name="complexAttribute" type="data:ComplexAttribute"
+			minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation>Сложный атрибут записи - имя плюс вложенная
+					сущность</xs:documentation>
+				<xs:appinfo>
+					<jaxb:property name="complexAttributes" />
+				</xs:appinfo>
+			</xs:annotation>
+		</xs:element>
+	</xs:sequence>
+    </xs:complexType>
+
+    <!-- Just a merking base type -->
+    <xs:complexType name="RelationBase">
+        <xs:attribute name="relName" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Обязательное имя связи</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="IntegralRecord">
+        <xs:annotation>
+            <xs:documentation>
+Структура, описывающая неотделимую сущность. Используется для представления записи в композитных объектах. Состоит из обязательного имени связи, а также либо основной, либо исходной записи сущности.
+Примером такой связанной сущности может служить информация о банковском счёте, неотделимой от сущности 'сотрудник'
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:RelationBase">
+                <xs:choice minOccurs="1" maxOccurs="1">
+	               <xs:element name="etalonRecord" type="data:EtalonRecord">
+	                   <xs:annotation><xs:documentation>Основаня запись связанной сущности</xs:documentation></xs:annotation>
+	               </xs:element>
+	               <xs:element name="originRecord" type="data:OriginRecord">
+	                   <xs:annotation><xs:documentation>Исходная запись связанной сущности</xs:documentation></xs:annotation>
+	               </xs:element>
+	            </xs:choice>
+	        </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="RelationToInfoSection">
+        <xs:attribute name="createdBy" use="optional" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Кем создан</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="updatedBy" use="optional" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Кем последний раз обновлен</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="createDate" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Дата создания записи эталонной записи.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="updateDate" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Дата последнего обновления эталонной записи.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="status" type="data:RecordStatus" use="optional">
+            <xs:annotation>
+                <xs:documentation>Служебный аттрибут, описывающий общий статус эталонной записи. 
+                Запись может быть: 
+                - ACTIVE - активна, 
+                - INACTIVE - неакитвна из-за удаления, 
+                - MERGED - неактивна после слияния с другим объектом в результате слияния дубликатов
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="approval" type="data:ApprovalState" use="optional">
+            <xs:annotation>
+                <xs:documentation>Служебный аттрибут, описывающий состояние изменений эталонной записи. 
+                Запись может быть: 
+                - PENDING - некие изменения ожидают подтверждений, 
+                - APPROVED - неподтвержденные изменения отсутствуют, 
+                - DECLINED -  изменения отклонены (Состояние невозможное для инфо-секции эталонной записи)
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rangeFrom" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Начало действия данной версии эталонных данных. null значит бесконечность в прошлом.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rangeTo" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Окончание действия данной версии эталонных данных. null значит бесконечность в будущем.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="RelationTo">
+        <xs:annotation>
+            <xs:documentation>
+Структура, описывающая связь между сущностями. Используется для представления связи в композитных сущностях. Состоит из обязательного имени связи, а также ключа для идентификации либо основной, либо исходной записи сущности.
+Помимо этого, сама связь может содержать, как простые так и сложные атрибуты.
+Примером такой связи между сущностями может служить связь, сущностями 'сотрудник' и 'отдел', каждая из которых имеет свой жизненный цикл.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+	        <xs:extension base="data:RelationBase">
+	            <xs:sequence>
+		            <xs:choice minOccurs="1" maxOccurs="1">
+		                <xs:element name="toEtalonKey" type="data:EtalonKey">
+		                    <xs:annotation>
+		                        <xs:documentation>Ключ основной записи сущности</xs:documentation>
+		                    </xs:annotation>
+		                </xs:element>
+		                <xs:element name="toOriginKey" type="data:OriginKey">
+		                    <xs:annotation>
+		                        <xs:documentation>Ключ исходной записи сущности</xs:documentation>
+		                    </xs:annotation>
+		                </xs:element>
+		            </xs:choice>
+		            <xs:sequence>
+		                <xs:element name="simpleAttributes" type="data:SimpleAttribute" minOccurs="0" maxOccurs="unbounded">
+		                    <xs:annotation>
+		                        <xs:documentation>Простые аттрибуты связи</xs:documentation>
+		                    </xs:annotation>
+		                </xs:element>                
+		                <xs:element name="complexAttributes" type="data:ComplexAttribute" minOccurs="0" maxOccurs="unbounded">
+		                    <xs:annotation>
+		                        <xs:documentation>Сложные аттрибуты связи</xs:documentation>
+		                    </xs:annotation>
+		                </xs:element>
+                        <xs:element name="infoSection" type="data:RelationToInfoSection" minOccurs="0" maxOccurs="1">
+                            <xs:annotation>
+                                <xs:documentation>Опциональная секция описывающая состояние объекта. Заполняется системой при отдаче записи.</xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+		            </xs:sequence>
+		        </xs:sequence>
+	        </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="EntityRelations">
+        <xs:annotation>
+            <xs:documentation>
+Вспомогательная структура содержащая информацию о связях данной сущности. Состоит из набора обычных связей к другим сущностям ('relationTo'), а также набора неотделимых сущностей ('integralEntity')
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="integralEntities" type="data:IntegralRecord" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="relationsTo" type="data:RelationTo" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="EtalonRecordInfoSection">
+        <xs:attribute name="entityName" use="optional" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Имя сущности</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="createdBy" use="optional" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Кем создан</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="updatedBy" use="optional" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Кем последний раз обновлен</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="status" type="data:RecordStatus" use="optional">
+            <xs:annotation>
+                <xs:documentation>Служебный аттрибут, описывающий общий статус эталонной записи. 
+                Запись может быть: 
+                - ACTIVE - активна, 
+                - INACTIVE - неакитвна из-за удаления, 
+                - MERGED - неактивна после слияния с другим объектом в результате слияния дубликатов
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="approval" type="data:ApprovalState" use="optional">
+            <xs:annotation>
+                <xs:documentation>Служебный аттрибут, описывающий статус подтверждения эталонной записи. 
+                Запись может быть: 
+                - PENDING - активна, но ожидает подтверждения,
+                - APPROVED - активна и подтверждена, 
+                - DECLINED - неактивна после отклонения изменений.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute> 
+        <xs:attribute name="rangeFrom" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Начало действия данной версии эталонных данных. null значит бесконечность в прошлом.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rangeTo" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Окончание действия данной версии эталонных данных. null значит бесконечность в будущем.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="createDate" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Дата создания записи эталонной записи.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="updateDate" type="xs:dateTime" use="optional">
+            <xs:annotation>
+                <xs:documentation>Дата последнего обновления эталонной записи.</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="EtalonRecord">
+        <xs:annotation>
+            <xs:documentation>
+Структура полностью описывающая основную запись сущности. Является логическим расширением структуры 'NestedRecord'. Всегда содержит
+- имя сущности, такое как 'Банк', 'Сотдрудник' итд.
+- набор простых и сложных атрибутов
+- значение ключа идентифицирующего основную запись
+- список связей данной сущности
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:NestedRecord">
+                <xs:sequence>
+                    <xs:element name="etalonKey" type="data:EtalonKey" minOccurs="1" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Обязательное значение ключа идентифицирующего основную запись</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="relations" type="data:EntityRelations" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая связи сущности</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="classifiers" type="data:EtalonClassifierRecord" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая классификаторы сущности</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="infoSection" type="data:EtalonRecordInfoSection" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая состояние объекта. Заполняется системой при отдаче записи.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="OriginRecordInfoSection">
+        <xs:attribute name="entityName" use="optional" type="xs:string">
+             <xs:annotation>
+                 <xs:documentation>Имя сущности</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="createdBy" use="optional" type="xs:string">
+             <xs:annotation>
+                 <xs:documentation>Кем создан</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="updatedBy" use="optional" type="xs:string">
+             <xs:annotation>
+                 <xs:documentation>Кем последний раз обновлен</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="status" type="data:RecordStatus" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Служебный аттрибут, описывающий статус эталонной записи. 
+                 Запись может быть: 
+                 - ACTIVE - активна, 
+                 - INACTIVE - неакитвна из-за удаления, 
+                 - MERGED - неактивна после слияния с другим объектом в результате слияния дубликатов</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+          <xs:attribute name="approval" type="data:ApprovalState" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Служебный аттрибут, описывающий статус эталонной записи. 
+                 Запись может быть: 
+                 - PENDING - активна, но ожидает подтверждения,
+                 - APPROVED - активна и подтверждена, 
+                 - DECLINED - неактивна после отклонения изменений.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="rangeFrom" type="xs:dateTime" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Начало действия данной версии эталонных данных. null значит бесконечность в прошлом.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="rangeTo" type="xs:dateTime" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Окончание действия данной версии эталонных данных. null значит бесконечность в будущем.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="createDate" type="xs:dateTime" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Дата создания записи эталонной записи.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="updateDate" type="xs:dateTime" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Дата последнего обновления эталонной записи.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="revision" type="xs:int" use="optional">
+             <xs:annotation>
+                 <xs:documentation>Ревизия ориджин записи.</xs:documentation>
+             </xs:annotation>
+         </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="OriginRecord">
+        <xs:annotation>
+            <xs:documentation>
+Структура полностю аналогичная 'EtalonRecord' с той лишь разницей, что описывает исходную запись сущности. Также является логическим расширением структуры 'NestedRecord'. Всегда содержит
+- имя сущности, такое как 'Банк', 'Сотдрудник' итд.
+- набор простых и сложных атрибутов
+- значение ключа идентифицирующего исходную запись
+- список связей данной сущности
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:NestedRecord">
+                <xs:sequence>
+                    <xs:element name="originKey" type="data:OriginKey" minOccurs="1" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Обязательное значение ключа идентифицирующего исходную запись</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="relations" type="data:EntityRelations" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая связи сущности</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="classifiers" type="data:OriginClassifierRecord" minOccurs="0" maxOccurs="unbounded">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая классификаторы сущности</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                    <xs:element name="infoSection" type="data:OriginRecordInfoSection" minOccurs="0" maxOccurs="1">
+                        <xs:annotation>
+                            <xs:documentation>Опциональная секция описывающая состояние сущности.</xs:documentation>
+                        </xs:annotation>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="OriginClassifierRecord">
+        <xs:complexContent>
+            <xs:extension base="data:ClassifierRecord"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="EtalonClassifierRecord">
+        <xs:complexContent>
+            <xs:extension base="data:ClassifierRecord"/>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ClassifierRecord">
+        <xs:annotation>
+            <xs:documentation>
+                Структура полностю аналогичная 'EtalonRecord' и 'OriginRecord' с той лишь разницей, что описывает
+                класиффицируемую часть данных.
+                Также является логическим расширением структуры 'NestedRecord'. Всегда содержит
+                - имя классификатора, такое как 'Человек', 'Горила' итд.
+                - индитификатор ноды классификатора.
+                - набор простых атрибутов
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="data:NestedRecord">
+                <xs:attribute name="classifierNodeId" type="xs:string">
+                    <xs:annotation>
+                        <xs:documentation>Индетификатор ноды классификатора</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="classifierName" type="xs:string" use="required">
+                    <xs:annotation>
+                        <xs:documentation>Имя классификатора</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+                <xs:attribute name="status" type="data:RecordStatus" use="required">
+                    <xs:annotation>
+                        <xs:documentation>Состояние классификатора</xs:documentation>
+                    </xs:annotation>
+                </xs:attribute>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="DataQualityStatusType">
+        <xs:annotation>
+            <xs:documentation>
+                Перечисление возможных состояний ошибок данных, ассоциированных с основной записью сущности. Используется в ответе на запрос 'RequestGetDataQualityErrors'
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="new"/>
+            <xs:enumeration value="resolved"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="DataQualityError">
+        <xs:annotation>
+            <xs:documentation>
+Структура, описывающая ошибоку данных, ассоциированную с основной записью сущности. Используется в ответе на запрос 'RequestGetDataQualityErrors'
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute name="errorId" type="xs:string" use="required"><xs:annotation><xs:documentation>Уникальный идентификатор ошибки</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="createDate" type="xs:dateTime" use="required"><xs:annotation><xs:documentation>Дата создания ошибки</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="updateDate" type="xs:dateTime" use="required"><xs:annotation><xs:documentation>Дата последненго обновления информации об ошибке</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="status" type="data:DataQualityStatusType" use="required"><xs:annotation><xs:documentation>Состояние данной ошибки - новая, исправленная итд</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="ruleName" type="xs:string" use="required"><xs:annotation><xs:documentation>Имя правила качества данных, на основе которого была сформирована ошибка</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="message" type="xs:string" use="required"><xs:annotation><xs:documentation>Текст сообщения ошибки</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="severity" type="xs:string" use="required"><xs:annotation><xs:documentation>Уровень критичности, используется для группировки в отчётах</xs:documentation></xs:annotation></xs:attribute>
+        <xs:attribute name="category" type="xs:string" use="required"><xs:annotation><xs:documentation>Имя категории ошибки, используется для группировки в отчётах</xs:documentation></xs:annotation></xs:attribute>
+    </xs:complexType>
+</xs:schema>
