@@ -798,31 +798,6 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:complexType name="DataQualityErrorValue">
-        <xs:annotation>
-            <xs:documentation>
-Тип, содержащий ошибочное значение и точный путь к атрибуту в структуре данных в терминах local path. 
-            </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element name="cause" type="data:AbstractAttribute" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="path" type="xs:string" minOccurs="1" maxOccurs="1"/>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="DataQualityCallState">
-        <xs:annotation>
-            <xs:documentation>
-                CallState. Используется в ответе на запрос 'RequestGetDataQualityErrors'
-            </xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element name="path" type="xs:string" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="port" type="xs:string" minOccurs="0" maxOccurs="1"/>
-            <xs:element name="value" type="data:AbstractAttribute" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
-    </xs:complexType>
-    
     <xs:complexType name="DataQualityError">
         <xs:annotation>
             <xs:documentation>
@@ -830,8 +805,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="input" type="data:DataQualityCallState" minOccurs="0" maxOccurs="unbounded"/>
-            <xs:element name="values" type="data:DataQualityErrorValue" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="paths" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="errorId" type="xs:string" use="required"><xs:annotation><xs:documentation>Уникальный идентификатор ошибки</xs:documentation></xs:annotation></xs:attribute>
         <xs:attribute name="createDate" type="xs:dateTime" use="required"><xs:annotation><xs:documentation>Дата создания ошибки</xs:documentation></xs:annotation></xs:attribute>
@@ -841,7 +815,6 @@
         <xs:attribute name="message" type="xs:string" use="required"><xs:annotation><xs:documentation>Текст сообщения ошибки</xs:documentation></xs:annotation></xs:attribute>
         <xs:attribute name="severity" type="xs:string" use="required"><xs:annotation><xs:documentation>Уровень критичности, используется для группировки в отчётах</xs:documentation></xs:annotation></xs:attribute>
         <xs:attribute name="category" type="xs:string" use="required"><xs:annotation><xs:documentation>Имя категории ошибки, используется для группировки в отчётах</xs:documentation></xs:annotation></xs:attribute>
-
     </xs:complexType>
 
     <xs:complexType name="Cluster">

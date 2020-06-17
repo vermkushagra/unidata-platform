@@ -261,7 +261,7 @@ public class TermsAggregationRequestContext extends AbstractAggregationRequestCo
             return this;
         }
         /**
-         * @param aggs - sub aggregation
+         * @param agg - sub aggregation
          * @return self
          */
         public TermsAggregationRequestContextBuilder subAggregations(Collection<AggregationRequestContext> aggs) {

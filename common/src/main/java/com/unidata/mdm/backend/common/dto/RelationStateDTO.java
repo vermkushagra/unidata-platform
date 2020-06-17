@@ -73,8 +73,8 @@ public class RelationStateDTO {
     /**
      * @param relationName the relationName to set
      */
-    public void setRelationName(String relationName) {
-        this.relationName = relationName;
+    public void setRelationName(String relName) {
+        this.relationName = relName;
     }
     /**
      * @return the relationType
@@ -85,8 +85,8 @@ public class RelationStateDTO {
     /**
      * @param relationType the relationType to set
      */
-    public void setRelationType(RelType relationType) {
-        this.relationType = relationType;
+    public void setRelationType(RelType relType) {
+        this.relationType = relType;
     }
     /**
      * @return the rangeFrom
@@ -97,8 +97,8 @@ public class RelationStateDTO {
     /**
      * @param rangeFrom the rangeFrom to set
      */
-    public void setRangeFrom(Date rangeFrom) {
-        this.rangeFrom = rangeFrom;
+    public void setRangeFrom(Date rangeFromMin) {
+        this.rangeFrom = rangeFromMin;
     }
     /**
      * @return the rangeTo
@@ -109,7 +109,7 @@ public class RelationStateDTO {
     /**
      * @param rangeTo the rangeTo to set
      */
-    public void setRangeTo(Date rangeTo) {
-        this.rangeTo = rangeTo;
+    public void setRangeTo(Date rangeToMax) {
+        this.rangeTo = rangeToMax;
     }
 }

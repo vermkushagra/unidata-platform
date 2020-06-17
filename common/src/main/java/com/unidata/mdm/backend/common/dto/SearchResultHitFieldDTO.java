@@ -22,7 +22,6 @@
  */
 package com.unidata.mdm.backend.common.dto;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -43,14 +42,7 @@ public class SearchResultHitFieldDTO {
     * Field value.
     */
    private final List<Object> values;
-   /**
-    * Diesplay values.
-    */
-   private final List<String> displayValues;
-   /**
-    * Hack.
-    */
-   private String systemId;
+
     /**
      * Constructor.
      */
@@ -58,7 +50,6 @@ public class SearchResultHitFieldDTO {
         super();
         this.field = field;
         this.values = values == null || values.isEmpty() ? Collections.emptyList() : values;
-        this.displayValues = this.values.isEmpty() ? Collections.emptyList() : new ArrayList<>(this.values.size());
     }
 
    /**
@@ -75,25 +66,14 @@ public class SearchResultHitFieldDTO {
        return values;
    }
 
-    public List<String> getDisplayValues() {
-        return displayValues;
-    }
-    /**
-     *
-     * @return return first value in values otherwise null
-     */
-    public String getFirstDisplayValue() {
-        return isNullField() ? null : getDisplayValues().isEmpty() ? null : getDisplayValues().get(0);
-    }
+   public boolean isEmpty() {
 
-    public boolean isEmpty() {
+       if (isNullField()) {
+           return true;
+       }
 
-        if (isNullField()) {
-            return true;
-        }
-
-        return values.stream().allMatch(Objects::isNull);
-    }
+       return values.stream().allMatch(Objects::isNull);
+   }
     /**
      *
      * @return return first value in values otherwise null
@@ -128,20 +108,6 @@ public class SearchResultHitFieldDTO {
      */
     public boolean isSingleValue(){
         return !isCollection();
-    }
-
-    /**
-     * @return the systemId
-     */
-    public String getSystemId() {
-        return systemId;
-    }
-
-    /**
-     * @param systemId the systemId to set
-     */
-    public void setSystemId(String systemId) {
-        this.systemId = systemId;
     }
 }
 

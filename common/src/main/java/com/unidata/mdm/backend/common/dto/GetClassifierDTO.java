@@ -21,8 +21,6 @@ package com.unidata.mdm.backend.common.dto;
 
 import java.util.List;
 
-import com.unidata.mdm.backend.common.dto.security.ResourceSpecificRightDTO;
-import com.unidata.mdm.backend.common.dto.wf.WorkflowTaskDTO;
 import com.unidata.mdm.backend.common.keys.ClassifierKeys;
 import com.unidata.mdm.backend.common.types.EtalonClassifier;
 import com.unidata.mdm.backend.common.types.OriginClassifier;
@@ -44,14 +42,6 @@ public class GetClassifierDTO implements ClassifierDTO, EtalonClassifierDTO, Ori
      * Origin classifier records.
      */
     private List<OriginClassifier> origins;
-    /**
-     * Tasks set
-     */
-    private List<WorkflowTaskDTO> tasks;
-    /**
-     * Rights.
-     */
-    private ResourceSpecificRightDTO rights;
     /**
      * Constructor.
      */
@@ -96,29 +86,5 @@ public class GetClassifierDTO implements ClassifierDTO, EtalonClassifierDTO, Ori
      */
     public void setOrigins(List<OriginClassifier> origins) {
         this.origins = origins;
-    }
-    /**
-     * @return the tasks
-     */
-    public List<WorkflowTaskDTO> getTasks() {
-        return tasks;
-    }
-    /**
-     * @param tasks the tasks to set
-     */
-    public void setTasks(List<WorkflowTaskDTO> tasks) {
-        this.tasks = tasks;
-    }
-    /**
-     * @return the rights
-     */
-    public ResourceSpecificRightDTO getRights() {
-        return rights;
-    }
-    /**
-     * @param rights the rights to set
-     */
-    public void setRights(ResourceSpecificRightDTO rights) {
-        this.rights = rights;
     }
 }

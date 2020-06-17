@@ -155,7 +155,7 @@ public class NestedAggregationRequestContext extends AbstractAggregationRequestC
             return this;
         }
         /**
-         * @param aggs - sub aggregation
+         * @param agg - sub aggregation
          * @return self
          */
         public NestedAggregationRequestContextBuilder subAggregations(Collection<AggregationRequestContext> aggs) {

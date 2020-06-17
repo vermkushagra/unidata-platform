@@ -287,7 +287,7 @@ public class DeleteRelationsRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public DeleteRelationsRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -306,7 +306,7 @@ public class DeleteRelationsRequestContext
         }
 
         /**
-         * @param originKey the etalonKey to set
+         * @param etalonKey the etalonKey to set
          */
         public DeleteRelationsRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -372,16 +372,16 @@ public class DeleteRelationsRequestContext
         /**
          * @param validFrom the range from to set
          */
-        public DeleteRelationsRequestContextBuilder validFrom(Date validFrom) {
-            this.validFrom = validFrom;
+        public DeleteRelationsRequestContextBuilder validFrom(Date rangeFrom) {
+            this.validFrom = rangeFrom;
             return this;
         }
 
         /**
          * @param validTo the range to to set
          */
-        public DeleteRelationsRequestContextBuilder validTo(Date validTo) {
-            this.validTo = validTo;
+        public DeleteRelationsRequestContextBuilder validTo(Date rangeTo) {
+            this.validTo = rangeTo;
             return this;
         }
 

@@ -52,6 +52,7 @@ public enum StatisticType {
      * The clusters.
      */
     CLUSTERS("CLUSTERS", false);
+
     /**
      * The value.
      */
@@ -77,7 +78,7 @@ public enum StatisticType {
      */
     public static StatisticType fromValue(String v) {
         for (StatisticType c : StatisticType.values()) {
-            if (c.value.equalsIgnoreCase(v)) {
+            if (c.value.equals(v)) {
                 return c;
             }
         }

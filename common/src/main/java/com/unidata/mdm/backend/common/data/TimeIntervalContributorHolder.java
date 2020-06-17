@@ -21,27 +21,26 @@ package com.unidata.mdm.backend.common.data;
 
 import java.util.Date;
 
-import com.unidata.mdm.backend.common.types.ApprovalState;
+import com.unidata.mdm.backend.common.dto.ContributorDTO;
 import com.unidata.mdm.backend.common.types.RecordStatus;
-import com.unidata.mdm.backend.common.types.TimeIntervalContributorInfo;
 
 /**
  * @author mikhail
  * Time line contributor holder.
  */
 public class TimeIntervalContributorHolder
-    implements CalculableHolder<TimeIntervalContributorInfo> {
+    implements CalculableHolder<ContributorDTO> {
 
     /**
      * The value.
      */
-    private final TimeIntervalContributorInfo value;
+    private final ContributorDTO value;
 
     /**
      * Constructor.
      * @param v the value
      */
-    public TimeIntervalContributorHolder(TimeIntervalContributorInfo v) {
+    public TimeIntervalContributorHolder(ContributorDTO v) {
         super();
         this.value = v;
     }
@@ -50,7 +49,7 @@ public class TimeIntervalContributorHolder
      * @see com.unidata.mdm.backend.common.data.CalculableHolder#getValue()
      */
     @Override
-    public TimeIntervalContributorInfo getValue() {
+    public ContributorDTO getValue() {
         return value;
     }
 
@@ -68,8 +67,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public String getTypeName() {
-        // Not currently supported, but may be of use later
-        return null;
+        return value == null ? null : value.getTypeName();
     }
 
     /**
@@ -77,7 +75,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public String getSourceSystem() {
-        return value.getSourceSystem();
+        return value == null ? null : value.getSourceSystem();
     }
 
     /**
@@ -85,15 +83,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public RecordStatus getStatus() {
-        return value.getStatus();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ApprovalState getApproval() {
-        return value.getApproval();
+        return value == null ? null : value.getStatus();
     }
 
     /**
@@ -101,7 +91,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public Date getLastUpdate() {
-        return value.getCreateDate();
+        return value == null ? null : value.getLastUpdate();
     }
 
     /**
@@ -109,7 +99,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public int getRevision() {
-        return value.getRevision();
+        return value == null ? -1 : value.getRevision();
     }
 
     /**
@@ -117,6 +107,7 @@ public class TimeIntervalContributorHolder
      */
     @Override
     public CalculableType getCalculableType() {
-        return CalculableType.INFO;
+        return CalculableType.TIME_INTERVAL;
     }
+
 }

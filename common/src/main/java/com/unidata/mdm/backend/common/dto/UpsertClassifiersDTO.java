@@ -19,7 +19,6 @@
 
 package com.unidata.mdm.backend.common.dto;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,6 +44,7 @@ public class UpsertClassifiersDTO implements ClassifiersDTO<UpsertClassifierDTO>
      */
     @Override
     public Map<String, List<UpsertClassifierDTO>> getClassifiers() {
-        return classifiers == null ? Collections.emptyMap() : classifiers;
+        return classifiers;
     }
+
 }

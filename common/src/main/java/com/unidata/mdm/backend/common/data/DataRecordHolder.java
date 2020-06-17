@@ -21,7 +21,6 @@ package com.unidata.mdm.backend.common.data;
 
 import java.util.Date;
 
-import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.DataRecord;
 import com.unidata.mdm.backend.common.types.OriginRecord;
 import com.unidata.mdm.backend.common.types.RecordStatus;
@@ -39,6 +38,11 @@ public class DataRecordHolder
     /**
      * Constructor.
      * @param data the data
+     * @param name type name
+     * @param sourceSystem the source system
+     * @param externalId object's external id
+     * @param status the status
+     * @param lastUpdate the last update
      */
     public DataRecordHolder(OriginRecord data) {
         super();
@@ -78,13 +82,6 @@ public class DataRecordHolder
     @Override
     public RecordStatus getStatus() {
         return value.getInfoSection().getStatus();
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ApprovalState getApproval() {
-        return value.getInfoSection().getApproval();
     }
     /**
      * {@inheritDoc}

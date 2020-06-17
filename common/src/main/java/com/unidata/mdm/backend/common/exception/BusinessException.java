@@ -45,8 +45,4 @@ public class BusinessException extends SystemRuntimeException {
     public BusinessException(String message, ExceptionId id) {
         super(message, id);
     }
-
-    public BusinessException(String message, Throwable cause, ExceptionId id, Object... args) {
-        super(message, cause, id, args);
-    }
 }

@@ -52,6 +52,13 @@ public interface SearchService {
      */
     SearchResultDTO search(SearchRequestContext ctx);
 
-
+    /**
+     * Count errors by severity
+     *
+     * @param severity severity
+     * @param ctx      context.
+     * @return number of errors.
+     */
+    long countErrorsBySeverity(String severity, SearchRequestContext ctx);
 
 }

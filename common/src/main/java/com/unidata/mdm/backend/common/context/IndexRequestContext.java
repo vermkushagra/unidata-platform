@@ -22,24 +22,18 @@ package com.unidata.mdm.backend.common.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
+import com.unidata.mdm.backend.common.types.DataQualityError;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
 import com.unidata.mdm.backend.common.matching.ClusterSet;
 import com.unidata.mdm.backend.common.search.SearchField;
-import com.unidata.mdm.backend.common.search.id.ClassifierIndexId;
-import com.unidata.mdm.backend.common.search.id.ManagedIndexId;
-import com.unidata.mdm.backend.common.search.id.RecordIndexId;
-import com.unidata.mdm.backend.common.search.id.RelationIndexId;
-import com.unidata.mdm.backend.common.search.types.EntitySearchType;
-import com.unidata.mdm.backend.common.types.DataQualityError;
 import com.unidata.mdm.backend.common.types.EtalonClassifier;
 import com.unidata.mdm.backend.common.types.EtalonClassifierInfoSection;
 import com.unidata.mdm.backend.common.types.EtalonRecord;
@@ -77,9 +71,18 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
      */
     private final boolean refresh;
     /**
-     * Ids to delete.
+     * Records period ids to delete.
      */
-    private final Map<EntitySearchType, List<? extends ManagedIndexId>> idsToDelete;
+    private final List<String> recordsToDelete;
+
+    /**
+     * Classifier records ids to delete.
+     */
+    private final List<String> classifiersToDelete;
+    /**
+     * Relation period ids (tss) to delete.
+     */
+    private final Map<String, List<String>> relationsToDelete;
     /**
      * Record records.
      * TODO replace this with plain EtalonRecord collection. Pull all the innfo needed from info section.
@@ -112,10 +115,6 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
      */
     private final List<EtalonRecordInfoSection> recordsToQueryDelete;
     /**
-     * Matching to query delete (header fields).
-     */
-    private final List<EtalonRecordInfoSection> matchingToQueryDelete;
-    /**
      * Classifiers sys update data (header fields).
      */
     private final List<EtalonClassifierInfoSection> classifiersToQueryDelete;
@@ -134,10 +133,11 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
         this.routing = b.routing;
         this.drop = b.drop;
         this.refresh = b.refresh;
-        this.idsToDelete = b.idsToDelete;
+        this.recordsToDelete = b.recordsToDelete;
+        this.classifiersToDelete = b.classifiersToDelete;
+        this.relationsToDelete = b.relationsToDelete;
         this.recordsToSysUpdate = b.recordsToSysUpdate;
         this.recordsToQueryDelete = b.recordsToQueryDelete;
-        this.matchingToQueryDelete = b.matchingToQueryDelete;
         this.classifiersToQueryDelete = b.classifiersToQueryDelete;
         this.relationsToQueryDelete = b.relationsToQueryDelete;
         this.records = b.records;
@@ -194,50 +194,26 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
     public boolean isRefresh() {
         return refresh;
     }
-    /**
-     * Gets delete ids grouped by entity name.
-     * @return
-     */
-    public Map<String, List<ManagedIndexId>> getDeleteIdsGroupedByEntityName() {
-
-        if (MapUtils.isEmpty(idsToDelete)) {
-            return Collections.emptyMap();
-        }
-
-        return idsToDelete.entrySet().stream()
-            .filter(entry -> CollectionUtils.isNotEmpty(entry.getValue()))
-            .flatMap(entry -> entry.getValue().stream())
-            .collect(Collectors.groupingBy(ManagedIndexId::getEntityName));
-    }
 
     /**
      * @return the oldRecordIds
      */
-    @SuppressWarnings("unchecked")
-    public List<RecordIndexId> getRecordsToDelete() {
-        return CollectionUtils.isEmpty(idsToDelete.get(EntitySearchType.ETALON_DATA))
-                ? Collections.emptyList()
-                : (List<RecordIndexId>) idsToDelete.get(EntitySearchType.ETALON_DATA);
+    public List<String> getRecordsToDelete() {
+        return recordsToDelete == null ? Collections.emptyList() : recordsToDelete;
     }
 
     /**
      * @return the classifiersToDelete
      */
-    @SuppressWarnings("unchecked")
-    public List<ClassifierIndexId> getClassifiersToDelete() {
-        return CollectionUtils.isEmpty(idsToDelete.get(EntitySearchType.CLASSIFIER))
-                ? Collections.emptyList()
-                : (List<ClassifierIndexId>) idsToDelete.get(EntitySearchType.CLASSIFIER);
+    public List<String> getClassifiersToDelete() {
+        return classifiersToDelete == null ? Collections.emptyList() : classifiersToDelete;
     }
 
     /**
      * @return the oldRelationIds
      */
-    @SuppressWarnings("unchecked")
-    public List<RelationIndexId> getRelationsToDelete() {
-        return CollectionUtils.isEmpty(idsToDelete.get(EntitySearchType.ETALON_RELATION))
-                ? Collections.emptyList()
-                : (List<RelationIndexId>) idsToDelete.get(EntitySearchType.ETALON_RELATION);
+    public Map<String, List<String>> getRelationsToDelete() {
+        return relationsToDelete == null ? Collections.emptyMap() : relationsToDelete;
     }
 
     /**
@@ -248,18 +224,12 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
     }
 
     /**
-     * @return the recordsToSysDelete
+     * @return the recordsToSysUpdate
      */
     public List<EtalonRecordInfoSection> getRecordsToQueryDelete() {
         return recordsToQueryDelete == null ? Collections.emptyList() : recordsToQueryDelete;
     }
 
-    /**
-     * @return the matchingToSysDelete
-     */
-    public List<EtalonRecordInfoSection> getMatchingToQueryDelete() {
-        return matchingToQueryDelete == null ? Collections.emptyList() : matchingToQueryDelete;
-    }
     /**
      * @return the classifiersToSysUpdate
      */
@@ -316,11 +286,6 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
     public static IndexRequestContextBuilder builder() {
         return new IndexRequestContextBuilder();
     }
-
-    public static IndexRequestContextBuilder builder(IndexRequestContext idx) {
-        return new IndexRequestContextBuilder(idx);
-    }
-
     /**
      * Context builder.
      * @author Mikhail Mikhailov
@@ -347,6 +312,18 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
          */
         private boolean refresh = true;
         /**
+         * Records period ids in form {etalonId, periodId} to delete.
+         */
+        private List<String> recordsToDelete;
+        /**
+         * Classifier records to delete in form {etalonId, classifierName}.
+         */
+        private List<String> classifiersToDelete;
+        /**
+         * Relation period ids in form {etalonId, relationName, periodId} to delete.
+         */
+        private Map<String, List<String>> relationsToDelete;
+        /**
          * Record to sys updates (header fields).
          */
         private List<EtalonRecordInfoSection> recordsToSysUpdate;
@@ -354,10 +331,6 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
          * Record to sys updates (header fields).
          */
         private List<EtalonRecordInfoSection> recordsToQueryDelete;
-        /**
-         * Record to sys delete (header fields).
-         */
-        private List<EtalonRecordInfoSection> matchingToQueryDelete;
         /**
          * Classifiers sys update data (header fields).
          */
@@ -382,38 +355,15 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
          * Matching clusters.
          */
         private Map<EtalonRecord, ClusterSet> clusters;
+
         /**
          * Data quality errors.
          */
         private final Map<EtalonRecord, List<DataQualityError>> dqErrors = new IdentityHashMap<>();
-        /**
-         * Ids to delete.
-         */
-        private Map<EntitySearchType, List<? extends ManagedIndexId>> idsToDelete = new EnumMap<>(EntitySearchType.class);
-        /**
-         * Constructor.
-         */
+
         private IndexRequestContextBuilder() {
             super();
         }
-
-        public IndexRequestContextBuilder(final IndexRequestContext idx) {
-            super();
-            storageId = idx.storageId;
-            drop = idx.drop;
-            refresh = idx.refresh;
-            records = idx.records;
-            classifiers = idx.classifiers;
-            relations = idx.relations;
-            idsToDelete = idx.idsToDelete;
-            recordsToQueryDelete = idx.recordsToQueryDelete;
-            relationsToQueryDelete = idx.relationsToQueryDelete;
-            classifiersToQueryDelete = idx.classifiersToQueryDelete;
-            entity = idx.entity;
-            routing = idx.routing;
-
-        }
-
         /**
          * Overrides default storage id.
          * @param storageId the storage id to use
@@ -466,33 +416,27 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
             return this;
         }
         /**
-         * Sets records to delete.
-         * @param ids id to delete
-         * @return self
+         * @param recordsToDelete the old record ids to set
          */
-        @SuppressWarnings("unchecked")
-        public IndexRequestContextBuilder recordsToDelete(List<RecordIndexId> ids) {
+        public IndexRequestContextBuilder recordsToDelete(List<String> recordsToDelete) {
 
-            if (CollectionUtils.isNotEmpty(ids)) {
-                ((List<RecordIndexId>) idsToDelete
-                    .computeIfAbsent(EntitySearchType.ETALON_DATA, key -> new ArrayList<RecordIndexId>()))
-                    .addAll(ids);
+            if (CollectionUtils.isEmpty(recordsToDelete)) {
+                return this;
+            }
+
+            if (Objects.isNull(this.recordsToDelete)) {
+                this.recordsToDelete = new ArrayList<>(recordsToDelete);
+            } else {
+                this.recordsToDelete.addAll(recordsToDelete);
             }
 
             return this;
         }
         /**
-         * Sets record to delete.
-         * @param id id to delete
-         * @return self
+         * @param recordToDelete the old record id to set
          */
-        public IndexRequestContextBuilder recordToDelete(RecordIndexId id) {
-
-            if (Objects.isNull(id)) {
-                return this;
-            }
-
-            return recordsToDelete(Collections.singletonList(id));
+        public IndexRequestContextBuilder recordToDelete(String recordToDelete) {
+            return recordsToDelete(Collections.singletonList(recordToDelete));
         }
         /**
          * @param recordsToQueryDelete the record sys update
@@ -512,30 +456,13 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
             return this;
         }
         /**
-         * @param matchingToQueryDelete the record sys update
-         */
-        public IndexRequestContextBuilder matchingToQueryDelete(List<EtalonRecordInfoSection> matchingToQueryDelete) {
-
-            if (CollectionUtils.isEmpty(matchingToQueryDelete)) {
-                return this;
-            }
-
-            if (Objects.isNull(this.matchingToQueryDelete)) {
-                this.matchingToQueryDelete = new ArrayList<>(matchingToQueryDelete);
-            } else {
-                this.matchingToQueryDelete.addAll(matchingToQueryDelete);
-            }
-
-            return this;
-        }
-        /**
          * @param recordToQueryDelete the record sys update
          */
         public IndexRequestContextBuilder recordToQueryDelete(EtalonRecordInfoSection recordToQueryDelete) {
             return recordsToQueryDelete(Collections.singletonList(recordToQueryDelete));
         }
         /**
-         * @param recordsToSysUpdate the record sys update
+         * @param recordsToQueryDelete the record sys update
          */
         public IndexRequestContextBuilder recordsToSysUpdate(List<EtalonRecordInfoSection> recordsToSysUpdate) {
 
@@ -552,39 +479,37 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
             return this;
         }
         /**
-         * @param recordToSysUpdate the record sys update
+         * @param recordToQueryDelete the record sys update
          */
         public IndexRequestContextBuilder recordToSysUpdate(EtalonRecordInfoSection recordToSysUpdate) {
             return recordsToSysUpdate(Collections.singletonList(recordToSysUpdate));
         }
         /**
-         * Sets classifier to delete.
-         * @param ids id to delete
+         * Sets classifiers to delete.
+         * @param classifiersToDelete
          * @return self
          */
-        @SuppressWarnings("unchecked")
-        public IndexRequestContextBuilder classifiersToDelete(List<ClassifierIndexId> ids) {
+        public IndexRequestContextBuilder classifiersToDelete(List<String> classifiersToDelete) {
 
-            if (CollectionUtils.isNotEmpty(ids)) {
-                ((List<ClassifierIndexId>) idsToDelete
-                    .computeIfAbsent(EntitySearchType.CLASSIFIER, key -> new ArrayList<ClassifierIndexId>()))
-                    .addAll(ids);
+            if (CollectionUtils.isEmpty(classifiersToDelete)) {
+                return this;
+            }
+
+            if (Objects.isNull(this.classifiersToDelete)) {
+                this.classifiersToDelete = new ArrayList<>(classifiersToDelete);
+            } else {
+                this.classifiersToDelete.addAll(classifiersToDelete);
             }
 
             return this;
         }
         /**
-         * Sets classifier to delete.
-         * @param id id to delete
+         * Sets classifiers to delete.
+         * @param classifiersToDelete
          * @return self
          */
-        public IndexRequestContextBuilder classifierToDelete(ClassifierIndexId id) {
-
-            if (Objects.isNull(id)) {
-                return this;
-            }
-
-            return classifiersToDelete(Collections.singletonList(id));
+        public IndexRequestContextBuilder classifierToDelete(String classifierToDelete) {
+            return classifiersToDelete(Collections.singletonList(classifierToDelete));
         }
         /**
          * Sets classifiers to sys update.
@@ -614,7 +539,7 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
             return classifiersToQueryDelete(Collections.singletonList(classifierToQueryDelete));
         }
         /**
-         * @param relationsToQueryDelete the record to sys update
+         * @param ids the record to sys update
          */
         public IndexRequestContextBuilder relationsToQueryDelete(List<EtalonRelationInfoSection> relationsToQueryDelete) {
 
@@ -639,33 +564,30 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
             return relationsToQueryDelete(Collections.singletonList(relationQueryDelete));
         }
         /**
-         * Sets relations to delete.
-         * @param ids id to delete
-         * @return self
+         * @param ids the old record ids to set
          */
-        @SuppressWarnings("unchecked")
-        public IndexRequestContextBuilder relationsToDelete(List<RelationIndexId> ids) {
+        public IndexRequestContextBuilder relationsToDelete(String sideName, List<String> relationsToDelete) {
 
-            if (CollectionUtils.isNotEmpty(ids)) {
-                ((List<RelationIndexId>) idsToDelete
-                    .computeIfAbsent(EntitySearchType.ETALON_RELATION, key -> new ArrayList<RelationIndexId>()))
-                    .addAll(ids);
+            if (CollectionUtils.isEmpty(relationsToDelete)) {
+                return this;
             }
+
+            if (Objects.isNull(this.relationsToDelete)) {
+                this.relationsToDelete = new HashMap<>();
+            }
+
+            this.relationsToDelete.computeIfAbsent(sideName, k -> new ArrayList<>(relationsToDelete.size()))
+                .addAll(relationsToDelete);
 
             return this;
         }
         /**
          * Sets relation to delete.
-         * @param id id to delete
+         * @param classifiersToDelete
          * @return self
          */
-        public IndexRequestContextBuilder relationToDelete(RelationIndexId id) {
-
-            if (Objects.isNull(id)) {
-                return this;
-            }
-
-            return relationsToDelete(Collections.singletonList(id));
+        public IndexRequestContextBuilder relationToDelete(String sideName, String relationToDelete) {
+            return relationsToDelete(sideName, Collections.singletonList(relationToDelete));
         }
         /**
          * @param classifiers the classifiers to set
@@ -723,9 +645,11 @@ public class IndexRequestContext extends CommonRequestContext implements SearchC
         public boolean hasUpdates() {
             return MapUtils.isNotEmpty(this.records)
                 || MapUtils.isNotEmpty(this.clusters)
-                || MapUtils.isNotEmpty(this.idsToDelete)
+                || CollectionUtils.isNotEmpty(this.recordsToDelete)
                 || CollectionUtils.isNotEmpty(this.relations)
-                || CollectionUtils.isNotEmpty(this.classifiers);
+                || MapUtils.isNotEmpty(this.relationsToDelete)
+                || CollectionUtils.isNotEmpty(this.classifiers)
+                || CollectionUtils.isNotEmpty(this.classifiersToDelete);
         }
         /**
          * Builds context.

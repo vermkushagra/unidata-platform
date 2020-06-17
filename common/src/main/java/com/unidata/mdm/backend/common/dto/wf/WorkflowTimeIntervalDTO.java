@@ -35,7 +35,7 @@ public class WorkflowTimeIntervalDTO extends TimeIntervalDTO {
     /**
      * Contributors.
      */
-    private final List<ContributorDTO> pendings = new ArrayList<>(4);
+    private final List<ContributorDTO> pendings = new ArrayList<>();
 
     /**
      * Interval is in pending state.
@@ -44,10 +44,10 @@ public class WorkflowTimeIntervalDTO extends TimeIntervalDTO {
 
     /**
      * Constructor.
-     * @param validFrom period's validity start timestamp
-     * @param validTo period's validity end timestamp
+     * @param period's validity start timestamp
+     * @param period's validity end timestamp
      * @param periodId period id (index onn the time line)
-     * @param active activity mark
+     * @param isActive activity mark
      * @param pending wither the period is in pending state
      */
     public WorkflowTimeIntervalDTO(Date validFrom, Date validTo, long periodId, boolean active, boolean pending) {
@@ -72,7 +72,7 @@ public class WorkflowTimeIntervalDTO extends TimeIntervalDTO {
     }
 
     /**
-     * Gets deleted state -&gt;
+     * Gets deleted state ->
      *
      * @return true if interval was "hard" deleted, otherwise false
      */

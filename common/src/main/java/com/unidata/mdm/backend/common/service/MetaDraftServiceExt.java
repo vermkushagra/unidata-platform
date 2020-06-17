@@ -51,10 +51,6 @@ public interface MetaDraftServiceExt {
 	 * Removes the draft.
 	 */
 	void removeDraft();
-	/**
-	 * Load active draft.
-	 */
-	void loadActiveDraft();
 
 	/**
 	 * Gets the entities groups.

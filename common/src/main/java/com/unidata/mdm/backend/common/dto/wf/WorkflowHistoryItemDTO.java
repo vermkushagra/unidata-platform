@@ -35,7 +35,6 @@ public class WorkflowHistoryItemDTO {
     private String filename;
     private String description;
     private String assignee;
-    private String completedBy;
     private ZonedDateTime startTime;
     private ZonedDateTime endTime;
     private ZonedDateTime claimTime;
@@ -110,13 +109,5 @@ public class WorkflowHistoryItemDTO {
 
     public void setClaimTime(ZonedDateTime claimTime) {
         this.claimTime = claimTime;
-    }
-
-    public String getCompletedBy() {
-        return completedBy;
-    }
-
-    public void setCompletedBy(String completedBy) {
-        this.completedBy = completedBy;
     }
 }

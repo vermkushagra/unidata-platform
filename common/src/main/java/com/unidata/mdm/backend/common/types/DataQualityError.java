@@ -20,20 +20,18 @@
 package com.unidata.mdm.backend.common.types;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.dq.DataQualityExecutionMode;
 
 /**
  * DQ error type. Created from JAXB artefact.
  */
-public class DataQualityError implements Serializable {
+public class DataQualityError implements Serializable
+{
     /**
      * SVUID.
      */
@@ -42,10 +40,12 @@ public class DataQualityError implements Serializable {
      * Id.
      */
     private final String id;
+
     /**
      * Etalon id
      */
     private String etalonId;
+
     /**
      * Create date.
      */
@@ -59,9 +59,9 @@ public class DataQualityError implements Serializable {
      */
     private final String createdBy;
     /**
-     * Paths and attributes (optional), caused this validation error.
+     * Problematic local paths, caused the error, if any.
      */
-    private final List<Pair<String, Attribute>> values;
+    private final List<String> paths;
     /**
      * Status.
      */
@@ -87,10 +87,6 @@ public class DataQualityError implements Serializable {
      */
     private final DataQualityExecutionMode executionMode;
     /**
-     * DataQualityCallState
-     */
-    private final List<DataQualityCallState> dataQualityCallStates;
-    /**
      * Constructor.
      * @param b the builder
      */
@@ -101,14 +97,13 @@ public class DataQualityError implements Serializable {
         createDate = b.createDate;
         updateDate = b.updateDate;
         createdBy = b.createdBy;
-        values = Objects.isNull(b.values) ? Collections.emptyList() : b.values;
+        paths = Objects.isNull(b.paths) ? Collections.emptyList() : b.paths;
         status = b.status;
         ruleName = b.ruleName;
         message = b.message;
         severity= b.severity;
         category = b.category;
         executionMode = b.executionMode;
-        dataQualityCallStates = b.dataQualityCallStates;
     }
     /**
      * Gets the value of the errorId property.
@@ -165,10 +160,10 @@ public class DataQualityError implements Serializable {
         return createdBy;
     }
     /**
-     * @return the values
+     * @return the paths
      */
-    public List<Pair<String, Attribute>> getValues() {
-        return values;
+    public List<String> getPaths() {
+        return paths;
     }
     /**
      * Gets the value of the status property.
@@ -236,13 +231,6 @@ public class DataQualityError implements Serializable {
     public DataQualityExecutionMode getExecutionMode() {
         return executionMode;
     }
-
-    /**
-     * @return Call state
-     */
-    public List<DataQualityCallState> getCallState(){
-        return dataQualityCallStates;
-    }
     /**
      * {@inheritDoc}
      */
@@ -306,9 +294,9 @@ public class DataQualityError implements Serializable {
          */
         private String createdBy;
         /**
-         * Paths and attributes (optional), caused this validation error.
+         * Problematic local paths, caused the error, if any.
          */
-        private List<Pair<String, Attribute>> values;
+        private List<String> paths;
         /**
          * Status.
          */
@@ -334,10 +322,6 @@ public class DataQualityError implements Serializable {
          */
         private DataQualityExecutionMode executionMode;
         /**
-         * Call state
-         */
-        private List<DataQualityCallState> dataQualityCallStates;
-        /**
          * Constructor.
          */
         private DataQualityErrorBuilder() {
@@ -362,8 +346,7 @@ public class DataQualityError implements Serializable {
             message = error.message;
             severity= error.severity;
             category = error.category;
-            values = error.values;
-            dataQualityCallStates = error.dataQualityCallStates;
+            paths = error.paths;
         }
 
         /**
@@ -414,27 +397,12 @@ public class DataQualityError implements Serializable {
             return this;
         }
         /**
-         * Problematic local paths and attr values, caused the error, if any.
-         * @param values the values to set
+         * Problematic local paths, caused the error, if any.
+         * @param paths the paths to set
          * @return self
          */
-        public DataQualityErrorBuilder values(List<Pair<String, Attribute>> values) {
-            if (Objects.isNull(this.values)) {
-                this.values = new ArrayList<>();
-            }
-            this.values.addAll(values);
-            return this;
-        }
-        /**
-         * Problematic local path and its attr value, caused the error, if any.
-         * @param value the value to set
-         * @return self
-         */
-        public DataQualityErrorBuilder value(Pair<String, Attribute> value) {
-            if (Objects.isNull(this.values)) {
-                this.values = new ArrayList<>();
-            }
-            this.values.add(value);
+        public DataQualityErrorBuilder paths(List<String> paths) {
+            this.paths = paths;
             return this;
         }
         /**
@@ -493,21 +461,11 @@ public class DataQualityError implements Serializable {
         }
         /**
          * Sets execution mode.
-         * @param executionMode Data quality execution mode
+         * @param value the value to set
          * @return self
          */
         public DataQualityErrorBuilder executionMode(DataQualityExecutionMode executionMode) {
             this.executionMode = executionMode;
-            return this;
-        }
-
-        /**
-         * Call state
-         * @param dataQualityCallStates
-         * @return
-         */
-        public DataQualityErrorBuilder callStates(List<DataQualityCallState> dataQualityCallStates){
-            this.dataQualityCallStates = dataQualityCallStates;
             return this;
         }
         /**

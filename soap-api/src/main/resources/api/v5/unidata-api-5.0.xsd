@@ -923,7 +923,6 @@ Or element.
                         </xs:element>
                     </xs:choice>
                     <xs:element name="relations" type="tdapi:UpsertRelationsDef" minOccurs="0" maxOccurs="1"/>
-                    <xs:element name="relationsDelete" type="tdapi:DeleteRelationsDef" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="range" type="tdapi:TimeIntervalDef" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="aliasCodeAttributePointers" type="tdapi:AliasCodeAttributePointerDef" minOccurs="0" maxOccurs="unbounded"/>
                     <xs:element name="classifierPointers" type="tdapi:ClassifierPointerDef" minOccurs="0" maxOccurs="unbounded"/>

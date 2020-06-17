@@ -72,7 +72,7 @@ public class CleanseFunctionExecutionException extends SystemRuntimeException {
     /**
      * Instantiates a new cleanse function exception.
      *
-     * @param cleanseFunctionId the cleansefunction id
+     * @param cleansefunctionId the cleansefunction id
      * @param cause the cause
      * @param errorMessages the error messages
      */

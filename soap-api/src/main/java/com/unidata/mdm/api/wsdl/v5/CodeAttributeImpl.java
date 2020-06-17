@@ -21,6 +21,8 @@ package com.unidata.mdm.api.wsdl.v5;
 
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import com.unidata.mdm.data.v5.AbstractCodeAttribute;
 import com.unidata.mdm.data.v5.CodeDataType;
 
@@ -34,6 +36,7 @@ public class CodeAttributeImpl extends AbstractCodeAttribute {
     /**
      * Value data type.
      */
+    @XmlTransient
     private CodeDataType type;
     /**
      * Constructor.
@@ -45,6 +48,7 @@ public class CodeAttributeImpl extends AbstractCodeAttribute {
     /**
      * @return the type
      */
+    @XmlTransient
     public CodeDataType getType() {
         return type;
     }

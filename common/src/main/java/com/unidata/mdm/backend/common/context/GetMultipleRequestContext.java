@@ -151,7 +151,7 @@ public class GetMultipleRequestContext extends CommonRequestContext {
         }
 
         /**
-         * @param goldenKeys the etalonKeys to set
+         * @param goldenKey the etalonKeys to set
          */
         public GetMultipleRequestContextBuilder etalonKeys(List<String> goldenKeys) {
             this.etalonKeys = goldenKeys;

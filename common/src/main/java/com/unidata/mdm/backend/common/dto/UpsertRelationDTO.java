@@ -134,8 +134,8 @@ public class UpsertRelationDTO implements RelationDTO, EtalonRelationDTO {
     /**
      * @param relationType the relationType to set
      */
-    public void setRelationType(RelationType relationType) {
-        this.relationType = relationType;
+    public void setRelationType(RelationType relType) {
+        this.relationType = relType;
     }
 
     /**

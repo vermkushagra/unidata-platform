@@ -47,7 +47,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-    <xs:simpleType name="ElementType" final="restriction">
+	<xs:simpleType name="ElementType" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ENTITY" />
 			<xs:enumeration value="NESTED_ENTITY" />
@@ -67,22 +67,6 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-    <xs:element name="getEntityWithDepsRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="entityName" type="xs:string" />
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    <xs:element name="getEntityWithDepsResponse">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="entity" type="meta:EntityDef" minOccurs="1" maxOccurs="1"/>
-                <xs:element name="nestedEntity" type="meta:NestedEntityDef" minOccurs="0" maxOccurs="unbounded"/>
-                <xs:element name="relation" type="meta:RelationDef" minOccurs="0" maxOccurs="unbounded"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
 	<xs:element name="upsertElementRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -475,8 +459,6 @@
 
     <xs:complexType name="VersionedObjectDef">
         <xs:attribute name="version" type="xs:long"/>
-        <xs:attribute name="updatedAt" type="xs:dateTime"/>
-        <xs:attribute name="createAt" type="xs:dateTime"/>
     </xs:complexType>
 
     <xs:complexType name="AbstractEntityDef">
@@ -633,10 +615,8 @@
                 maxOccurs="2" />
             <xs:element name="rClass" type="meta:DQRuleClass" minOccurs="0"
                 maxOccurs="1" />
-			<xs:element name="applicable" type="meta:DQApplicableType"
-				minOccurs="0" maxOccurs="2" />
-			<xs:element name="customProperties" type="meta:CustomPropertyDef"
-				minOccurs="0" maxOccurs="unbounded" />
+            <xs:element name="applicable" type="meta:DQApplicableType" minOccurs="0"
+                maxOccurs="2" />
         </xs:sequence>
         <xs:attribute name="name" type="meta:KeyAttribute" use="required" />
         <xs:attribute name="cleanseFunctionName" type="xs:string"

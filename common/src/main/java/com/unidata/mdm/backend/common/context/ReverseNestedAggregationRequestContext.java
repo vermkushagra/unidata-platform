@@ -155,7 +155,7 @@ public class ReverseNestedAggregationRequestContext extends AbstractAggregationR
             return this;
         }
         /**
-         * @param aggs - sub aggregation
+         * @param agg - sub aggregation
          * @return self
          */
         public ReverseNestedAggregationRequestContextBuilder subAggregations(Collection<AggregationRequestContext> aggs) {

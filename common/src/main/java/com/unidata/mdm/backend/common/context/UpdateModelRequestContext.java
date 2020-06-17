@@ -17,6 +17,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ */
 package com.unidata.mdm.backend.common.context;
 
 import static java.util.stream.Collectors.toCollection;
@@ -96,8 +99,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
      */
     private final UpsertType upsertType;
 
-    private final boolean skipRemoveElements;
-
     /**
      * Constructor.
      */
@@ -114,7 +115,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
         this.upsertType = b.upsertType;
         this.entitiesGroupsUpdate = b.entitiesGroupsUpdate;
         this.defaultClassifiersUpdate = b.defaultClassifiersUpdate;
-        this.skipRemoveElements = b.skipRemoveElements;
     }
 
     /**
@@ -191,10 +191,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
      */
     public UpsertType getUpsertType() {
         return upsertType;
-    }
-
-    public boolean isSkipRemoveElements() {
-        return skipRemoveElements;
     }
 
     /**
@@ -377,8 +373,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
 
         private UpsertType upsertType = UpsertType.PARTIAL_UPDATE;
 
-        private boolean skipRemoveElements;
-
         /**
          * Constructor.
          */
@@ -494,11 +488,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
 
         public UpdateModelRequestContextBuilder isForceRecreate(UpsertType upsertType) {
             this.upsertType = upsertType;
-            return this;
-        }
-
-        public UpdateModelRequestContextBuilder skipRemoveElements(boolean skipRemoveElements) {
-            this.skipRemoveElements = skipRemoveElements;
             return this;
         }
 

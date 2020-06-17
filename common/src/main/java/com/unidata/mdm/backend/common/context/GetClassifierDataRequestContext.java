@@ -34,7 +34,7 @@ import com.unidata.mdm.backend.common.keys.RecordKeys;
  * Gets classifier data record.
  */
 public class GetClassifierDataRequestContext
-    extends AbstractClassifierDataRequestContext {
+    extends CommonRequestContext implements ClassifierIdentityContext  {
     /**
      * Generated SVUID.
      */
@@ -122,7 +122,7 @@ public class GetClassifierDataRequestContext
      */
     @Override
     public RecordKeys keys() {
-        return getFromStorage(super.keysId());
+        return getFromStorage(ClassifierIdentityContext.super.keysId());
     }
 
     /**
@@ -396,7 +396,7 @@ public class GetClassifierDataRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public GetClassifierDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -415,7 +415,7 @@ public class GetClassifierDataRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public GetClassifierDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;

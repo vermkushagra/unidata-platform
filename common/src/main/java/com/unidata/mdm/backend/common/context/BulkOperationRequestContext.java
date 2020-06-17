@@ -140,7 +140,7 @@ public class BulkOperationRequestContext extends CommonRequestContext {
         }
         /**
          * Sets selected ids.
-         * @param configuration configuration
+         * @param selectedIds the IDs
          * @return self
          */
         public BulkOperationRequestContextBuilder configuration(BulkOperationConfiguration configuration) {

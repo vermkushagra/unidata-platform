@@ -142,7 +142,7 @@ public class FormFieldsGroup {
 
     @Nonnull
     public Collection<FormField> getFormFields() {
-        return formFields;
+        return Collections.unmodifiableCollection(formFields);
     }
 
     @Nonnull

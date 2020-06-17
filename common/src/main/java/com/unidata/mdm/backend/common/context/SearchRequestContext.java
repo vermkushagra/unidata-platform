@@ -25,15 +25,12 @@ import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import com.unidata.mdm.backend.common.search.FormField;
-import com.unidata.mdm.meta.SimpleDataType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +49,7 @@ import com.unidata.mdm.backend.common.search.types.ServiceSearchType;
  */
 public class SearchRequestContext implements SearchContext {
 
-    public static final int MAX_PAGE_SIZE = 50000;
+    private static final Integer MAX_PAGE_SIZE = 50000;
 
     /**
      * Query type name.
@@ -78,6 +75,9 @@ public class SearchRequestContext implements SearchContext {
      * Fields to return.
      */
     private final List<String> returnFields;
+    /**
+     * Form fields array.
+     */
     private final List<FormFieldsGroup> form;
     /**
      * Search facets.
@@ -149,6 +149,9 @@ public class SearchRequestContext implements SearchContext {
      * Use scroll scan mechanism
      */
     private final boolean scrollScan;
+    /**
+     * Type of requested entity in index
+     */
     private final SearchType type;
     /**
      * Aggregations collection.
@@ -269,8 +272,6 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * Form fields array.
-     */ /**
      * @return the form
      */
     public List<FormFieldsGroup> getForm() {
@@ -450,8 +451,6 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * Type of requested entity in index
-     */ /**
      * Type of search entity
      *
      * @return search
@@ -885,14 +884,6 @@ public class SearchRequestContext implements SearchContext {
             return this;
         }
 
-        public List<FormFieldsGroup> getForm() {
-            return form;
-        }
-
-        public SearchType getType() {
-            return type;
-        }
-
         /**
          * Sets the search group if specified.
          *
@@ -1024,7 +1015,7 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the max count to return.
-         * Max count to return can't be more {@value #MAX_PAGE_SIZE}.
+         * Max count to return can't be more {@value MAX_PAGE_SIZE}.
          *
          * @param count the count
          * @return this
@@ -1195,27 +1186,14 @@ public class SearchRequestContext implements SearchContext {
         }
 
         public SearchRequestContextBuilder nestedSearch(NestedSearchRequestContext... searches) {
-            if(searches == null) {
-                return this;
-            }
             for (int i = 0; searches != null && i < searches.length; i++) {
                 nestedSearch(searches[i]);
             }
             return this;
         }
 
-        public SearchRequestContextBuilder nestedSearch(Collection<NestedSearchRequestContext> searches) {
-            if(searches == null) {
-                return this;
-            }
-            searches.forEach(this::nestedSearch);
-            return this;
-        }
-
         public SearchRequestContextBuilder nestedSearch(NestedSearchRequestContext newSearch) {
-            if(newSearch == null) {
-                return this;
-            }
+
             if(nestedSearch == null){
                 nestedSearch = new ArrayList<>();
             }
@@ -1224,58 +1202,6 @@ public class SearchRequestContext implements SearchContext {
             return this;
         }
     }
-//
-//    private static void processSearchRequest(SearchRequestContextBuilder builder){
-//        if(EntitySearchType.CLASSIFIER.equals(builder.type)
-//                && org.apache.commons.collections.CollectionUtils.isNotEmpty(builder.form)){
-//            for(FormFieldsGroup fieldsGroup: builder.form){
-//                Iterator<FormField> i = fieldsGroup.getFormFields().iterator();
-//                while (i.hasNext()) {
-//                    FormField formField = i.next();
-//
-//                    if(!formField.getPath().startsWith("$")){
-//                        String attrName = StringUtils.substringAfter(formField.getPath(), ".");
-//
-//                        if(!attrName.startsWith("$")){
-//                            String clsName = StringUtils.substringBefore(formField.getPath(), ".");
-//                            StringBuilder attrNamePath = new StringBuilder();
-//                            StringBuilder attrValuePath = new StringBuilder();
-//                            attrNamePath.append(clsName).append(".cls_attrs.$attr_name");
-//                            attrValuePath.append(clsName).append(".cls_attrs");
-//                            if(formField.getType() == SimpleDataType.NUMBER){
-//                                attrValuePath.append(".value_as_double");
-//                            } else if(formField.getType() == SimpleDataType.STRING){
-//                                attrValuePath.append(".value_as_string");
-//                            }
-//
-//                            FormFieldsGroup nestedGroup = FormFieldsGroup.createAndGroup();
-//                            nestedGroup.addFormField(FormField.strictString(attrNamePath.toString(), attrName));
-//                            nestedGroup.addFormField(new FormField(formField.getType(),
-//                                    attrValuePath.toString(),
-//                                    formField.getFormType(),
-//                                    formField.getInitialSingleValue(),
-//                                    formField.getValues(),
-//                                    formField.getRange(),
-//                                    formField.getSearchType()
-//                            ));
-//
-//                            builder.nestedSearch(NestedSearchRequestContext.builder(SearchRequestContext.builder()
-//                                    .nestedPath(clsName + ".cls_attrs")
-//                                    .form(nestedGroup)
-//                                    .count(1000)
-//                                    .source(false)
-//                                    .build())
-//                                    .nestedQueryName(attrValuePath.toString())
-//                                    .nestedSearchType(NestedSearchRequestContext.NestedSearchType.NESTED_OBJECTS)
-//                                    .build());
-//
-//                            i.remove();
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
 
     /**
      * {@inheritDoc}

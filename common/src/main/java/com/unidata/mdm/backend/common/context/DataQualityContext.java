@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-
 import com.unidata.mdm.backend.common.data.ModificationBox;
 import com.unidata.mdm.backend.common.dq.DataQualityExecutionMode;
 import com.unidata.mdm.backend.common.keys.EtalonKey;
@@ -39,6 +38,8 @@ import com.unidata.mdm.meta.DQRuleDef;
  * Data quality context.
  *
  * @author ilya.bykov
+ * @param <T>
+ *            the generic type
  */
 public class DataQualityContext extends CommonRequestContext implements RecordIdentityContext, ValidityRangeContext {
     /**
@@ -101,10 +102,6 @@ public class DataQualityContext extends CommonRequestContext implements RecordId
      * The errors.
      */
     private final List<DataQualityError> errors = new ArrayList<>(8);
-    /**
-     * Skipped rules.
-     */
-    private final List<String> skippedRules = new ArrayList<>();
     /**
      * Instantiates a new DQ context.
      */
@@ -225,14 +222,8 @@ public class DataQualityContext extends CommonRequestContext implements RecordId
     public DataQualityExecutionMode getExecutionMode() {
         return executionMode;
     }
-    
 
-
-	public List<String> getSkippedRules() {
-		return skippedRules;
-	}
-
-	/**
+    /**
      * @return the skipConsistencyChecks
      */
     public boolean isSkipConsistencyChecks() {
@@ -465,7 +456,7 @@ public class DataQualityContext extends CommonRequestContext implements RecordId
             return this;
         }
         /**
-         * @param rules the rules
+         * @param modificationBox the ModificationBox to set
          * @return self
          */
         public DataQualityContextBuilder rules(List<DQRuleDef> rules) {

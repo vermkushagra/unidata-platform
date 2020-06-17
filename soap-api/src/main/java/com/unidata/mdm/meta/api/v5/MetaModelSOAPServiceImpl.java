@@ -19,17 +19,12 @@
 
 package com.unidata.mdm.meta.api.v5;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.xml.ws.Holder;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,7 +34,6 @@ import com.google.common.cache.LoadingCache;
 import com.unidata.mdm.api.v5.SessionTokenDef;
 import com.unidata.mdm.backend.common.context.DeleteModelRequestContext;
 import com.unidata.mdm.backend.common.context.UpdateModelRequestContext.UpdateModelRequestContextBuilder;
-import com.unidata.mdm.backend.common.dto.data.model.GetEntityDTO;
 import com.unidata.mdm.backend.common.runtime.MeasurementContextName;
 import com.unidata.mdm.backend.common.runtime.MeasurementPoint;
 import com.unidata.mdm.backend.common.service.MetaDraftServiceExt;
@@ -55,12 +49,9 @@ import com.unidata.mdm.meta.v5.DeleteElementRequest;
 import com.unidata.mdm.meta.v5.DeleteElementResponse;
 import com.unidata.mdm.meta.v5.GetElementRequest;
 import com.unidata.mdm.meta.v5.GetElementResponse;
-import com.unidata.mdm.meta.v5.GetEntityWithDepsRequest;
-import com.unidata.mdm.meta.v5.GetEntityWithDepsResponse;
 import com.unidata.mdm.meta.v5.GetModelRequest;
 import com.unidata.mdm.meta.v5.GetModelResponse;
 import com.unidata.mdm.meta.v5.MetaHeader;
-import com.unidata.mdm.meta.v5.ObjectFactory;
 import com.unidata.mdm.meta.v5.UpsertElementRequest;
 import com.unidata.mdm.meta.v5.UpsertElementResponse;
 
@@ -80,8 +71,6 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
 	/** The draft service. */
 	@Autowired
 	private MetaDraftServiceExt draftService;
-
-	private ObjectFactory factory = new ObjectFactory();
 
 	/** The tokens. */
 	private LoadingCache<String, Optional<String>> tokens = CacheBuilder.newBuilder()
@@ -153,52 +142,7 @@ public class MetaModelSOAPServiceImpl extends MetaImpl {
         }
 	}
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public GetEntityWithDepsResponse getEntityWithDeps(GetEntityWithDepsRequest request,
-            Holder<MetaHeader> info, Holder<SessionTokenDef> security) throws Fault {
-
-        MeasurementPoint.init(MeasurementContextName.MEASURE_SOAP_GET_ENTITY_WITH_DEPS);
-        MeasurementPoint.start();
-        try {
-
-            validateRequest(security);
-
-            GetEntityWithDepsResponse response = factory.createGetEntityWithDepsResponse();
-            GetEntityDTO dto = null;
-
-            if (info.value.isDraft()) {
-                dto = draftService.getEntityById(request.getEntityName());
-            } else {
-                dto = metamodelService.getEntityById(request.getEntityName());
-            }
-
-            if (Objects.nonNull(dto) && Objects.nonNull(dto.getEntity())) {
-
-                response
-                    .withEntity(ToSOAP.convert(dto.getEntity()))
-                    .withNestedEntity(Stream.of(dto.getRefs())
-                            .filter(CollectionUtils::isNotEmpty)
-                            .flatMap(Collection::stream)
-                            .map(ToSOAP::convert)
-                            .collect(Collectors.toList()))
-                    .withRelation(Stream.of(dto.getRelations())
-                            .filter(CollectionUtils::isNotEmpty)
-                            .flatMap(Collection::stream)
-                            .map(ToSOAP::convert)
-                            .collect(Collectors.toList()));
-
-            }
-
-            return response;
-        } finally {
-            MeasurementPoint.stop();
-        }
-    }
-
-    /* (non-Javadoc)
+	/* (non-Javadoc)
 	 * @see com.unidata.mdm.meta.api.v5.MetaImpl#getElement(com.unidata.mdm.meta.v5.GetElementRequest, javax.xml.ws.Holder, javax.xml.ws.Holder)
 	 */
 	@Override

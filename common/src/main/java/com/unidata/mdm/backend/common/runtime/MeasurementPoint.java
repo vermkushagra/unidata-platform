@@ -21,10 +21,6 @@ package com.unidata.mdm.backend.common.runtime;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.Objects;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -55,7 +51,7 @@ public class MeasurementPoint {
     /**
      * Measurement generally (enabled or not).
      */
-    private volatile static boolean enabled;
+    private static boolean enabled;
 
     /**
      * Constructor.
@@ -67,58 +63,26 @@ public class MeasurementPoint {
 
     /**
      * Starts new split.
-     * Takes custom label instead of calling method name.
-     * @param category a possibly given label category
-     * @param label the label to take
-     */
-    public static void start(@Nullable String category, @Nonnull String label) {
-
-        MeasurementPoint point = MEASUREMENT_CONTEXT.get();
-        if (point == null) {
-            return;
-        }
-
-        final boolean isEmpty = point.steps.peek() == null;
-        String path = isEmpty
-                ? point.name.name()
-                : point.steps.peek().getLeft()
-                    + Manager.HIERARCHY_DELIMITER
-                    + (Objects.nonNull(category) ? ("[" + category + "]") : "[UNSPECIFIED]")
-                    + "->"
-                    + ("[" + label + "]");
-
-        Split split = SimonManager.getStopwatch(path).start();
-        point.steps.push(new ImmutablePair<>(path, split));
-    }
-
-    /**
-     * Starts new split.
      */
     public static void start() {
 
         MeasurementPoint point = MEASUREMENT_CONTEXT.get();
         if (point == null) {
             return;
-        } else if (!enabled) {
-            MEASUREMENT_CONTEXT.set(null);
-            return;
         }
 
-        final boolean isEmpty = point.steps.peek() == null;
-        final StackTraceElement frame = isEmpty
-                ? null
-                : new Throwable().getStackTrace()[1];
-
-        String path = Objects.isNull(frame)
+        String path = point.steps.peek() == null
                 ? point.name.name()
                 : point.steps.peek().getLeft()
                     + Manager.HIERARCHY_DELIMITER
-                    + StringUtils.substringAfterLast(frame.getClassName(), ".")
+                    + StringUtils.substringAfterLast(
+                            Thread.currentThread().getStackTrace()[2].getClassName(),
+                            ".")
                     + "->"
-                    + frame.getMethodName();
+                    + Thread.currentThread().getStackTrace()[2].getMethodName();
 
         Split split = SimonManager.getStopwatch(path).start();
-        point.steps.push(new ImmutablePair<>(path, split));
+        point.steps.push(new ImmutablePair<String, Split>(path, split));
     }
 
     /**

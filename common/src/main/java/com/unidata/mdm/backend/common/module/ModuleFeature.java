@@ -61,7 +61,7 @@ public interface ModuleFeature {
     }
     /**
      * Tells whether an edition is supported.
-     * @param mode operation mode
+     * @param type the type to check
      * @return true, if so, false otherwise
      */
     default boolean isOperationModeSupported(OperationMode mode) {

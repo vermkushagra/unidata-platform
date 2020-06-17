@@ -66,11 +66,11 @@ public class JaxbUtils {
    /**
     * Data root package.
     */
-   private static final String DATA_ROOT_PACKAGE = "com.unidata.mdm.data.v4";
+   private static final String DATA_ROOT_PACKAGE = "com.unidata.mdm.data";  
    /**
     * API root package.
     */
-   private static final String API_ROOT_PACKAGE = "com.unidata.mdm.api.v4";
+   private static final String API_ROOT_PACKAGE = "com.unidata.mdm.api";
    /**
     * XSD dateTime date format.
     */
@@ -86,6 +86,9 @@ public class JaxbUtils {
     * Data unmarshaller.
     */
    private static JAXBContext DATA_CONTEXT;
+
+
+
    /**
     * API object factory.
     */
@@ -128,10 +131,10 @@ public class JaxbUtils {
            DATA_CONTEXT = JAXBContext.newInstance(DATA_ROOT_PACKAGE,
                    Thread.currentThread().getContextClassLoader(),
                    defaultContextProperties);
-
+         
 
            API_CONTEXT = JAXBContext.newInstance(API_ROOT_PACKAGE);
-
+        
        } catch (Exception e) {
            final String message = "JAXB failure. Exiting. [{}]";
            LOGGER.error(message, e);

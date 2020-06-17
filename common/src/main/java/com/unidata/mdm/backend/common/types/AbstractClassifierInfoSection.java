@@ -47,8 +47,8 @@ public abstract class AbstractClassifierInfoSection extends InfoSection {
      * Sets entity name field.
      * @param classifierName value to set
      */
-    public void setClassifierName(String classifierName) {
-        this.classifierName = classifierName;
+    public void setClassifierName(String relationName) {
+        this.classifierName = relationName;
     }
     /**
      * @return the nodeId
@@ -59,8 +59,8 @@ public abstract class AbstractClassifierInfoSection extends InfoSection {
     /**
      * @param nodeId the nodeId to set
      */
-    public void setNodeId(String nodeId) {
-        this.nodeId = nodeId;
+    public void setNodeId(String toEntityName) {
+        this.nodeId = toEntityName;
     }
     /**
      * @return the recordEntityName
@@ -71,7 +71,7 @@ public abstract class AbstractClassifierInfoSection extends InfoSection {
     /**
      * @param recordEntityName the recordEntityName to set
      */
-    public void setRecordEntityName(String recordEntityName) {
-        this.recordEntityName = recordEntityName;
+    public void setRecordEntityName(String fromEntityName) {
+        this.recordEntityName = fromEntityName;
     }
 }

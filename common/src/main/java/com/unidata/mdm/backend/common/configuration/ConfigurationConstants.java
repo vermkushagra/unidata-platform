@@ -72,7 +72,10 @@ public interface ConfigurationConstants {
      * Number of fields per index property name.
      */
     String SEARCH_FIELDS_NUMBER_PROPERTY = "unidata.search.fields.limit";
-
+    /**
+     * Simon enabled property name.
+     */
+    String SIMON_STATISTIC_ENABLED_PROPERTY = "unidata.simon.enabled";
     /**
      * If this is a smoke test stand.
      */
@@ -122,36 +125,10 @@ public interface ConfigurationConstants {
      */
     String UNIDATA_DUMP_TARGET_FORMAT_PROPERTY = "unidata.dump.target.format";
     // Unidata audit configuration constants
-    /**
-     * Disable audit entirely.
-     */
-    String UNIDATA_AUDIT_DISABLED = "unidata.audit.disabled";
-    /**
-     * Skip read events.
-     */
-    String UNIDATA_AUDIT_READ_DISABLED = "unidata.audit.read.events";
-    /**
-     * Stacktrace reporting max. depth.
-     */
-    String UNIDATA_AUDIT_STACK_TRACE_DEPTH = "unidata.audit.stacktrace.depth";
 
     //--------------------------------------- Classifier config -------------------------------------------------
 
     String CLASSIFIER_IMPORT_BATCH_SIZE = "unidata.classifier.import.batch.size";
-    /**
-     * Size of the cache backup.
-     */
-    String CLASSIFIER_CACHE_BACKUP_COUNT = "unidata.classifier.model.cache.backup.count";
-    /**
-     * Create near cache (consuming more memory) or not.
-     */
-    String CLASSIFIER_CACHE_USE_NEAR = "unidata.classifier.model.cache.near";
-    /**
-     * Classifiers cache entry TTL.
-     */
-    String CLASSIFIER_CACHE_ENTRY_TTL = "unidata.classifier.model.cache.ttl";
 
     String REINDEX_JOB_MAPPING_BLOCK_SIZE = "unidata.job.reindex_data.mapping.block";
-
-    String DATA_SOAP_UPSERT_MAX_ATTEMPT_COUNT = "unidata.data.soap.upsert.max.attempt.count";
 }

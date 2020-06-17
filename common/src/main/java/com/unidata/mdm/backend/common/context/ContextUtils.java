@@ -193,14 +193,8 @@ public class ContextUtils {
      * Skip matching main phase. Default is false.
      */
     public static final int CTX_FLAG_RESOLVE_BY_MATCHING = 47;
-    /**
-     * Tells if this context is a period restore context. Default is false.
-     */
-    public static final int CTX_FLAG_IS_PERIOD_RESTORE = 48;
-    /**
-     * Tells whether timeline shoud be fetched with data. Default is false.
-     */
-    public static final int CTX_FLAG_FETCH_TIMELINE_DATA = 49;
+
+
     /**
      * Constructor.
      */

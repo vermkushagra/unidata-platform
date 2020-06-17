@@ -157,7 +157,7 @@ public class FilterAggregationRequestContext extends AbstractAggregationRequestC
             return this;
         }
         /**
-         * @param aggs - sub aggregation
+         * @param agg - sub aggregation
          * @return self
          */
         public FilterAggregationRequestContextBuilder subAggregations(Collection<AggregationRequestContext> aggs) {

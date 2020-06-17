@@ -17,6 +17,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ */
 package com.unidata.mdm.backend.common.context;
 
 import java.util.Date;
@@ -107,7 +110,7 @@ public class UpsertRelationRequestContext
      * Constructor.
      */
     private UpsertRelationRequestContext(UpsertRelationRequestContextBuilder b) {
-        super(b.parentContext);
+        super();
         this.relationEtalonKey = b.relationEtalonKey;
         this.relationOriginKey = b.relationOriginKey;
         this.etalonKey = b.etalonKey;
@@ -376,9 +379,6 @@ public class UpsertRelationRequestContext
          * Audit level.
          */
         private short auditLevel = AuditLevel.AUDIT_SUCCESS;
-
-        private CommonDependableContext parentContext;
-
         /**
          * Constructor.
          */
@@ -556,11 +556,6 @@ public class UpsertRelationRequestContext
          */
         public UpsertRelationRequestContextBuilder auditLevel(short auditLevel) {
             this.auditLevel = auditLevel;
-            return this;
-        }
-
-        public UpsertRelationRequestContextBuilder parentContext(final CommonDependableContext parentContext) {
-            this.parentContext = parentContext;
             return this;
         }
 

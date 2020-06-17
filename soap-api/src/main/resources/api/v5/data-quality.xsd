@@ -121,8 +121,6 @@
 				minOccurs="0" maxOccurs="1" />
 			<xsd:element name="errors" type="d:DataQualityError"
 				minOccurs="0" maxOccurs="unbounded" />
-			<xsd:element name="skippedRules" type="xsd:string"
-				minOccurs="0" maxOccurs="unbounded" />
 		</xsd:sequence>
 	</xsd:complexType>
 	<xsd:complexType name="ResultsRequestType">

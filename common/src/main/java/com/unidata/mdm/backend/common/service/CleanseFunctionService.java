@@ -63,6 +63,7 @@ public interface CleanseFunctionService {
      *            the path id
      * @param compositeCleanseFunctionDef
      *            the composite cleanse function def
+     * @return the by id
      */
     void upsertCompositeCleanseFunction(String pathID, CompositeCleanseFunctionDef compositeCleanseFunctionDef);
     /**

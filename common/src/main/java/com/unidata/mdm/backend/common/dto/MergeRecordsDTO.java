@@ -35,8 +35,6 @@ public class MergeRecordsDTO {
 
     private final List<String> mergedIds;
 
-    private List<ErrorInfoDTO> errors;
-
     /**
      * Constructor.
      */
@@ -55,16 +53,5 @@ public class MergeRecordsDTO {
 
     public List<String> getMergedIds() {
         return mergedIds;
-    }
-
-    /**
-     * list of errors
-     */
-    public List<ErrorInfoDTO> getErrors() {
-        return errors;
-    }
-
-    public void setErrors(List<ErrorInfoDTO> errors) {
-        this.errors = errors;
     }
 }

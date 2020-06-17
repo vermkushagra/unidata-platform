@@ -24,7 +24,6 @@ package com.unidata.mdm.backend.common.data;
 
 import java.util.Date;
 
-import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.Attribute;
 import com.unidata.mdm.backend.common.types.RecordStatus;
 
@@ -137,14 +136,5 @@ public class RecordAttributeHolder implements CalculableHolder<Attribute> {
     @Override
     public int getRevision() {
         return revision;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ApprovalState getApproval() {
-        // NOPE for attributes
-        return null;
     }
 }

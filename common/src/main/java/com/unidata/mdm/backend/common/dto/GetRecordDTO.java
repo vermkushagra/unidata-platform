@@ -176,7 +176,7 @@ implements RecordDTO, OriginRecordsDTO, EtalonRecordDTO, RelationsDTO<GetRelatio
     }
 
     /**
-     * @param originRecords the origins to set
+     * @param origins the origins to set
      */
     public void setOrigins(List<OriginRecord> originRecords) {
         this.origins = originRecords;

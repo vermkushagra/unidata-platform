@@ -119,7 +119,6 @@ public class GetRequestContext
         flags.set(ContextUtils.CTX_FLAG_STRICT_DRAFT, b.strictDraft);
         flags.set(ContextUtils.CTX_FLAG_FETCH_CLUSTERS, b.fetchClusters);
         flags.set(ContextUtils.CTX_FLAG_FETCH_LARGE_OBJECTS, b.fetchLargeObjects);
-        flags.set(ContextUtils.CTX_FLAG_FETCH_TIMELINE_DATA, b.fetchTimelineData);
     }
 
     /**
@@ -295,12 +294,7 @@ public class GetRequestContext
     public boolean isFetchLargeObjects() {
         return flags.get(ContextUtils.CTX_FLAG_FETCH_LARGE_OBJECTS);
     }
-    /**
-     * @return the fetchTimelineData
-     */
-    public boolean isFetchTimelineData() {
-        return flags.get(ContextUtils.CTX_FLAG_FETCH_TIMELINE_DATA);
-    }
+
     /**
      * @return collection of etalons for
      */
@@ -441,10 +435,6 @@ public class GetRequestContext
          * Return large objects data immediately or not.
          */
         private boolean fetchLargeObjects;
-        /**
-         * Return timeline with data.
-         */
-        private boolean fetchTimelineData;
         /**
          * Constructor.
          */
@@ -679,13 +669,6 @@ public class GetRequestContext
          */
         public GetRequestContextBuilder fetchLargeObjects(boolean fetchLargeObjects) {
             this.fetchLargeObjects = fetchLargeObjects;
-            return this;
-        }
-        /**
-         * @param fetchTimelineData the fetchTimelineData to set
-         */
-        public GetRequestContextBuilder fetchTimelineData(boolean fetchTimelineData) {
-            this.fetchTimelineData = fetchTimelineData;
             return this;
         }
         /**

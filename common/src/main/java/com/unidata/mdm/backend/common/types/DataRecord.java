@@ -248,7 +248,7 @@ public interface DataRecord {
     boolean containsAttribute(String name);
     /**
      * Removes attribute, if it can be found.
-     * @param name the attribute name.
+     * @param attribute the attribute.
      * @return the value, if it was mapped, null otherwise
      */
     Attribute removeAttribute(String name);

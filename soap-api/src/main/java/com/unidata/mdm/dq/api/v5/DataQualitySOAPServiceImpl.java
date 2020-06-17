@@ -287,7 +287,6 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 		}
 
 		DataQualityResultType result = new DataQualityResultType();
-		result.withSkippedRules(dCtx.getSkippedRules());
 		if (!CollectionUtils.isEmpty(dCtx.getErrors())) {
 			result.getStatus().add(DQApplyStatusType.CONTAINS_ERRORS);
 			result.getErrors().addAll(DumpUtils.to(dCtx.getErrors()));
@@ -295,8 +294,6 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 		} else {
 			result.getStatus().add(DQApplyStatusType.VALID);
 		}
-		
-		
 
 		boolean isModified = dCtx.getModificationBox().count(ModificationBox.toBoxKey(dCtx)) > 1;
 		if (dCtx.getRules().stream().anyMatch(dr -> dr.getType().contains(com.unidata.mdm.meta.DQRuleType.ENRICH)) && isModified) {

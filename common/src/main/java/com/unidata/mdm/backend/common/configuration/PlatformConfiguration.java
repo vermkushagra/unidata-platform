@@ -33,10 +33,6 @@ public interface PlatformConfiguration extends PlatformIdentitySource {
      */
     int getPlatformMinor();
     /**
-     * Patch number.
-     */
-    int getPlatformPatch();
-    /**
      * Revision number.
      */
     int getPlatformRevision();

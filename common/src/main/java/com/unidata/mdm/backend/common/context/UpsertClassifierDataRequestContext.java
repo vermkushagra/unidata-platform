@@ -34,7 +34,8 @@ import com.unidata.mdm.backend.common.types.RecordStatus;
  * @author Mikhail Mikhailov
  * Classifier data upsert context.
  */
-public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRequestContext implements ApprovalStateSettingContext {
+public class UpsertClassifierDataRequestContext extends CommonSendableContext implements ClassifierIdentityContext {
+
     /**
      * SVUID.
      */
@@ -143,7 +144,7 @@ public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRe
      */
     @Override
     public RecordKeys keys() {
-        return getFromStorage(super.keysId());
+        return getFromStorage(ClassifierIdentityContext.super.keysId());
     }
 
     /**
@@ -239,7 +240,7 @@ public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRe
      */
     @Override
     public ClassifierKeys classifierKeys() {
-        return getFromStorage(super.classifierKeysId());
+        return getFromStorage(ClassifierIdentityContext.super.classifierKeysId());
     }
 
     /**
@@ -273,7 +274,6 @@ public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRe
     /**
      * @return the approvalState
      */
-    @Override
     public ApprovalState getApprovalState() {
         return approvalState;
     }
@@ -502,7 +502,7 @@ public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRe
             return this;
         }
         /**
-         * @param originKey the etalonKey to set
+         * @param etalonKey the etalonKey to set
          */
         public UpsertClassifierDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -537,7 +537,7 @@ public class UpsertClassifierDataRequestContext extends AbstractClassifierDataRe
             return this;
         }
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public UpsertClassifierDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;

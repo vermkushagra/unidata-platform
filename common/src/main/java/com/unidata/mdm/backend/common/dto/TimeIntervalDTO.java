@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-
 /**
  * @author Mikhail Mikhailov
  *
@@ -37,7 +35,7 @@ public class TimeIntervalDTO {
     /**
      * Contributors.
      */
-    private final List<ContributorDTO> contributors = new ArrayList<>(4);
+    private final List<ContributorDTO> contributors = new ArrayList<>();
     /**
      * Valid from.
      */
@@ -56,8 +54,8 @@ public class TimeIntervalDTO {
     private final long periodId;
     /**
      * Constructor.
-     * @param validFrom period's validity start timestamp
-     * @param validTo period's validity end timestamp
+     * @param period's validity start timestamp
+     * @param period's validity end timestamp
      * @param periodId period id (index onn the time line)
      * @param isActive activity mark
      */
@@ -104,14 +102,4 @@ public class TimeIntervalDTO {
         return active;
     }
 
-    /**
-     * Tells whether the given date is within range of this time interval.
-     * @param asOf the date to check interval against. Must not be null
-     * @return true, if included, false otherwise
-     */
-    public boolean isInRange(@Nonnull Date asOf) {
-        boolean left = validFrom == null || validFrom.before(asOf) || validFrom.getTime() == asOf.getTime();
-        boolean right = validTo == null || validTo.after(asOf) || validTo.getTime() == asOf.getTime();
-        return left && right;
-    }
 }

@@ -415,7 +415,6 @@ public class ToInternal {
 		target.setSpecial(source.isSpecial());
 		target.getType().addAll(fromDQTypes(source.getType()));
 		target.setRunType(source.getRunType() == null ? null : DQRuleRunType.valueOf(source.getRunType().name()));
-		target.withCustomProperties(fromCustomProperties(source.getCustomProperties()));
 
 		return target;
 	}

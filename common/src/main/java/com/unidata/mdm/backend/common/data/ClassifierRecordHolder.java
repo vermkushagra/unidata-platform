@@ -21,7 +21,6 @@ package com.unidata.mdm.backend.common.data;
 
 import java.util.Date;
 
-import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.OriginClassifier;
 import com.unidata.mdm.backend.common.types.RecordStatus;
 
@@ -74,14 +73,6 @@ public class ClassifierRecordHolder implements CalculableHolder<OriginClassifier
     @Override
     public RecordStatus getStatus() {
         return value.getInfoSection().getStatus();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ApprovalState getApproval() {
-        return value.getInfoSection().getApproval();
     }
 
     /**

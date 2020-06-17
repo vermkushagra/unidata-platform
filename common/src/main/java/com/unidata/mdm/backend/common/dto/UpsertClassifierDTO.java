@@ -21,7 +21,6 @@ package com.unidata.mdm.backend.common.dto;
 
 import com.unidata.mdm.backend.common.keys.ClassifierKeys;
 import com.unidata.mdm.backend.common.types.EtalonClassifier;
-import com.unidata.mdm.backend.common.types.UpsertAction;
 
 /**
  * @author Mikhail Mikhailov
@@ -37,10 +36,6 @@ public class UpsertClassifierDTO implements ClassifierDTO, EtalonClassifierDTO {
      * Etalon classifier record.
      */
     private EtalonClassifier etalon;
-    /**
-     * Upsert action.
-     */
-    private UpsertAction action;
     /**
      * Constructor.
      */
@@ -72,17 +67,5 @@ public class UpsertClassifierDTO implements ClassifierDTO, EtalonClassifierDTO {
      */
     public void setClassifierKeys(ClassifierKeys classifierKeys) {
         this.classifierKeys = classifierKeys;
-    }
-    /**
-     * @return the action
-     */
-    public UpsertAction getAction() {
-        return action;
-    }
-    /**
-     * @param action the action to set
-     */
-    public void setAction(UpsertAction action) {
-        this.action = action;
     }
 }

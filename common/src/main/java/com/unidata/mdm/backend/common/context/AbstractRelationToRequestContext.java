@@ -17,6 +17,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ *
+ */
 package com.unidata.mdm.backend.common.context;
 
 import com.unidata.mdm.backend.common.keys.RecordKeys;
@@ -26,16 +29,11 @@ import com.unidata.mdm.backend.common.keys.RecordKeys;
  *
  */
 public abstract class AbstractRelationToRequestContext
-    extends CommonDependableContext implements RelationIdentityContext {
+    extends CommonSendableContext implements RelationIdentityContext {
     /**
      * SVUID.
      */
     private static final long serialVersionUID = 7823433615112393227L;
-
-    public AbstractRelationToRequestContext(CommonDependableContext parentContext) {
-        super(parentContext);
-    }
-
     /**
      * {@inheritDoc}
      */

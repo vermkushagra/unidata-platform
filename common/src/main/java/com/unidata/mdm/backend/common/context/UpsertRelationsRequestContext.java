@@ -302,7 +302,7 @@ public class UpsertRelationsRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public UpsertRelationsRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;

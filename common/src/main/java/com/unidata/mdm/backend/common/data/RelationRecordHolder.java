@@ -24,7 +24,6 @@ package com.unidata.mdm.backend.common.data;
 
 import java.util.Date;
 
-import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.OriginRelation;
 import com.unidata.mdm.backend.common.types.RecordStatus;
 import com.unidata.mdm.backend.common.types.RelationType;
@@ -83,13 +82,6 @@ public class RelationRecordHolder
         return value.getInfoSection().getStatus();
     }
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ApprovalState getApproval() {
-        return value.getInfoSection().getApproval();
-    }
-    /**
      * @return the type
      */
     public RelationType getType() {
@@ -114,6 +106,6 @@ public class RelationRecordHolder
 	 */
 	@Override
 	public CalculableType getCalculableType() {
-		return CalculableType.RELATION;
+		return CalculableType.RELATION_TO;
 	}
 }

@@ -32,7 +32,8 @@ import com.unidata.mdm.backend.common.types.ApprovalState;
  * @author Mikhail Mikhailov
  * Delete relation context.
  */
-public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRequestContext implements ValidityRange, ApprovalStateSettingContext {
+public class DeleteClassifierDataRequestContext
+    extends CommonSendableContext implements ClassifierIdentityContext, ValidityRange {
     /**
      * SVUID.
      */
@@ -233,7 +234,6 @@ public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRe
     /**
      * @return the approvalState
      */
-    @Override
     public ApprovalState getApprovalState() {
         return approvalState;
     }
@@ -295,7 +295,7 @@ public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRe
      */
     @Override
     public RecordKeys keys() {
-        return getFromStorage(super.keysId());
+        return getFromStorage(ClassifierIdentityContext.super.keysId());
     }
 
     /**
@@ -303,7 +303,7 @@ public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRe
      */
     @Override
     public ClassifierKeys classifierKeys() {
-        return getFromStorage(super.classifierKeysId());
+        return getFromStorage(ClassifierIdentityContext.super.classifierKeysId());
     }
 
     /**
@@ -493,7 +493,7 @@ public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRe
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public DeleteClassifierDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -504,7 +504,7 @@ public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRe
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public DeleteClassifierDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;

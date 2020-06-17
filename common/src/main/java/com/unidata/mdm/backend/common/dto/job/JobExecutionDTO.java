@@ -27,8 +27,6 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 
-import com.unidata.mdm.backend.common.job.JobExecutionBatchStatus;
-
 public class JobExecutionDTO {
 
     private final JobDTO jobDTO;

@@ -47,6 +47,7 @@ public interface SecurityService {
      * @param params login parameters
      *
      * @return the security token.
+     * @throws Exception the exception.
      */
     SecurityToken login(Map<AuthenticationSystemParameter, Object> params);
 
@@ -57,6 +58,7 @@ public interface SecurityService {
      * @param tokenString the token string
      * @param params addition params
      * @return true, if successful
+     * @throws Exception the exception
      */
     boolean logout(String tokenString, Map<AuthenticationSystemParameter, Object> params);
 
@@ -75,6 +77,7 @@ public interface SecurityService {
      * @param password    the password
      * @param oldPassword the old password
      * @return true, if successful
+     * @throws Exception the exception
      */
     boolean updatePassword(String user, String password, String oldPassword);
 
@@ -85,6 +88,7 @@ public interface SecurityService {
      * @param tokenString the token string
      * @param prolongTTL prolong token TTL or not.
      * @return true, if successful
+     * @throws Exception the exception
      */
     boolean validateAndProlongToken(String tokenString, boolean prolongTTL);
 
@@ -93,6 +97,7 @@ public interface SecurityService {
      *
      * @param tokenString the token string
      * @return the user by token
+     * @throws Exception the exception
      */
     User getUserByToken(String tokenString);
 
@@ -108,6 +113,7 @@ public interface SecurityService {
      *
      * @param tokenString the token string
      * @return the roles by token
+     * @throws Exception the exception
      */
     List<Right> getRightsByToken(String tokenString);
 
@@ -115,6 +121,7 @@ public interface SecurityService {
      * Logout user by name.
      *
      * @param userName the user name
+     * @throws Exception the exception
      */
     void logoutUserByName(String userName);
 
@@ -122,6 +129,7 @@ public interface SecurityService {
      * Logout all currently logged in users that attached to the provided role.
      *
      * @param roleName Role name.
+     * @throws Exception In case if any exception occurs.
      */
     void logoutByRoleName(String roleName);
 

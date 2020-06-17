@@ -93,8 +93,6 @@ public class GetClassifiersDataRequestContext
 
         // Flags
         flags.set(ContextUtils.CTX_FLAG_FETCH_ORIGINS, b.fetchOrigins);
-        flags.set(ContextUtils.CTX_FLAG_FETCH_TASKS, b.tasks);
-        flags.set(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS, b.includeDrafts);
     }
 
     /**
@@ -187,18 +185,7 @@ public class GetClassifiersDataRequestContext
     public boolean isFetchOrigins() {
         return flags.get(ContextUtils.CTX_FLAG_FETCH_ORIGINS);
     }
-    /**
-     * @return the tasks
-     */
-    public boolean isTasks() {
-        return flags.get(ContextUtils.CTX_FLAG_FETCH_TASKS);
-    }
-    /**
-     * @return the unpublishedState
-     */
-    public boolean isIncludeDrafts() {
-        return flags.get(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS);
-    }
+
     /**
      * Gets new builder.
      * @return builder
@@ -253,14 +240,6 @@ public class GetClassifiersDataRequestContext
          */
         private boolean fetchOrigins;
         /**
-         * Request tasks additionally. Show draft version.
-         */
-        private boolean tasks;
-        /**
-         * Show draft version.
-         */
-        private boolean includeDrafts;
-        /**
          * Constructor.
          */
         private GetClassifiersDataRequestContextBuilder() {
@@ -275,7 +254,7 @@ public class GetClassifiersDataRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public GetClassifiersDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -293,7 +272,7 @@ public class GetClassifiersDataRequestContext
         }
 
         /**
-         * @param originKey the etalonKey to set
+         * @param etalonKey the etalonKey to set
          */
         public GetClassifiersDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -375,20 +354,6 @@ public class GetClassifiersDataRequestContext
             return this;
         }
 
-        /**
-         * Request tasks additionally. Show draft version.
-         */
-        public GetClassifiersDataRequestContextBuilder tasks(boolean tasks) {
-            this.tasks = tasks;
-            return this;
-        }
-        /**
-         * Request tasks additionally. Show draft version.
-         */
-        public GetClassifiersDataRequestContextBuilder includeDrafts(boolean includeDrafts) {
-            this.includeDrafts = includeDrafts;
-            return this;
-        }
         /**
          * Builds a context.
          * @return a new context

@@ -32,10 +32,6 @@ import javax.annotation.Nullable;
  */
 public class MeasurementValue implements Serializable{
     /**
-     * SVUID.
-     */
-    private static final long serialVersionUID = 4851410968298290660L;
-    /**
      * User defined unique id of measurement value
      */
     private String id;

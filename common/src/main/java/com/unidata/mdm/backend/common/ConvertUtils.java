@@ -100,20 +100,4 @@ public class ConvertUtils {
     public static Date zonedDateTime2Date(ZonedDateTime z){
         return z == null ? null : Date.from(z.toInstant());
     }
-    /**
-     * LocalTime 2 LocalDateTime.
-     * @param d the local time
-     * @return date
-     */
-    public static LocalDateTime localTime2LocalDateTime(LocalTime d) {
-        return d == null ? null : LocalDateTime.of(START_OF_EPOCH, d);
-    }
-    /**
-     * LocalDate 2 LocalDateTime.
-     * @param d the local date
-     * @return date
-     */
-    public static LocalDateTime localDate2LocalDateTime(LocalDate d) {
-        return d == null ? null : LocalDateTime.of(d, LocalTime.MIN);
-    }
 }

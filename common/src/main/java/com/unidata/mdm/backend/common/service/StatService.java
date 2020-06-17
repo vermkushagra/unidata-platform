@@ -104,8 +104,4 @@ public interface StatService {
      */
     int getCacheTTL();
 
-    /**
-     * gather DQ statistic
-     */
-
 }

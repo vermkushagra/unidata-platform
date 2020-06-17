@@ -41,7 +41,6 @@ public class NestedSearchRequestContext  {
          */
         NESTED_OBJECTS
     }
-
     private final SearchRequestContext nestedSearch;
 
     private final Integer minDocCount;
@@ -50,14 +49,11 @@ public class NestedSearchRequestContext  {
 
     private final String nestedQueryName;
 
-    private final boolean positive;
-
     public NestedSearchRequestContext(NestedSearchRequestContextBuilder builder){
         this.nestedSearch = builder.nestedSearch;
         this.minDocCount = builder.minDocCount;
         this.nestedSearchType = builder.nestedSearchType;
         this.nestedQueryName = builder.nestedQueryName;
-        this.positive = builder.positive;
     }
 
     public static NestedSearchRequestContextBuilder builder(SearchRequestContext nestedSearch){
@@ -88,10 +84,6 @@ public class NestedSearchRequestContext  {
         return minDocCount;
     }
 
-    public boolean isPositive() {
-        return positive;
-    }
-
     public static class NestedSearchRequestContextBuilder{
 
         private SearchRequestContext nestedSearch;
@@ -101,8 +93,6 @@ public class NestedSearchRequestContext  {
         private NestedSearchType nestedSearchType;
 
         private String nestedQueryName;
-
-        private boolean positive = true;
 
         private NestedSearchRequestContextBuilder(){
             super();
@@ -124,11 +114,6 @@ public class NestedSearchRequestContext  {
 
         public NestedSearchRequestContextBuilder minDocCount(Integer minDocCount){
             this.minDocCount = minDocCount;
-            return this;
-        }
-
-        public NestedSearchRequestContextBuilder positive(boolean positive){
-            this.positive = positive;
             return this;
         }
     }

@@ -99,8 +99,8 @@ public class OriginClassifierInfoSection extends AbstractClassifierInfoSection {
     /**
      * @param recordOriginKey the recordOriginKey to set
      */
-    public void setRecordOriginKey(OriginKey recordOriginKey) {
-        this.recordOriginKey = recordOriginKey;
+    public void setRecordOriginKey(OriginKey recordKey) {
+        this.recordOriginKey = recordKey;
     }
     /**
      * @return the classifierOriginKey
@@ -109,7 +109,7 @@ public class OriginClassifierInfoSection extends AbstractClassifierInfoSection {
         return classifierOriginKey;
     }
     /**
-     * @param relationOriginKey the classifierOriginKey to set
+     * @param classifierOriginKey the classifierOriginKey to set
      */
     public void setClassifierOriginKey(String relationOriginKey) {
         this.classifierOriginKey = relationOriginKey;
@@ -121,7 +121,7 @@ public class OriginClassifierInfoSection extends AbstractClassifierInfoSection {
         return classifierSourceSystem;
     }
     /**
-     * @param relationSourceSystem the classifierSourceSystem to set
+     * @param classifierSourceSystem the classifierSourceSystem to set
      */
     public void setClassifierSourceSystem(String relationSourceSystem) {
         this.classifierSourceSystem = relationSourceSystem;

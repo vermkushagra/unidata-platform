@@ -90,7 +90,7 @@ public class DeleteRelationRequestContext
      * Constructor.
      */
     private DeleteRelationRequestContext(DeleteRelationRequestContextBuilder b) {
-        super(b.parentContext);
+        super();
         this.etalonKey = b.etalonKey;
         this.originKey = b.originKey;
         this.externalId = b.externalId;
@@ -374,9 +374,6 @@ public class DeleteRelationRequestContext
          * Skips process and tasks suspending, if set to true.
          */
         private boolean workflowAction;
-
-        private CommonDependableContext parentContext;
-
         /**
          * Constructor.
          */
@@ -443,7 +440,7 @@ public class DeleteRelationRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public DeleteRelationRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -454,7 +451,7 @@ public class DeleteRelationRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public DeleteRelationRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -562,12 +559,6 @@ public class DeleteRelationRequestContext
             this.batchUpsert = batchUpsert;
             return this;
         }
-
-        public DeleteRelationRequestContextBuilder parentContext(final CommonDependableContext parentContext) {
-            this.parentContext = parentContext;
-            return this;
-        }
-
         /**
          * Builder method.
          * @return context

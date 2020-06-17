@@ -410,7 +410,7 @@ public class UpsertClassifiersDataRequestContext extends CommonRequestContext im
             return this;
         }
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public UpsertClassifiersDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;

@@ -172,7 +172,7 @@ public class JoinRequestContext
         }
 
         /**
-         * @param originKey the etalonKey to set
+         * @param etalonKey the etalonKey to set
          */
         public JoinRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -212,7 +212,7 @@ public class JoinRequestContext
         }
 
         /**
-         * @param originKey the goldenKey to set
+         * @param etalonKey the goldenKey to set
          */
         public JoinRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;

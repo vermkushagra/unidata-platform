@@ -368,7 +368,7 @@ public class SoapJobApiServiceImpl implements SoapJobApiService {
         validationErrors.forEach(stringJoiner::add);
         throw new JobException(
                 "Parameters not valid",
-                ExceptionId.EX_JOB_PARAMETERS_SOAP_VALIDATION_ERRORS,
+                ExceptionId.EX_JOB_PARAMETERS_VALIDATION_ERRORS,
                 stringJoiner.toString()
         );
     }
