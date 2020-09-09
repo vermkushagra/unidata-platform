@@ -1,0 +1,31 @@
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework:spring-framework-bom:4.3.18.RELEASE'
+        mavenBom 'org.springframework.security:spring-security-bom:4.2.7.RELEASE'
+        mavenBom 'org.springframework.integration:spring-integration-bom:4.3.17.RELEASE'
+
+        mavenBom 'io.projectreactor:reactor-bom:Bismuth-SR10'
+
+        mavenBom 'io.dropwizard.metrics5:metrics-bom:5.0.0'
+    }
+
+    dependencies {
+        dependencySet(group: 'org.springframework.batch', version: '3.0.9.RELEASE') {
+            entry 'spring-batch-core'
+            entry 'spring-batch-infrastructure'
+            entry 'spring-batch-integration'
+        }
+
+        dependencySet(group: 'org.apache.poi', version: '3.17') {
+            entry 'poi'
+            entry 'poi-ooxml'
+            entry 'poi-ooxml-schemas'
+        }
+
+        dependencySet(group: 'io.prometheus', version: '0.5.0') {
+            entry 'simpleclient_servlet'
+            entry 'simpleclient_dropwizard'
+            entry 'simpleclient_hotspot'
+        }
+    }
+}
