@@ -1,0 +1,14 @@
+$baseCls: 'un-dq-rule-port-upath';
+
+.#{$baseCls} {
+  .un-htmlcombo-value {
+    &.#{$prefix}form-text {
+      min-height: 19px;
+    }
+  }
+
+  .input-port {
+    border: 1px solid #d9d9d9;
+    border-top-color: #c1c1c1;
+  }
+}

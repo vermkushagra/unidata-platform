@@ -1,0 +1,22 @@
+$baseCls: '.un-workflow-task-property';
+
+#{$baseCls} {
+  margin-bottom: $un-content-inner-gap;
+  font-size: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+#{$baseCls}-title {
+  margin-bottom: 3px;
+  font-weight: bold;
+}
+
+#{$baseCls}-value {
+}
+
+#{$baseCls}-underline {
+  text-decoration: underline;
+}

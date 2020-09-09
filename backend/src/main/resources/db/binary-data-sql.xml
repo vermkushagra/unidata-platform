@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="deleteUnusedBData">
+        <![CDATA[
+            delete from binary_data
+            where event_id is null
+            and etalon_id is null
+            and origin_id is null
+            and status =  ?::approval_state
+            and create_date < ?
+        ]]>
+    </entry>
+    <entry key="deleteUnusedCData">
+        <![CDATA[
+            delete from character_data
+            where event_id is null
+            and etalon_id is null
+            and origin_id is null
+            and status =  ?::approval_state
+            and create_date < ?
+        ]]>
+    </entry>
+    <entry key="checkBData">
+        <![CDATA[
+            select exists(
+                select 1 from binary_data
+            where id = :id::uuid)
+        ]]>
+    </entry>
+    <entry key="checkCData">
+        <![CDATA[
+            select exists(
+                select 1 from character_data
+            where id = :id::uuid)
+        ]]>
+    </entry>
+</properties>

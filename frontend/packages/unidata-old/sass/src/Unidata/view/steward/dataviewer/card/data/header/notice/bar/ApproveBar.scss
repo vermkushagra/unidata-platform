@@ -1,0 +1,18 @@
+$baseCls: '.un-approvebar';
+$approveBtnCls: '.un-approvebar-approvebutton';
+
+#{$baseCls} {
+  #{$approveBtnCls}.x-btn {
+    background-color: #FFC107;
+    border-color: #FFC107;
+
+    // текст кнопунца
+    span.x-btn-inner {
+      color: #5E5E5E;
+      font-size: 16px;
+    }
+
+    // тень
+    @include box-shadow(2px 2px 5px 0 rgba(0, 0, 0, 0.35));
+  }
+}

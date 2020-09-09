@@ -1,0 +1,15 @@
+$baseCls: 'un-duplicates-rulelist';
+
+.#{$baseCls} {
+  .x-toolbar-docked-top {
+    padding: 6px 8px;
+
+    & > div {
+      border-bottom: 1px solid #dcdcdc;
+
+      .x-toolbar-item:last-child {
+        margin-right: 0 !important;
+      }
+    }
+  }
+}

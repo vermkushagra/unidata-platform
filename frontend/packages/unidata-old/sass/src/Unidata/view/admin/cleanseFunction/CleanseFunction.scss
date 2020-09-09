@@ -1,0 +1,45 @@
+.unidata-admin-cleansefunction {
+  > .x-panel-body {
+    background-color: #eaeaea !important;
+  }
+
+  > .x-panel-header .x-title-text {
+    font-size: 16px;
+  }
+
+  .cl-section {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border: 1px solid #d0d0d0;
+    margin: 10px 20px;
+  }
+
+  .cl-section .x-panel-header {
+    //padding-left: 0px !important;
+    margin-bottom: 10px;
+  }
+
+  .cl-section-properties .x-form-item-body {
+    min-width: 600px !important;
+    max-width: 600px !important;
+    min-height: 30px !important;
+  }
+
+  //.cl-section-properties .x-form-item-body textarea {
+  //  font-size: 13px;
+  //  padding-left: 0px;
+  //}
+
+  .cl-section-properties .description {
+    font-size: 14px;
+    padding: 10px 0px 20px 0px;
+  }
+
+  .cl-section .x-title-text{
+    padding: 0px !important;
+  }
+
+  .execute-button {
+    margin-top: 20px
+  }
+}

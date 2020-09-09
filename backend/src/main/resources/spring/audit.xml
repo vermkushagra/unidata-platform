@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/jee
+                           http://www.springframework.org/schema/jee/spring-jee.xsd
+                           http://www.springframework.org/schema/jdbc
+                           http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <jee:jndi-lookup id="unidataAuditDataSource" jndi-name="jdbc/UniDataAuditDataSource" expected-type="javax.sql.DataSource" />
+
+    <bean class="com.unidata.mdm.backend.service.configuration.RegisterDataSource">
+        <property name="contextListener" ref="applicationContextCloseListener"/>
+        <property name="dataSource" ref="unidataAuditDataSource"/>
+    </bean>
+
+    <alias name="auditDatabaseStorageDao" alias="auditDao"/>
+    <bean id="auditDatabaseStorageDao" class="com.unidata.mdm.backend.dao.impl.audit.AuditDatabaseStorageDaoImpl">
+        <constructor-arg index="0" ref="unidataAuditDataSource"/>
+        <constructor-arg index="1" ref="audit-sql"/>
+    </bean>
+
+    <beans profile="audit_embedded">
+        <bean id="unidataAuditEmbeddedStorageDataSource" class="com.unidata.mdm.backend.jdbc.datasource.HsqldbDataSource">
+            <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
+            <property name="url" value="${unidata.audit.embedded.url}" />
+            <property name="username" value="${unidata.audit.embedded.username}" />
+            <property name="password" value="${unidata.audit.embedded.password}" />
+        </bean>
+
+        <jdbc:initialize-database data-source="unidataAuditEmbeddedStorageDataSource">
+            <jdbc:script location="classpath:audit/${unidata.audit.embedded.mode}_mode_audit_embedded.sql" />
+        </jdbc:initialize-database>
+
+        <alias name="auditEmbeddedDatabaseStorageDao" alias="auditDao"/>
+        <bean id="auditEmbeddedDatabaseStorageDao" class="com.unidata.mdm.backend.dao.impl.audit.AuditDatabaseStorageDaoImpl">
+            <constructor-arg index="0" ref="unidataAuditEmbeddedStorageDataSource"/>
+            <constructor-arg index="1" ref="audit-sql"/>
+        </bean>
+
+        <bean class="com.unidata.mdm.backend.service.configuration.RegisterDataSource">
+            <property name="contextListener" ref="applicationContextCloseListener"/>
+            <property name="dataSource" ref="unidataAuditEmbeddedStorageDataSource"/>
+        </bean>
+    </beans>
+</beans>

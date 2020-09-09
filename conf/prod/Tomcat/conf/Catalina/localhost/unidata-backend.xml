@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+    <Loader className="org.apache.catalina.loader.VirtualWebappLoader"
+              virtualClasspath="${catalina.base}/unidata-integration/*.jar" searchVirtualFirst="true"/>
+
+    <!-- Database access -->
+    <!--
+        For information about these DataSource Pool properties see:
+        http://www.tomcatexpert.com/blog/2010/04/01/configuring-jdbc-pool-high-concurrency
+    -->
+    <Resource type="javax.sql.DataSource"
+              name="jdbc/UniDataDataSource"
+              description="UniData Database"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/unidata"
+              username="postgres"
+              password="postgres"
+              initialSize="10"
+              maxActive="100"
+              maxIdle="50"
+              minIdle="10"
+              suspectTimeout="60"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true"
+              removeAbandonedTimeout="180"
+              logAbandoned="true"
+              abandonWhenPercentageFull="50"
+              jdbcInterceptors="ResetAbandonedTimer" />
+
+    <!-- Same database by default, but separate connection pool required -->
+    <Resource type="javax.sql.DataSource"
+              name="jdbc/UniDataBatchJobDataSource"
+              description="UniData Batch Job Database"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/unidata?currentSchema=unidata_batch_job"
+              username="postgres"
+              password="postgres"
+              initialSize="10"
+              maxActive="100"
+              maxIdle="50"
+              minIdle="10"
+              suspectTimeout="60"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true"
+              removeAbandonedTimeout="180"
+              logAbandoned="true"
+              abandonWhenPercentageFull="50"
+              jdbcInterceptors="ResetAbandonedTimer" />
+
+    <!-- Different schema for ACTIVITI tables. -->
+    <Resource type="javax.sql.DataSource"
+              name="jdbc/UniDataWorkFlowDataSource"
+              description="UniData Workflow Database"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/unidata?currentSchema=unidata_work_flow"
+              username="postgres"
+              password="postgres"
+              initialSize="5"
+              maxActive="50"
+              maxIdle="40"
+              minIdle="10"
+              suspectTimeout="60"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true"
+              removeAbandonedTimeout="180"
+              logAbandoned="true"
+              abandonWhenPercentageFull="50"
+              jdbcInterceptors="ResetAbandonedTimer" />
+
+	<!-- Different schema for Audit tables. -->
+    <Resource type="javax.sql.DataSource"
+              name="jdbc/UniDataAuditDataSource"
+              description="UniData Audit Events Database"
+              factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+              driverClassName="org.postgresql.Driver"
+              url="jdbc:postgresql://localhost:5432/unidata?currentSchema=unidata_audit"
+              username="postgres"
+              password="postgres"
+              initialSize="1"
+              maxActive="10"
+              maxIdle="40"
+              minIdle="10"
+              suspectTimeout="60"
+              timeBetweenEvictionRunsMillis="30000"
+              minEvictableIdleTimeMillis="60000"
+              testOnBorrow="true"
+              validationQuery="SELECT 1"
+              validationInterval="30000"
+              removeAbandoned="true"
+              removeAbandonedTimeout="180"
+              logAbandoned="true"
+              abandonWhenPercentageFull="50"
+              jdbcInterceptors="ResetAbandonedTimer" />
+</Context>

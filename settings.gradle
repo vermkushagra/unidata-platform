@@ -1,0 +1,12 @@
+rootProject.name = "unidata"
+
+include 'frontend'
+include 'frontend-admin'
+include 'soap-api'
+include 'backend'
+include 'api-docs'
+include 'database'
+include 'migrations'
+include 'common'
+include 'samples'
+include 'tools'

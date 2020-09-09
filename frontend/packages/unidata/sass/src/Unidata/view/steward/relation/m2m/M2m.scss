@@ -1,0 +1,9 @@
+$baseCls: '.un-relation-m2m';
+
+#{$baseCls} {
+  &#{$baseCls}-invalid {
+    .un-no-data {
+      color: #cf4c35;
+    }
+  }
+}

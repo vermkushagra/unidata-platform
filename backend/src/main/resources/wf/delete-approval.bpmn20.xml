@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.ocrv.ru/data-record-delete-approval" exporter="Camunda Modeler" exporterVersion="1.2.0">
+  <process id="deleteApprovalProcess" name="Согласование удаления записи" isExecutable="true">
+    <documentation>Процесс согласования удаления записи. Запускается неавторизованным пользователем и согласуется в один прием</documentation>
+    <startEvent id="startApproval" name="Start approval process on record delete" activiti:initiator="initiator"></startEvent>
+    <userTask id="deleteApprove" name="Утверждение" activiti:candidateGroups="approvalGroup2">
+      <documentation>Этап утверждения удаления записи</documentation>
+    </userTask>
+    <endEvent id="endApproval" name="End"></endEvent>
+    <sequenceFlow id="approveFlowOut" sourceRef="notification" targetRef="endApproval"></sequenceFlow>
+    <sequenceFlow id="approveFlowIn" sourceRef="startApproval" targetRef="deleteApprove"></sequenceFlow>
+    <serviceTask id="notification" name="Оповещение" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${initiatorEmail}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="charset">
+          <activiti:string><![CDATA[UTF-8]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[support@unidata-platform.ru]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:expression><![CDATA[Заявка на удаление записи ${recordTitle} выполнена]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="html">
+          <activiti:expression><![CDATA[Уважаемый(ая) ${initiatorName},<br/><br/>
+Задача ${taskName} удаления записи ${recordTitle} была выполнена пользователем ${deleteApproveCompletedByName} ${deleteApproveCompletedTimestamp}]]></activiti:expression>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="notificationFlow" sourceRef="deleteApprove" targetRef="notification"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_deleteApprovalProcess">
+    <bpmndi:BPMNPlane bpmnElement="deleteApprovalProcess" id="BPMNPlane_deleteApprovalProcess">
+      <bpmndi:BPMNShape bpmnElement="startApproval" id="BPMNShape_startApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="46.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="deleteApprove" id="BPMNShape_deleteApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="160.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endApproval" id="BPMNShape_endApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="500.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="notification" id="BPMNShape_notification">
+        <omgdc:Bounds height="55.0" width="105.0" x="332.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="approveFlowOut" id="BPMNEdge_approveFlowOut">
+        <omgdi:waypoint x="437.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="500.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="approveFlowIn" id="BPMNEdge_approveFlowIn">
+        <omgdi:waypoint x="81.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="notificationFlow" id="BPMNEdge_notificationFlow">
+        <omgdi:waypoint x="265.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="332.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,5 @@
+$ui-name: 'un-field-default';
+
+@include un-text-field-ui(
+  $ui: $ui-name
+);

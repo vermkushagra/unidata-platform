@@ -1,0 +1,20 @@
+$baseCls: 'un-presentation';
+
+.#{$baseCls} {
+  .un-attribute-grid {
+    border: 1px solid #ddd;
+    @include border-radius(6px);
+    margin: 10px 0 10px 10px;
+    min-height: 150px;
+    >.#{$prefix}panel-body {
+      min-height: 150px;
+      background-color: #fff;
+    }
+    >.#{$prefix}panel-header {
+      background-color: #507fba;
+      .#{$prefix}title {
+        color: white;
+      }
+    }
+  }
+}

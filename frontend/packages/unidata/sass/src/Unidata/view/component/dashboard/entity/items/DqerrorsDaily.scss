@@ -1,0 +1,45 @@
+$baseCls: '.un-dashboard-dqerrors-daily';
+$bg-color: #ebebeb;
+
+#{$baseCls} {
+
+  table {
+    margin-top: 5px;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th, td {
+      padding: 5px 8px;
+    }
+
+    th {
+      font-family: Arial, serif;
+    }
+
+    tr:hover {
+      td {
+        background-color: $bg-color;
+      }
+    }
+
+    a {
+      color: #1F4D91;
+    }
+  }
+
+  .un-table-wrap {
+    width: 100%;
+    overflow: auto;
+  }
+
+  .un-dqerrors-entity {
+    border-top: solid 1px #cfcfcf;
+  }
+
+  .un-dq-count {
+    text-align: center;
+  }
+
+  .un-col-fixed {
+  }
+}

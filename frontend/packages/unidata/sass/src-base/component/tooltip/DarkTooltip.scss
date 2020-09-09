@@ -1,0 +1,8 @@
+$ui-name: 'un-dark';
+
+@include un-tooltip-ui(
+  $ui: $ui-name,
+  $ui-font-color: $color-primary-2-0,
+  $ui-background-color: $color-primary-1-0,
+  $ui-border-color: $color-primary-1-0
+);

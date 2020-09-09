@@ -1,0 +1,22 @@
+.un-catalog {
+  .un-overlay {
+    background: rgba(255, 255, 255, 0.65) none;
+    cursor: default;
+    border-color: transparent;
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    outline: none !important;
+  }
+}
+.un-catalog-tree {
+  background: #fff;
+}
+
+.un-catalog-tree-cell__error {
+  background-color: #ffc0c0;
+}
+

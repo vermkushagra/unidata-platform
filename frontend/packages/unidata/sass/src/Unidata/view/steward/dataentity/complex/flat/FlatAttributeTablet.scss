@@ -1,0 +1,33 @@
+$baseCls: '.un-flat-attribute-tablet';
+
+#{$baseCls} {
+  .un-dataentity-attribute-title {
+    text-align: left;
+    padding-left: 7px;
+  }
+
+  // заголовки комплексных атрибутов - жирные
+  &.x-panel-un-card {
+    >.x-panel-header-un-card {
+      .x-panel-header-title-un-card {
+        font-weight: bold;
+      }
+    }
+  }
+
+  // заголовки инстансов комплексных атрибутов - простые
+  .un-dataentity-attribute-complex {
+    &.x-panel-un-card {
+      >.x-panel-header-un-card {
+        .x-panel-header-title-un-card {
+          font-weight: normal;
+        }
+      }
+    }
+  }
+
+  //// убрать паддинги справа для выравнивания иконок у компл.атриб и их инстансов
+  //.x-panel-body-un-card {
+  //  padding-right: 0;
+  //}
+}

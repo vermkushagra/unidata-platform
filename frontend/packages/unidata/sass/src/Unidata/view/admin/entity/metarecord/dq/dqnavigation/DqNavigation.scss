@@ -1,0 +1,69 @@
+$baseCls: 'un-dq-nav';
+
+.#{$baseCls} {
+  .un-dq-nav-attribute {
+    // атрибут используется в выбранном правиле качества
+    .x-grid-item:not(.x-grid-item-selected):not(.x-grid-item-over) .un-dq-rule-useattr {
+      background-color: #dddddd;
+    }
+  }
+
+  .un-dq-nav-list {
+    .x-grid-item:not(.x-grid-item-over) span.un-dq-acolumn-move,
+    .x-grid-item .un-dq-rule-special.x-grid-row span.un-dq-acolumn-move {
+      display: none;
+    }
+
+    .x-grid-item span.un-dq-acolumn-move {
+      pointer-events: none;
+    }
+
+    .x-grid-item:not(.x-grid-item-over):not(.x-grid-item-selected) span.un-dq-acolumn-remove,
+    .x-grid-item .un-dq-rule-special.x-grid-row span.un-dq-acolumn-remove {
+      display: none;
+    }
+
+    // не валидное правило качества
+    .x-grid-item:not(.x-grid-item-selected) .un-dq-rule-invalid {
+      color: red;
+    }
+
+    // новое правило
+    .x-grid-item .un-dq-rule-phantom {
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    // для нового правила и измененного отображаем звездочку
+    .un-dq-rule-phantom .un-dq-namecol-wrap:after,
+    .un-dq-rule-dirty .un-dq-namecol-wrap:after {
+      content: '*';
+      color: red;
+      opacity: 0.7;
+      margin-left: 13px;
+      margin-right: -13px;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .un-dq-rule-phantom .un-dq-namecol-wrap,
+    .un-dq-rule-dirty .un-dq-namecol-wrap {
+      padding-right: 10px;
+    }
+
+    .un-dq-namecol-text {
+      display: inline-block;
+      float: left;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      margin-right: -10px;
+    }
+  }
+
+  // кнопка распирает заголовок делаем отступы меньше
+  .x-panel-header {
+    padding: 7px 10px 6px 10px;
+  }
+}

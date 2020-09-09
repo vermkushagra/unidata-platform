@@ -1,0 +1,15 @@
+/**
+ * ui для toolbar визарда тестирования правил качества
+ */
+
+$ui-name: 'un-dq-testwzrd-toolbar';
+
+@include extjs-toolbar-ui(
+    $ui: $ui-name,
+    $background-color: #eaeaea
+);
+
+// если тулбар находится в окне для него применяется отдельный стиль
+.x-window .x-toolbar.x-toolbar-#{$ui-name} {
+    background-color: #eaeaea;
+}

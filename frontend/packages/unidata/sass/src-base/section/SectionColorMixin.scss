@@ -1,0 +1,11 @@
+// миксин для переопределения цвета для элементов раздела
+@mixin set-section-color($baseCls, $section, $color) {
+  #{$baseCls}-#{$section} {
+    .un-result-grid-item-tag,
+    .x-tab-bar-strip-un-content {
+      background-color: $color !important;
+    }
+
+    @include set-un-underlined-color($color);
+  }
+}

@@ -1,0 +1,33 @@
+$ui-name: 'default';
+
+//для горизонтальных вкладок смещаем закрывающий элемент ("крестик") так чтобы по дефолту он выглядил отцентрованным
+.x-tab-bar.x-tab-bar-horizontal {
+  .x-tab.x-tab-top.x-tab-closable
+  {
+    .x-tab-close-btn {
+      top: 8px;
+    }
+  }
+}
+
+.x-tab {
+  .x-tab-wrap {
+    display: block; // title elipsis
+
+    .x-tab-button {
+      display: block; // title elipsis
+    }
+  }
+}
+
+.x-tab-closable {
+  .x-tab-text {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+}
+
+.#{$prefix}tab-#{$ui-name}:not(.#{$prefix}tab-active) .#{$prefix}tab-close-btn {
+  background: url(images/tab/tab-#{$ui-name}-dark-close.png) 0 0;
+}

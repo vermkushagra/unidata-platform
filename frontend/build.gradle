@@ -1,0 +1,73 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+ext {
+    isWindows = org.gradle.internal.os.OperatingSystem.current().windows
+    if(isWindows) {
+        senchaCmd = senchaCmdHome + '/sencha.exe'
+    } else {
+        senchaCmd = senchaCmdHome + '/sencha'
+    }
+}
+
+//
+// Upgrade Sencha SDK
+//
+//task senchaUpgrade(type: Exec) {
+//    commandLine senchaCmd, 'app', 'upgrade', senchaSdkHome
+//}
+
+//
+// Build Sencha application
+//
+task senchaBuild(type: Exec) {
+    environment 'PATH', rubyBin + ';' + System.getenv("PATH")
+    commandLine senchaCmd, 'app', 'clean'
+    commandLine senchaCmd, 'app', 'build', '--environment', senchaEnvironment
+}
+//senchaBuild.enabled = false
+
+//
+// WAR packaging
+//
+war {
+    war.destinationDir = new File(project.rootDir, '/target')
+    war.archiveName = rootProject.name + '-frontend.war'
+    war.from 'build/' + senchaEnvironment + '/Unidata'
+    war.manifest {
+        attributes(
+            'Implementation-Title': 'UniData Frontend',
+            'Implementation-Version': project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision()) + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+task fillVersion {
+    doLast{
+        //a bit ugly Ant call since built-in Gradle filter() doesn't support encoding option
+        ant.replace(file: 'build/' + senchaEnvironment + '/Unidata/index.html', encoding: 'UTF-8') {
+            replacefilter(token: '@APP_VERSION@', value: project.version)
+            replacefilter(token: '@SVN_REVISION@', value: project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision()) // использование: gradle -Psvn_revision=... build
+            replacefilter(token: '@BUILD_NUMBER@', value: project.hasProperty('build_number') ? project.build_number : 'undefined')
+            replacefilter(token: '@BUILD_DATE@', value: new Date().format('yyyy-MM-dd HH:mm:ss'))
+            replacefilter(token: '@BUILD_PROFILE@', value: project.hasProperty('profile') ? project.profile : 'undefined')
+        }
+    }
+}
+
+task fillCustomerProps(type: Copy, group: 'build'){
+    inputs.files fileTree('../profiles/')
+
+    from '.'
+    into "$buildDir/$senchaEnvironment/Unidata/"
+    include 'customer.json'
+
+    // expand looks more appropriate for groovy style, but require quoting $ in processed resources
+    filter(ReplaceTokens, tokens: [appMode: project.hasProperty('userAppMode') ? userAppMode : 'user', backendUrl: backendUrl, frontendUrlAdmin: frontendUrlAdmin, frontendUrlUser: frontendUrlUser])
+}
+
+//
+// Task dependencies
+//
+tasks.war.dependsOn(senchaBuild, fillVersion, fillCustomerProps)
+tasks.fillVersion.mustRunAfter(senchaBuild)
+tasks.fillCustomerProps.mustRunAfter(senchaBuild)

@@ -1,0 +1,18 @@
+$baseCls: '.un-job-execution-error';
+
+#{$baseCls} {
+  padding: 10px;
+}
+
+#{$baseCls}-title {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+#{$baseCls}-exitCode {
+  margin-bottom: 10px;
+}
+
+#{$baseCls}-exitDescription {
+
+}

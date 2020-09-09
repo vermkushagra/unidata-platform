@@ -1,0 +1,15 @@
+$baseCls: 'un-tree-search-combobox';
+
+.#{$baseCls}-boundlist {
+  .#{$prefix}boundlist-item {
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border-bottom: 1px solid #ddd;
+    padding-top: 7px;
+  }
+
+  .#{$prefix}boundlist-item-over {
+    background-color: #e6f0fa;
+  }
+}

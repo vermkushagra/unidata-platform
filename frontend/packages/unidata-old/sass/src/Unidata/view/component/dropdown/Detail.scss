@@ -1,0 +1,62 @@
+$baseCls: '.un-lookup-attribute-details';
+
+#{$baseCls} {
+
+  .x-grid-item-selected {
+    font-weight: 600;
+  }
+
+  .un-validity-period-column {
+    color: $color-secondary-2-0;
+    padding-left: 5px;
+  }
+
+  .un-timeinterval-removed {
+    color: $color-primary-4-3;
+  }
+
+  .x-grid-body {
+    border-top: 1px dashed #D5D5D5 !important;
+    border-bottom: 1px dashed #D5D5D5 !important;
+  }
+
+  .x-grid-cell-inner {
+    padding: 5px;
+  }
+
+  .x-column-header {
+    background-color: white;
+    border: none;
+  }
+
+  .x-column-header-text-wrapper,
+  .un-toggle-label {
+    text-transform: uppercase;
+    font-family: "PT Sans";
+    font-size: 0.9em;
+    vertical-align: bottom;
+    text-align: left;
+    color: black;
+  }
+
+  .un-toggle-label {
+    padding-right: 8px;
+    padding-top: 5px;
+  }
+
+  .un-show-referenced-attrubutes-toggle {
+    padding-top: 7px;
+  }
+
+  .un-show-removed-periods {
+    font-size: 12px;
+  }
+
+  .un-relation-attribute-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+}
+

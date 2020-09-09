@@ -1,0 +1,18 @@
+$baseCls: '.un-merge-data-record-viewer';
+
+#{$baseCls} {
+  >.x-panel-header {
+
+    .un-roundbutton {
+      margin-left: 5px;
+    }
+
+    .un-roundbutton__exclude {
+      background-color: red;
+    }
+
+  .un-roundbutton__delete {
+    background-color: #ef6c00;
+  }
+  }
+}

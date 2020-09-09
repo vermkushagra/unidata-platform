@@ -1,0 +1,43 @@
+$baseCls: '.un-relation-reference';
+$searchable: '.un-dataentity-searchable';
+
+#{$baseCls} {
+  //border: 1px solid #dedede;
+  //@include box-shadow(5px 5px 2px #909090);
+
+  //>.x-panel-header .x-title-text {
+  //  padding-left: 0 !important;
+  //}
+
+  //.un-dataentity-attribute-indicator {
+  //  margin-left: -6px !important;
+  //}
+
+  //>.x-panel-body {
+  //  .x-form-field {
+  //    font-weight: bold;
+  //    font-size: 14px;
+  //    color: #31627e;
+  //  }
+  //}
+}
+
+//#{$baseCls}#{$searchable}__searched {
+//  #{$baseCls}-entityComboBox {
+//    background-color: #ecffd7;
+//
+//    .x-form-text-default {
+//      background-color: #ecffd7;
+//    }
+//  }
+//}
+//
+//#{$baseCls}#{$searchable}__searchedAndActive {
+//  #{$baseCls}-entityComboBox {
+//    background-color: #f0ff7d;
+//
+//    .x-form-text-default {
+//      background-color: #f0ff7d;
+//    }
+//  }
+//}

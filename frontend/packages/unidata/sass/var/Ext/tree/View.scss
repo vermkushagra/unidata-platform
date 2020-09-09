@@ -1,0 +1,12 @@
+$tree-elbow-width: 18px !default;
+$tree-elbow-spacing: 2px !default;
+$tree-checkbox-spacing: 4px !default;
+$tree-icon-spacing: 4px !default;
+$tree-cell-inner-padding: 4px 5px 4px 6px !default;
+
+// если в дереве есть колонки отличные от treenodecell то необходимо задать паддинг равный $tree-cell-inner-padding
+.x-tree-view{
+  .x-grid-cell-inner {
+    padding: $tree-cell-inner-padding !important;
+  }
+}

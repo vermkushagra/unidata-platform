@@ -1,0 +1,25 @@
+$baseCls: '.un-dashboard';
+
+#{$baseCls} {
+  background-color: $un-color-content-panel;
+  padding: $un-content-inner-padding;
+
+  .un-v-split {
+    .x-panel-body-default {
+      background-color: #afafaf;
+    }
+  }
+
+  .un-export-stats-button {
+    .x-btn-icon-el {
+      font-size: 20px;
+      color: #666666 !important;
+    }
+  }
+
+  .un-button-mode-switcher {
+    .x-btn-icon-el {
+      font-size: 20px;
+    }
+  }
+}

@@ -1,0 +1,101 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+    <hz:queue id="sampleItemsJobQueue" instance-ref="instance" name="sampleItemsJobsPartitionQueue"
+              lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="sampleItemsProcessingJob">
+        <batch:step id="processSampleItems.master">
+            <batch:partition partitioner="sampleItemPartitioner" handler="sampleItemPartitionHandler">
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+
+    <bean id="sampleItemsProcessingJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="sampleItemsProcessingJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="param1" value-type="java.lang.String" value="value1"/>
+                <entry key="param2" value-type="java.lang.String" value="value2"/>
+                <!--<entry key="param3" value-type="java.time.ZonedDateTime" value="2016-04-11T23:23:00+03:00"/>-->
+                <entry key="param4" value-type="java.lang.Boolean" value="true"/>
+                <entry key="param5" value-ref="sampleIStringItemsEnumParameters"/>
+                <!--<entry key="param6" value-ref="sampleIDateItemsEnumParameters"/>-->
+                <entry key="param7" value-ref="sampleILongItemsEnumParameters"/>
+                <entry key="param8" value-ref="sampleIDoubleItemsEnumParameters"/>
+                <entry key="param9" value-ref="sampleIBooleanItemsEnumParameters"/>
+                <entry key="param10" value-ref="sampleMultiSelectParameters"/>
+            </util:map>
+        </property>
+    </bean>
+    <!--...-->
+
+    <bean id="sampleIStringItemsEnumParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemStringEnumParameterExtractor"/>
+<!--
+    <bean id="sampleIDateItemsEnumParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemDateEnumParameterExtractor"/>
+-->
+    <bean id="sampleILongItemsEnumParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemLongEnumParameterExtractor"/>
+    <bean id="sampleIDoubleItemsEnumParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemDoubleEnumParameterExtractor"/>
+    <bean id="sampleIBooleanItemsEnumParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemBooleanEnumParameterExtractor"/>
+    <bean id="sampleMultiSelectParameters"
+          class="com.unidata.mdm.backend.service.job.sample.SampleItemMultiSelectParameterExtractor"/>
+
+    <bean id="sampleItemPartitioner" class="com.unidata.mdm.backend.service.job.sample.SampleItemPartitioner"/>
+
+    <bean id="sampleItemPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="processSampleItems"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="sampleItemsJobQueue"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="processSampleItems">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="sampleItemReader" processor="sampleItemProcessor" writer="sampleItemWriter"
+                         commit-interval="10"/>
+        </batch:tasklet>
+    </batch:step>
+
+    <bean id="sampleItemReader" class="com.unidata.mdm.backend.service.job.sample.SampleItemReader" scope="step">
+        <property name="from" value="#{stepExecutionContext[minValue]}"/>
+        <property name="to" value="#{stepExecutionContext[maxValue]}"/>
+        <property name="firstParameter" value="#{jobParameters[param1]}"/>
+    </bean>
+
+    <bean id="sampleItemProcessor" class="com.unidata.mdm.backend.service.job.sample.SampleItemProcessor" scope="step"/>
+    <bean id="sampleItemWriter" class="com.unidata.mdm.backend.service.job.sample.SampleItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <bean id="sampleItemStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="sampleItemsProcessingJob"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="sampleItemsJobQueue"/>
+        <property name="threadCount" value="2"/>
+    </bean>
+
+</beans>

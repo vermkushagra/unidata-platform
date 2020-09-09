@@ -1,0 +1,13 @@
+$baseCls: 'un-classifier-nodelist';
+
+.#{$baseCls} {
+  .#{$prefix}panel-body-un-search {
+    padding: 0 !important;
+  }
+
+  .un-classifier-tree>.x-toolbar .x-form-item,
+  .un-classifier-combobox {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

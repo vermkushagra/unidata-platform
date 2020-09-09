@@ -1,0 +1,17 @@
+$baseCls: '.un-mainmenu-item';
+
+$un-mainmenu-item-exit-color: #9E3437;
+
+#{$baseCls}-exit {
+  #{$baseCls}-body {
+    background-color: $un-mainmenu-item-exit-color;
+
+    &:hover {
+      background-color: lighten($un-mainmenu-item-exit-color, 5%);
+    }
+  }
+
+  #{$baseCls}-icon {
+    font-size: 20px;
+  }
+}

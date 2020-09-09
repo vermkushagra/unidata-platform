@@ -1,0 +1,48 @@
+$base-cls: 'unidata-admin-metarecord-attribute';
+
+.#{$base-cls} {
+  .attribute-tree-component {
+    margin: 5px 0px 5px 10px;
+  }
+
+  .attribute-property-grid {
+    .un-attribute-row-lookupentitydisplayattributes, .un-attribute-row-lookupentitysearchattributes {
+      .#{$prefix}grid-cell-inner {
+        overflow: visible;
+        white-space: pre-wrap;
+        line-height: 24px;
+
+        >.un-empty-text {
+          font-weight: normal;
+        }
+      }
+    }
+
+    .x-grid-item:first-child {
+      border-top: 1px solid #ededed;
+    }
+
+    .x-grid-cell-value.x-grid-cell-selected {
+      background-color: white;
+    }
+
+    tr {
+      td.x-grid-cell-last {
+        border-right: none;
+      }
+
+      &.row-readonly {
+        .x-grid-cell-value, .x-grid-cell-name {
+          opacity: 0.4;
+        }
+      }
+    }
+  }
+
+  .#{$base-cls}-config-container {
+    margin: 0px 10px;
+    .un-admin-metarecord-panel-inner {
+      margin-top: 15px;
+    }
+  }
+}

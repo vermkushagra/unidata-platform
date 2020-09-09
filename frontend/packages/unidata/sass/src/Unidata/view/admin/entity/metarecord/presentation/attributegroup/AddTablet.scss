@@ -1,0 +1,20 @@
+$baseCls: '.un-entity-grouptabletadd';
+$icon-size: 19px;
+
+#{$baseCls} {
+  //a span.x-btn-inner {
+  //  font-size: 19px;
+  //  line-height: 22px;
+  //}
+
+  .#{$prefix}btn-button {
+    height: $icon-size;
+  }
+
+  .#{$prefix}btn-icon-el {
+    height: $icon-size;
+    width: $icon-size;
+    color: #666;
+    font-size: $icon-size;
+  }
+}

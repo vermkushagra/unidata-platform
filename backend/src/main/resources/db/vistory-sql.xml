@@ -1,0 +1,999 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="acquireOriginLockSQL">
+        <![CDATA[
+            select pg_advisory_xact_lock(o.gsn) from origins o where o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="putVersionJaxbSQL">
+        <![CDATA[
+            insert into origins_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_a,
+                created_by,
+                create_date,
+                status,
+                approval,
+                shift,
+                major,
+                minor,
+                operation_type
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select (max(prev.revision) + 1) from origins_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                coalesce(?, now()),
+                ?::record_status,
+                ?::approval_state,
+                ?::data_shift,
+                ?,
+                ?,
+                ?::vistory_operation_type
+        ]]>
+    </entry>
+    <entry key="putVersionProtostuffSQL">
+        <![CDATA[
+            insert into origins_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_b,
+                created_by,
+                create_date,
+                status,
+                approval,
+                shift,
+                major,
+                minor,
+                operation_type
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select (max(prev.revision) + 1) from origins_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                coalesce(?, now()),
+                ?::record_status,
+                ?::approval_state,
+                ?::data_shift,
+                ?,
+                ?,
+                ?::vistory_operation_type
+        ]]>
+    </entry>
+    <entry key="loadLastApprovedActiveVersionJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.approval = 'APPROVED'
+            and v.status = 'ACTIVE'
+            and v.origin_id = o.id
+            order by v.revision desc fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadLastApprovedActiveVersionProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.approval = 'APPROVED'
+            and v.status = 'ACTIVE'
+            and v.origin_id = o.id
+            order by v.revision desc fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadVersionJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and v.origin_id = o.id
+            and v.status <> 'MERGED'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and (v.approval <> 'DECLINED' and (v.approval <> 'PENDING' or (? = 'true' or v.created_by = ?)))
+            order by v.revision desc fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadVersionProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and v.origin_id = o.id
+            and v.status <> 'MERGED'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and (v.approval <> 'DECLINED' and (v.approval <> 'PENDING' or (? = 'true' or v.created_by = ?)))
+            order by v.revision desc fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadPendingVersionsByOriginIdSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins_vistory t
+                    where
+                        t.origin_id = ?::uuid
+                    and t.approval = 'PENDING'
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    group by t.origin_id
+                ) as p, origins o
+            where
+                v.origin_id = p.origin_id
+            and v.origin_id = o.id
+            and v.revision <= p.revision
+            and v.approval = 'PENDING'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.revision > (
+                coalesce((select max(t.revision)
+                from
+                    origins_vistory t
+                where
+                    t.origin_id = ?::uuid
+                and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                and t.approval = 'APPROVED'), 0)
+            )
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="loadPendingVersionsByEtalonIdSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins_vistory t, origins o
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and t.approval = 'PENDING'
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    group by t.origin_id
+                ) as p, origins o
+            where
+                v.origin_id = p.origin_id
+            and v.origin_id = o.id
+            and v.revision <= p.revision
+            and v.approval = 'PENDING'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.revision > (
+                coalesce((select max(t.revision)
+                from
+                    origins_vistory t
+                where
+                    t.origin_id = v.origin_id
+                and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                and t.approval = 'APPROVED'), 0)
+            )
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="loadVersionsJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForLudJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and coalesce(t.create_date, '-infinity') <= ?
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForLudProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and coalesce(t.create_date, '-infinity') <= ?
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForUpdatedAfterJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    and exists (
+                        select true from origins_vistory ovt
+                        where ovt.id = t.id
+                        and coalesce(ovt.create_date, '-infinity') >= ?
+                    )
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForUpdatedAfterProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    and exists (
+                        select true from origins_vistory ovt
+                        where ovt.id = t.id
+                        and coalesce(ovt.create_date, '-infinity') >= ?
+                    )
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForOperationIdJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and coalesce(t.create_date, '-infinity') <=
+                        (select create_date from origins_vistory
+                         where operation_id = ?
+                         and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadVersionsForOperationIdProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and coalesce(t.create_date, '-infinity') <=
+                        (select create_date from origins_vistory
+                         where operation_id = ?
+                         and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                    and (t.approval <> 'DECLINED'::approval_state and (t.approval <> 'PENDING'::approval_state or (? = 'true' or t.created_by = ?)))
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadUnfilteredVersionsStateSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and t.approval <> 'DECLINED'::approval_state
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadUnfilteredVersionsStateByOriginSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins o, origins_vistory t, origins ot, etalons e
+                    where
+                        ot.id = ?::uuid
+                    and ot.etalon_id = e.id
+                    and o.etalon_id = e.id
+                    and o.id = t.origin_id
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    and t.approval <> 'DECLINED'::approval_state
+                    group by t.origin_id
+                ) as s, origins o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadOriginHistoryJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and v.origin_id = o.id
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="loadOriginHistoryProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift::text,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = ?::uuid
+            and v.origin_id = o.id
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="loadHistoryJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = o.id
+            and o.etalon_id = ?::uuid
+            order by o.source_system, o.external_id, v.revision
+        ]]>
+    </entry>
+    <entry key="loadHistoryProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.shift,
+                v.major,
+                v.minor,
+                v.operation_type,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.is_enrichment,
+                o.gsn
+            from
+                origins_vistory v, origins o
+            where
+                v.origin_id = o.id
+            and o.etalon_id = ?::uuid
+            order by o.source_system, o.external_id, v.revision
+        ]]>
+    </entry>
+    <entry key="loadTimelineSQL">
+        <![CDATA[
+            select period_id, vf, vt, contributors, ? as name from ud_fetch_records_timeline_intervals(?::uuid, ?, ?)
+        ]]>
+    </entry>
+    <entry key="loadTimelinesSQL">
+        <![CDATA[
+            select 
+                etalon_id,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select 
+                        e.id, 
+                        e.name, 
+                        ud_fetch_records_timeline_intervals(e.id, :user_name, :is_approver) as info
+                    from
+                        etalons e
+                    where e.id in (:ids)
+                ) select 
+                    result.name as name,
+                    (result.info).* from result ) q
+        ]]>
+    </entry>
+    <entry key="loadEtalonBoundarySQL">
+        <![CDATA[
+            select period_id, vf, vt, contributors, create_date, created_by, update_date, updated_by, name, status, approval, etalon_gsn
+            from ud_fetch_records_etalon_boundary(?::uuid, ?, ?, ?)
+        ]]>
+    </entry>
+    <entry key="updatePendingVersionsSQL">
+        <![CDATA[
+            update origins_vistory
+            set approval = ?::approval_state
+            from
+                origins_vistory v,
+                origins o,
+                etalons e
+            where
+                e.id = ?::uuid
+            and o.etalon_id = e.id
+            and o.id = v.origin_id
+            and v.approval = 'PENDING'::approval_state
+            and origins_vistory.id = v.id
+        ]]>
+    </entry>
+    <entry key="updateVersionsStatusSQL">
+        <![CDATA[
+            update origins_vistory
+            set status = :status::record_status
+            where id in (:ids)
+        ]]>
+    </entry>
+</properties>

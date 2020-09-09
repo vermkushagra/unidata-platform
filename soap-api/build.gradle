@@ -273,10 +273,10 @@ publishing {
         maven {
             name = 'server1.local'
             credentials {
-                username 'admin'
-                password 'TaskData2015'
+                username 'yourname'
+                password 'yourpwd'
             }
-            url 'http://maven.taskdata.work:8081/artifactory/libs-release-local/'
+            url 'http://maven.your.work:8081/artifactory/libs-release-local/'
         }
     }
 }

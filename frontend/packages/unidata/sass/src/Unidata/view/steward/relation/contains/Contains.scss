@@ -1,0 +1,9 @@
+$baseCls: '.un-relation-contains';
+
+#{$baseCls} {
+  >.x-panel-header {
+    .un-ndraw-indicatorround {
+      margin-right: 6px;
+    }
+  }
+}

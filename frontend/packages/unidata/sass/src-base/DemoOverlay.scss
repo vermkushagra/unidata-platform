@@ -1,0 +1,11 @@
+#demo-overlay {
+  position: fixed;
+  bottom: 70px;
+  right: 70px;
+  width: 240px;
+  height: 316px;
+  background-image: url(../resources/images/demo-overlay.png);
+  opacity : 0.7;
+  z-index: 999999999;
+  pointer-events: none;
+}

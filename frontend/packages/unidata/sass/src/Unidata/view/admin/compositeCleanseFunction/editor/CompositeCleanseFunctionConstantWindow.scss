@@ -1,0 +1,30 @@
+$baseCls: 'un-cleanse-function-constant-window';
+
+.#{$baseCls} {
+  >.#{$prefix}window-body {
+    padding: 7px;
+  }
+
+  #{$prefix}title-text {
+    position: relative;
+  }
+
+  .#{$baseCls}-title-icon {
+    position: absolute;
+    font-family: $font-family-linearicons;
+    font-size: 20px;
+  }
+
+  .#{$baseCls}-title-text {
+    margin-left: 25px;
+  }
+
+    .#{$baseCls}-title-icon:before {
+    content: '\e921';
+  }
+
+  .#{$baseCls}-title-type {
+    text-transform: none;
+    color: #999;
+  }
+}

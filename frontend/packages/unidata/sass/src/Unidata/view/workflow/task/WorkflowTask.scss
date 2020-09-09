@@ -1,0 +1,58 @@
+$baseCls: '.un-workflow-task';
+$mainPanelCls: '.un-workflow-task-mainPanel';
+
+#{$baseCls} {
+
+  > .x-panel-body {
+    padding: $un-content-inner-padding - ($un-content-inner-gap / 2);
+  }
+
+  .x-panel-un-card {
+    margin: $un-content-inner-gap / 2;
+  }
+
+}
+
+#{$mainPanelCls} {
+
+  // центральная колонка
+  &-column:nth-child(2) {
+    margin: 0 40px;
+  }
+
+  .un-workflow-task-record-state {
+    font-family: $font-family-1;
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    background-color: $un-color-section-task;
+    line-height: 18px;
+    padding: 0 4px;
+    text-transform: uppercase;
+    border-radius: 2px;
+    display: inline-block;
+    margin-left: 5px;
+  }
+
+  .un-workflow-task-property {
+
+    $label-width: 100px;
+    $label-margin: 5px;
+
+    &-title {
+      width: $label-width;
+      padding-right: $label-margin;
+      float: left;
+
+      > div {
+        min-height: 34px;
+      }
+    }
+
+    &-value {
+      margin-left: $label-width + $label-margin;
+    }
+
+  }
+
+}

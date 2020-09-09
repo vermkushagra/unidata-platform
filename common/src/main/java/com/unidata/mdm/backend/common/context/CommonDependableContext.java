@@ -20,10 +20,13 @@
 package com.unidata.mdm.backend.common.context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class CommonDependableContext extends CommonSendableContext implements RecordIdentityContext {
 
+    List<Function<CommonDependableContext, Boolean>> finalizeExecutors = null;
     @SuppressWarnings("unchecked")
     public CommonDependableContext(final CommonDependableContext parentContext) {
         if (parentContext != null) {
@@ -34,4 +37,16 @@ public abstract class CommonDependableContext extends CommonSendableContext impl
             ((List<CommonSendableContext>) parentContext.getFromStorage(StorageId.DEPENDED_CONTEXTS)).add(this);
         }
     }
+
+    public void addFinalizeExecutor (Function<CommonDependableContext, Boolean> executor) {
+        if (finalizeExecutors == null) {
+            finalizeExecutors = new ArrayList<>();
+        }
+        finalizeExecutors.add(executor);
+    }
+
+    public List<Function<CommonDependableContext, Boolean>> getFinalizeExecutors() {
+        return finalizeExecutors == null ? Collections.emptyList() : finalizeExecutors;
+    }
+
 }

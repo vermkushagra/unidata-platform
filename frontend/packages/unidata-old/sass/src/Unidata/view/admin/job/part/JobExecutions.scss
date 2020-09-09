@@ -1,0 +1,26 @@
+$toolColor: #666666;
+$toolFontSize: 15px;
+
+.un-job-executions {
+  .x-tool-play:before {
+    color: $toolColor;
+    font-size: $toolFontSize;
+  }
+
+  .x-tool-stop:before {
+    color: $toolColor;
+    font-size: $toolFontSize;
+  }
+
+  .x-tool-refresh:before {
+    color: $toolColor;
+    font-size: $toolFontSize;
+  }
+}
+
+.un-job-steps {
+  .x-tool-play:before {
+    color: $toolColor;
+    font-size: $toolFontSize;
+  }
+}

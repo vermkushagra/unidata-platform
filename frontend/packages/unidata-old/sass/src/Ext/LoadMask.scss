@@ -1,0 +1,16 @@
+.x-mask {
+  &.x-component-loader-left {
+    .x-mask-msg {
+      padding: 2px 4px;
+    }
+
+    .x-mask-msg-text {
+      padding: 2px 0 2px 21px;
+      background-position: left center;
+    }
+  }
+}
+
+//body > .x-mask {
+//  background-color: rgba(8, 40, 58, 0.8);
+//}

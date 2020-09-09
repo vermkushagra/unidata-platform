@@ -1,0 +1,119 @@
+$baseCls: '.un-import-settings';
+
+#{$baseCls} {
+
+  .x-grid-item-focused .x-grid-cell-inner:before {
+    display: none;
+  }
+
+  .x-grid-item-over,
+  .x-grid-item-selected {
+    background-color: white;
+  }
+
+  &-listGrid .x-grid-item-selected {
+    outline: solid 2px #3892d3;
+    outline-offset: -2px;
+  }
+
+  .un-import-settings-msg-error,
+  .un-import-settings-msg-warning {
+    padding: 0 3px;
+  }
+
+  .un-import-settings-msg-error,
+  .un-import-settings-error {
+    background-color: #ff9d9d;
+  }
+
+  .un-import-settings-msg-warning,
+  .un-import-settings-warning {
+    background-color: #ffe1b3;
+  }
+
+  .un-grid-icon {
+    font-size: 19px;
+    position: absolute;
+    top: -3px;
+    left: 0;
+  }
+
+  .un-import-settings-msg-counts {
+    .un-legend-icon {
+      font-size: 20px;
+      vertical-align: baseline;
+    }
+
+    .un-legend-icon:before {
+      vertical-align: middle;
+    }
+
+    > span {
+      margin-right: 15px;
+    }
+  }
+
+  .un-grid-icon-msg-cell .x-grid-cell-inner {
+    padding: 7px 0;
+    text-align: center !important;
+  }
+
+  .un-grid-icon-msg {
+    color: #3892d3;
+    font-size: 16px;
+  }
+
+  .un-grid-icon-green {
+    color: #06b700;
+  }
+
+  .un-grid-icon-yellow {
+    color: #e49300;
+  }
+
+  .un-grid-icon-red {
+    color: #e41400;
+  }
+
+  .x-tree-node-text {
+    position: relative;
+  }
+
+  .x-grid-tree-node-leaf {
+    .x-tree-node-text {
+      padding-left: 18px;
+    }
+  }
+
+  .un-import-settings-unchecked {
+    background-color: #e4e4e4;
+
+    .un-grid-icon {
+      @include opacity(0.5);
+    }
+
+    .x-grid-cell-inner {
+      color: #a5a5a5;
+    }
+  }
+
+  .x-panel-header-title-default > .x-title-text-default {
+    padding: 0px 10px 0px 3px;
+  }
+
+  .un-import-settings-listPanel {
+    .x-panel-header-default-horizontal.x-header-noborder {
+      padding: 0 !important;
+      padding-right: 10px !important;
+    }
+
+    .x-form-text-default {
+      padding-top: 0 !important;
+    }
+
+    .x-panel-header-title-default > .x-title-text-default {
+      padding: 10px 10px 10px 13px;
+    }
+  }
+
+}

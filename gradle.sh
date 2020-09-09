@@ -1,0 +1,2 @@
+. ./init-env.sh
+gradle $*

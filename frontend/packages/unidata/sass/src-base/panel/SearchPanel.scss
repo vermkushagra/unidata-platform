@@ -1,0 +1,70 @@
+// Поисковая панель
+$ui-name: 'un-search';
+
+@include un-panel-ui(
+  $ui: $ui-name,
+  $ui-form-item-margin: 0 0 10px 0,
+  $ui-header-noborder-adjust: false,
+  $ui-header-padding: $un-search-panel-body-padding,
+  $ui-header-background-color: $un-search-panel-color-1,
+  $ui-header-color: $un-search-panel-color-4,
+  $ui-header-text-transform: uppercase,
+  $ui-body-padding: 0 $un-search-panel-body-padding $un-search-panel-body-padding $un-search-panel-body-padding,
+  $ui-body-font-size: $un-search-panel-body-font-size,
+  $ui-body-color: $color-primary-2-0,
+  $ui-body-background-color: $un-search-panel-color-1
+);
+
+.x-panel-#{$ui-name} {
+  width: $un-search-panel-width;
+
+  .x-panel-header-#{$ui-name} {
+
+    &-collapsed-left,
+    &-collapsed-right {
+      .x-tool-expand-right:before {
+        margin-left: 1px;
+      }
+    }
+  }
+
+  .x-form-item-label,
+  .x-panel-body {
+    color: $color-primary-2-0;
+  }
+
+  .x-panel-body-default {
+    background-color: transparent;
+  }
+
+  .x-masked,
+  .x-item-disabled {
+    @include opacity(0.5);
+  }
+
+  .x-mask {
+    background-color: transparent;
+  }
+
+  .#{$prefix}toolbar {
+    background-color: $un-search-panel-color-1;
+
+    // обычное состояние кнопки
+    a.x-btn.un-roundbutton {
+      background-color: #ccc;
+    }
+
+    // состояние иконки кнопки
+    a.x-btn.un-roundbutton .x-btn-icon-el {
+      color: #666;
+    }
+
+    // кнопка под курсором
+    a.x-btn.un-roundbutton.x-btn-over {
+      background-color: #4370a0;
+      .x-btn-icon-el {
+        color: #fff
+      }
+    }
+  }
+}

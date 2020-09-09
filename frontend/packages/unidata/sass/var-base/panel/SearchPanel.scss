@@ -1,0 +1,21 @@
+// Поисковая панель
+$un-search-panel-width: 300px;
+
+$un-search-panel-body-padding: 15px;
+$un-search-panel-attribute-body-padding: 10px;
+
+$un-search-panel-base-color: $un-color-search-panel; // #515151
+
+$un-search-panel-body-font-size: 11.5px;
+
+// основной цвет фона #515151
+$un-search-panel-color-1: $un-search-panel-base-color;
+// фон вложенной группы #494949
+$un-search-panel-color-2: darken($un-search-panel-base-color, 3%);
+// цвет разделителя #6B6B6B
+$un-search-panel-color-3: lighten($un-search-panel-base-color, 10%);
+// цвет заголовка #DCDCDC
+$un-search-panel-color-4: lighten($un-search-panel-base-color, 54%);
+
+
+$un-search-panel-attribute-border-color: $un-search-panel-color-3;

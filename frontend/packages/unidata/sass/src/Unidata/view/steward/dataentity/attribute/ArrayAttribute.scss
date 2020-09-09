@@ -1,0 +1,55 @@
+$baseCls: '.un-dataentity-attribute';
+$un-type: 'array';
+$un-max-width: 500px;
+
+#{$baseCls}-type-#{$un-type} {
+  #{$baseCls}-input-cont-wrapper {
+    max-width: $un-max-width;
+
+    .x-form-text-field-body {
+      max-width: $un-max-width;
+    }
+  }
+
+  > #{$baseCls}-top > #{$baseCls}-input-cont-wrapper {
+      padding-top: 6px;
+  }
+
+  #{$baseCls}-notitle {
+    #{$baseCls}-input-cont-wrapper {
+      margin-left: 0;
+    }
+  }
+
+  // внутри paging toolbar вокруг инпутов должна быть граница
+  .x-toolbar {
+    .x-form-trigger-wrap {
+      border-width: 1px;
+      border-style: solid;
+      border-color: #c1c1c1 #d9d9d9 #d9d9d9;
+    }
+  }
+
+    // при фокусе появляется бордер
+  &#{$baseCls}-focus {
+    > #{$baseCls}-top > #{$baseCls}-input-cont-wrapper {
+      border-color: $color-primary-4-4  ;
+    }
+  }
+
+  // при невалидном поле появляется бордер
+  &#{$baseCls}-invalid {
+    >#{$baseCls}-top {
+      >#{$baseCls}-input-cont-wrapper {
+        >#{$baseCls}-input-cont {
+          padding-right: 0;
+        }
+        // и рисуем иконку
+        >#{$baseCls}-notification {
+          display: none;
+        }
+
+      }
+    }
+  }
+}

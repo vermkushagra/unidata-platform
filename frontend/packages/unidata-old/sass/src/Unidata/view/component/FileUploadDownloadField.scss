@@ -1,0 +1,43 @@
+$baseCls: '.file-uploaddownload-field';
+
+.file-uploaddownload-field.error .x-btn {
+  border: 2px solid red;
+}
+
+#{$baseCls} {
+  .isLoading {
+    padding-right: 20px;
+    background-repeat: no-repeat;
+    background-image: url('images/loadmask/loading.gif');
+    background-position: right center;
+  }
+
+  .x-form-invalid-field-default {
+    background-color: transparent !important;
+  }
+
+  .x-form-trigger-wrap {
+    width: auto;
+
+    a {
+      white-space: nowrap;
+    }
+  }
+
+  .x-form-trigger .x-btn {
+    margin-left: 3px;
+  }
+
+  .x-form-text-wrap {
+    padding-right: 3px;
+    vertical-align: middle;
+
+    div {
+      white-space: nowrap;
+    }
+  }
+}
+
+.x-gecko #{$baseCls} .x-form-trigger-wrap {
+  display: -moz-inline-box !important;
+}

@@ -1,0 +1,64 @@
+$baseCls: '.un-carousel-panel';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background-color: transparent;
+  }
+}
+
+#{$baseCls} {
+  .un-carousel-button-prev,
+  .un-carousel-button-next,
+  .un-carousel-button-prev.x-btn-pressed,
+  .un-carousel-button-next.x-btn-pressed {
+    background-color: transparent !important;
+    border: none;
+    border-radius: 0px;
+
+    .x-btn-glyph {
+      color: #507fba !important;
+    }
+  }
+
+  .un-carousel-button-prev,
+  .un-carousel-button-prev.x-btn-pressed {
+    border-right: 1px solid #eee;
+  }
+
+  .un-carousel-button-next,
+  .un-carousel-button-next.x-btn-pressed{
+    border-left: 1px solid #eee;
+  }
+}
+
+#{$baseCls} .un-carousel-items-container {
+  //padding: ($un-ded-inner-gap / 2) 0 ($un-ded-inner-gap / 2) $un-ded-inner-gap;
+  padding: 10px 0 10px 5px;
+  margin: 0;
+
+  .un-carousel-panel-item__firstvisible {
+    margin-left: 0px !important;
+  }
+
+  .un-carousel-panel-item__lastvisible {
+    margin-right: 0px !important;
+  }
+
+  >.x-box-inner {
+    >.x-box-target {
+      >.x-panel-un-card {
+        margin-right: $un-ded-inner-gap;
+        margin-bottom: 0;
+
+        &:last-child {
+          margin-right: $un-ded-inner-gap !important;
+        }
+      }
+    }
+  }
+}
+
+.un-no-data {
+  color: $color-primary-1-3;
+  padding: 10px;
+}

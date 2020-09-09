@@ -1,0 +1,7 @@
+$baseCls: 'un-classifier-array-attr';
+
+.#{$baseCls} {
+  .x-panel-header-title-un-card > .x-title-text-un-card {
+    text-transform: none;
+  }
+}

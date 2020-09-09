@@ -1,0 +1,88 @@
+$ui-name: 'un-query-toggle-button';
+$un-no-border-button-background-color: transparent;
+$un-no-border-btn-color: #999;
+$un-no-border-btn-color-pressed: #fff;
+$un-no-border-btn-color-disabled: #777;
+$un-no-border-btn-icon-size-medium: 20px;
+$un-no-border-btn-icon-size-small: 15px;
+
+@include extjs-button-small-ui(
+  $ui: $ui-name,
+  $background-color: $un-no-border-button-background-color,
+  $color: $un-no-border-btn-color,
+  $glyph-color: $un-no-border-btn-color,
+  $glyph-opacity: 1,
+  $padding: 3px 4px 3px 4px,
+  $icon-size: $un-no-border-btn-icon-size-small,
+  $border-color: null,
+  $border-width: 0,
+  $font-weight: normal
+  //$icon-size: $un-font-button-small-height,
+);
+
+@include extjs-button-medium-ui(
+  $ui: $ui-name,
+  $background-color: $un-no-border-button-background-color,
+  $color: $un-no-border-btn-color,
+  $glyph-color: $un-no-border-btn-color,
+  $glyph-opacity: 1,
+  $icon-size: $un-no-border-btn-icon-size-medium,
+  $padding: 4px 5px 4px 5px,
+  $border-color: null,
+  $border-width: 0,
+  $font-weight: normal
+  //$icon-size: $un-font-button-small-height,
+);
+
+.#{$prefix}btn-icon-el-#{$ui-name}-medium {
+  color: $un-no-border-btn-color;
+  font-size: $un-no-border-btn-icon-size-medium;
+}
+
+.#{$prefix}btn-icon-el-#{$ui-name}-small {
+  color: $un-no-border-btn-color;
+  font-size: $un-no-border-btn-icon-size-small;
+}
+
+.#{$prefix}btn-inner-#{$ui-name}-small, .#{$prefix}btn-inner-#{$ui-name}-medium {
+  padding: 2px 0;
+}
+
+.#{$prefix}btn-disabled {
+  .#{$prefix}btn-button-#{$ui-name}-medium {
+      .#{$prefix}btn-icon-el-#{$ui-name}-medium,
+      .#{$prefix}btn-inner-#{$ui-name}-medium
+      {
+        color:$un-no-border-btn-color-disabled;
+      }
+  }
+
+  .#{$prefix}btn-button-#{$ui-name}-small {
+      .#{$prefix}btn-icon-el-#{$ui-name}-small,
+      .#{$prefix}btn-inner-#{$ui-name}-small
+      {
+        color: $un-no-border-btn-color-disabled;
+      }
+  }
+}
+
+.#{$prefix}btn-pressed {
+  .#{$prefix}btn-icon-el-#{$ui-name}-small,
+  .#{$prefix}btn-icon-el-#{$ui-name}-medium {
+    color: $un-no-border-btn-color-pressed;
+  }
+}
+
+.#{$prefix}btn-button {
+  .#{$prefix}btn-inner-#{$ui-name}-small,
+  .#{$prefix}btn-inner-#{$ui-name}-medium {
+    color: $un-no-border-btn-color-pressed;
+  }
+}
+
+.#{$prefix}btn-disabled {
+  &.#{$prefix}btn-#{$ui-name}-small, &.#{$prefix}btn-#{$ui-name}-medium {
+    opacity: 1;
+  }
+}
+

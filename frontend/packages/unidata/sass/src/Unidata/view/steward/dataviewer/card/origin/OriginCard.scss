@@ -1,0 +1,17 @@
+$baseCls: '.un-dataviewer-card-origin';
+
+#{$baseCls} {
+  .x-table-layout {
+    .x-table-layout-cell {
+      .x-panel-un-card {
+        margin-right: 8px;
+      }
+    }
+
+    .x-table-layout-cell:last-child {
+      .x-panel-un-card {
+        margin-right: 0;
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+$baseCls: 'un-dq-rule';
+
+.#{$baseCls} {
+  background-color: #eaeaea !important;
+
+  .#{$prefix}panel-header {
+    .#{$prefix}title-text {
+      .#{$baseCls}-title-info {
+        font-weight: normal;
+      }
+    }
+  }
+
+  .#{$baseCls}-editor-container {
+    >.#{$prefix}panel-body {
+      background: transparent;
+    }
+  }
+}

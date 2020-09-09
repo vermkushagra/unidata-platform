@@ -1,0 +1,44 @@
+$ui-name: 'un-main-button';
+$un-main-button-btn-background-color: #507fba;
+$un-main-button-btn-glyph-color: #ffffff;
+$un-main-button-btn-icon-size-medium: 20px;
+$un-main-button-btn-icon-size-small: 15px;
+$un-main-button-btn-border-color: #507fba;
+
+@include extjs-button-small-ui(
+        $ui: $ui-name,
+        $background-color: $un-main-button-btn-background-color,
+        $glyph-color: $un-main-button-btn-glyph-color,
+        $glyph-opacity: 1,
+        $padding: 3px 4px 3px 4px,
+        $icon-size: $un-main-button-btn-icon-size-small,
+        $border-color: $un-main-button-btn-border-color
+  //$icon-size: $un-font-button-small-height,
+);
+
+@include extjs-button-medium-ui(
+        $ui: $ui-name,
+        $background-color: $un-main-button-btn-background-color,
+        $glyph-color: $un-main-button-btn-glyph-color,
+        $glyph-opacity: 1,
+        $icon-size: $un-main-button-btn-icon-size-medium,
+        $padding: 4px 5px 4px 5px,
+        $border-color: $un-main-button-btn-border-color
+  //$icon-size: $un-font-button-small-height,
+);
+
+.#{$prefix}btn-icon-el-#{$ui-name}-medium {
+  color: $un-main-button-btn-glyph-color;
+  font-size: $un-main-button-btn-icon-size-medium;
+}
+
+.#{$prefix}btn-icon-el-#{$ui-name}-small {
+  color: $un-main-button-btn-glyph-color;
+  font-size: $un-main-button-btn-icon-size-small;
+}
+
+.#{$prefix}btn-disabled {
+  .#{$prefix}btn-icon-el-#{$ui-name}-medium, .#{$prefix}btn-icon-el-#{$ui-name}-small {
+    color: lighten($un-main-button-btn-glyph-color, 6%);
+  }
+}

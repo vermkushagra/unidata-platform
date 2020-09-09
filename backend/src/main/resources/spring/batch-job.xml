@@ -1,0 +1,297 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/jee
+                           http://www.springframework.org/schema/jee/spring-jee.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util-3.0.xsd
+                           http://www.springframework.org/schema/task
+                           http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <util:map id="jobParameterProcessorsMap" 
+        map-class="java.util.concurrent.ConcurrentHashMap" 
+        key-type="java.lang.String" 
+        value-type="com.unidata.mdm.backend.service.job.JobParameterProcessor">
+        <description>Active parameter processing map.</description>
+    </util:map>
+
+    <!--        Jobs     -->
+    <import resource="job/matching-job.xml"/>
+    <import resource="job/reindex-data-job.xml"/>
+    <import resource="job/reindex-mappings-job.xml"/>
+    <import resource="job/import-data-job.xml"/>
+    <import resource="job/export-data-job.xml"/>
+    <import resource="job/merge-duplicates-job.xml"/>
+    <import resource="job/modify-job.xml"/>
+    <import resource="job/export-job.xml"/>
+    <import resource="job/softdeletecleanup-job.xml"/>
+    <import resource="job/republish-registry-job.xml"/>
+    <import resource="job/reindex-metadata-job.xml"/>
+    <import resource="job/remove-job.xml"/>
+    <import resource="job/remove-relations-job.xml"/>
+
+    <!-- Stored job-meta in database -->
+    <bean id="jobTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="jobDataSource"/>
+    </bean>
+
+    <!-- Solves java 8 time type serialization problem. -->
+    <bean id="customJobExecutionContextSerializer"
+          class="com.unidata.mdm.backend.service.job.batch.core.CustomJobExecutionContextSerializer"/>
+
+    <bean id="jobRepository"
+          class="com.unidata.mdm.backend.service.job.batch.core.CustomJobRepositoryFactoryBean">
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="transactionManager" ref="jobTransactionManager"/>
+        <property name="databaseType" value="postgres"/>
+        <property name="tablePrefix" value="unidata_batch_job.BATCH_"/>
+        <property name="serializer" ref="customJobExecutionContextSerializer"/>
+    </bean>
+
+    <bean id="jobLauncher"
+          class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="taskExecutor" ref="jobTaskExecutor"/>
+    </bean>
+
+    <bean id="jobTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="${unidata.job.thread.pool.size:30}"/>
+        <property name="maxPoolSize" value="${unidata.job.thread.pool.size:30}"/>
+        <property name="queueCapacity" value="${unidata.job.queue.size:100}"/>
+    </bean>
+
+    <task:scheduler id="jobScheduler" pool-size="10"/>
+
+    <bean id="jobExplorer" class="com.unidata.mdm.backend.service.job.batch.core.CustomJobExplorerFactoryBean">
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="transactionManager" ref="jobTransactionManager"/>
+        <property name="tablePrefix" value="unidata_batch_job.BATCH_"/>
+        <property name="serializer" ref="customJobExecutionContextSerializer"/>
+    </bean>
+
+    <bean id="jobStepLocator" class="org.springframework.batch.integration.partition.BeanFactoryStepLocator"/>
+
+    <bean id="jobRegistry" class="com.unidata.mdm.backend.service.job.registry.JobWithParamsRegistryImpl">
+        <property name="jobParameterProcessorsMap" ref="jobParameterProcessorsMap"/>
+    </bean>
+
+    <bean id="jobRegistryBeanPostProcessor" class="com.unidata.mdm.backend.service.job.registry.CustomJobRegistryBeanPostProcessor">
+        <property name="jobWithParamsRegistry" ref="jobRegistry"/>
+    </bean>
+
+    <bean id="jobOperator" class="org.springframework.batch.core.launch.support.SimpleJobOperator">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository" />
+        <property name="jobRegistry" ref="jobRegistry" />
+        <property name="jobLauncher" ref="jobLauncher" />
+    </bean>
+
+    <bean id="jobLoader" class="org.springframework.batch.core.configuration.support.DefaultJobLoader">
+        <property name="jobRegistry" ref="jobRegistry"/>
+    </bean>
+
+    <bean id="jobExternalLoader" class="com.unidata.mdm.backend.service.job.JobExternalLoader" autowire="byName">
+        <property name="jobLoader" ref="jobLoader"/>
+    </bean>
+
+    <!--
+        System jobs list.
+    -->
+    <bean id="notificationJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.notification.job.NotificationJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${notification.job.disable:false}" value-type="java.lang.String"/>
+                <entry key="attemptCount" value="${notification.job.attempt.count:10}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="notificationJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="notificationJobDetail"/>
+        <property name="cronExpression" value="${notification.job.execution.time:0 0/1 * * * ?}"/>
+    </bean>
+
+     <!-- job for clean old delivered messages -->
+    <bean id="cleanNotificationJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.notification.clean.CleanNotificationJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${clean.notification.job.disable:false}" value-type="java.lang.String"/>
+                <entry key="lifetimeInMinutes" value="${clean.notification.job.lifetime.minutes:10080}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="cleanNotificationJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="cleanNotificationJobDetail"/>
+        <property name="group" value="main"/>
+        <property name="cronExpression" value="${clean.notification.job.execution.time:0 0 0/1 * * ?}"/>
+    </bean>
+
+    <!-- job for clean unused binary data -->
+    <bean id="cleanUnusedBinaryDataJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.files.CleanUnusedBinaryDataJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${clean.unused.binary.job.disable:false}" value-type="java.lang.String"/>
+                <entry key="lifetimeInMinutes" value="${clean.unused.binary.job.lifetime.minutes:10080}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="cleanUnusedBinaryDataJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="cleanUnusedBinaryDataJobDetail"/>
+        <property name="group" value="main"/>
+        <property name="cronExpression" value="${clean.unused.binary.job.execution.time:0 0 0/1 * * ?}"/>
+    </bean>
+
+    <!-- job for calculate statistic -->
+    <bean id="calculateStatisticJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.stat.CalculateStatisticJob"/>
+        <property name="group" value="#{T(com.unidata.mdm.backend.service.job.scheduler.UnidataSchedulerFactoryBean).MEMORY_GROUP}"/>
+        <property name="durability" value="true"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${calculate.statistic.job.disable:false}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="calculateStatisticJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="calculateStatisticJobDetail"/>
+        <property name="group" value="#{T(com.unidata.mdm.backend.service.job.scheduler.UnidataSchedulerFactoryBean).MEMORY_GROUP}"/>
+        <property name="cronExpression" value="${calculate.statistic.job.execution.time:0 0 2 * * ?}"/>
+    </bean>
+
+    <!-- job for cleaning invalid classified data -->
+    <bean id="invalidClassificationDataCleanJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.classifier.InvalidClassificationDataCleanJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="jobEnabled" value="${invalid.classification.data.clean.job.enabled:true}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+
+    <bean id="invalidClassificationDataCleanJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="invalidClassificationDataCleanJobDetail"/>
+        <property name="group" value="main"/>
+        <property name="cronExpression" value="${invalid.classification.data.clean.job.execution.time:0 0 */1 * * ?}"/>
+    </bean>
+
+    <!-- job for clean unused binary data -->
+    <bean id="cleanOldAuditDataJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.audit.CleanOldAuditDataJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${clean.old.audit.data.job.disable:false}" value-type="java.lang.String"/>
+                <entry key="lifetimeInMinutes" value="${clean.old.audit.data.job.lifetime.minutes:10080}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="cleanOldAuditDataJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="cleanOldAuditDataJobDetail"/>
+        <property name="group" value="main"/>
+        <property name="cronExpression" value="${clean.old.audit.data.job.execution.time:0 0 */12 ? * *}"/>
+    </bean>
+
+    <!-- job for clean unused data from database -->
+    <bean id="cleanOldAuditRawDataJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.unidata.mdm.backend.service.job.audit.CleanOldAuditRawDataJob"/>
+        <property name="group" value="main"/>
+        <property name="durability" value="true" />
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="disableJob" value="${clean.old.audit.raw.data.job.disable:false}" value-type="java.lang.String"/>
+                <entry key="lifetimeInMinutes" value="${clean.old.audit.raw.data.job.lifetime.minutes:10100}" value-type="java.lang.String"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="cleanOldAuditRawDataJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="cleanOldAuditRawDataJobDetail"/>
+        <property name="group" value="main"/>
+        <property name="cronExpression" value="${clean.old.audit.raw.data.job.execution.time:0 0 */12 ? * *}"/>
+    </bean>
+
+    <!--
+        Quartz scheduler for running jobs on cluster.
+    -->
+    <!--<bean id="unidataQuartzScheduler" class="com.unidata.mdm.backend.service.job.scheduler.UnidataQuartzScheduler"/>-->
+
+    <bean id="quartzSchedulerFactory" class="com.unidata.mdm.backend.service.job.scheduler.UnidataSchedulerFactoryBean"
+        destroy-method="destroy"
+        autowire-candidate="true">
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="transactionManager" ref="jobTransactionManager"/>
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="startupDelay" value="30"/>
+        <property name="autoStartup" value="false"/>
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.jobStore.isClustered">true</prop>
+                <prop key="org.quartz.jobStore.useProperties">true</prop>
+                <prop key="org.quartz.jobStore.tablePrefix">unidata_batch_job.qrtz_</prop>
+                <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.PostgreSQLDelegate</prop>
+                <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+            </props>
+        </property>
+        <property name="triggers">
+            <list>
+                <ref bean="notificationJobTrigger"/>
+                <ref bean="cleanNotificationJobTrigger"/>
+                <ref bean="cleanUnusedBinaryDataJobTrigger"/>
+                <ref bean="calculateStatisticJobTrigger"/>
+                <ref bean="invalidClassificationDataCleanJobTrigger"/>
+                <ref bean="cleanOldAuditDataJobTrigger"/>
+                <ref bean="cleanOldAuditRawDataJobTrigger"/>
+            </list>
+        </property>
+    </bean>
+    <!--
+    <bean class="org.springframework.beans.factory.config.CustomEditorConfigurer">
+        <property name="customEditors">
+            <map>
+                <entry key="java.time.ZonedDateTime" value="com.unidata.mdm.backend.service.job.CustomZonedDateTimeEditor" />
+            </map>
+        </property>
+    </bean>
+    -->
+
+    <bean id="allEntityNameParameterExtractor"
+          class="com.unidata.mdm.backend.service.job.extractors.AllEntityNameParameterExtractor"/>
+          
+    <bean id="allEntityNamesMultiselectParameterExtractor"
+          class="com.unidata.mdm.backend.service.job.extractors.AllEntityNamesMultiselectParameterExtractor"/>
+
+    <bean id="justEntityNameParameterExtractor"
+          class="com.unidata.mdm.backend.service.job.extractors.JustEntityNameParameterExtractor"/>
+
+    <bean id="auditLevelParameterExtractor"
+          class="com.unidata.mdm.backend.service.job.extractors.AuditLevelParameterExtractor"/>
+
+    <bean id="importDataJobDataSetSizeParameterExtractor"
+          class="com.unidata.mdm.backend.service.job.extractors.ImportDataJobDataSetSizeParameterExtractor"/>
+
+    <!-- Validators -->
+    <bean id="positiveValueParameterValidator"
+          class="com.unidata.mdm.backend.service.job.common.PositiveValueParameterValidator"/>
+
+</beans>

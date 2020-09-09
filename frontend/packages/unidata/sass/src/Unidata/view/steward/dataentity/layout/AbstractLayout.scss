@@ -1,0 +1,12 @@
+$baseCls: '.un-ded-layout';
+
+
+#{$baseCls} {
+  &-column {
+    margin-right: $un-ded-inner-gap;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}

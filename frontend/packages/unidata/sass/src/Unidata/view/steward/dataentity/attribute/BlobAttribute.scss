@@ -1,0 +1,62 @@
+$baseCls: 'un-dataentity-attribute';
+$un-type: 'blob';
+$un-max-width: 200px;
+
+
+.#{$baseCls}-type-#{$un-type} {
+  max-width: none;
+  .#{$baseCls}-type-#{$un-type}-content {
+    img {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+  }
+
+  .#{$prefix}form-trigger-wrap {
+    padding-right: 3px;
+  }
+}
+
+.#{$baseCls}-type-#{$un-type}-image-full {
+  .#{$baseCls}-indicator {
+    display: none;
+  }
+
+  .#{$baseCls}-input-cont-wrapper {
+    padding: 0;
+    border: 0;
+    margin-left: 0;
+    @include border-radius(0);
+  }
+
+  .#{$baseCls}-input-blob {
+    .#{$prefix}form-text-wrap {
+      display: none;
+    }
+
+    .#{$prefix}form-trigger .x-btn {
+      margin-left: 0 !important;
+      margin-right: 3px;
+    }
+
+    .#{$prefix}form-trigger-wrap {
+      @include border-radius(0);
+    }
+  }
+}
+
+.#{$baseCls}-input-#{$un-type} {
+  img {
+    position: absolute;
+    left: -129px;
+    margin-top: 20px;
+  }
+
+  .#{$prefix}form-text-wrap {
+    max-width: $un-max-width;
+    div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

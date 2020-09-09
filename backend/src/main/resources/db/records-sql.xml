@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="changeOriginsStatusByEtalonIdSQL">
+        <![CDATA[
+            update origins set
+                status = ?::record_status,
+                update_date = current_timestamp,
+                updated_by = ?
+            where
+                etalon_id = ?::uuid and status <> ?::record_status
+        ]]>
+    </entry>
+    <entry key="changeEtalonStatusSQL">
+        <![CDATA[
+            update etalons set
+                status = ?::record_status,
+                approval = ?::approval_state,
+                update_date = ?,
+                updated_by = ?,
+                operation_id = ?
+            where
+                id = ?::uuid and status <> ?::record_status
+        ]]>
+    </entry>
+    <entry key="changeEtalonApprovalSQL">
+        <![CDATA[
+            update etalons set
+                update_date = current_timestamp,
+                updated_by = ?,
+                approval = ?::approval_state
+            where
+                id = ?::uuid and approval <> ?::approval_state
+        ]]>
+    </entry>
+    <entry key="changeOriginStatusSQL">
+        <![CDATA[
+            update origins set
+                status = ?::record_status,
+                update_date = ?,
+                updated_by = ?
+            where
+                id = ?::uuid and status <> ?::record_status
+        ]]>
+    </entry>
+    <entry key="changeEtalonsStatusSQL">
+        <![CDATA[
+            update etalons set
+                status = :status::record_status,
+                update_date = current_timestamp,
+                updated_by = :updated_by,
+                operation_id = :operation_id
+            where
+                id in (:id) and status <> :status::record_status
+        ]]>
+    </entry>
+    <entry key="changeOriginsStatusSQL">
+        <![CDATA[
+            update origins set
+                status = :status::record_status,
+                update_date = current_timestamp,
+                updated_by = :updated_by
+            where
+                id (:id) and status <> :status::record_status
+        ]]>
+    </entry>
+    <entry key="changeOriginsStatusAndOwnershipByEtalonIdsSQL">
+        <![CDATA[
+            update origins set
+                etalon_id = :etalon_id,
+                status = :status::record_status,
+                update_date = current_timestamp,
+                updated_by = :updated_by
+            where
+                etalon_id in (:id) and status <> :status::record_status
+        ]]>
+    </entry>
+    <entry key="changeOriginsOwnershipByEtalonIdsSQL">
+        <![CDATA[
+            update origins set
+                etalon_id = :etalon_id,
+                update_date = current_timestamp,
+                updated_by = :updated_by
+            where
+                etalon_id in (:id)
+        ]]>
+    </entry>
+    <entry key="changeVistoryStatusByEtalonIdsSQL">
+        <![CDATA[
+            update origins_vistory set
+                status = :status::record_status
+            from
+                origins
+            where
+                origins.etalon_id in (:id)
+            and origins.id = origins_vistory.origin_id
+        ]]>
+    </entry>
+    <entry key="selectOriginByExternalIdSQL">
+        <![CDATA[
+            select
+                o.id::text,
+                o.etalon_id::text,
+                o.name,
+                o.source_system,
+                o.external_id,
+                o.version,
+                o.create_date,
+                o.update_date,
+                o.created_by,
+                o.updated_by,
+                o.status::text,
+                o.is_enrichment
+            from
+                origins o
+            where
+                o.source_system = ?
+            and o.external_id = ?
+            and o.name = ?
+        ]]>
+    </entry>
+    <entry key="selectOriginByIdSQL">
+        <![CDATA[
+            select
+                o.id::text,
+                o.etalon_id::text,
+                o.name,
+                o.version,
+                o.source_system,
+                o.external_id,
+                o.create_date,
+                o.update_date,
+                o.created_by,
+                o.updated_by,
+                o.status::text,
+                o.is_enrichment
+            from origins o
+            where o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="insertEtalonSQL">
+        <![CDATA[
+            insert into etalons (name, version, create_date, created_by, id, approval, status, operation_id)
+            values (?, ?, ?, ?, ?::uuid, ?::approval_state, ?::record_status, ?)
+        ]]>
+    </entry>
+    <entry key="updateEtalonSQL">
+        <![CDATA[
+            update etalons set update_date = ?, updated_by = ?, status = ?::record_status, approval = ?::approval_state, operation_id = ? where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="insertOriginSQL">
+        <![CDATA[
+            insert into origins (id, etalon_id, external_id, source_system, name, version, create_date, created_by, status, is_enrichment)
+            values (?::uuid, ?::uuid, ?, ?, ?, ?, ?, ?, ?::record_status, ?)
+        ]]>
+    </entry>
+    <entry key="updateOriginSQL">
+        <![CDATA[
+            update origins set version = ?, update_date = ?, updated_by = ?, status = ?::record_status, etalon_id = ?::uuid where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="insertEtalonStateDraftSQL">
+        <![CDATA[
+            insert into etalons_draft_states(etalon_id, revision, status, created_by)
+            select ?::uuid, coalesce((select max(prev.revision) + 1 from etalons_draft_states prev where prev.etalon_id = ?::uuid), 1), ?::record_status, ?
+        ]]>
+    </entry>
+    <entry key="cleanupEtalonStateDraftsSQL">
+        <![CDATA[
+            delete from etalons_draft_states where etalon_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadLastEtalonStateDraftByEtalonIdSQL">
+        <![CDATA[
+            select id, etalon_id::text, revision, status::text, create_date, created_by
+            from etalons_draft_states where etalon_id = ?::uuid
+            order by revision desc
+            fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadEtalonSQL">
+        <![CDATA[
+            select
+                e.id::text,
+                e.name,
+                e.version,
+                e.create_date,
+                e.update_date,
+                e.created_by,
+                e.updated_by,
+                e.status::text,
+                e.approval::text,
+                e.gsn,
+                e.operation_id
+            from etalons e
+            where
+                e.id = ?::uuid
+            and e.status = any(array[?]::record_status[])
+        ]]>
+    </entry>
+    <entry key="loadOriginsByEtalonIdSQL">
+        <![CDATA[
+            select
+                o.id::text,
+                o.etalon_id::text,
+                o.name,
+                o.version,
+                o.source_system,
+                o.external_id,
+                o.create_date,
+                o.update_date,
+                o.created_by,
+                o.updated_by,
+                o.status::text,
+                o.is_enrichment
+            from origins o
+            where
+                o.etalon_id = ?::uuid
+            and o.source_system = coalesce(?, o.source_system)
+            and o.external_id = coalesce(?, o.external_id)
+        ]]>
+    </entry>
+    <entry key="loadKeysByExternalIdSQL">
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id = (select o.etalon_id from origins o where
+                    o.source_system = ?
+                    and o.external_id = ?
+                    and o.name = ?)
+            and o.is_enrichment = false
+        ]]>
+    </entry>
+    <entry key="loadKeysByOriginIdSQL">
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id = (select o.etalon_id from origins o where o.id = ?::uuid)
+        ]]>
+    </entry>
+    <entry key="loadKeysByEtalonIdAndSourceSystemNameSQL">
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e left outer join origins o
+                on (o.etalon_id = e.id
+                and o.source_system = ?
+                and o.is_enrichment = false)
+            where e.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByEtalonIdExternalIdAndSourceSystemNameSQL">
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e left outer join origins o
+                on (o.etalon_id = e.id
+                and o.source_system = ?
+                and o.external_id = ?
+                and o.is_enrichment = ?)
+            where e.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByEtalonIdSQL">
+        <!-- UN-8791 
+        Don't remove this apparently useless union.
+        On some setups, for many times merged records, not the initial 'unidata' origin is taken as the first one (because not the nearest PG heap page)
+        but one of the loosers. This causes ERROR: duplicate key value violates unique constraint "ix_uq_origins_relations_name_origin_id_from_origin_id_to",
+        if the origin had ref link in the past. 
+        -->
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                o.create_date,
+                o.update_date,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id = ?::uuid
+            and e.create_date = o.create_date
+            union
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                o.create_date,
+                o.update_date,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id = ?::uuid
+            and e.create_date <> o.create_date
+        ]]>
+    </entry>
+    <entry key="loadKeysByGSNSQL">
+        <![CDATA[
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.gsn = ?
+        ]]>
+    </entry>
+    <entry key="loadKeysByEtalonIdsTemplateSQL">
+        <![CDATA[
+            -- Etalon ids
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id in (:etalon_id)
+        ]]>
+    </entry>
+    <entry key="loadKeysByOriginIdsTemplateSQL">
+        <![CDATA[
+            -- Origin ids
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id in (select distinct o.etalon_id from origins o where o.id in (:origin_id))
+        ]]>
+    </entry>
+    <entry key="loadKeysByGSNsTemplateSQL">
+        <![CDATA[
+            -- GSNs
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.gsn in (:gsn)
+        ]]>
+    </entry>
+    <entry key="loadKeysByExternalIdsTemplateSQL">
+        <![CDATA[
+            -- External Ids, special, not processed by JDBC template
+            select
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                e.version as etalon_version,
+                e.gsn as etalon_gsn,
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.status::text as origin_status,
+                o.version as origin_version,
+                o.source_system as origin_source_system,
+                o.external_id as origin_external_id,
+                o.gsn as origin_gsn,
+                o.is_enrichment as is_enrichment,
+                (select max(v.revision) from origins_vistory v where v.origin_id = o.id) as origin_revision,
+                coalesce((select true from origins_vistory v where v.origin_id = o.id and v.approval = 'APPROVED'::approval_state fetch first 1 rows only), false) as has_approved_revisions
+            from etalons e inner join origins o
+                on o.etalon_id = e.id
+            where
+                e.id in (
+                select distinct o.etalon_id from origins o,
+                    (   :external_id) as q
+                    where
+                        o.source_system = q.source_system
+                    and o.external_id = q.external_id
+                    and o.name = q.name)
+            and o.is_enrichment = false
+        ]]>
+    </entry>
+    <!-- Wipe support. -->
+    <entry key="deleteCdataByOriginIdSQL">
+        <![CDATA[
+            delete from character_data where origin_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteBdataByOriginIdSQL">
+        <![CDATA[
+            delete from binary_data where origin_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteCdataByEtalonIdSQL">
+        <![CDATA[
+            delete from character_data where etalon_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteBdataByEtalonIdSQL">
+        <![CDATA[
+            delete from binary_data where etalon_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteVistoryByOriginIdSQL">
+        <![CDATA[
+            delete from origins_vistory where origin_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteOriginByIdSQL">
+        <![CDATA[
+            delete from origins where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteEtalonByIdSQL">
+        <![CDATA[
+            delete from etalons where id = ?::uuid
+        ]]>
+    </entry>
+
+    <entry key="deleteCdataByOriginIdsSQL">
+        <![CDATA[
+            delete from character_data where origin_id in (:origin_id)
+        ]]>
+    </entry>
+    <entry key="deleteBdataByOriginIdsSQL">
+        <![CDATA[
+            delete from binary_data where origin_id in (:origin_id)
+        ]]>
+    </entry>
+    <entry key="deleteCdataByEtalonIdsSQL">
+        <![CDATA[
+            delete from character_data where etalon_id in (:etalon_id)
+        ]]>
+    </entry>
+    <entry key="deleteBdataByEtalonIdsSQL">
+        <![CDATA[
+            delete from binary_data where etalon_id in (:etalon_id)
+        ]]>
+    </entry>
+    <entry key="deleteVistoryByOriginIdsSQL">
+        <![CDATA[
+            delete from origins_vistory where origin_id in (:origin_id)
+        ]]>
+    </entry>
+    <entry key="deleteOriginByIdsSQL">
+        <![CDATA[
+            delete from origins where id in (:origin_id)
+        ]]>
+    </entry>
+    <entry key="deleteEtalonByIdsSQL">
+        <![CDATA[
+            delete from etalons where id in (:etalon_id)
+        ]]>
+    </entry>
+    <!-- End Wipe support. -->
+    <entry key="obtainTransitionLockSQL">
+        <![CDATA[
+            select pg_advisory_xact_lock(gsn) from etalons where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="insertEtalonTransitionSQL">
+        <![CDATA[
+            insert into etalons_transitions (id, etalon_id, operation_id, type, revision, created_by)
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                ?,
+                coalesce((select max(prev.revision) + 1 from etalons_transitions prev where prev.etalon_id = ?::uuid), 1),
+                ?
+        ]]>
+    </entry>
+    <entry key="mergeDuplicatesTransitionSQL">
+        <![CDATA[
+            insert into duplicates(etalon_transition_id, duplicate_id, is_auto)
+            select
+                t.id,
+                d.id,
+                :is_auto
+            from
+                etalons_transitions t, etalons d
+            where t.etalon_id = :etalon_id::uuid
+            and t.revision = (select max(revision) from etalons_transitions where etalon_id = :etalon_id::uuid)
+            and d.id in (:id)
+        ]]>
+    </entry>
+    <entry key="originAttachTransitionSQL">
+        <![CDATA[
+            with et(etalon_id) as (select ?::uuid as etalon_id)
+            insert into origins_transitions(etalon_transition_id, origin_id)
+            select
+                next.id,
+                o.origin_id
+            from
+                etalons_transitions prev,
+                etalons_transitions next,
+                origins_transitions o
+            where
+                prev.etalon_id = (select et.etalon_id from et)
+            and prev.revision = (select max(revision) - 1 from etalons_transitions where etalon_id = (select et.etalon_id from et))
+            and prev.id = o.etalon_transition_id
+            and next.etalon_id = prev.etalon_id
+            and next.revision = (select max(revision) from etalons_transitions where etalon_id = (select et.etalon_id from et))
+            union
+            select
+                t.id,
+                ?::uuid
+            from
+                etalons_transitions t
+            where t.etalon_id = (select et.etalon_id from et)
+            and t.revision = (select max(revision) from etalons_transitions where etalon_id = (select et.etalon_id from et))
+        ]]>
+    </entry>
+    <entry key="insertOriginsMergeTransitionSQL">
+        <![CDATA[
+            with et(etalon_id) as (select ?::uuid as etalon_id)
+            insert into origins_transitions(etalon_transition_id, origin_id)
+            select
+                next.id,
+                o.origin_id
+            from
+                etalons_transitions prev,
+                etalons_transitions next,
+                origins_transitions o
+            where
+                prev.etalon_id = (select et.etalon_id from et)
+            and prev.revision = (select max(revision) - 1 from etalons_transitions where etalon_id = (select et.etalon_id from et))
+            and prev.id = o.etalon_transition_id
+            and next.etalon_id = prev.etalon_id
+            and next.revision = (select max(revision) from etalons_transitions where etalon_id = (select et.etalon_id from et))
+            union
+            select
+                next.id,
+                o.id
+            from
+                etalons_transitions next, etalons e, origins o
+            where
+                next.etalon_id = (select et.etalon_id from et)
+            and next.revision = (select max(revision) from etalons_transitions where etalon_id = (select et.etalon_id from et))
+            and next.etalon_id = e.id
+            and o.etalon_id = e.id
+            and o.id not in (
+                select ex.origin_id from origins_transitions ex, etalons_transitions prev
+                where ex.etalon_transition_id = prev.id
+                and prev.etalon_id = next.etalon_id
+                and prev.revision = (select max(revision) - 1 from etalons_transitions where etalon_id = next.etalon_id)
+            )
+        ]]>
+    </entry>
+    <entry key="findAllOriginsForEtlaonsQuery">
+        <![CDATA[
+            select * from origins where etalon_id in (:etalon_id)
+        ]]>
+    </entry>
+</properties>

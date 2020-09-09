@@ -1,0 +1,30 @@
+$baseCls: '.un-classifier-list';
+
+#{$baseCls} {
+
+}
+
+.un-classifier-list-button-menu {
+  border: none;
+  padding-left: 2px;
+  overflow: visible;
+
+  .x-menu-body-default {
+    border-left: solid 1px #034A7C !important;
+    background-color: transparent;
+    -webkit-box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.35);
+  }
+
+  .x-menu-item {
+    background-color: #4e93bc;
+  }
+
+  .x-menu-item-active {
+    background-color: #3386c2;
+  }
+
+  .x-menu-item-text-default {
+    color: white;
+  }
+}

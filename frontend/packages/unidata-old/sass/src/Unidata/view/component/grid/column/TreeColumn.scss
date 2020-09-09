@@ -1,0 +1,21 @@
+$iconCls: '.un-tree-icon';
+$un-tree-icon-font-size: 14px;
+
+#{$iconCls}-leaf {
+  &:before {
+    font-size: $un-tree-icon-font-size;
+    content: "\f016";
+  }
+}
+
+#{$iconCls}-parent {
+  &:before {
+    font-size: $un-tree-icon-font-size;
+    content: "\f114";
+
+    .x-grid-tree-node-expanded & {
+      font-size: $un-tree-icon-font-size;
+      content: "\f115";
+    }
+  }
+}

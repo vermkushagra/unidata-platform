@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.ocrv.ru/data-record-approval" exporter="Camunda Modeler" exporterVersion="1.2.0">
+  <process id="approvalProcessOnVersionConflict" name="Согласование изменений записи при конфликте версий из разных систем - источников" isExecutable="true">
+    <documentation>Процесс согласования изменений записи. Запускается неавторизованным пользователем при конфликте изменений из разных источников и согласуется в два приема.</documentation>
+    <startEvent id="startApproval" name="Start approval process on record change" activiti:initiator="initiator"></startEvent>
+    <userTask id="firstLevelApprove" name="Согласовать изменения?" activiti:candidateGroups="approvalGroup1">
+      <documentation>Согласование первой ступени осуществляется руководителем с соответствующими правами.</documentation>
+    </userTask>
+    <userTask id="secondLevelApprove" name="Опубликовать изменения?" activiti:candidateGroups="approvalGroup2">
+      <documentation>Согласование второй ступени осуществляется руководителем с соответствующими правами.</documentation>
+    </userTask>
+    <endEvent id="firstLevelRejected" name="End"></endEvent>
+    <endEvent id="endApproval" name="End"></endEvent>
+    <sequenceFlow id="secondLevelApprovalFlowOut" sourceRef="secondLevelApprove" targetRef="endApproval"></sequenceFlow>
+    <exclusiveGateway id="firstLevelApproved" name="Первый уровень согласован?"></exclusiveGateway>
+    <sequenceFlow id="firstLevelApproveFlowOut" sourceRef="firstLevelApprove" targetRef="firstLevelApproved"></sequenceFlow>
+    <sequenceFlow id="firstLevelRejectedFlow" name="Изменения отклонены в процессе согласования" sourceRef="firstLevelApproved" targetRef="firstLevelRejected">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstLevelApprove == 'DECLINED'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="secondLevelApproveFlowIn" name="Изменения подтверждены в процессе согласования" sourceRef="firstLevelApproved" targetRef="skipSecondLevelApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstLevelApprove == 'APPROVED'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="skipFirstLevelApprove" name="Skip first level approve?"></exclusiveGateway>
+    <sequenceFlow id="firstLevelApproveFlowNoSkip" name="Не пропускать шаг согласования" sourceRef="skipFirstLevelApprove" targetRef="firstLevelApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipStep1 == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="firstLevelApproveFlowSkip" name="Пропустить шаг согласования" sourceRef="skipFirstLevelApprove" targetRef="skipSecondLevelApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipStep1 == true}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="skipSecondLevelApprove" name="Skip second level approve?"></exclusiveGateway>
+    <sequenceFlow id="secondLevelApproveFlowNoSkip" name="Не пропускать шаг публикации" sourceRef="skipSecondLevelApprove" targetRef="secondLevelApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipStep2 == false}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="secondLevelApproveFlowSkip" name="Пропустить шаг публикации" sourceRef="skipSecondLevelApprove" targetRef="endApproval">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${skipStep2 == true}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="zeroLevelFlowIn" name="Начать процесс согласования" sourceRef="startApproval" targetRef="skipFirstLevelApprove"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_approvalProcessOnVersionConflict">
+    <bpmndi:BPMNPlane bpmnElement="approvalProcessOnVersionConflict" id="BPMNPlane_approvalProcessOnVersionConflict">
+      <bpmndi:BPMNShape bpmnElement="startApproval" id="BPMNShape_startApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="366.0" y="156.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelApprove" id="BPMNShape_firstLevelApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="508.0" y="53.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="secondLevelApprove" id="BPMNShape_secondLevelApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="860.0" y="146.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelRejected" id="BPMNShape_firstLevelRejected">
+        <omgdc:Bounds height="35.0" width="35.0" x="895.0" y="1.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endApproval" id="BPMNShape_endApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="895.0" y="238.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelApproved" id="BPMNShape_firstLevelApproved">
+        <omgdc:Bounds height="40.0" width="40.0" x="892.0" y="60.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="skipFirstLevelApprove" id="BPMNShape_skipFirstLevelApprove">
+        <omgdc:Bounds height="40.0" width="40.0" x="540.0" y="153.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="skipSecondLevelApprove" id="BPMNShape_skipSecondLevelApprove">
+        <omgdc:Bounds height="40.0" width="40.0" x="689.0" y="153.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApprovalFlowOut" id="BPMNEdge_secondLevelApprovalFlowOut">
+        <omgdi:waypoint x="912.0" y="201.0"></omgdi:waypoint>
+        <omgdi:waypoint x="912.0" y="238.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelApproveFlowOut" id="BPMNEdge_firstLevelApproveFlowOut">
+        <omgdi:waypoint x="613.0" y="80.0"></omgdi:waypoint>
+        <omgdi:waypoint x="892.0" y="80.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelRejectedFlow" id="BPMNEdge_firstLevelRejectedFlow">
+        <omgdi:waypoint x="912.0" y="60.0"></omgdi:waypoint>
+        <omgdi:waypoint x="912.0" y="36.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="48.0" width="100.0" x="935.0" y="29.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApproveFlowIn" id="BPMNEdge_secondLevelApproveFlowIn">
+        <omgdi:waypoint x="912.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="709.0" y="153.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="48.0" width="100.0" x="731.0" y="101.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelApproveFlowNoSkip" id="BPMNEdge_firstLevelApproveFlowNoSkip">
+        <omgdi:waypoint x="560.0" y="153.0"></omgdi:waypoint>
+        <omgdi:waypoint x="560.0" y="108.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="460.0" y="119.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelApproveFlowSkip" id="BPMNEdge_firstLevelApproveFlowSkip">
+        <omgdi:waypoint x="580.0" y="173.0"></omgdi:waypoint>
+        <omgdi:waypoint x="657.0" y="173.0"></omgdi:waypoint>
+        <omgdi:waypoint x="689.0" y="173.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="580.0" y="173.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApproveFlowNoSkip" id="BPMNEdge_secondLevelApproveFlowNoSkip">
+        <omgdi:waypoint x="729.0" y="173.0"></omgdi:waypoint>
+        <omgdi:waypoint x="860.0" y="173.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="729.0" y="173.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApproveFlowSkip" id="BPMNEdge_secondLevelApproveFlowSkip">
+        <omgdi:waypoint x="709.0" y="193.0"></omgdi:waypoint>
+        <omgdi:waypoint x="709.0" y="255.0"></omgdi:waypoint>
+        <omgdi:waypoint x="895.0" y="255.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="770.0" y="225.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="zeroLevelFlowIn" id="BPMNEdge_zeroLevelFlowIn">
+        <omgdi:waypoint x="401.0" y="173.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="173.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="419.0" y="173.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

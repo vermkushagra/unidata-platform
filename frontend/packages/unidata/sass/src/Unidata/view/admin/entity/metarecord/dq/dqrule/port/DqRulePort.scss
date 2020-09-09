@@ -1,0 +1,49 @@
+$baseCls: 'un-dq-rule-port';
+
+.#{$baseCls} {
+  >.#{$prefix}panel-header {
+    background-color: transparent;
+    padding: 0 0 5px 0;
+    .#{$prefix}title-text {
+      font-size: 14px;
+      font-weight: normal;
+    }
+  }
+
+  >.#{$prefix}panel-body {
+    padding-left: 15px;
+  }
+
+  .#{$baseCls}-radiogroup {
+    margin: 0 0 3px 0;
+
+    >.#{$prefix}form-checkboxgroup-body {
+      padding: 0;
+    }
+  }
+
+  .#{$baseCls}-upath {
+    margin: 3px 0 0 0px;
+  }
+
+  .#{$baseCls}-constant {
+    margin: 3px 0 0 0px;
+  }
+
+  .#{$baseCls}-data-type {
+    color: #6b6b6b;
+    font-size: 13px;
+    padding-left: 5px;
+    font-style: italic;
+  }
+
+  .#{$baseCls}-warning {
+    font-size: 12px;
+    color: #507fba;
+    margin: 0 0 0 3px;
+  }
+
+  .#{$baseCls}-warning-icon {
+    margin-right: 3px;
+  }
+}

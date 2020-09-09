@@ -1,0 +1,1 @@
+alter table audit_record_operation_details add column created_at timestamp with time zone DEFAULT now();

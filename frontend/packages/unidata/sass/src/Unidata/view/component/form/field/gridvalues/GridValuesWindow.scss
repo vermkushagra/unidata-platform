@@ -1,0 +1,25 @@
+$baseCls: '.un-gridvalues-window';
+
+#{$baseCls} {
+
+  &.un-readonly-false {
+    .x-grid-with-row-lines .x-grid-item:last-child {
+      color: #b9b9b9;
+
+      .x-grid-row-checker {
+        display: none !important;
+      }
+    }
+  }
+
+  .un-gridvalues-invalid {
+    background-color: #fdd5d5;
+  }
+
+  &.un-readonly-true {
+    .x-column-header-checkbox .x-column-header-text-container,
+    .x-grid-row-checker {
+      display: none !important;
+    }
+  }
+}

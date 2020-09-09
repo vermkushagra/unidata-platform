@@ -1,0 +1,13 @@
+$ui-name: 'un-fieldset-gray';
+
+@include extjs-fieldset-ui(
+    $ui: $ui-name,
+    $ui-border-color: #a6a6a6,
+    $ui-header-color: #a6a6a6
+);
+
+.x-fieldset.x-fieldset-#{$ui-name} {
+    legend {
+        margin-left: 20px;
+    }
+}

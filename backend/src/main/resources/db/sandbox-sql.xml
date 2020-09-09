@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="INSERT_DATA_RECORD">
+        <![CDATA[
+          INSERT INTO sandbox_data_records(entity_name, data) VALUES (:entityName, :data) RETURNING id
+        ]]>
+    </entry>
+
+    <entry key="UPDATE_DATA_RECORD">
+        <![CDATA[
+          UPDATE sandbox_data_records SET entity_name = :entityName, data = :data WHERE id = :id
+        ]]>
+    </entry>
+
+    <entry key="SELECT_BY_ID">
+        <![CDATA[
+        SELECT * FROM sandbox_data_records WHERE id = :id
+        ]]>
+    </entry>
+
+    <entry key="DELETE_BY_IDS">
+        <![CDATA[
+        DELETE FROM sandbox_data_records WHERE id IN (:ids)
+        ]]>
+    </entry>
+
+    <entry key="DELETE_BY_ENTITY_NAME">
+        <![CDATA[
+        DELETE FROM sandbox_data_records WHERE entity_name = :entityName
+        ]]>
+    </entry>
+
+    <entry key="SELECT_BY_ENTITY_NAME">
+        <![CDATA[
+        SELECT * FROM sandbox_data_records WHERE entity_name = :entityName ORDER BY id LIMIT :limit OFFSET :offset
+        ]]>
+    </entry>
+
+    <entry key="SELECT_BY_RECORDS_IDS">
+        <![CDATA[
+        SELECT * FROM sandbox_data_records WHERE id IN (:recordsIds) ORDER BY id
+        ]]>
+    </entry>
+
+    <entry key="COUNT_IDS_BY_ENTITY_NAME">
+        <![CDATA[
+        SELECT count(id) FROM sandbox_data_records WHERE entity_name = :entityName
+        ]]>
+    </entry>
+</properties>

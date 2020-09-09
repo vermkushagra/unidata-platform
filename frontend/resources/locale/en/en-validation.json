@@ -1,0 +1,13 @@
+{
+  "form.requiredFields": "Invalid form. Required fields are not filled.",
+  "form.securityLabel": "Invalid form. Not tested for security labels.",
+  "field.required": "Field should be filled.",
+  "field.required_includeFieldName": "Field '{{fieldName}}' should be filled.",
+  "loadFailed": "Failed to load {{name, lowercase}}",
+  "valueCantBeDot": "Value can not contain character \"dot\"",
+  "onlyAlphaAndSlashes": "Incorrect value. You can use only latin characters and numbers. Value can not be start with number.",
+  "valueRequired": "Value should be specified.",
+  "invalidTime": "Invalid time",
+  "invalidDateFormat": "is not correct date - date should be specified in format",
+  "somethingCantBeEmpty": "{{name, capitalize}} can't be empty"
+}

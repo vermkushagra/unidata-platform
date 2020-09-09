@@ -1,0 +1,38 @@
+$baseCls: '.un-carousel-panel';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background-color: transparent;
+  }
+}
+
+#{$baseCls} {
+  //.un-carousel-button-prev {
+  //  margin-right: 10px;
+  //  margin-top: 10px;
+  //}
+
+  //.un-carousel-button-next {
+  //  margin-left: 10px;
+  //  margin-top: 10px;
+  //}
+}
+
+#{$baseCls} .un-carousel-items-container {
+  padding: 0px;
+  margin: 0px;
+
+  .un-carousel-panel-item__firstvisible {
+    margin-left: 0px !important;
+  }
+
+  .un-carousel-panel-item {
+    //border: 1px solid #dedede;
+    //margin: 10px 10px 10px 0px !important;
+    //padding: 5px;
+  }
+
+  .un-carousel-panel-item__lastvisible {
+    margin-right: 0px !important;
+  }
+}

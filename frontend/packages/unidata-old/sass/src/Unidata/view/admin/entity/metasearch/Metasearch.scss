@@ -1,0 +1,11 @@
+$baseCls: '.un-metasearch';
+
+#{$baseCls} {
+  .x-form-text {
+    padding-left: 5px !important;
+  }
+
+  .x-grid-cell-inner {
+    white-space: normal !important;
+  }
+}

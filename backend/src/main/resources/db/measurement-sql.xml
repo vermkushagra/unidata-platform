@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="INSERT_VALUE">
+        <![CDATA[
+            insert into measurement_values (id,name,short_name) values (:id,:name,:shortName)
+        ]]>
+    </entry>
+    <entry key="UPDATE_VALUE">
+        <![CDATA[
+            update measurement_values set name=:name ,short_name=:shortName where id=:id
+        ]]>
+    </entry>
+    <entry key="DELETE_VALUE">
+        <![CDATA[
+            delete from measurement_values where id in (:valueIds)
+        ]]>
+    </entry>
+    <entry key="DELETE_UNITS">
+        <![CDATA[
+            delete from measurement_units where value_id=:valueId
+        ]]>
+    </entry>
+    <entry key="INSERT_UNITS">
+        <![CDATA[
+            insert into measurement_units (id,name,short_name,value_id,function,base,unit_order) values (:id,:name,:shortName,:valueId,:function,:base,:order)
+        ]]>
+    </entry>
+    <entry key="SELECT_VALUE_BY_ID">
+        <![CDATA[
+        select mv.*,
+            mu.id as unit_id,
+            mu.name as unit_name,
+            mu.short_name as unit_short_name,
+            mu.function,
+            mu.base,
+            mu.unit_order as order
+            from measurement_values as mv,measurement_units as mu where mv.id=mu.value_id and mv.id=:id
+        ]]>
+    </entry>
+    <entry key="SELECT_ALL_VALUES">
+        <![CDATA[
+        select mv.*,
+            mu.id as unit_id,
+            mu.name as unit_name,
+            mu.short_name as unit_short_name,
+            mu.function,
+            mu.base,
+            mu.unit_order as order
+            from measurement_values as mv,measurement_units as mu where mv.id=mu.value_id
+        ]]>
+    </entry>
+</properties>

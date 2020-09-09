@@ -1,0 +1,219 @@
+.x-btn {
+  // убираем тень
+  @include box-shadow(none !important);
+}
+
+.#{$prefix}btn-disabled {
+  cursor: default;
+}
+
+[class^="x-btn-button-default-"], [class*=" x-btn-button-default-"] {
+  text-transform: uppercase;
+
+  .x-btn-inner {
+    // добавляем отступы, что бы помещалась "Й"
+    padding: 2px 0;
+    margin: -2px 0;
+  }
+
+  // позиционируем иконку
+  .x-btn-icon-el {
+    position: relative;
+
+    &:before {
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      top: 50%;
+      left: 50%;
+      margin-top: -0.5em;
+      margin-left: -0.5em;
+    }
+  }
+
+  // цвет дефолтной иконки
+  .x-btn-icon-el {
+    color: $button-default-color;
+  }
+}
+
+// дефолтный цвет для un-fontbutton
+[class^="x-btn-un-fontbutton-"], [class*=" x-btn-un-fontbutton-"] {
+  .x-btn-icon-el {
+    color: $un-font-button-color;
+  }
+
+  &.x-btn-over .x-btn-icon-el,
+  &.x-btn-focus .x-btn-icon-el,
+  &.x-btn-pressed .x-btn-icon-el {
+    color: darken($un-font-button-color, 8%);
+  }
+}
+
+// размер шрифта (для иконок)
+.x-btn-button-default {
+  &-toolbar-small,
+  &-small {
+    font-size: $button-small-font-size;
+  }
+
+  &-toolbar-medium,
+  &-medium {
+    font-size: $button-medium-font-size;
+  }
+
+  &-toolbar-large,
+  &-large {
+    font-size: $button-large-font-size;
+  }
+}
+
+@mixin un-button-color(
+  $name: null,
+  $background-color: null,
+  $border-color: null,  // будет использован $background-color, если не задан
+  $font-color: null     // необязательный параметр, будет использован $button-default-color
+) {
+
+  @if $border-color == null {
+    $border-color: $background-color;
+  }
+
+  .un-button-color-#{$name} {
+
+    // меняем цвет текста для un-fontbutton и un-chart-legend
+    @if $background-color != transparent {
+      &[class^="x-btn-un-fontbutton-"], &[class*=" x-btn-un-fontbutton-"] {
+        .x-btn-inner,
+        .x-btn-icon-el {
+          color: $background-color !important;
+        }
+
+        &.x-btn-over,
+        &.x-btn-focus,
+        &.x-btn-pressed {
+
+          .x-btn-inner,
+          .x-btn-icon-el {
+            color: darken($background-color, 8%) !important;
+          }
+        }
+      }
+
+      &[class^="x-btn-un-chart-legend-"], &[class*=" x-btn-un-chart-legend-"] {
+        .x-btn-inner,
+        .x-btn-icon-el {
+          color: $background-color !important;
+        }
+      }
+
+      &[class^="x-btn-un-text-toggle-button-"], &[class*=" x-btn-un-text-toggle-button-"] {
+        .x-btn-inner,
+        .x-btn-icon-el {
+          color: $background-color !important;
+        }
+
+        &:after {
+          color: $background-color !important;
+        }
+
+        &.x-btn-pressed {
+          .x-btn-inner,
+          .x-btn-icon-el {
+            color: $border-color !important;
+          }
+        }
+      }
+    }
+
+    @if $font-color != null {
+      .x-btn-icon-el,
+      .x-btn-inner {
+        color: $font-color !important;
+      }
+    }
+
+    // не меняем цвет фона для un-fontbutton
+    &[class^="x-btn-default-"], &[class*=" x-btn-default-"] {
+      background-color: $background-color !important;
+      border-color: $border-color !important;
+
+      &:not([class*='un-button-inactive']) {
+        &.x-btn-over {
+          background-color: button-default-background-color-over($background-color) !important;
+          border-color: button-default-border-color-over($border-color) !important;
+        }
+
+        &.x-btn-focus {
+          background-color: button-default-background-color-focus($background-color) !important;
+          border-color: button-default-border-color-focus($border-color) !important;
+        }
+
+        &.x-btn-pressed {
+          background-color: button-default-background-color-pressed($background-color) !important;
+          border-color: button-default-border-color-pressed($border-color) !important;
+        }
+
+        &.x-btn-disabled {
+          background-color: button-default-background-color-disabled($background-color) !important;
+          border-color: button-default-border-color-disabled($border-color) !important;
+        }
+      }
+
+      // если кнопка неактивная, то все цвета одинаковые
+      &.un-button-inactive {
+        cursor: default;
+
+        &.x-btn-over {
+          cursor: default;
+          background-color: $background-color !important;
+          border-color: $border-color !important;
+        }
+
+        &.x-btn-focus {
+          cursor: default;
+          background-color: $background-color !important;
+          border-color: $border-color !important;
+        }
+
+        &.x-btn-pressed {
+          cursor: default;
+          background-color: $background-color !important;
+          border-color: $border-color !important;
+        }
+
+        &.x-btn-disabled {
+          cursor: default;
+          background-color: $background-color !important;
+          border-color: $border-color !important;
+        }
+      }
+    }
+  }
+}
+
+// генерим цвета кнопок
+@for $colorIndex from 1 through length($un-button-colors) {
+  $item: nth($un-button-colors, $colorIndex);
+  $name: nth($item, 1);
+
+  $background-color: nth($item, 2);
+  $border-color: $background-color;
+  $font-color: #FFFFFF;
+
+  @if length($item) > 2 {
+    $border-color: nth($item, 3);
+  }
+
+  @if length($item) > 3 {
+    $font-color: nth($item, 4);
+  }
+
+  @include un-button-color(
+    $name: $name,
+    $background-color: $background-color,
+    $border-color: $border-color,
+    $font-color: $font-color
+  );
+
+}

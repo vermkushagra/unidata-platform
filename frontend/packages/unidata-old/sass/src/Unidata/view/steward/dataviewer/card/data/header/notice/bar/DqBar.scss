@@ -1,0 +1,18 @@
+$baseCls: '.un-dqbar';
+$errorBtnCls: '.un-approvebar-errorbutton';
+
+#{$baseCls} {
+  #{$errorBtnCls}.x-btn {
+    background-color: #d84315;
+    border-color: #d84315;
+
+    // текст кнопунца
+    span.x-btn-inner {
+      color: white;
+      font-size: 16px;
+    }
+
+    // тень
+    @include box-shadow(2px 2px 5px 0 rgba(0, 0, 0, 0.35));
+  }
+}

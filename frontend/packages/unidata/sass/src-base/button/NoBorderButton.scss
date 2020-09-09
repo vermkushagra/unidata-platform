@@ -1,0 +1,80 @@
+$ui-name: 'un-no-border-button';
+$un-no-border-button-background-color: transparent;
+$un-no-border-btn-color: #696969;
+$un-no-border-btn-color-pressed: #006699;
+$un-no-border-btn-color-disabled: #555;
+$un-no-border-btn-icon-size-medium: 20px;
+$un-no-border-btn-icon-size-small: 15px;
+
+@include extjs-button-small-ui(
+  $ui: $ui-name,
+  $background-color: $un-no-border-button-background-color,
+  $color: $un-no-border-btn-color,
+  $glyph-color: $un-no-border-btn-color,
+  $glyph-opacity: 1,
+  $padding: 3px 4px 3px 4px,
+  $icon-size: $un-no-border-btn-icon-size-small,
+  $border-color: null,
+  $border-width: 0
+  //$icon-size: $un-font-button-small-height,
+);
+
+@include extjs-button-medium-ui(
+  $ui: $ui-name,
+  $background-color: $un-no-border-button-background-color,
+  $color: $un-no-border-btn-color,
+  $glyph-color: $un-no-border-btn-color,
+  $glyph-opacity: 1,
+  $icon-size: $un-no-border-btn-icon-size-medium,
+  $padding: 4px 5px 4px 5px,
+  $border-color: null,
+  $border-width: 0
+  //$icon-size: $un-font-button-small-height,
+);
+
+.#{$prefix}btn-icon-el-#{$ui-name}-medium {
+  color: $un-no-border-btn-color;
+  font-size: $un-no-border-btn-icon-size-medium;
+}
+
+.#{$prefix}btn-icon-el-#{$ui-name}-small {
+  color: $un-no-border-btn-color;
+  font-size: $un-no-border-btn-icon-size-small;
+}
+
+.#{$prefix}btn-disabled {
+  .#{$prefix}btn-icon-el-#{$ui-name}-medium, .#{$prefix}btn-icon-el-#{$ui-name}-small {
+    color: lighten($un-no-border-btn-color, 6%);
+  }
+}
+
+.#{$prefix}btn-pressed {
+  .#{$prefix}btn-icon-el-#{$ui-name}-small,
+  .#{$prefix}btn-inner-#{$ui-name}-small,
+  .#{$prefix}btn-icon-el-#{$ui-name}-medium,
+  .#{$prefix}btn-inner-#{$ui-name}-medium {
+    color: $un-no-border-btn-color-pressed;
+  }
+}
+
+.#{$prefix}btn-inner-#{$ui-name}-small, .#{$prefix}btn-inner-#{$ui-name}-medium {
+  text-decoration: underline;
+}
+
+.#{$prefix}btn-disabled {
+  //.#{$prefix}btn-icon-el-#{$ui-name}-small,
+  //.#{$prefix}btn-icon-el-#{$ui-name}-medium {
+  //  display: none;
+  //}
+
+  .#{$prefix}btn-inner-#{$ui-name}-small,
+  .#{$prefix}btn-inner-#{$ui-name}-medium{
+    color: $un-no-border-btn-color-disabled;
+    text-decoration: none;
+  }
+
+  &.#{$prefix}btn-#{$ui-name}-small, &.#{$prefix}btn-#{$ui-name}-medium {
+    opacity: 1;
+  }
+}
+

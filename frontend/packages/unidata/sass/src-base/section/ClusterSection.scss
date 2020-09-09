@@ -1,0 +1,8 @@
+/*
+* Специальные стили для раздела "Дубликаты"
+*/
+$baseCls: '.un-section';
+$section: 'cluster';
+$section-color: $un-color-section-cluster;
+
+@include set-section-color($baseCls, $section, $section-color);

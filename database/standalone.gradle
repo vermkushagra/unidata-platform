@@ -1,0 +1,24 @@
+//push config from properties in order to reuse existing build.gradle file
+ext.databaseUrl = databaseUrl
+ext.databaseUser = databaseUser
+ext.databasePassword = databasePassword
+
+//buildscript import do not work in "apply from", so small duplication here
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1', 'org.postgresql:postgresql:42.2.2', 'com.google.guava:guava:23.0'
+    }
+}
+repositories {
+    mavenCentral()
+}
+
+// Stub fo standalone run. Only need for old version while migration on new procedure happened
+def getScmRevision(){
+    '_standalone_'
+}
+
+apply from: 'build.gradle'

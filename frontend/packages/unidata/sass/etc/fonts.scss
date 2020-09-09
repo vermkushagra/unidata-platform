@@ -1,0 +1,43 @@
+$font-family-1: 'Open Sans';                  // надписи в UI
+$font-family-2: 'PT Sans';                    // заголовки, лейблы данных
+$font-family-3: 'Arial';                      // данные
+$font-family-linearicons: 'Linearicons';      // иконки
+
+// Open Sans
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans-Regular-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans-Semibold-webfont.woff') format('woff');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('fonts/OpenSans-Bold-webfont.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+// PT Sans
+
+@font-face {
+  font-family: 'PT Sans';
+  src: url('fonts/PTS55F-webfont.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'PT Sans';
+  src: url('fonts/PTS75F-webfont.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}

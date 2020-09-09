@@ -1,0 +1,169 @@
+$baseCls: 'un-table-grid';
+
+$un-table-grid-columnheader-color: transparent;
+$un-table-grid-columnheader-fontsize: 0.9em;
+$un-table-grid-columnheader-paddingleft: 10px;
+
+$un-table-grid-cell-color: transparent;
+$un-table-grid-cell-fontsize: 13px;
+$un-table-grid-cell-paddingleft: $un-table-grid-columnheader-paddingleft;
+
+$un-table-grid-color-itemover: #ededed;
+$un-table-grid-color-itemselect: lighten($un-table-grid-color-itemover, 5%);
+$un-table-grid-color-texthover: #f08080;
+$un-table-grid-color-columnover: $un-table-grid-color-itemover;
+
+// форматирование логических блоков грида
+.#{$baseCls} {
+  .x-grid-header-ct {
+    border: none;
+  }
+
+  .x-grid-body {
+    border: none;
+  }
+
+  .x-grid-view {
+    border-top: 2px solid lighten($color-secondary-1-0, 40%);
+  }
+}
+
+// форматирование заголовков колонок
+.#{$baseCls} {
+  .x-column-header:not(.un-column-title-inactive) {
+    // навели мышкой на колонку
+    .x-column-header-inner.x-column-header-over {
+      background-color: $un-table-grid-color-columnover;
+
+      .x-column-header-text-wrapper {
+        color: $un-table-grid-color-texthover;
+        text-decoration: underline;
+      }
+
+      .x-column-header-trigger {
+        background-color: $un-table-grid-color-columnover;
+      }
+    }
+  }
+
+  .x-column-header {
+    background-color: $un-table-grid-columnheader-color;
+    border: none;
+
+    // элемент содержащий заголовок колонки
+    .x-column-header-text-wrapper {
+      text-transform: uppercase;
+      font-family: $font-family-2;
+      font-size: $un-table-grid-columnheader-fontsize;
+      vertical-align: bottom;
+      text-align: left;
+      color: black;
+    }
+
+    &.x-column-header-align-right {
+      .x-column-header-text-wrapper {
+        text-align: right;
+      }
+
+      .x-column-header-text {
+        margin-right: 0;
+      }
+    }
+
+    .x-column-header-inner {
+      border-bottom: 1px solid lighten($color-secondary-1-0, 40%);
+      padding-left: $un-table-grid-columnheader-paddingleft;
+    }
+
+    // по умолчанию наведения нет
+    .x-column-header-inner.x-column-header-over {
+      background-color: $un-table-grid-columnheader-color;
+
+      .x-column-header-trigger {
+        background-color: $un-table-grid-columnheader-color;
+      }
+    }
+
+    // менюшка колонки расткрыта
+    //.x-column-header-inner.x-column-header-open {
+    //  background-color: white;
+    //
+    //  .x-column-header-trigger {
+    //    background-color: white;
+    //  }
+    //}
+
+    // убираем бордер (появлется  если ткнуть в заголовок столбца)
+    .x-column-header-inner:before {
+      border: none;
+    }
+
+    // убрать бордер у элемента для показа контекстного меню колонки
+    .x-column-header-trigger {
+      border: none;
+    }
+  }
+}
+
+// форматирование ячеек таблицы
+.#{$baseCls} {
+  // элемент ячейки
+  .x-grid-cell {
+    font-family: $font-family-3;
+    font-size: $un-table-grid-cell-fontsize;
+    background-color: $un-table-grid-cell-color;
+
+    // элемент отображающий тест ячейки
+    .x-grid-cell-inner {
+      padding-left: $un-table-grid-cell-paddingleft;
+      min-height: 30px;
+      padding: 5px;
+      line-height: 20px;
+    }
+  }
+
+  .x-grid-cell.x-grid-cell-first {
+    .x-grid-cell-inner {
+      padding: 5px 5px 5px 10px;
+    }
+  }
+
+  .x-grid-cell.x-grid-cell-last {
+    .x-grid-cell-inner {
+      padding: 5px 10px 5px 5px;
+    }
+  }
+}
+
+// форматирование строк таблицы
+.#{$baseCls} {
+  // строка под мышкой
+  .x-grid-item.x-grid-item-over {
+    .x-grid-cell {
+      background-color: $un-table-grid-color-itemover;
+    }
+
+    // при наведении мышкой текст подсвечивается
+    .x-grid-cell:hover {
+      color: $un-table-grid-color-texthover;
+    }
+  }
+
+  // бордеры строк красим в цвет наведения
+  .x-grid-item.x-grid-item-over {
+    border-color: $un-table-grid-color-itemover;
+  }
+
+  // бордеры строк красим в цвет наведения
+  .x-grid-item-over + .x-grid-item {
+    border-color: $un-table-grid-color-itemover;
+  }
+
+  // выбранная строка
+  .x-grid-item.x-grid-item-selected {
+    .x-grid-cell {
+      background-color: $un-table-grid-color-itemselect;
+    }
+  }
+}
+

@@ -1,0 +1,39 @@
+.un-relation-m2m-tableview {
+  // убираем стандартный бекграунд
+  .x-grid-row-expander {
+    background-image: none;
+
+    .x-grid-row-expander {
+      background-image: none;
+    }
+  }
+
+  // специальный шрифт для отображения значков схлопывания / разворачивания контента
+  .x-grid-row-expander {
+    font-size: 11px;
+    font-family: Linearicons;
+    line-height: 11px;
+  }
+
+  // значек показывающий что есть разворачиваемый контент
+  .x-grid-row-collapsed .x-grid-row-expander:before {
+    content: '\e93c';
+  }
+
+  // значек показывающий что контент схлопывается
+  .x-grid-row-expander:before{
+    content: '\e93a';
+  }
+
+  .un-attribute-label {
+    color: $color-primary-1-1;
+    font-family: $font-family-2;
+    font-weight: bold;
+  }
+
+  .un-attribute-value {
+    color: $color-primary-1-1;
+    font-family: $font-family-3;
+  }
+
+}

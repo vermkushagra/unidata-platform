@@ -1,0 +1,32 @@
+.un-dropdown-picker-field {
+  .x-form-trigger {
+      width: 20px;
+  }
+
+  .un-form-clear-trigger {
+      font-size: 19px;
+      color: #666;
+  }
+
+  .un-form-magnifier-trigger {
+    font-size: 15px;
+    color: $color-secondary-2-0 !important;
+  }
+
+  .un-form-magnifier-trigger::before {
+    content: "" !important;
+  }
+
+  .un-form-clear-trigger::before {
+    content: "" !important;
+  }
+
+    .un-form-detail-trigger {
+      font-size: 13px;
+      color: $color-secondary-2-0 !important;
+    }
+
+}
+
+
+

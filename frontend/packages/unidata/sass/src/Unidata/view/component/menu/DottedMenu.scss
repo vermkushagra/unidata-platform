@@ -1,0 +1,109 @@
+$baseCls: 'un-dottedmenu';
+$ui-name: 'un-dottedmenu';
+
+@include extjs-menu-ui(
+  $ui: $ui-name,
+  $ui-padding: 0 0 10px 0,
+  $ui-item-font-family: $font-family-1,
+  $ui-item-font-size: 13px,
+  $ui-item-font-weight: normal,
+  $ui-text-color: $color-primary-1-2,
+  $ui-item-active-background-color: none,
+  $ui-item-icon-size: 0,
+  $ui-item-icon-vertical-offset: 0,
+  $ui-item-icon-horizontal-spacing: 0,
+  $ui-item-text-horizontal-spacing: 0,
+  $ui-item-separator-margin: 10px 0 0 0,
+  $ui-item-text-vertical-offset: 10px,
+  $ui-background-color: $color-primary-2-0,
+  $ui-border-color: $color-primary-1-4
+);
+
+.x-menu-#{$ui-name} {
+  margin: 20px;
+  overflow: visible;
+  @include border-radius(3px);
+  .x-menu-item-link {
+    margin: 0 15px;
+  }
+}
+
+.x-menu-item-#{$ui-name}.x-menu-item-active {
+  .x-menu-item-text {
+    color: $color-secondary-2-0;
+    //font-weight: 600;
+    //font-family: $font-family-1;
+  }
+}
+
+.x-menu-item-#{$ui-name}.un-menu-item-selected {
+  .x-menu-item-text {
+    font-weight: bold;
+  }
+}
+
+// triangle
+.x-menu-#{$ui-name}:after,
+.x-menu-#{$ui-name}:before {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-style: solid;
+}
+
+.#{$baseCls}-bottom-right:after,
+.#{$baseCls}-bottom-right:before {
+  bottom: -10px;
+  right: 6px;
+  margin-bottom: 0;
+  border-width: 10px 10px 0 10px;
+  border-color: $color-primary-2-0 transparent transparent transparent;
+}
+
+.#{$baseCls}-bottom-right:before {
+  margin-bottom: -1px;
+  border-color: $color-primary-1-4 transparent transparent transparent;
+}
+
+.#{$baseCls}-bottom-left:after,
+.#{$baseCls}-bottom-left:before {
+  bottom: -10px;
+  left: 6px;
+  margin-bottom: 0;
+  border-width: 10px 10px 0 10px;
+  border-color: $color-primary-2-0 transparent transparent transparent;
+}
+
+.#{$baseCls}-bottom-left:before {
+  margin-bottom: -1px;
+  border-color: $color-primary-1-4 transparent transparent transparent;
+}
+
+.#{$baseCls}-top-right:after,
+.#{$baseCls}-top-right:before {
+  bottom: 100%;
+  right: 6px;
+  margin-bottom: -1px;
+  border-width: 0 10px 10px 10px;
+  border-color: transparent transparent $color-primary-2-0 transparent;
+}
+
+.#{$baseCls}-top-right:before {
+  margin-bottom: 0;
+  border-color: transparent transparent $color-primary-1-4 transparent;
+}
+
+.#{$baseCls}-top-left:after,
+.#{$baseCls}-top-left:before {
+  bottom: 100%;
+  left: 6px;
+  margin-bottom: -1px;
+  border-width: 0 10px 10px 10px;
+  border-color: transparent transparent $color-primary-2-0 transparent;
+}
+
+.#{$baseCls}-top-left:before {
+  margin-bottom: 0;
+  border-color: transparent transparent $color-primary-1-4 transparent;
+}

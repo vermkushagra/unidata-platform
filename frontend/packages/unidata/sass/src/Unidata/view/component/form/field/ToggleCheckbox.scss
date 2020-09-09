@@ -1,0 +1,113 @@
+$baseCls: '.un-toggle-checkbox';
+$un-toggle-checkbox-width: 34px;
+$un-toggle-checkbox-height: 20px;
+$un-toggle-checkbox-top-bottom-padding: 3px;
+$un-toggle-checkbox-left-right-padding: 6px;
+$un-toggle-checkbox-checked-color: $color-secondary-2-0;
+$un-toggle-checkbox-unchecked-color: $color-primary-1-4;
+$un-toggle-checkbox-round-color: #fff;
+$un-toggle-checkbox-transition-time: 0.3s;
+$un-toggle-checkbox-label-line-height: 13px;
+$un-toggle-checkbox-label-padding-left: 5px;
+
+@mixin un-toggle-checkbox(
+  $width: null,
+  $height: null,
+  $border-radius: null,
+  $top-bottom-padding: null,
+  $left-right-padding: null,
+  $checked-color: null,
+  $unchecked-color: null,
+  $round-color: null,
+  $transition-time: null,
+  $label-line-height: null,
+  $label-padding-left: null,
+  $label-font: null,
+  $label-font-color: null
+) {
+
+  @if $border-radius == null {
+    $border-radius: $height;
+  }
+
+  @if $transition-time == null {
+    $transition-time: 0.3s;
+  }
+
+  .#{$prefix}form-item-label {
+    margin: 0;
+    line-height: $label-line-height;
+    @if $label-font-color != null {
+      color: $label-font-color;
+    }
+    @if $label-font != null {
+      font: $label-font;
+    }
+  }
+
+  .#{$prefix}form-item-label-right {
+    text-align: left !important;
+    padding-left: $label-padding-left;
+  }
+
+  input[type=checkbox]{
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    display: none;
+  }
+
+  label.x-form-cb-label {
+    cursor: pointer;
+    text-indent: -9999px;
+    width: $width;
+    height: $height;
+    background: $unchecked-color;
+    display: block;
+    border-radius: $border-radius;
+    position: relative;
+    margin: 0;
+  }
+
+  label.x-form-cb-label:after {
+    content: '';
+    position: absolute;
+    top: $top-bottom-padding;
+    left: $top-bottom-padding;
+    width: #{$height - $top-bottom-padding*2};
+    height: #{$height - $top-bottom-padding*2};
+    background: $round-color;
+    border-radius: $border-radius;
+    transition: $transition-time;
+  }
+
+  input:checked + label.x-form-cb-label {
+    background: $checked-color;
+  }
+
+  input:checked + label.x-form-cb-label:after {
+    left: #{$width - $top-bottom-padding};
+    transform: translateX(-100%);
+  }
+
+  label.x-form-cb-label:active:after {
+    width: #{$width - $left-right-padding*2};
+  }  
+}
+
+#{$baseCls} {
+  margin-top: 2px;
+
+  @include un-toggle-checkbox (
+    $width: $un-toggle-checkbox-width,
+    $height: $un-toggle-checkbox-height,
+    $top-bottom-padding: $un-toggle-checkbox-top-bottom-padding,
+    $left-right-padding: $un-toggle-checkbox-left-right-padding,
+    $checked-color: $un-toggle-checkbox-checked-color,
+    $unchecked-color: $un-toggle-checkbox-unchecked-color,
+    $round-color: $un-toggle-checkbox-round-color,
+    $label-line-height: $un-toggle-checkbox-label-line-height,
+    $label-padding-left: $un-toggle-checkbox-label-padding-left,
+    $label-font-color: $color-primary-1-2
+  );
+}

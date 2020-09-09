@@ -1,0 +1,71 @@
+$ui-name: 'un-fontbutton';
+
+@include extjs-button-medium-ui(
+  $ui: $ui-name,
+  $background-color: transparent,
+  $icon-size: $un-font-button-medium-height,
+  $border-width: 0,
+  $border-radius: 0,
+  $padding: 0,
+  $inner-border-width: 0,
+  $inner-border-width-over: 0,
+  $inner-border-width-focus: 0,
+  $inner-border-width-pressed: 0,
+  $inner-border-width-focus-over: 0,
+  $inner-border-width-focus-pressed: 0,
+  $inner-border-width-disabled: 0
+);
+
+@include extjs-button-small-ui(
+  $ui: $ui-name,
+  $background-color: transparent,
+  $icon-size: $un-font-button-small-height,
+  $border-width: 0,
+  $border-radius: 0,
+  $padding: 0,
+  $inner-border-width: 0,
+  $inner-border-width-over: 0,
+  $inner-border-width-focus: 0,
+  $inner-border-width-pressed: 0,
+  $inner-border-width-focus-over: 0,
+  $inner-border-width-focus-pressed: 0,
+  $inner-border-width-disabled: 0
+);
+
+@include extjs-button-large-ui(
+  $ui: $ui-name,
+  $background-color: transparent,
+  $icon-size: $un-font-button-large-height,
+  $border-width: 0,
+  $border-radius: 0,
+  $padding: 0,
+  $inner-border-width: 0,
+  $inner-border-width-over: 0,
+  $inner-border-width-focus: 0,
+  $inner-border-width-pressed: 0,
+  $inner-border-width-focus-over: 0,
+  $inner-border-width-focus-pressed: 0,
+  $inner-border-width-disabled: 0
+);
+
+.x-btn-#{$ui-name} {
+  &-small {
+    font-size: $un-font-button-small-height;
+  }
+
+  &-medium {
+    font-size: $un-font-button-medium-height;
+  }
+
+  &-large {
+    font-size: $un-font-button-large-height;
+  }
+}
+
+[class^="x-btn-un-fontbutton-"], [class*=" x-btn-un-fontbutton-"] {
+  .x-btn-icon-el {
+    color: $un-font-button-color;
+    // fix отображения иконки в firefox - подняли на 1px вверх, иначе съедается 1px изображения
+    margin-bottom: 1px;
+  }
+}

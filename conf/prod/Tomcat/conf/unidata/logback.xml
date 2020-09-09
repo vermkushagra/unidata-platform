@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+By default Logback rescan configuration for changes every 1 minute
+http://logback.qos.ch/manual/configuration.html#autoScan
+ -->
+<configuration scan="true">
+    <logger name="net.sf.ehcache" level="INFO"/>
+    <logger name="org.springframework.web.servlet" level="INFO"/>
+    <logger name="org.apache.cxf" level="INFO" />
+    <!-- Custom CXF messages interceptor -->
+    <logger name="com.unidata.mdm.backend.util.interceptor" level="INFO"/>
+
+    <logger name="com.unidata" level="INFO"/>
+    <logger name="com.unidata.mdm.backend.service.job" level="DEBUG"/>
+
+    <!-- Disable Spring JdbcTemplate logging (produce too much debug logs)  -->
+    <logger name="com.unidata.mdm.backend.jdbc" level="WARN"/>
+    <logger name="com.unidata.mdm.backend.dao" level="WARN"/>
+
+    <logger name="UNIDATA_REST_CLIENT" level="ALL">
+        <appender-ref ref="CLIENT_LOG_FILE" />
+    </logger>
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+    <appender name="CLIENT_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${catalina.base}/logs/unidata_frontend.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${catalina.base}/logs/closed/unidata_frontend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- keep 60 days -->
+            <maxHistory>60</maxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%-50(%date{ISO8601} [%thread]) %-55([%mdc{request_uuid:--}] [%mdc{credential:--}]) %-5level %logger{48}.%method:%line - %msg%n</pattern>
+        </encoder>
+        <filter class="com.unidata.mdm.backend.util.LoggingFilter">
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="BACKEND_LOG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <file>${catalina.base}/logs/unidata_backend.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${catalina.base}/logs/closed/unidata_backend.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- keep 60 days -->
+            <maxHistory>60</maxHistory>
+            <!-- or whenever the file size reaches 100MB -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%-50(%date{ISO8601} [%thread]) %-55([%mdc{request_uuid:--}] [%mdc{credential:--}]) %-5level %logger{48}.%method:%line - %msg%n</pattern>
+        </encoder>
+        <filter class="com.unidata.mdm.backend.util.LoggingFilter">
+            <onMatch>DENY</onMatch>
+            <onMismatch>ACCEPT</onMismatch>
+        </filter>
+    </appender>
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-50(%date{ISO8601} [%thread]) %-55([%mdc{request_uuid:--}] [%mdc{credential:--}]) %-5level %logger{48}.%method:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="BACKEND_LOG_FILE"/>
+        <appender-ref ref="CLIENT_LOG_FILE"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

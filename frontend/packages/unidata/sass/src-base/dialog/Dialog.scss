@@ -1,0 +1,21 @@
+$baseCls: 'un-dialog-body';
+.#{$baseCls} {
+  padding : 16px 0 16px 0;
+
+  .un-dialog-body-icon {
+    font-size: 37px;
+    color: #cc6666;
+    padding-left: 6px;
+    padding-right:  16px;
+    padding-top: 3px;
+    display:  inline-block;
+    vertical-align: top;
+  }
+
+  .un-dialog-body-text {
+    line-height: 1.6;
+    display: inline-block;
+    width: 290px;
+    vertical-align: top;
+  }
+}

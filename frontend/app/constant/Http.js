@@ -1,0 +1,85 @@
+/**
+ * Константы кодов ответа http сервера
+ *
+ * @date 2015-11-24
+ * @author Mаrshalkin Ivan
+ */
+
+Ext.define('Unidata.constant.Http', {
+    singleton: true,
+
+    // 1xx: Informational (информационные)
+    CONTINUE: 100,                        // (продолжай)
+    SWITCHING_PROTOCOLS: 101,             // (переключение протоколов)
+    PROCESSING: 102,                      // (идёт обработка)
+    NAME_NOT_RESOLVED: 105,               // (не удается преобразовать DNS-адрес сервера)
+
+    // 2xx: Success (успешно)
+    OK: 200,                              // (хорошо)
+    CREATED: 201,                         // (создано)
+    ACCEPTED: 202,                        // (принято)
+    NONAUTHORITATIVE_INFORMATION: 203,    // (информация не авторитетна)
+    NO_CONTENT: 204,                      // (нет содержимого)
+    RESET_CONTENT: 205,                   // (сбросить содержимое)
+    PARTIAL_CONTENT: 206,                 // (частичное содержимое)
+    MULTISTATUS: 207,                     // (многостатусный)
+    IM_USED: 226,                         // (использовано IM)
+
+    // 3xx: Redirection (перенаправление)
+    MULTIPLE_CHOICES: 300,                // (множество выборов)
+    MOVED_PERMANENTLY: 301,               // (перемещено навсегда)
+    MOVED_TEMPORARILY: 302,               // (перемещено временно)
+    SEE_OTHER: 303,                       // (смотреть другое)
+    NOT_MODIFIED: 304,                    // (не изменялось)
+    USE_PROXY: 305,                       // (использовать прокси)
+    // 306                                зарезервировано (код использовался только в ранних спецификациях)
+    TEMPORARY_REDIRECT: 307,              // (временное перенаправление)
+
+    //4xx: Client Error (ошибка клиента)
+    BAD_REQUEST: 400,                     // (плохой, негодный запрос)
+    UNAUTHORIZED: 401,                    // (неавторизован)
+    PAYMENT_REQUIRED: 402,                // (необходима оплата)
+    FORBIDDEN: 403,                       // (запрещено)
+    NOT_FOUND: 404,                       // (не найдено)
+    METHOD_NOT_ALLOWED: 405,              // (метод не поддерживается)
+    NOT_ACCEPTABLE: 406,                  // (неприемлемо)
+    PROXY_AUTHENTICATION_REQUIRED: 407,   // (необходима аутентификация прокси)
+    REQUEST_TIMEOUT: 408,                 // (истекло время ожидания)
+    CONFLICT: 409,                        // (конфликт)
+    GONE: 410,                            // (удалён)
+    LENGTH_REQUIRED: 411,                 // (необходима длина)
+    PRECONDITION_FAILED: 412,             // (условие ложно)
+    REQUEST_ENTITY_TOO_LARGE: 413,        // (размер запроса слишком велик)
+    REQUESTURI_TOO_LARGE: 414,            // (запрашиваемый URI слишком длинный)
+    UNSUPPORTED_MEDIA_TYPE: 415,          // (неподдерживаемый тип данных)
+    REQUESTED_RANGE_NOT_SATISFIABLE: 416, // (запрашиваемый диапазон не достижим)
+    EXPECTATION_FAILED: 417,              // (ожидаемое неприемлемо)
+    IM_A_TEAPOT: 418,                     // (я - чайник)
+    UNPROCESSABLE_ENTITY: 422,            // (необрабатываемый экземпляр)
+    LOCKED: 423,                          // (заблокировано)
+    FAILED_DEPENDENCY: 424,               // (невыполненная зависимость)
+    UNORDERED_COLLECTION: 425,            // (неупорядоченный набор)
+    UPGRADE_REQUIRED: 426,                // (необходимо обновление)
+    PRECONDITION_REQUIRED: 428,           // (необходимо предусловие)
+    TOO_MANY_REQUESTS: 429,               // (слишком много запросов)
+    REQUEST_HEADER_FIELDS_TOO_LARGE: 431, // (поля заголовка запроса слишком большие)
+    REQUESTED_HOST_UNAVAILABLE: 434,      // (Запрашиваемый адрес недоступен)
+    RETRY_WITH: 449,                      // (повторить с)
+    UNAVAILABLE_FOR_LEGAL_REASONS: 451,   // (недоступно по юридическим причинам)
+    UNRECOVERABLE_ERROR: 456,             // (некорректируемая ошибка)
+    // 499                                Используется Nginx, когда клиент закрывает соединение до получения ответа
+
+    // 5xx: Server Error (ошибка сервера)
+    INTERNAL_SERVER_ERROR: 500,           // (внутренняя ошибка сервера)
+    NOT_IMPLEMENTED: 501,                 // (не реализовано)
+    BAD_GATEWAY: 502,                     // (плохой, ошибочный шлюз)
+    SERVICE_UNAVAILABLE: 503,             // (сервис недоступен)
+    GATEWAY_TIMEOUT: 504,                 // (шлюз не отвечает)
+    HTTP_VERSION_NOT_SUPPORTED: 505,      // (версия HTTP не поддерживается)
+    VARIANT_ALSO_NEGOTIATES: 506,         // (вариант тоже проводит согласование)
+    INSUFFICIENT_STORAGE: 507,            // (переполнение хранилища)
+    LOOP_DETECTED: 508,                   // (обнаружена петля)
+    BANDWIDTH_LIMIT_EXCEEDED: 509,        // (исчерпана пропускная ширина канала)
+    NOT_EXTENDED: 510,                    // (не расширено)
+    NETWORK_AUTHENTICATION_REQUIRED: 511  // (требуется сетевая аутентификация)
+});

@@ -1,0 +1,1 @@
+alter table rule_group_linker rename to matching_group_matching_rule;

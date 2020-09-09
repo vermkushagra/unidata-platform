@@ -1,0 +1,31 @@
+$baseCls: '.un-dqerrors-chart';
+
+#{$baseCls} {
+
+  .un-chart-total-count {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    font-family: $font-family-1;
+    text-align: center;
+    line-height: 150px;
+  }
+
+  .un-chart-total-count-large {
+    font-size: 28px
+  }
+
+  .un-chart-total-count-medium {
+    font-size: 24px
+  }
+
+  .un-chart-total-count-small {
+    font-size: 20px
+  }
+
+  .x-btn {
+    .x-btn-inner {
+      color: #333333 !important;
+    }
+  }
+}

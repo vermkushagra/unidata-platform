@@ -1,0 +1,670 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!-- BOF SERVICE -->
+    <entry key="getUnidataIndexesSQL">
+        <![CDATA[
+            select ci.relname as name, i.indexrelid as id from pg_index i, pg_class ct, pg_class ci
+            where ct.relname = ?
+            and i.indrelid = ct.oid
+            and i.indexrelid = ci.oid
+            and ci.relname like 'ix_%'
+        ]]>
+    </entry>
+    <!-- EOF SERVICE -->
+    <!-- BOF RECORDS CREATE -->
+    <entry key="createRecordsInsertsEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_i (
+                id uuid,
+                name character varying(256),
+                version integer,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRecordsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRecordsInsertsOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_i (
+                id uuid,
+                name character varying(256),
+                version integer,
+                source_system character varying(256),
+                external_id character varying(512),
+                etalon_id uuid,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                is_enrichment boolean default false
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRecordsUpdatesOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRecordsOriginsVistoryTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_v (
+                id uuid,
+                origin_id uuid,
+                revision integer,
+                valid_from timestamp with time zone,
+                valid_to timestamp with time zone,
+                data_a text,
+                data_b bytea,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state,
+                shift data_shift,
+                operation_id character(36),
+                major integer,
+                minor integer,
+                operation_type vistory_operation_type
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <!-- Alter for row id. -->
+    <entry key="alterRowIdRecordsInsertsEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRecordsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRecordsInsertsOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRecordsUpdatesOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRecordsOriginsVistoryTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_v add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <!-- Records data -->
+    <entry key="insertRecordsEtalonsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_etalons_i',
+                'etalons',
+                'row_id',
+                'id, name, version, create_date, created_by, status, approval',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateRecordsEtalonsSQL">
+        <![CDATA[
+            update etalons set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_etalons_u u
+            where u.id = etalons.id
+        ]]>
+    </entry>
+    <entry key="insertRecordsOriginsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_i',
+                'origins',
+                'row_id',
+                'id, name, version, source_system, external_id, etalon_id, create_date, created_by, status, is_enrichment',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateRecordsOriginsSQL">
+        <![CDATA[
+            update origins set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_origins_u u
+            where u.id = origins.id
+        ]]>
+    </entry>
+    <entry key="insertRecordsOriginsVistorySQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_v',
+                'origins_vistory',
+                'row_id',
+                'id, origin_id, revision, valid_from, valid_to, data_a, data_b, create_date, created_by, status, approval, shift, operation_id, major, minor, operation_type',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <!-- RECORDS DROP -->
+    <entry key="dropRecordsInsertsEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_i
+        ]]>
+    </entry>
+    <entry key="dropRecordsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_u
+        ]]>
+    </entry>
+    <entry key="dropRecordsInsertsOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_i
+        ]]>
+    </entry>
+    <entry key="dropRecordsUpdatesOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_u
+        ]]>
+    </entry>
+    <entry key="dropRecordsOriginsVistoryTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_v
+        ]]>
+    </entry>
+    <!-- RECORDS TRUNCATE -->
+    <entry key="truncateRecordsInsertsEtalonsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_etalons_i
+        ]]>
+    </entry>
+    <entry key="truncateRecordsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_etalons_u
+        ]]>
+    </entry>
+    <entry key="truncateRecordsInsertsOriginsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_i
+        ]]>
+    </entry>
+    <entry key="truncateRecordsUpdatesOriginsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_u
+        ]]>
+    </entry>
+    <entry key="truncateRecordsOriginsVistoryTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_v
+        ]]>
+    </entry>
+    <!-- CLASSIFIERS CREATE -->
+    <entry key="createClassifiersInsertsEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_classifiers_i (
+                id uuid,
+                name character varying(256),
+                etalon_id_record uuid,
+                version integer,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createClassifiersUpdatesEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_classifiers_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createClassifiersInsertsOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_classifiers_i (
+                id uuid,
+                etalon_id uuid,
+                name character varying(256),
+                node_id character varying(2044),
+                origin_id_record uuid,
+                version integer,
+                source_system character varying(256),
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createClassifiersUpdatesOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_classifiers_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createClassifiersOriginsVistoryTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_classifiers_v (
+                id uuid,
+                origin_id uuid,
+                revision integer,
+                valid_from timestamp with time zone,
+                valid_to timestamp with time zone,
+                data_a text,
+                data_b bytea,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state,
+                operation_id character varying(36),
+                major integer,
+                minor integer
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <!-- Alter for row id. -->
+    <entry key="alterRowIdClassifiersInsertsEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_classifiers_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdClassifiersUpdatesEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_classifiers_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdClassifiersInsertsOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_classifiers_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdClassifiersUpdatesOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_classifiers_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdClassifiersOriginsVistoryTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_classifiers_v add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <!-- CLASSIFIERS DATA -->
+    <entry key="insertClassifiersEtalonsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_etalons_classifiers_i',
+                'etalons_classifiers',
+                'row_id',
+                'id, name, etalon_id_record, version, create_date, created_by, status, approval',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateClassifiersEtalonsSQL">
+        <![CDATA[
+            update etalons_classifiers set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_etalons_classifiers_u u
+            where u.id = etalons_classifiers.id
+        ]]>
+    </entry>
+    <entry key="insertClassifiersOriginsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_classifiers_i',
+                'origins_classifiers',
+                'row_id',
+                'id, etalon_id, name, node_id, origin_id_record, version, source_system, create_date, created_by, status',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateClassifiersOriginsSQL">
+        <![CDATA[
+            update origins_classifiers set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_origins_classifiers_u u
+            where u.id = origins_classifiers.id
+        ]]>
+    </entry>
+    <entry key="insertClassifiersOriginsVistorySQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_classifiers_v',
+                'origins_classifiers_vistory',
+                'row_id',
+                'id, origin_id, revision, valid_from, valid_to, data_a, data_b, create_date, created_by, status, approval, operation_id, major, minor',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <!-- CLASSIFIERS DROP -->
+    <entry key="dropClassifiersInsertsEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_classifiers_i
+        ]]>
+    </entry>
+    <entry key="dropClassifiersUpdatesEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_classifiers_u
+        ]]>
+    </entry>
+    <entry key="dropClassifiersInsertsOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_classifiers_i
+        ]]>
+    </entry>
+    <entry key="dropClassifiersUpdatesOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_classifiers_u
+        ]]>
+    </entry>
+    <entry key="dropClassifiersOriginsVistoryTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_classifiers_v
+        ]]>
+    </entry>
+    <!-- CLASSIFIERS TRUNCATE -->
+    <entry key="truncateClassifiersInsertsEtalonsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_etalons_classifiers_i
+        ]]>
+    </entry>
+    <entry key="truncateClassifiersUpdatesEtalonsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_etalons_classifiers_u
+        ]]>
+    </entry>
+    <entry key="truncateClassifiersInsertsOriginsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_classifiers_i
+        ]]>
+    </entry>
+    <entry key="truncateClassifiersUpdatesOriginsTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_classifiers_u
+        ]]>
+    </entry>
+    <entry key="truncateClassifiersOriginsVistoryTableSQL">
+        <![CDATA[
+            truncate unidata_data_import._{runId}_origins_classifiers_v
+        ]]>
+    </entry>
+    <!-- RELATIONS CREATE -->
+    <entry key="createRelationsInsertsEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_relations_i (
+                id uuid,
+                name character varying(256),
+                etalon_id_from uuid,
+                etalon_id_to uuid,
+                version integer,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRelationsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_etalons_relations_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRelationsInsertsOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_relations_i (
+                id uuid,
+                etalon_id uuid,
+                name character varying(256),
+                origin_id_from uuid,
+                origin_id_to uuid,
+                version integer,
+                source_system character varying(256),
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status
+            ) with (
+                oids = false,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRelationsUpdatesOriginsTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_relations_u (
+                id uuid,
+                update_date timestamp with time zone,
+                updated_by character varying(256),
+                status record_status
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <entry key="createRelationsOriginsVistoryTableSQL">
+        <![CDATA[
+            create unlogged table unidata_data_import._{runId}_origins_relations_v (
+                id uuid,
+                origin_id uuid,
+                revision integer,
+                valid_from timestamp with time zone,
+                valid_to timestamp with time zone,
+                data_a text,
+                data_b bytea,
+                create_date timestamp with time zone,
+                created_by character varying(256),
+                status record_status,
+                approval approval_state,
+                operation_id character varying(36),
+                major integer,
+                minor integer,
+                operation_type vistory_operation_type
+            ) with (
+                oids = true,
+                toast.autovacuum_enabled = false
+            )
+        ]]>
+    </entry>
+    <!-- Alter for row id. -->
+    <entry key="alterRowIdRelationsInsertsEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_relations_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRelationsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_etalons_relations_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRelationsInsertsOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_relations_i add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRelationsUpdatesOriginsTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_relations_u add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <entry key="alterRowIdRelationsOriginsVistoryTableSQL">
+        <![CDATA[
+            alter table unidata_data_import._{runId}_origins_relations_v add column row_id bigserial primary key
+        ]]>
+    </entry>
+    <!-- RELATIONS INSERT/UPDATE -->
+    <entry key="insertRelationsEtalonsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_etalons_relations_i',
+                'etalons_relations',
+                'row_id',
+                'id, name, version, etalon_id_from, etalon_id_to, create_date, created_by, status, approval',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateRelationsEtalonsSQL">
+        <![CDATA[
+            update etalons_relations set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_etalons_relations_u u
+            where u.id = etalons_relations.id
+        ]]>
+    </entry>
+    <entry key="insertRelationsOriginsSQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_relations_i',
+                'origins_relations',
+                'row_id',
+                'id, name, version, source_system, origin_id_from, origin_id_to, etalon_id, create_date, created_by, status',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <entry key="updateRelationsOriginsSQL">
+        <![CDATA[
+            update origins_relations set
+                update_date = u.update_date,
+                updated_by = u.updated_by,
+                status = u.status
+            from
+                unidata_data_import._{runId}_origins_relations_u u
+            where u.id = origins_relations.id
+        ]]>
+    </entry>
+    <entry key="insertRelationsOriginsVistorySQL">
+        <![CDATA[
+            select ud_move_from_import_tables(
+                '_{runId}_origins_relations_v',
+                'origins_relations_vistory',
+                'row_id',
+                'id, origin_id, revision, valid_from, valid_to, data_a, data_b, create_date, created_by, status, approval, operation_id, major, minor, operation_type',
+                ?,
+                ?,
+                'unidata_data_import',
+                'public')
+        ]]>
+    </entry>
+    <!-- RELATIONS DROP -->
+    <entry key="dropRelationsInsertsEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_relations_i
+        ]]>
+    </entry>
+    <entry key="dropRelationsUpdatesEtalonsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_etalons_relations_u
+        ]]>
+    </entry>
+    <entry key="dropRelationsInsertsOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_relations_i
+        ]]>
+    </entry>
+    <entry key="dropRelationsUpdatesOriginsTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_relations_u
+        ]]>
+    </entry>
+    <entry key="dropRelationsOriginsVistoryTableSQL">
+        <![CDATA[
+            drop table if exists unidata_data_import._{runId}_origins_relations_v
+        ]]>
+    </entry>
+</properties>

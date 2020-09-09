@@ -1,0 +1,24 @@
+$baseCls: '.un-abstract-attribute-tablet';
+
+#{$baseCls}-tip-title {
+  i {
+    margin-left: 8px;
+    font-size: 13px;
+  }
+}
+#{$baseCls}-tip-description, #{$baseCls}-tip-diff {
+  border-top: solid 1px #cacaca;
+  margin-top: 5px;
+  font-size: 13px;
+}
+#{$baseCls}-tip-value {
+  font-weight: bold;
+  font-size: 13px;
+  font-family: Arial, serif;
+}
+#{$baseCls}-tip-diff, #{$baseCls}-tip-description, #{$baseCls}-tip-value {
+  padding-top: 3px;
+}
+#{$baseCls}-tip-title i, #{$baseCls}-tip-description {
+  color: #6b6b6b;
+}

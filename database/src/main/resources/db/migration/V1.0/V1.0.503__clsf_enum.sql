@@ -1,0 +1,1 @@
+ALTER TABLE clsf_node_attr ADD COLUMN enum_data_type character varying(256);

@@ -1,0 +1,104 @@
+$ui-name: 'un-text-toggle-button';
+$un-text-toggle-button-color-1: #333333;
+$un-text-toggle-button-color-2: #507fba;
+
+@include extjs-button-medium-ui(
+        $ui: $ui-name,
+        $background-color: transparent,
+        $border-width: 0,
+        $border-radius: 0,
+        $padding: 0 0 5px 0,
+        $inner-border-width: 0,
+        $inner-border-width-over: 0,
+        $inner-border-width-focus: 0,
+        $inner-border-width-pressed: 0,
+        $inner-border-width-focus-over: 0,
+        $inner-border-width-focus-pressed: 0,
+        $inner-border-width-disabled: 0
+);
+
+@include extjs-button-small-ui(
+        $ui: $ui-name,
+        $background-color: transparent,
+        $border-width: 0,
+        $border-radius: 0,
+        $padding: 0 0 5px 0,
+        $inner-border-width: 0,
+        $inner-border-width-over: 0,
+        $inner-border-width-focus: 0,
+        $inner-border-width-pressed: 0,
+        $inner-border-width-focus-over: 0,
+        $inner-border-width-focus-pressed: 0,
+        $inner-border-width-disabled: 0
+);
+
+.x-btn-#{$ui-name} {
+
+  &-small,
+  &-medium,
+  &-large {
+    position: relative;
+    padding-right: 10px;
+
+    // colors
+    .x-btn-inner,
+    .x-btn-icon-el {
+      color: $un-text-toggle-button-color-1 !important;
+    }
+
+    &:after {
+      color: $un-text-toggle-button-color-1 !important;
+    }
+
+    &.x-btn-pressed {
+      .x-btn-inner,
+      .x-btn-icon-el {
+        color: $un-text-toggle-button-color-2 !important;
+      }
+    }
+
+    .x-btn-inner,
+    .x-btn-icon-el {
+    }
+
+    .x-btn-inner {
+      text-transform: uppercase;
+      text-decoration: underline;
+      padding-bottom: 2px;
+    }
+
+    &.x-btn-pressed {
+
+      .x-btn-inner {
+        text-decoration: none;
+      }
+    }
+
+    &:after {
+      content: '/';
+      position: absolute;
+      top: 0;
+      right: 3px;
+      line-height: 1em;
+    }
+
+    &:last-child {
+      padding-right: 0;
+      margin-right: 0;
+
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &-small {
+  }
+
+  &-medium {
+  }
+
+  &-large {
+  }
+}
+

@@ -1,0 +1,17 @@
+$baseCls: 'un-lookup-attribute-search-wnd';
+
+.#{$baseCls} {
+  .disallow-record-select {
+    color: lightgrey;
+  }
+
+  .un-title {
+    color: black;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: "Open Sans";
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+}
+

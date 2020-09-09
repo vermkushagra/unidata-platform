@@ -1,0 +1,8 @@
+/*
+* Специальные стили для раздела "Классификация"
+*/
+$baseCls: '.un-section';
+$section: 'classifier';
+$section-color: $un-color-section-classifier;
+
+@include set-section-color($baseCls, $section, $section-color);

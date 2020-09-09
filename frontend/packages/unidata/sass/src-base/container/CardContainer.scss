@@ -1,0 +1,10 @@
+$ui-name: 'un-cardcontainer';
+
+$borderColor: rgb(220, 220, 220);
+$borderRadius: 6px;
+
+.x-container.x-container-un-cardcontainer {
+  border: 1px solid $borderColor;
+  border-radius: 6px;
+  overflow: hidden;
+}

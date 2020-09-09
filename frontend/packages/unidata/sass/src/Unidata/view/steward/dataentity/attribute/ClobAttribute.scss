@@ -1,0 +1,17 @@
+$baseCls: 'un-dataentity-attribute';
+$un-type: 'clob';
+$un-max-width: 200px;
+
+.#{$baseCls}-input-#{$un-type} {
+  .#{$prefix}form-text-wrap {
+    max-width: $un-max-width;
+    >div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .#{$prefix}form-trigger-wrap {
+    padding-right: 3px;
+  }
+}

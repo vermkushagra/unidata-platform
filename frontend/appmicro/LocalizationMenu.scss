@@ -1,0 +1,134 @@
+$bgColor: white;
+$borderColor: #cccccc;
+$fontSize: 10px;
+$fontColor: #666666;
+
+.un-local-switch {
+  position: relative;
+  margin: 0 auto;
+  float: right;
+
+  .un-menu-dot {
+    background-color: $bgColor;
+    width: 40px;
+    height: 40px;
+    color: #888888;
+    padding: 0 0 0 0px;
+    font: bold 20px Helvetica, sans-serif;
+    line-height: 41px;
+    cursor: default;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+
+    border-left: 1px solid $borderColor;
+    margin-top: 10px;
+
+    label {
+      height: 40px;
+      width: 20px;
+      display: inline-block;
+    }
+  }
+
+  .un-menu-toggle-text:hover {
+    cursor: pointer; color: #555555;
+  }
+  .un-menu-toggle-text:before {
+    content: '\02807';
+  }
+
+  .menu {
+    max-width: 100px;
+    left: -64px;
+    display: block;
+    position: absolute;
+    z-index: 100;
+  }
+
+  .menu a {
+    display: block;
+    background-color: $bgColor;
+    padding: 5px 10px 5px 45px;
+    font: bold 13px Helvetica, sans-serif;
+    text-align: left;
+    text-decoration: none;
+    color: $fontColor;
+    font-size: 10px;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .menu a {
+    .icon-selected {
+      display: none;
+    }
+  }
+
+  .menu a.selected {
+    .icon-selected {
+      display: inline-block;
+    }
+  }
+
+  .menu a:nth-child(2) {
+  }
+
+  .menu a:last-child {
+  }
+
+  .menu a:hover {
+    color: #555555;
+  }
+
+  .icon {
+    position: absolute;
+    left: 25px;
+    color: $fontColor;
+    width: 16px;
+    height: 16px;
+    margin-top: 2px;
+    background-image: url("resources/flags/flags16.png");
+    background-repeat: no-repeat;
+    background-position: 20px 0;
+  }
+
+  .icon-selected {background-position: 0 0; left: 5px;}
+  .icon-flag-ru { background-position: 0 -32px; }
+  .icon-flag-en { background-position: 0 -16px; }
+
+  .menu-wrap {
+    border-radius: 4px;
+    border: 1px solid $borderColor;
+    overflow: hidden;
+  }
+
+  .arrow {
+    position: absolute;
+    top: -6px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    margin-left: 15px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 7px solid $borderColor;
+  }
+
+  .arrow-down {
+    position: absolute;
+    top: -4px;
+    right: 10px;
+    width: 0;
+    height: 0;
+    margin-left: 15px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 7px solid $bgColor;
+  }
+
+}

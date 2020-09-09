@@ -1,0 +1,19 @@
+$baseCls: 'un-dq-rule-editor';
+
+.#{$baseCls} {
+  >.#{$prefix}panel-body {
+    background: transparent;
+    >.#{$prefix}box-inner {
+      >.#{$prefix}box-target {
+        >.#{$prefix}panel:not(:first-child) {
+          margin-top: 10px;
+        }
+        >.#{$prefix}panel {
+          >.#{$prefix}panel-body {
+            background-color: white;
+          }
+        }
+      }
+    }
+  }
+}

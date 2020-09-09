@@ -1,0 +1,54 @@
+@mixin un-form-trigger($name, $font-family, $content) {
+  .un-form-#{$name}-trigger {
+    background-image: none !important;
+    vertical-align: middle;
+    text-align: center;
+  }
+
+  .un-form-#{$name}-trigger:after {
+    font-family: $font-family;
+    content: $content;
+  }
+}
+
+// un-form-edit-trigger
+@include un-form-trigger('edit', $font-family-linearicons, '\e934');
+
+// un-form-edit2-trigger
+@include un-form-trigger('edit2', $font-family-linearicons, '\e612');
+
+// un-form-magnifier-trigger
+@include un-form-trigger('magnifier', $font-family-linearicons, '\e925');
+
+// un-form-detail-trigger
+@include un-form-trigger('detail', $font-family-linearicons, '\e99b');
+
+//un-form-clear-trigger
+@include un-form-trigger('clear', $font-family-linearicons, '\e92a');
+
+
+[class^="icon-"].x-form-trigger, [class*=" icon-"].x-form-trigger {
+  background-image: none !important;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.un-form-edit2-trigger {
+  padding-top: 2px;
+}
+
+.un-form-edit2-trigger:after {
+  font-size: 15px;
+  color: #555;
+}
+
+.un-form-edit2-trigger.#{$prefix}form-trigger-over:after {
+  color: #000;
+}
+
+.un-form-warning-trigger:before {
+  font-family: $font-family-linearicons;
+  font-size: 15px;
+  content: "\e955" !important;
+  color: #993300;
+}

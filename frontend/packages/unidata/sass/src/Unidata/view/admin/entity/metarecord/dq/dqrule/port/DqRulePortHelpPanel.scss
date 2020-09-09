@@ -1,0 +1,102 @@
+$baseCls: 'un-dq-rule-port-help-panel';
+
+$un-dq-rule-help-panel-border-color: #cccccc;
+$un-dq-rule-help-panel-important-text: #507fba;
+
+.#{$baseCls} {
+  border: 1px solid $un-dq-rule-help-panel-border-color;
+  border-radius: 3px;
+
+  &:after {
+    content: "\e957";
+    font-family: $font-family-linearicons;
+    font-size: 20px;
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    opacity: 0.3;
+  }
+
+  .x-tab-bar {
+    line-height: 32px;
+    background-color: #E4E4E4;
+  }
+
+  .x-tab {
+    font-size: 12px;
+    text-transform: uppercase;
+    border: 0;
+    background-color: transparent !important;
+    padding: 4px 0;
+
+    .x-tab-inner {
+      text-decoration: underline;
+      color: #999999;
+    }
+  }
+
+  .x-tab-active {
+    .x-tab-inner {
+      text-decoration: unset;
+      color: $un-dq-rule-help-panel-important-text !important;
+    }
+  }
+
+  .un-dq-rule-port-example-syntax {
+    padding: 0 15px 15px 15px;
+    font-size: 12px;
+    b {
+      font-weight: 600;
+      color: $un-dq-rule-help-panel-important-text;
+      font-size: 13px;
+    }
+    .un-dq-rule-port-example-syntax-el {
+      padding: 15px 0 0 0;
+    }
+
+  }
+  .x-panel {
+    margin: 0;
+  }
+
+  .x-tool-expand-bottom,
+  .x-tool-collapse-top {
+    text-align: center;
+  }
+
+  .x-tool-collapse-top::before {
+    content: '\e93a';
+    font-size: 12px;
+    font-family: $font-family-linearicons;
+    vertical-align: middle;
+  }
+
+  .x-tool-expand-bottom::before {
+    content: '\e939';
+    font-size: 12px;
+    font-family: $font-family-linearicons;
+    vertical-align: middle;
+  }
+
+  .x-accordion-item {
+    border-top: 1px solid $un-dq-rule-help-panel-border-color;
+  }
+
+  //add border for expanded element
+  .x-accordion-body {
+    border-top: 1px solid $un-dq-rule-help-panel-border-color !important;
+  }
+
+  .x-accordion-layout-ct {
+    padding: 0;
+  }
+
+  .x-panel-header {
+    background-color: transparent;
+  }
+
+  .x-panel-header-title {
+    color: $un-dq-rule-help-panel-important-text;
+  }
+
+}

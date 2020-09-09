@@ -1,0 +1,75 @@
+$baseCls: '.un-array-attribute-read';
+
+#{$baseCls} {
+
+  .x-form-trigger-wrap {
+    table-layout: fixed;
+  }
+
+  .x-tagfield-item {
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 25%;
+    margin: 0;
+    padding: 0 !important;
+    background-color: transparent;
+    border: none;
+
+    &:hover {
+      background-color: transparent !important;
+      border: none !important;
+
+      .x-tagfield-item-text {
+        background-color: #e4e4e4;
+        border-color: #999999;
+      }
+    }
+
+    &.x-tagfield-item-selected-un {
+      background-color: transparent !important;
+      border: none !important;
+
+      .x-tagfield-item-text {
+        border-color: #157fcc !important;
+        background-color: #c4e2f8 !important;
+        color: black !important;
+      }
+    }
+  }
+
+  .x-tagfield-item-text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    border-radius: 3px;
+    background-color: #f5f5f5;
+    border: 1px solid #dcdcdc;
+    padding: 0 5px 0 5px !important;
+    margin: 1px 4px 1px 0;
+  }
+
+  //.un-array-attribute-fake-tag {
+  //  .x-tagfield-item:hover .x-tagfield-item-text,
+  //  .x-tagfield-item-text {
+  //    padding-top: 1px !important;
+  //    background-color: transparent !important;
+  //    border: none;z
+  //  }
+  //
+  //  &-empty {
+  //    max-width: none;
+  //  }
+  //}
+
+  .un-dataentity-attribute-bottom-right {
+    margin-left: 0 !important;
+  }
+}
+
+#{$baseCls}-tagfield {
+  .x-form-trigger,
+  .x-tagfield-input,
+  .x-tagfield-item-close {
+    display: none !important;
+  }
+}

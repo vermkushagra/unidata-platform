@@ -1,0 +1,52 @@
+@mixin un-tooltip-ui(
+  $ui: null,
+
+  $ui-padding: $un-tooltip-padding,
+
+  $ui-font-family: $un-tooltip-font-family,
+  $ui-font-size: $un-tooltip-font-size,
+  $ui-font-color: $un-tooltip-font-color,
+
+  $ui-background-color: $un-tooltip-background-color,
+
+  $ui-border-style: $un-tooltip-border-style,
+  $ui-border-width: $un-tooltip-border-width,
+  $ui-border-color: $un-tooltip-border-color,
+  $ui-border-radius: $un-tooltip-border-radius,
+
+  $ui-shadow: $un-tooltip-shadow
+) {
+
+  $baseCls: '.un-tooltip';
+
+  #{$baseCls}-#{$ui} {
+    overflow: visible;
+    padding: $ui-padding;
+    font-family: $ui-font-family;
+    font-size: $ui-font-size;
+    color: $ui-font-color;
+
+    background: $ui-background-color;
+
+    border-style: $ui-border-style;
+    border-width: $ui-border-width;
+    border-color: $ui-border-color;
+
+    @if $ui-border-radius {
+      @include border-radius($ui-border-radius);
+    }
+
+    @if $ui-shadow {
+      @include box-shadow($ui-shadow);
+    }
+
+    #{$baseCls}-arrow {
+      position: absolute;
+      border-style: solid;
+    }
+  }
+}
+
+@include un-tooltip-ui(
+  $ui: 'default'
+);

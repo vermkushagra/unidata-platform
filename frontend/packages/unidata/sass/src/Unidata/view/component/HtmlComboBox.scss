@@ -1,0 +1,77 @@
+$baseCls: 'un-htmlcombo';
+
+.#{$baseCls} {
+
+  font-family: $font-family-1;
+  max-width: 700px;
+
+  .x-form-text-wrap {
+    position: relative;
+    padding: 3px 3px 0 4px;
+  }
+
+  .x-form-trigger.x-form-arrow-trigger {
+    display: none;
+  }
+}
+
+.#{$baseCls}-treeItem {
+  display: inline-block;
+  background-color: #dbdbdb;
+  padding: 1px 5px;
+  @include border-radius(3px);
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+
+  &:first-child {
+    margin-left: 0;
+  }
+}
+
+.#{$baseCls}-treeItem-icon {
+  margin-right: 4px;
+}
+
+.#{$baseCls}-treeItem-filter {
+  font-size: 12px;
+  color: #152784;
+  font-weight: normal;
+}
+
+.#{$baseCls}-treeItem-filter-value {
+  color: #006699;
+}
+
+.#{$baseCls}-treeItem-delimiter {
+  font-size: 10px;
+  font-family: $font-family-linearicons;
+  color: #333333;
+  margin: 0px 1px 1px 2px;
+  display: inline-block;
+  overflow: hidden;
+
+  &:before {
+    content: '\e93c';
+  }
+}
+
+
+.#{$baseCls}-value.x-form-text {
+  display: inline-block;
+  min-height: 12px;
+}
+
+.#{$baseCls}-placeholder {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  color: #ADADAD;
+
+  .x-form-empty-field + & {
+    display: block;
+  }
+}

@@ -1,0 +1,133 @@
+$ui-name: 'un-card';
+
+$un-card-background-color: $color-primary-2-0;
+$un-card-border-color: $color-primary-4-4;
+$un-card-border-width: 1px;
+
+@include extjs-panel-ui(
+  $ui: $ui-name,
+  $ui-header-background-color: change-color($un-card-background-color, $alpha: 0),
+  $ui-body-background-color: change-color($un-card-background-color, $alpha: 0),
+  $ui-ignore-frame-padding: true,
+  $ui-padding: 0,
+  $ui-border-color: $un-card-border-color,
+  $ui-border-radius: 6px,
+  $ui-border-width: $un-card-border-width,
+
+  $ui-header-inner-border-width: 0,
+  $ui-header-border-width: $un-card-border-width,
+  $ui-header-border-color: $un-card-border-color,
+  $ui-header-color: $color-primary-2-3,
+  $ui-header-padding: 8px 8px 8px 13px !important,
+  $ui-header-font-family: $font-family-2,
+  $ui-header-text-transform: uppercase,
+  $ui-header-font-size: 13px,
+  $ui-header-font-weight: bold
+);
+
+.x-panel-#{$ui-name} {
+  background-color: $un-card-background-color;
+
+  .#{$prefix}panel-header-title-#{$ui-name} > .#{$prefix}title-text-#{$ui-name} .un-simple-title-text {
+    font-weight: normal;
+    text-transform: none;
+  }
+
+  // у вложенной панельки
+  .x-panel-#{$ui-name} {
+    border: none !important;
+    -moz-border-radius: 0 !important;
+    -webkit-border-radius: 0 !important;
+    border-radius: 0 !important;
+
+    .x-panel-header-#{$ui-name} {
+      -moz-border-radius: 0 !important;
+      -webkit-border-radius: 0 !important;
+      border-radius: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      padding-bottom: 4px !important;
+      overflow: visible !important;
+    }
+
+    .x-panel-header-title-#{$ui-name} {
+      font-weight: normal;
+    }
+
+    //.x-btn-un-fontbutton-medium {
+    //  margin-left: 19px !important;
+    //}
+
+    .x-tool-collapse-el {
+      padding-bottom: 30px;
+      padding-left: 2px;
+      background-color: $un-card-background-color;
+      .#{$prefix}tool-img {
+        padding-right: 1px;
+      }
+    }
+      //>.x-panel-header {
+      //  >.x-box-inner{
+      //    >.x-box-target{
+      //      >.x-panel-header-title{
+      //        padding-left: 19px;
+      //      }
+      //    }
+      //  }
+      //}
+
+    .x-panel-body-#{$ui-name} {
+      padding: 8px 0 8px 18px;
+    }
+
+    .timeintervals-container {
+      margin-left: 15px
+    }
+  }
+
+  &-collapsed {
+  }
+
+  .x-tool-collapse-el {
+    .x-tool-img {
+      color: $color-primary-1-2;
+      opacity: unset !important;
+      font-family: $font-family-linearicons;
+      font-size: 11px;
+      line-height: 16px;
+      text-align: center;
+    }
+
+    .x-tool-expand-bottom:before,
+    .x-tool-collapse-top::before {
+      vertical-align: middle;
+    }
+
+    .x-tool-collapse-top::before,
+    .x-tool-expand-bottom:before {
+      content: '\e93a'; // icon-chevron-right
+    }
+
+    .x-tool-expand-bottom {
+      @include transform(rotate(-90deg));
+    }
+
+    .x-tool-collapse-top {
+
+    }
+  }
+}
+
+.x-panel-header-#{$ui-name} {
+  &-top {
+    top: 0 !important;
+  }
+
+  .x-btn {
+    margin-left: 8px;
+  }
+}
+
+.x-panel-body-#{$ui-name} {
+  padding: 8px 12px 8px 12px;
+}

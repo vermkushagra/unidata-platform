@@ -1,0 +1,13 @@
+$baseCls: '.un-relation-m2mrecord';
+
+#{$baseCls} {
+  .un-m2m-timeinterval {
+    .x-form-invalid-field {
+      color: #d94e37;
+
+      &::placeholder {
+        color: #d94e37;
+      }
+    }
+  }
+}

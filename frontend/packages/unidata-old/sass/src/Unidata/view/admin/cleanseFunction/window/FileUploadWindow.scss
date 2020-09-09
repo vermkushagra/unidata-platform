@@ -1,0 +1,13 @@
+.unidata-file-upload-window {
+  .p.success-loading {
+    color: green;
+  }
+
+  .file-upload-field .x-form-item-label, .file-upload-field .x-form-item-label-inner {
+    width: 300px !important;
+  }
+
+  .file-upload-field .x-form-text-wrap {
+    display: none !important;
+  }
+}

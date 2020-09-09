@@ -1,0 +1,20 @@
+$un-menu-item-animation-speed: $animation-speed;
+
+$un-menu-item-logo-size: 35px;
+
+$un-menu-item-height: 40px;
+$un-menu-item-width: 54px;
+
+$un-menu-item-inner-height: $un-menu-item-width;
+$un-menu-item-inner-pin-width: 28px;
+$un-menu-item-inner-icon-size: 32px;
+$un-menu-item-inner-icon-size-hover: 40px;
+
+$un-menu-item-group-arrow-width: 25px;
+
+$un-menu-item-colors:
+  $un-color-section-main,
+  $un-color-section-data,
+  $un-color-section-cluster,
+  $un-color-section-task,
+  $un-color-section-classifier;

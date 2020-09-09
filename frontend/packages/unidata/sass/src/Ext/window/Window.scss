@@ -1,0 +1,24 @@
+$un-tool-color: $color-primary-1-3;
+
+.x-window-header-title {
+  .x-title-text {
+    text-transform: uppercase;
+  }
+}
+
+.x-window {
+  .x-toolbar {
+    background-color: transparent;
+  }
+
+  .x-tool-img {
+    color: $un-tool-color;
+  }
+
+  .x-tool-close {
+    &:before {
+      font-family: $font-family-linearicons;
+      content: "\e92a";
+    }
+  }
+}

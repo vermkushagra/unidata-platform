@@ -1,0 +1,70 @@
+// common
+$un-button-border-radius: 3px;
+$un-button-border-width: 1px;
+$un-button-font-weight: 600;
+$un-button-font-family: $font-family-1;
+$un-button-text-padding: 0;
+
+// small 23px
+$button-small-border-radius: $un-button-border-radius - 1px;
+$button-small-border-width: $un-button-border-width;
+$button-small-padding: 5px 7px;
+$button-small-text-padding: $un-button-text-padding;
+$button-small-font-size: 11px;
+$button-small-font-weight: $un-button-font-weight;
+$button-small-font-family: $un-button-font-family;
+$button-small-line-height: $button-small-font-size;
+$button-small-icon-size: $button-small-font-size;
+
+// medium 30px
+$button-medium-border-radius: $un-button-border-radius;
+$button-medium-border-width: $un-button-border-width;
+$button-medium-padding: 8px 10px;
+$button-medium-text-padding: $un-button-text-padding;
+$button-medium-font-size: 12px;
+$button-medium-font-weight: $un-button-font-weight;
+$button-medium-font-family: $un-button-font-family;
+$button-medium-line-height: $button-medium-font-size;
+$button-medium-icon-size: $button-medium-font-size;
+
+// large 35px
+$button-large-border-radius: $un-button-border-radius;
+$button-large-border-width: $un-button-border-width;
+$button-large-padding: 10px 12px;
+$button-large-text-padding: $un-button-text-padding;
+$button-large-font-size: 13px;
+$button-large-font-weight: $un-button-font-weight;
+$button-large-font-family: $un-button-font-family;
+$button-large-line-height: $button-large-font-size;
+$button-large-icon-size: $button-large-font-size;
+
+// цвета
+$button-default-base-color: $color-secondary-2-0; // #507fba
+$button-default-border-color: $color-secondary-2-0;
+$button-default-color: $color-primary-2-0; // #FFFFFF
+
+// генерятся классы для кнопок вида: un-button-color-{name}
+// name | background | border | font
+$un-button-colors:
+  transparent transparent #CDCDCD #999999,
+  transparent-light transparent #CDCDCD #CDCDCD,
+  gray #6f6f6f,
+  toggle-text-gray #CCCCCC #FFFFFF,
+  toggle-text-light-gray #a9a9a9 #333333,
+  lightgray #d3d3d3,
+  lightgray2 #f2f2f2 #aeaeae #515151,
+  blue #507fba,
+  red #BD3A3E,
+  orange #FC9F48,
+  pink #ED5464;
+
+// градиенты
+$button-default-background-gradient: null;
+$button-default-background-gradient-over: null;
+$button-default-background-gradient-pressed: null;
+$button-default-background-gradient-disabled: null;
+
+$button-toolbar-background-gradient: null;
+$button-toolbar-background-gradient-over: null;
+$button-toolbar-background-gradient-pressed: null;
+$button-toolbar-background-gradient-disabled: null;

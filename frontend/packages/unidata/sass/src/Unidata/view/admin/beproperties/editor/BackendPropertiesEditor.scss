@@ -1,0 +1,40 @@
+$bePropBackgroundColor: rgb(242, 242, 242);
+
+.x-panel.un-beprop-editor {
+  > .x-panel-body {
+    background-color: $bePropBackgroundColor;
+  }
+
+  .x-panel.un-beprop-propgroup:first-child {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .x-panel.un-beprop-propgroup:last-child {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    .x-panel-header {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+
+  .x-panel.un-beprop-propgroup:not(:first-child) {
+    border-top: none;
+  }
+
+  .x-panel.un-beprop-propgroup:not(:first-child):not(:last-child) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+    .x-panel-header {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}

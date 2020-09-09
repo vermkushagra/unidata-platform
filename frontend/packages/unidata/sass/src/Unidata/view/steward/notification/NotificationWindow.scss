@@ -1,0 +1,14 @@
+$baseCls: 'un-notificationwindow';
+
+.#{$baseCls} {
+  background-color: transparent;
+  border: none;
+
+  > .x-window-body {
+    background-color: transparent;
+  }
+
+  .un-notificationwindow-rightcontainer {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}

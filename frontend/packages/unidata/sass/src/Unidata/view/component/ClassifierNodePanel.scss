@@ -1,0 +1,7 @@
+$baseCls: '.un-classifier-node-panel';
+
+.unidata-main-container #{$baseCls} {
+  >.x-panel-body {
+    background: transparent;
+  }
+}

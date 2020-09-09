@@ -1,0 +1,8 @@
+$baseCls: '.un-property-item';
+
+#{$baseCls} {
+  .x-form-item-label-inner {
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}

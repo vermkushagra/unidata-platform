@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
+       xmlns:jaxrs="http://cxf.apache.org/jaxrs" xmlns:cxf="http://cxf.apache.org/core"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <import resource="classpath:META-INF/cxf/cxf.xml" />
+    <import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+    <!-- inbound/outbound message logging -->
+    <cxf:bus>
+        <cxf:inInterceptors>
+            <bean id="unitdataLoggingInInterceptor"
+                  class="com.unidata.mdm.backend.util.interceptor.UnitdataLoggingInInterceptor" />
+        </cxf:inInterceptors>
+        <cxf:outInterceptors>
+            <bean id="unidataLoggingOutInterceptor"
+                  class="com.unidata.mdm.backend.util.interceptor.UnidataLoggingOutInterceptor" />
+        </cxf:outInterceptors>
+        <cxf:outFaultInterceptors>
+            <bean id="cxfFaultListener" class="com.unidata.mdm.api.wsdl.v4.NonStandardErrorInterceptor" />
+        </cxf:outFaultInterceptors>
+    </cxf:bus>
+    <bean id="licenseInterceptor"
+          class="com.unidata.mdm.backend.service.security.utils.LicenseCxfInterceptor" />
+    <bean id="authInterceptor" class="com.unidata.mdm.backend.service.security.utils.BearerTokenCxfInterceptor">
+        <constructor-arg ref="configurationService"/>
+    </bean>
+    <bean id="maintenanceInterceptor"
+          class="com.unidata.mdm.backend.api.rest.maintanance.MaintenanceCxfInterceptor" />
+    <!-- Swagger API listing resource -->
+    <bean id="swaggerResourceJSON"
+          class="io.swagger.jaxrs.listing.ApiListingResource" />
+
+    <!-- JAX-WS -->
+    <!-- SOAP API version 3 -->
+    <bean id="soapVersion44Transformer" class="com.unidata.mdm.api.wsdl.v3.DataVersion44Transformer"/>
+    <bean id="unidataSOAPServiceV3" class="com.unidata.mdm.api.wsdl.v3.SoapApiServiceImpl" />
+    <!-- SOAP API version 4 -->
+    <bean id="unidataSOAPServiceV4" class="com.unidata.mdm.api.wsdl.v4.SoapApiServiceImpl" />
+    <bean id="soapJobApiService" class="com.unidata.mdm.api.wsdl.v4.SoapJobApiServiceImpl" />
+    <!-- DQ SOAP API version 4 -->
+    <bean id="unidataSOAPServiceDQV4" class="com.unidata.mdm.dq.api.v4.DataQualitySOAPServiceImpl" />
+    <!-- DQ SOAP API version 5 -->
+    <bean id="unidataSOAPServiceDQV5" class="com.unidata.mdm.dq.api.v5.DataQualitySOAPServiceImpl" />
+    <bean id="unidataSOAPServiceMetaV5" class="com.unidata.mdm.meta.api.v5.MetaModelSOAPServiceImpl" />
+    <bean id="unidataSOAPServiceLoginSOAPV5" class="com.unidata.mdm.login.api.v5.LoginSOAPServiceImpl" />
+    <bean id="soapJobApiServiceV5" class="com.unidata.mdm.api.wsdl.v5.SoapJobApiServiceImpl" />
+    <bean id="unidataSOAPServiceV5" class="com.unidata.mdm.api.wsdl.v5.SoapApiServiceImpl" />
+    <!-- JAXB context properties map -->
+    <util:map id="jaxbPropertiesMap" key-type="java.lang.String"
+              value-type="java.lang.Object">
+        <description>Custom JAXB properties map.</description>
+        <entry key="com.sun.xml.bind.XmlAccessorFactory">
+            <value type="java.lang.Boolean">true</value>
+        </entry>
+        <entry key="com.sun.xml.bind.disableXmlSecurity">
+            <value type="java.lang.Boolean">true</value>
+        </entry>
+        <entry key="supressAccessorWarnings">
+            <value type="java.lang.Boolean">true</value>
+        </entry>
+    </util:map>
+
+    <jaxws:server id="unidataSOAPServiceV3Server" address="/public/v3" serviceBean="#unidataSOAPServiceV3"
+                  bus="cxf" wsdlLocation="classpath:api/v3/unidata-api.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceV3Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <jaxws:server id="unidataSOAPServiceDQV4Server" address="/public/dq/v4" serviceBean="#unidataSOAPServiceDQV4"
+                  bus="cxf" wsdlLocation="classpath:api/v4/dq-unidata-api.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceDQV4Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <jaxws:server id="unidataSOAPServiceV4Server" address="/public/v4" serviceBean="#unidataSOAPServiceV4"
+                  bus="cxf" wsdlLocation="classpath:api/v4/unidata-api.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceV4Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <!-- Start of API Version 5 -->
+    <jaxws:server id="unidataSOAPServiceDQV5Server" address="/public/dq/v5" serviceBean="#unidataSOAPServiceDQV5"
+                  bus="cxf" wsdlLocation="classpath:api/v5/dq-unidata-api.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceDQV5Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <jaxws:server id="unidataSOAPServiceMetaV5Server" address="/public/meta/v5" serviceBean="#unidataSOAPServiceMetaV5"
+                  bus="cxf" wsdlLocation="classpath:api/v5/unidata-meta.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceMetaV5Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <jaxws:server id="unidataSOAPServiceLoginSOAPV5Server"
+            address="/public/login/v5" serviceBean="#unidataSOAPServiceLoginSOAPV5"
+                  bus="cxf" wsdlLocation="classpath:api/v5/login-api.wsdl">
+        <!-- Dump attachments larger then 200K to a temp directory. -->
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+            <!-- CXF cannot deal with our setup. Validation disabled. -->
+            <!-- <entry key="schema-validation-enabled" value="true"/> -->
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceLoginSOAPV5Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+        <!-- Binding properties -->
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <jaxws:server id="unidataSOAPServiceV5Server" address="/public/v5" serviceBean="#unidataSOAPServiceV5"
+                  bus="cxf" wsdlLocation="classpath:api/v5/unidata-api.wsdl">
+
+        <jaxws:properties>
+            <entry key="attachment-directory" value="/tmp/unidata-temp-storage" />
+            <entry key="attachment-memory-threshold" value="404800" />
+            <entry key="attachment-max-size" value="404800" />
+
+        </jaxws:properties>
+
+        <jaxws:inInterceptors>
+
+            <bean class="com.unidata.mdm.backend.service.security.utils.DynamicPublishedEndpointUrlInterceptor">
+                <constructor-arg value="unidataSOAPServiceV5Server"/>
+                <property name="headerName" value="${unidata.balancer.protocol.header:}"/>
+            </bean>
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+
+        </jaxws:inInterceptors>
+
+        <jaxws:dataBinding>
+            <bean class="org.apache.cxf.jaxb.JAXBDataBinding">
+                <property name="contextProperties" ref="jaxbPropertiesMap" />
+            </bean>
+        </jaxws:dataBinding>
+    </jaxws:server>
+    <!-- End of API Version 5 -->
+    <!-- JAX-RS -->
+    <bean id="apiWriter"
+          class="io.swagger.jaxrs.listing.SwaggerSerializers" />
+    <bean id="cleanseFunctionsRestService"
+          class="com.unidata.mdm.backend.api.rest.CleanseFunctionRestService" />
+    <bean id="enumerationsRestService" class="com.unidata.mdm.backend.api.rest.EnumerationRestService" />
+    <bean id="entitiesGroupRestService"
+          class="com.unidata.mdm.backend.api.rest.EntitiesGroupRestService" />
+    <bean id="measureValuesRestService"
+          class="com.unidata.mdm.backend.api.rest.MeasureValuesRestService" />
+    <bean id="sourceSystemsRestService"
+          class="com.unidata.mdm.backend.api.rest.SourceSystemRestService" />
+    <bean id="lookupEntitiesRestService"
+          class="com.unidata.mdm.backend.api.rest.LookupEntityRestService" />
+    <bean id="metaModelInfoRestService"
+          class="com.unidata.mdm.backend.api.rest.MetaModelInfoRestService"/>
+    <bean id="entitiesRestService" class="com.unidata.mdm.backend.api.rest.EntityRestService" />
+    <bean id="searchRestService" class="com.unidata.mdm.backend.api.rest.SearchRestService" />
+    <bean id="dataEntityRestService" class="com.unidata.mdm.backend.api.rest.DataEntityRestService" />
+    <bean id="authRestService" class="com.unidata.mdm.backend.api.rest.LoginRestService" />
+    <bean id="loggingRestService" class="com.unidata.mdm.backend.api.rest.LoggingRestService" />
+    <bean id="globalRestExceptionMapper"
+          class="com.unidata.mdm.backend.configuration.GlobalRestExceptionMapper" />
+    <bean id="statisticRestService" class="com.unidata.mdm.backend.api.rest.StatisticRestService" />
+    <bean id="relationRestService" class="com.unidata.mdm.backend.api.rest.RelationRestService" />
+    <bean id="dqRulesRestService" class="com.unidata.mdm.backend.api.rest.DQRestService" />
+    <bean id="metaModelRestService" class="com.unidata.mdm.backend.api.rest.MetaModelRestService" />
+    <bean id="roleRestService" class="com.unidata.mdm.backend.api.rest.RoleRestService" />
+    <bean id="userRestService" class="com.unidata.mdm.backend.api.rest.UserRestService" />
+    <bean id="exportRestService" class="com.unidata.mdm.backend.api.rest.DataExportRestService" />
+    <bean id="importRestService" class="com.unidata.mdm.backend.api.rest.DataImportRestService" />
+    <bean id="labelRestService"
+          class="com.unidata.mdm.backend.api.rest.SecurityLabelRestService" />
+    <bean id="jobRestService" class="com.unidata.mdm.backend.api.rest.JobRestService" />
+    <bean id="relationsRestService"
+          class="com.unidata.mdm.backend.api.rest.DataRelationsRestService" />
+    <bean id="bulkOperationsRestService"
+          class="com.unidata.mdm.backend.api.rest.BulkOperationsRestService" />
+    <bean id="classifierRestService" class="com.unidata.mdm.backend.api.rest.ClassifierRestService" />
+    <bean id="matchingRestService" class="com.unidata.mdm.backend.api.rest.MatchingRestService" />
+    <bean id="notificationRestService"
+          class="com.unidata.mdm.backend.api.rest.NotificationRestService" />
+    <bean id="workflowRestService" class="com.unidata.mdm.backend.api.rest.WorkflowRestService" />
+    <bean id="userNotificationsRestService"
+          class="com.unidata.mdm.backend.api.rest.UserNotificationsRestService" />
+    <bean id="auditLogSearchRestService"
+          class="com.unidata.mdm.backend.api.rest.AuditLogSearchRestService" />
+    <bean id="clusterRestService" class="com.unidata.mdm.backend.api.rest.ClusterRestService" />
+    <bean id="metaIERestService" class="com.unidata.mdm.backend.api.rest.MetaIERestService" />
+    <bean id="systemRestService" class="com.unidata.mdm.backend.api.rest.SystemRestService"/>
+    <bean id="customSettingsRestService" class="com.unidata.mdm.backend.api.rest.CustomStorageRestService"/>
+    <bean id="configurationRestService" class="com.unidata.mdm.backend.api.rest.ConfigurationRestService"/>
+    <bean id="dqSandboxRestService"
+          class="com.unidata.mdm.backend.api.rest.DQSandboxRestService" />
+    <bean id="healthCheckRestService"
+          class="com.unidata.mdm.backend.api.rest.HealthCheckRestService" />
+
+    <jaxrs:server address="/internal"
+                  basePackages="com.unidata.mdm.backend.configuration">
+        <jaxrs:serviceBeans>
+            <ref bean="cleanseFunctionsRestService" />
+            <ref bean="enumerationsRestService" />
+            <ref bean="entitiesGroupRestService" />
+            <ref bean="sourceSystemsRestService" />
+            <ref bean="lookupEntitiesRestService" />
+            <ref bean="metaModelInfoRestService" />
+            <ref bean="entitiesRestService" />
+            <ref bean="classifierRestService" />
+            <ref bean="matchingRestService" />
+            <ref bean="searchRestService" />
+            <ref bean="dataEntityRestService" />
+            <ref bean="authRestService" />
+            <ref bean="statisticRestService" />
+            <ref bean="relationRestService" />
+            <ref bean="measureValuesRestService" />
+            <ref bean="dqRulesRestService" />
+            <ref bean="metaModelRestService" />
+            <ref bean="loggingRestService" />
+            <ref bean="roleRestService" />
+            <ref bean="userRestService" />
+            <ref bean="exportRestService" />
+            <ref bean="importRestService" />
+            <ref bean="labelRestService" />
+            <ref bean="jobRestService" />
+            <ref bean="relationsRestService" />
+            <ref bean="bulkOperationsRestService" />
+            <ref bean="notificationRestService" />
+            <ref bean="workflowRestService" />
+            <ref bean="userNotificationsRestService" />
+            <ref bean="auditLogSearchRestService" />
+            <ref bean="clusterRestService" />
+            <ref bean="metaIERestService" />
+            <ref bean="systemRestService"/>
+            <ref bean="customSettingsRestService"/>
+            <ref bean="configurationRestService"/>
+            <ref bean="dqSandboxRestService"/>
+
+            <!-- Swagger API Listing resource -->
+            <ref bean="swaggerResourceJSON" />
+        </jaxrs:serviceBeans>
+
+        <jaxrs:providers>
+            <ref bean="jacksonProvider" />
+            <ref bean="globalRestExceptionMapper" />
+            <!-- required for writing swagger classes -->
+            <ref bean="apiWriter" />
+        </jaxrs:providers>
+        <jaxrs:inInterceptors>
+            <ref bean="authInterceptor" />
+            <ref bean="licenseInterceptor" />
+            <ref bean="maintenanceInterceptor" />
+        </jaxrs:inInterceptors>
+        <jaxrs:properties>
+            <!-- 100mb -->
+            <entry key="attachment-memory-threshold" value="104857600" />
+            <entry key="attachment-max-size" value="104857600" />
+        </jaxrs:properties>
+    </jaxrs:server>
+
+    <jaxrs:server address="/monitoring"
+                  basePackages="com.unidata.mdm.backend.configuration">
+        <jaxrs:serviceBeans>
+            <ref bean="healthCheckRestService"/>
+        </jaxrs:serviceBeans>
+
+        <jaxrs:providers>
+            <ref bean="jacksonProvider" />
+            <ref bean="globalRestExceptionMapper" />
+            <!-- required for writing swagger classes -->
+            <ref bean="apiWriter" />
+        </jaxrs:providers>
+
+        <jaxrs:inInterceptors>
+            <ref bean="authInterceptor" />
+            <ref bean="licenseInterceptor" />
+        </jaxrs:inInterceptors>
+        <jaxrs:properties>
+            <!-- 100mb -->
+            <entry key="attachment-memory-threshold" value="104857600" />
+            <entry key="attachment-max-size" value="104857600" />
+        </jaxrs:properties>
+    </jaxrs:server>
+
+    <bean id="jacksonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+        <property name="mapper" ref="objectMapper" />
+    </bean>
+
+    <!-- this scans the classes for resources -->
+    <bean id="swaggerConfig" class="io.swagger.jaxrs.config.BeanConfig">
+        <property name="resourcePackage" value="com.unidata.mdm.backend.api.rest" />
+        <property name="version" value="1.0.0" />
+        <property name="basePath" value="${unidata.swagger.basepath}" />
+        <property name="title" value="Unidata Internal REST API" />
+        <property name="description" value="Внутреннее API для UI операций" />
+        <property name="contact" value="" />
+        <property name="licenseUrl" value="" />
+        <property name="scan" value="true" />
+    </bean>
+</beans>

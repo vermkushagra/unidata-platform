@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                        http://www.springframework.org/schema/util
+                        http://www.springframework.org/schema/util/spring-util-3.0.xsd
+                        http://www.springframework.org/schema/jee
+                        http://www.springframework.org/schema/jee/spring-jee.xsd">
+
+    <bean id="wfTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="wfDataSource"/>
+    </bean>
+
+    <!-- Custom user/group management -->
+    <bean id="unidataGroupIdentityManger" class="com.unidata.mdm.backend.service.wf.UnidataGroupIdentityManger"/>
+    <bean id="unidataUserIdentityManager" class="com.unidata.mdm.backend.service.wf.UnidataUserIdentityManager"/>
+    <bean id="unidataGroupManagerFactory" class="com.unidata.mdm.backend.service.wf.UnidataGroupManagerFactory"/>
+    <bean id="unidataUserManagerFactory" class="com.unidata.mdm.backend.service.wf.UnidataUserManagerFactory"/>
+
+    <bean id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration" depends-on="applicationContextRefreshListener">
+        <property name="dataSource" ref="wfDataSource"/>
+        <property name="databaseType" value="postgres"/>
+        <property name="jobExecutorActivate" value="${unidata.activiti.task.jobExecutorActivate:false}"/>
+        <property name="asyncExecutorActivate" value="${unidata.activiti.task.asyncExecutorActivate:false}"/>
+        <property name="transactionManager" ref="wfTransactionManager"/>
+
+        <!-- Email sending related settings (tenantId not needed?) -->
+        <property name="mailServerHost" value="${unidata.activiti.task.mailServerHost:@null}"/>
+        <property name="mailServerPort" value="${unidata.activiti.task.mailServerPort}"/>
+        <property name="mailServerUseSSL" value="${unidata.activiti.task.mailServerUseSSL}"/>
+        <property name="mailServerUseTLS" value="${unidata.activiti.task.mailServerUseTLS}"/>
+        <property name="mailServerDefaultFrom" value="${unidata.activiti.task.mailServerDefaultFrom}"/>
+        <property name="mailServerUsername" value="${unidata.activiti.task.mailServerUsername}"/>
+        <property name="mailServerPassword" value="${unidata.activiti.task.mailServerPassword}"/>
+
+        <!--  Identity -->
+        <property name="customSessionFactories">
+            <list>
+                <ref bean="unidataGroupManagerFactory"/>
+                <ref bean="unidataUserManagerFactory"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+    </bean>
+
+    <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+    <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+    <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+    <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+    <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+
+</beans>

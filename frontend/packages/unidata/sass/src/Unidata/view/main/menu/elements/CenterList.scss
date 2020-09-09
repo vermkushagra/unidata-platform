@@ -1,0 +1,6 @@
+$baseCls: '.un-mainmenu';
+
+#{$baseCls}-list-center {
+  -webkit-transition: height $un-menu-item-animation-speed;
+  transition: height $un-menu-item-animation-speed;
+}

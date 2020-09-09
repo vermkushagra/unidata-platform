@@ -1,0 +1,46 @@
+@mixin un-toolbar-ui(
+  $ui: null,
+
+  $ui-padding: ceil($un-toolbar-padding * 0.75) $un-toolbar-padding,
+
+  $ui-background-color: $un-toolbar-background-color,
+
+  $ui-border-style: $un-toolbar-border-style,
+  $ui-border-width: $un-toolbar-border-width,
+  $ui-border-color: $un-toolbar-border-color
+) {
+
+  $baseCls: '.un-toolbar';
+
+  #{$baseCls}-#{$ui} {
+    padding: $ui-padding;
+    background-color: $ui-background-color;
+    border-style: $ui-border-style;
+    border-width: 0 !important;
+    border-color: $ui-border-color;
+
+    &.#{$prefix}docked-top {
+      border-bottom-width: $ui-border-width !important;
+    }
+
+    &.#{$prefix}docked-bottom {
+      border-top-width: $ui-border-width !important;
+    }
+
+    &.#{$prefix}docked-left {
+      border-right-width: $ui-border-width !important;
+    }
+
+    &.#{$prefix}docked-right {
+      border-left-width: $ui-border-width !important;
+    }
+
+    //.#{$prefix}box-inner {
+    //  overflow: visible;
+    //}
+  }
+}
+
+@include un-toolbar-ui(
+  $ui: 'default'
+);

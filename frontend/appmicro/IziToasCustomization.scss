@@ -1,0 +1,20 @@
+.iziToast.un-error {
+  background-color: #880303;
+
+  .iziToast-message, .iziToast-icon, .iziToast-close {
+    color: white;
+  }
+
+  .iziToast-message {
+    font-family: "Open Sans";
+  }
+
+  .iziToast-close {
+    background: none;
+
+    &:before {
+      font-family: "Linearicons";
+      content: "\e92a";
+    }
+  }
+}

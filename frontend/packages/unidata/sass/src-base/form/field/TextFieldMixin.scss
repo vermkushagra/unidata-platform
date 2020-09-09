@@ -1,0 +1,245 @@
+// Миксин для text-field, расширяющий настройки extjs-text-field-ui
+
+$un-text-field-padding: 5px 8px;
+$un-text-field-background-color: #FFFFFF;
+$un-text-field-border-color: #DEDEDE;
+$un-text-field-border-radius: 3px;
+$un-text-field-trigger-width: 22px;
+$un-text-field-trigger-icon-size: 12px;
+$un-text-field-trigger-icon-color: #333;
+$un-text-field-trigger-background-image: null;
+$un-text-field-trigger-background-color: transparent;
+
+@mixin un-text-field-ui(
+  // переменные обёртки
+  $ui-trigger-icon-size: $un-text-field-trigger-icon-size,
+  $ui-trigger-icon-color: $un-text-field-trigger-icon-color,
+
+  // переменные оригинального миксина
+  $ui: null,
+  $ui-height: $form-text-field-height,
+  $ui-font-size: $form-text-field-font-size,
+  $ui-font-family: $form-text-field-font-family,
+  $ui-font-weight: $form-text-field-font-weight,
+  $ui-color: $form-text-field-color,
+  $ui-background-color: $un-text-field-background-color, // $form-text-field-background-color,
+  $ui-border-width: $form-text-field-border-width,
+  $ui-border-style: $form-text-field-border-style,
+  $ui-border-color: $un-text-field-border-color, // $form-text-field-border-color,
+  $ui-focus-border-color: $form-text-field-focus-border-color,
+  $ui-invalid-border-color: $form-text-field-invalid-border-color,
+  $ui-border-radius: $un-text-field-border-radius, // $form-text-field-border-radius,
+  $ui-background-image: $form-text-field-background-image,
+  $ui-padding: $un-text-field-padding, // $form-text-field-padding,
+  $ui-empty-color: $form-text-field-empty-color,
+  $ui-body-width: $form-text-field-body-width,
+
+  $ui-invalid-background-color: $form-field-invalid-background-color,
+  $ui-invalid-background-image: $form-field-invalid-background-image,
+  $ui-invalid-background-repeat: $form-field-invalid-background-repeat,
+  $ui-invalid-background-position: $form-field-invalid-background-position,
+
+  $ui-trigger-width: $un-text-field-trigger-width, // $form-trigger-width,
+  $ui-trigger-border-width: $form-trigger-border-width,
+  $ui-trigger-border-color: $form-trigger-border-color,
+  $ui-trigger-border-style: $form-trigger-border-style,
+
+  $ui-trigger-border-color-over: null,
+  $ui-trigger-border-color-focus: null,
+  $ui-trigger-border-color-pressed: null,
+
+  $ui-trigger-background-image: $form-trigger-background-image,
+  $ui-trigger-background-color: $form-trigger-background-color,
+
+  $ui-textarea-line-height: $form-textarea-line-height,
+  $ui-textarea-body-height: $form-textarea-body-height,
+  $ui-file-field-color: $form-file-field-color,
+
+  $ui-classic-border: $form-text-field-classic-border
+) {
+
+  @include extjs-text-field-ui(
+    $ui: $ui,
+    $ui-height: $ui-height,
+    $ui-font-size: $ui-font-size,
+    $ui-font-family: $ui-font-family,
+    $ui-font-weight: $ui-font-weight,
+    $ui-color: $ui-color,
+    $ui-background-color: $ui-background-color,
+    $ui-border-width: $ui-border-width,
+    $ui-border-style: $ui-border-style,
+    $ui-border-color: $ui-border-color,
+    $ui-focus-border-color: $ui-focus-border-color,
+    $ui-invalid-border-color: $ui-invalid-border-color,
+    $ui-border-radius: $ui-border-radius,
+    $ui-background-image: $ui-background-image,
+    $ui-padding: $ui-padding,
+    $ui-empty-color: $ui-empty-color,
+    $ui-body-width: $ui-body-width,
+
+    $ui-invalid-background-color: $ui-invalid-background-color,
+    $ui-invalid-background-image: $ui-invalid-background-image,
+    $ui-invalid-background-repeat: $ui-invalid-background-repeat,
+    $ui-invalid-background-position: $ui-invalid-background-position,
+
+    $ui-trigger-width: $ui-trigger-width,
+    $ui-trigger-border-width: $ui-trigger-border-width,
+    $ui-trigger-border-color: $ui-trigger-border-color,
+    $ui-trigger-border-style: $ui-trigger-border-style,
+
+    $ui-trigger-border-color-over: $ui-trigger-border-color-over,
+    $ui-trigger-border-color-focus: $ui-trigger-border-color-focus,
+    $ui-trigger-border-color-pressed: $ui-trigger-border-color-pressed,
+
+    $ui-trigger-background-image: $un-text-field-trigger-background-image, // $ui-trigger-background-image,
+    $ui-trigger-background-color: $un-text-field-trigger-background-color, // $ui-trigger-background-color,
+
+    $ui-textarea-line-height: $ui-textarea-line-height,
+    $ui-textarea-body-height: $ui-textarea-body-height,
+    $ui-file-field-color: $ui-file-field-color,
+
+    $ui-classic-border: $ui-classic-border
+  );
+
+  @include extjs-label-ui(
+    $ui: $ui
+  );
+
+  .#{$prefix}form-invalid-under-#{$ui} {
+    margin-top: 0;
+    padding: 0;
+    background-image: none;
+    font-size: 11px;
+  }
+
+  .x-field-#{$ui} {
+
+    .x-tagfield-input-field {
+      margin-top: 3px;
+      margin-left: 5px;
+    }
+
+    .x-form-item-body-#{$ui} {
+      border: solid 1px transparent;
+    }
+
+    // при фокусе
+    &.x-field-focus {
+      .x-form-item-body-#{$ui} {
+        border: none;
+      }
+
+      .x-form-trigger-wrap-#{$ui} {
+        @include border-radius($ui-border-radius + 1px);
+        border-width: $ui-border-width + 1px;
+      }
+    }
+
+    // отступ справа
+    $padding-right: 0;
+    @if length($ui-padding) == 1 {
+      $padding-right: ($ui-padding / 3);
+    } @else {
+      $padding: nth($ui-padding, 2);
+      $padding-right: $padding / 3;
+    }
+
+    .x-form-text-#{$ui} {
+      background-color: transparent;
+      padding-right: $padding-right;
+      min-height: $ui-height;
+    }
+
+    .x-form-trigger-wrap-#{$ui} {
+      background-color: $ui-background-color;
+      padding-right: $padding-right;
+    }
+
+    .x-form-trigger {
+      @if $un-text-field-trigger-background-image == null {
+        background-image: none !important;
+      }
+
+      font-family: $font-family-linearicons;
+      position: relative;
+      font-size: $ui-trigger-icon-size;
+      color: $ui-trigger-icon-color;
+      vertical-align: middle !important;
+      text-align: center;
+
+      &:hover {
+        color: darken($ui-trigger-icon-color, 30%);
+      }
+
+      &:before {
+        content: "\e93a";
+      }
+    }
+
+    .x-form-trigger-#{$ui}:before {
+      content: "\e93a";
+    }
+
+    .x-form-clear-trigger {
+      font-size: $ui-trigger-icon-size - 2px;
+
+      &:before {
+        content: "\e935";
+      }
+    }
+
+    .x-form-date-trigger {
+      font-size: $ui-trigger-icon-size + 4px;
+      color: lighten($ui-trigger-icon-color, 30%);
+
+      &:before {
+        content: "\e789";
+      }
+    }
+
+    .x-form-trigger-spinner {
+      position: relative;
+      height: 100%;
+      line-height: 1em;
+
+      &:before {
+        display: none;
+      }
+
+      .x-form-spinner {
+        position: relative;
+        width: 100%;
+        text-align: center;
+        height: 50%;
+
+        &:before {
+          content: "\e939";
+          position: absolute;
+          width: 100%;
+          left: 0;
+        }
+      }
+
+      .x-form-spinner-up {
+        &:before {
+          bottom: 0;
+        }
+      }
+
+      .x-form-spinner-down {
+        &:before {
+          content: "\e93a";
+          top: 0;
+        }
+      }
+
+    }
+
+
+    .x-form-item-label {
+      padding-top: 6px;
+    }
+
+  }
+
+}

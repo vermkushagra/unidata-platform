@@ -1,0 +1,19 @@
+/*
+* Специальные стили для раздела "Задачи"
+*/
+$baseCls: '.un-section';
+$section: 'task';
+$section-color: $un-color-section-task;
+
+@include set-section-color($baseCls, $section, $section-color);
+
+#{$baseCls}-#{$section} {
+  .#{$prefix}panel-un-result {
+    .#{$prefix}panel-header-title {
+      width: 0;
+    }
+    .#{$prefix}title-text {
+      width: 0;
+    }
+  }
+}

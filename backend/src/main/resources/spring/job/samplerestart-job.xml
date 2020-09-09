@@ -1,0 +1,76 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+    <hz:queue id="sampleRestartItemsJobQueue" instance-ref="instance" name="sampleRestartItemsJobsPartitionQueue"
+              lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="sampleRestartItemsProcessingJob">
+        <batch:step id="processSampleRestartItems.master">
+            <batch:partition partitioner="sampleRestartItemPartitioner" handler="sampleRestartItemPartitionHandler">
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+
+    <bean id="sampleRestartItemsProcessingJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="sampleRestartItemsProcessingJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="param1" value-type="java.lang.String" value="value1"/>
+                <entry key="param2" value-type="java.lang.String" value="value2"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="sampleRestartItemPartitioner" class="com.unidata.mdm.backend.service.job.samplerestart.SampleRestartItemPartitioner"/>
+
+    <bean id="sampleRestartItemPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="processSampleRestartItems"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="sampleItemsJobQueue"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="processSampleRestartItems">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="sampleRestartItemReader" processor="sampleRestartItemProcessor" writer="sampleRestartItemWriter"
+                         commit-interval="10"/>
+        </batch:tasklet>
+    </batch:step>
+
+    <bean id="sampleRestartItemReader" class="com.unidata.mdm.backend.service.job.samplerestart.SampleRestartItemReader" scope="step">
+        <property name="from" value="#{stepExecutionContext[minValue]}"/>
+        <property name="to" value="#{stepExecutionContext[maxValue]}"/>
+        <property name="firstParameter" value="#{jobParameters[param1]}"/>
+    </bean>
+
+    <bean id="sampleRestartItemProcessor" class="com.unidata.mdm.backend.service.job.samplerestart.SampleRestartItemProcessor" scope="step"/>
+    <bean id="sampleRestartItemWriter" class="com.unidata.mdm.backend.service.job.samplerestart.SampleRestartItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <bean id="sampleRestartItemStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="sampleRestartItemsJobQueue"/>
+        <property name="threadCount" value="2"/>
+        <property name="awaitTerminationInMinutes" value="1"/>
+    </bean>
+
+</beans>

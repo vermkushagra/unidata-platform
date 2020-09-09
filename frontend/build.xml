@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="Unidata" default=".help">
+    <!--
+    The build-impl.xml file imported here contains the guts of the build process. It is
+    a great idea to read that file to understand how the process works, but it is best to
+    limit your changes to this file.
+    -->
+    <import file="${basedir}/.sencha/app/build-impl.xml"/>
+
+    <!--
+    The following targets can be provided to inject logic before and/or after key steps
+    of the build process:
+
+        The "init-local" target is used to initialize properties that may be personalized
+        for the local machine.
+
+            <target name="-before-init-local"/>
+            <target name="-after-init-local"/>
+
+        The "clean" target is used to clean build output from the build.dir.
+
+            <target name="-before-clean"/>
+            <target name="-after-clean"/>
+
+        The general "init" target is used to initialize all other properties, including
+        those provided by Sencha Cmd.
+
+            <target name="-before-init"/>
+            <target name="-after-init"/>
+
+        The "page" target performs the call to Sencha Cmd to build the 'all-classes.js' file.
+
+            <target name="-before-page"/>
+            <target name="-after-page"/>
+
+        The "build" target performs the call to Sencha Cmd to build the application.
+
+            <target name="-before-build"/>
+            <target name="-after-build"/>
+    -->
+
+    <target name="-after-build">
+        <copy file="customer.json" tofile="${app.output}/customer.json" overwrite="true"/>
+        <copy file="unidatabootstrap.js" tofile="${app.output}/unidatabootstrap.js" overwrite="true"/>
+        <copy file="unidatabootstrap.css" tofile="${app.output}/unidatabootstrap.css" overwrite="true"/>
+        <copy file="customerbootstrap.js" tofile="${app.output}/customerbootstrap.js" overwrite="true"/>
+
+        <mkdir dir="${app.output}/CUX"/>
+        <copy file="CUX/Micrologin.js" tofile="${app.output}/CUX/Micrologin.js" overwrite="true"/>
+        <copy todir="${app.output}/WEB-INF" >
+            <fileset dir="WEB-INF" includes="**"/>
+        </copy>
+    </target>
+
+    <!--
+    <target name="-after-init-local">
+        <copy file="customer.json" tofile="${app.output}/customer.json" overwrite="true"/>
+    </target>
+    -->
+
+    <!--
+    <target name="-before-clean">
+        <delete file="${app.output}/customer.json"/>
+    </target>
+    -->
+</project>

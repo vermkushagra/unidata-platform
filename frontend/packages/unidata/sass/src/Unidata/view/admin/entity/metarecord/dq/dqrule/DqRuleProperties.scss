@@ -1,0 +1,30 @@
+$baseCls: 'un-dq-rule-properties';
+
+.#{$baseCls} {
+  .un-checkboxgroup-selected-all {
+    .#{$prefix}form-check-group {
+      .#{$prefix}field {
+        opacity: 0.3;
+      }
+    }
+  }
+
+  .#{$baseCls}-source-systems {
+    border-top: 1px solid #ddd;
+  }
+
+  .#{$baseCls}-use-special {
+    .#{$prefix}form-cb {
+      margin-top: 4px;
+    }
+
+    .#{$prefix}form-cb-label {
+      margin-top: 3px;
+    }
+  }
+
+  // кнопка распирает заголовок делаем отступы меньше
+  .x-panel-header {
+    padding: 7px 10px 6px 10px;
+  }
+}

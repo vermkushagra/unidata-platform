@@ -1,0 +1,32 @@
+.unidata-steward-search-datarecord-relation-relationsdigest {
+  .x-grid-body {
+    border-bottom: 0px;
+  }
+
+  .x-panel-body.info {
+    color: #909090
+  }
+
+  >.x-panel-header {
+    background-color: #f0f0f0 !important;
+  }
+
+  >.x-panel-header .x-title-text {
+    font-size: 18px;
+    padding-left: 10px;
+  }
+
+  .relationdigest-grid-panel {
+    .x-grid-item-over {
+      color: #2f4fed;
+      text-decoration: underline;
+      .x-grid-td {
+        cursor: pointer;
+      }
+    }
+
+    .paging-toolbar {
+      margin-top: 10px;
+    }
+  }
+}

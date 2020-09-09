@@ -1,0 +1,123 @@
+$baseCls: '.un-mainmenu-item';
+
+#{$baseCls} {
+  position: relative;
+
+  // необходимо для обработки события окончания анимации
+  border-top-color: green;
+  -webkit-transition: border-top-color $un-menu-item-animation-speed;
+  transition: border-top-color $un-menu-item-animation-speed;
+}
+
+#{$baseCls}-body {
+  color: $un-menu-color-6;
+  height: $un-menu-item-height;
+  line-height: $un-menu-item-height;
+  white-space: nowrap;
+  cursor: pointer;
+  overflow: hidden;
+
+  -webkit-transition: color, background-color, height $un-menu-item-animation-speed;
+  transition: color, background-color, height $un-menu-item-animation-speed;
+
+  &:hover {
+    color: #ffffff;
+    //background-color: $un-menu-color-3;
+  }
+}
+
+#{$baseCls}-icon {
+  width: $un-menu-item-width;
+  height: $un-menu-item-height;
+  margin-right: -$un-menu-item-width;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  position: relative;
+}
+
+#{$baseCls}-text {
+  height: $un-menu-item-height;
+  margin-left: $un-menu-item-width;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  @include user-select(none);
+}
+
+@mixin badge-counter(
+  $un-counter-radius,
+  $background-color,
+  $color,
+  $font-size,
+  $font-weight,
+  $offset-top,
+  $offset-right,
+  $section,
+  $color,
+  $border-color: #fff,
+  $border-width: null,
+  $ui: null) {
+
+  $cls: '';
+
+  @if $border-width == null {
+    $border-width: 0
+  }
+
+  @if $ui == null {
+    $cls: $baseCls + '-counter';
+  } @else {
+    $cls: $baseCls + '-counter-' + $ui;
+  }
+
+  #{$cls} {
+    position: absolute;
+    top: $offset-top;
+    right: $offset-right;
+    font-size: $font-size;
+    line-height: $un-counter-radius * 2;
+    text-align: center;
+    @include border-radius(50%);
+    width: $un-counter-radius * 2;
+    height: $un-counter-radius * 2;
+    background-color: $background-color;
+    color: $color;
+    font-weight: $font-weight;
+    @if $border-width != 0 {
+      @include box-shadow(0px 0px 0 $border-width $border-color inset);
+    }
+  }
+}
+
+@include badge-counter(
+    $un-counter-radius: 10px,
+    $background-color: #EA5A5A,
+    $color: #fff,
+    $font-size: 11px,
+    $font-weight: bold,
+    $offset-top: 2px,
+    $offset-right: 5px,
+    $border-width: 1px,
+    $border-color: #f1d6d6
+);
+
+@include badge-counter(
+  $ui: 'notifications',
+  $un-counter-radius: 8px,
+  $background-color: #EA5A5A,
+  $color: #fff,
+  $font-size: 9px,
+  $font-weight: bold,
+  $offset-top: 4px,
+  $offset-right: 10px
+);
+
+#{$baseCls}-pin {
+  display: none;
+}
+
+#{$baseCls}-notification {
+  #{$baseCls}-icon {
+    font-size: 17px !important;
+  }
+}

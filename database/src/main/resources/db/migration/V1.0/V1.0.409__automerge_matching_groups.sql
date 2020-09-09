@@ -1,0 +1,1 @@
+alter table matching_groups add column auto_merge boolean;

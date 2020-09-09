@@ -1,0 +1,40 @@
+$baseCls: '.un-mainmenu';
+
+#{$baseCls}-list {
+  background-color: $un-menu-color-1;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+
+  #{$baseCls}-list-body {
+    position: relative;
+  }
+
+  $scroll-width: 4px;
+
+  .ps__scrollbar-y-rail {
+    width: $scroll-width + 1px;
+    z-index: 2;
+
+    .ps__scrollbar-y {
+      right: 1px;
+      width: $scroll-width;
+      cursor: pointer !important;
+    }
+
+    &:hover {
+      background-color: transparent !important;
+      width: $scroll-width + 1px;
+
+      .ps__scrollbar-y {
+        width: $scroll-width;
+      }
+    }
+
+    &:active {
+      .ps__scrollbar-y {
+        width: $scroll-width + 2px;
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+ext.proguardEnabled = false
+//
+ext.tomcatProtocol = 'http'
+ext.tomcatHost = 'localhost'
+ext.tomcatPort = 8080
+ext.tomcatUser = 'tomcat'
+ext.tomcatPassword = 'tomcat'
+
+
+ext.databaseUrl = 'jdbc:postgresql://localhost:5432/unidata'
+ext.databaseUser = 'postgres'
+ext.databasePassword = 'postgres'
+
+ext.rubyBin = 'C:\\Ruby21-x64\\bin'
+
+ext.senchaCmdHome = '/Users/peat/Tools/Sencha/Cmd/6.2.2.36'
+ext.senchaSdkHome = '../frontend/ext'
+ext.senchaEnvironment = 'production'
+
+// For dev-local profile it hardcoded to static URL.
+// For others default is dynamic host and port - same from frontend requested.
+//ext.backendUrl = 'http://127.0.0.1:8080/unidata-backend/api/'
+ext.backendUrl = 'http://" + window.location.host + "/unidata-backend/api/'
+ext.frontendUrlUser = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend/'
+ext.frontendUrlAdmin = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend-admin/'
+
+// Smoke
+ext.smokeTests = []
+ext.userAppMode = 'dev'
+

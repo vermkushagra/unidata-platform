@@ -1,0 +1,52 @@
+/**
+ * CSS _НЕ_ зависимый от стилей ExtJS
+ */
+
+
+//полностью НЕ прозрачный элемент
+.nontransparent {
+    opacity: 1;
+}
+
+//полностью прозрачный элемент
+.transparent {
+    opacity: 0;
+}
+
+//степень НЕ прозрачности от 0.1 до 0.9
+@for $i from 1 through 9 {
+    .opacity_#{$i} {
+        opacity: ($i / 10);
+    }
+}
+
+.x-tool.un-gray .x-tool-img {
+    color: gray;
+}
+
+/**
+ * CSS зависимый от стилей ExtJS
+ */
+
+//для горизонтальных вкладок смещаем закрывающий элемент ("крестик") так чтобы по дефолту он выглядил отцентрованным
+//.x-tab-bar.x-tab-bar-horizontal {
+//    .x-tab.x-tab-top.x-tab-closable
+//    {
+//        .x-tab-close-btn {
+//            top: 7px !important;
+//        }
+//    }
+//}
+
+span.un-highlight {
+    background-color: #ffff00;
+    color: #333;
+    padding: 0 2px;
+}
+
+//@import '../../resources/sass/card.scss';
+//@import './card.scss';
+@import './field.scss';
+@import './panel.scss';
+@import './container.scss';
+@import './grid.scss';

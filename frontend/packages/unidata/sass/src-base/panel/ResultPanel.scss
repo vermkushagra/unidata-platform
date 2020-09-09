@@ -1,0 +1,116 @@
+$ui-name: 'un-result';
+
+$un-result-panel-base-color: $un-color-result-panel;
+
+@include extjs-panel-ui(
+  $ui: $ui-name,
+  $ui-header-background-color: $un-result-panel-base-color,
+  $ui-body-background-color: $un-result-panel-base-color,
+  $ui-header-color: $color-primary-1-3,
+  $ui-header-text-transform: uppercase,
+  $ui-header-padding: 11px 10px 12px 10px,
+  $ui-header-border-width: 0
+);
+
+.#{$prefix}panel-#{$ui-name} {
+  &-collapsed {
+    background-color: $un-result-panel-base-color;
+    padding: 5px 10px 0 10px;
+  }
+
+  .un-toolbar-paging {
+    background: $un-result-panel-base-color;
+    padding-left: 8px;
+    padding-right: 0;
+
+    .x-toolbar-text {
+      width: 80px;
+    }
+
+    .#{$prefix}tbar-page-number + .#{$prefix}toolbar-text {
+      margin-right: 26px;
+    }
+  }
+
+  >.x-toolbar {
+    background: $un-result-panel-base-color;
+
+    .un-roundbutton {
+      &.x-btn-over {
+        background-color: #4370a9 !important;
+      }
+    }
+  }
+
+  .x-panel-header-title-#{$ui-name} {
+    padding-left: 10px;
+  };
+
+  /* Магия по сокрытию checker */
+  .x-grid-cell-checkcolumn {
+    vertical-align: middle;
+  }
+
+  .x-grid-cell-checkcolumn {
+    vertical-align: middle;
+  }
+
+  .x-grid-cell-row-checker .x-grid-cell-inner {
+    padding: 0 !important;
+    display: none;
+  }
+
+  .x-grid-item-over {
+    .x-grid-cell-row-checker .x-grid-cell-inner {
+      display: block;
+    }
+  }
+
+  &.un-editmode-disabled {
+    .x-grid-cell-row-checker .x-grid-cell-inner {
+      display: none !important;
+    }
+  }
+
+  &.un-editmode-selection {
+    .x-grid-cell-row-checker .x-grid-cell-inner {
+      display: block !important;
+    }
+  }
+
+  &.un-editmode-query {
+    .x-grid-row-checker {
+      background-position: -30px -15px !important;
+    }
+    .x-grid-cell-row-checker .x-grid-cell-inner {
+      display: block !important;
+    }
+
+    .x-grid-item {
+      background-color: $color-primary-1-4 !important;
+
+      .x-grid-cell-first {
+        .x-grid-cell-inner {
+          padding-left: $un-result-card-left-padding - $un-grid-item-strip-width !important;
+          border-left: $un-grid-item-strip-width solid $un-grid-item-strip-color !important;
+        }
+      }
+
+      .x-grid-cell-row-checker {
+        .x-grid-cell-inner {
+          border-left: $un-grid-item-strip-width solid transparent !important;
+        }
+      }
+    }
+  }
+  /* --------------------- */
+
+  .un-query-pinned-sections {
+    padding-top: 0;
+    padding-bottom: 7px;
+  }
+
+  .#{$prefix}form-trigger-wrap-un-field-default:not(.#{$prefix}form-trigger-wrap-focus) {
+    border: 1px solid #cccccc;
+  }
+}

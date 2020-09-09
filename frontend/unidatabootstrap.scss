@@ -1,0 +1,12 @@
+/**
+ * для компиляции выполнить команду
+ * node-sass -w --output-style compressed unidatabootstrap.scss unidatabootstrap.css
+ *
+ * @author Ivan Marshalkin
+ * @date 2018-04-09
+ */
+
+@import "appmicro/Micrologin";
+@import "appmicro/LocalizationMenu";
+@import "appmicro/iziToast";
+@import "appmicro/IziToasCustomization";

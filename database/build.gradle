@@ -1,0 +1,76 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'org.flywaydb.flyway'
+apply plugin: 'application'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.flywaydb:flyway-gradle-plugin:3.2.1', 'org.postgresql:postgresql:42.2.2', 'com.google.guava:guava:23.0'
+    }
+}
+
+mainClassName = 'com.unidata.mdm.backend.db.update.FlywayUpdater'
+
+flyway {
+    url = rootProject.databaseUrl
+    user = rootProject.databaseUser
+    password = rootProject.databasePassword
+    schemas = ['public']
+    locations = ['classpath:db.migration']
+}
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+idea {
+    module {
+        sourceDirs += file('src/main/generated')
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+dependencies {
+
+    // DB engine and Drivers
+    compile ('org.postgresql:postgresql:42.2.2') { // BSD like
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+
+    compile 'org.flywaydb:flyway-core:3.2.1'
+    compile 'com.google.guava:guava:23.0'
+    compile ('com.beust:jcommander:1.48') {
+        exclude group: 'org.slf4j', module: 'slf4j-simple'
+    }
+}
+
+jar{
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+task fatJar(type: Jar, group: 'build'){
+    // Bundle all dependencies aka 'fat jar' to allow run from single file anywhere!
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+    archiveName = "${baseName}-${project.version}.svn.${getScmRevision()}.full.jar"
+}
+
+tasks.withType(Jar){ // Common for Jars
+    baseName = 'unidata-db-updater'
+    destinationDir = new File(project.rootDir, '/target')
+}

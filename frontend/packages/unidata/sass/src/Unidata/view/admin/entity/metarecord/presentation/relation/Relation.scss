@@ -1,0 +1,25 @@
+$baseCls: 'un-presentation-relation';
+
+.#{$baseCls} {
+  overflow: visible;
+  >.#{$prefix}panel-body {
+    overflow: visible;
+    padding: 8px 12px 8px 7px;
+    >.#{$prefix}box-inner {
+      overflow: visible;
+    }
+  }
+}
+
+.#{$baseCls}-type {
+  margin: 0px 100px 0px 0px;
+}
+
+.#{$baseCls}-type {
+  &.un-drop-invitation-before {
+    border-top: 2px solid #507fba;
+  }
+  &.un-drop-invitation-after {
+    border-bottom: 2px solid #507fba;
+  }
+}

@@ -1,0 +1,15 @@
+$baseCls: 'un-notificationarea';
+
+$un-notification-bg-color: $color-primary-4-2;
+
+.#{$baseCls} {
+  background-color: $un-notification-bg-color;
+
+  .x-toolbar-default{
+    background-color: $un-notification-bg-color;
+  }
+
+  .un-notificationclearlist {
+    background-color: $un-notification-bg-color;
+  }
+}

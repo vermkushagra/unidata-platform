@@ -1,0 +1,108 @@
+$baseCls: '.un-classifier-tree';
+$selected-item-color: #90CAF9;
+$focused-item-color: #BBDEFB;
+
+#{$baseCls} {
+  //>.x-panel-body {
+  //    >.x-tree-view {
+  //      .x-grid-cell-inner {
+  //        margin-right: -10px;
+  //      }
+  //    }
+  //}
+
+  //.x-grid-empty {
+    //color: #707070;
+    //background-color: transparent;
+  //}
+
+  //.x-toolbar {
+  //  padding-left: 0px;
+  //
+  //  .x-form-trigger-wrap {
+  //    border: 0px;
+  //  }
+  //}
+
+  //.x-tree-node-text {
+  //  display: inline-block;
+  //}
+
+  //.x-grid-item {
+    //font-size: 14px;
+    //color: #31627e;
+    //background-color: transparent;
+    //.un-classifier-node-special {
+    //  .x-tree-node-text {
+    //    color: #4E93BC;
+    //  }
+    //}
+  //}
+
+  //.x-grid-item-over {
+  //  background-color: rgba(89, 153, 159, 0.5);
+  //  .un-classifier-node-special {
+  //    .x-grid-cell-inner {
+  //      cursor: pointer;
+  //    }
+  //
+  //    .x-tree-node-text {
+  //      text-decoration: underline;
+  //    }
+  //  }
+  //}
+  //
+  //.x-grid-item-focused {
+  //  background-color: $focused-item-color;
+  //}
+  //
+  //.x-grid-item-selected {
+  //  background-color: $selected-item-color;
+  //
+  //  .x-grid-cell {
+  //    background-color: $selected-item-color;
+  //  }
+  //}
+  //.un-tree-icon-leaf {
+  //  &:before {
+  //    content: none;
+  //  }
+  //}
+
+  //.un-field {
+  //  .x-form-field {
+  //    background-color: $selected-item-color;
+  //  }
+  //
+  //  .x-form-trigger {
+  //    background-color: $selected-item-color;
+  //  }
+  //}
+
+  //.x-action-col-cell {
+  //  .un-faaction-col-icon {
+  //    color: #31627e;
+  //  }
+  //}
+
+  //.x-grid-cell {
+  //  #{$baseCls}-has-own-attributes {
+  //    color: #2e7d32;
+  //  }
+  //}
+
+  //.un-classifier-tree-search-field {
+  //  //padding: 10px;
+  //  width: 100%;
+  //  //max-width: 200px;
+  //  .x-form-item-body {
+  //    border: 1px solid #c0c0c0;
+  //    .x-form-field {
+  //      padding: 2px;
+  //    }
+  //    .x-form-trigger {
+  //      background-color: #ffffff;
+  //    }
+  //  }
+  //}
+}

@@ -1,0 +1,23 @@
+$baseCls: '.un-entity-linechart';
+
+#{$baseCls} {
+
+  > .x-panel-body div {
+    height: 100% !important;
+  }
+
+  .x-btn {
+    .x-btn-inner {
+      color: #333333 !important;
+    }
+
+    &:not([class*='x-btn-pressed']) {
+
+      .x-btn-inner,
+      .x-btn-icon-el {
+        color: #bbbbbb !important;
+        font-weight: normal;
+      }
+    }
+  }
+}

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<entry key="CREATE_NEW_SQL">
+        <![CDATA[
+           INSERT INTO 
+           				system_elements(
+             							element_type, 
+             							element_name, 
+             							element_folder, 
+             							element_description, 
+            							element_content, 
+            							element_class,
+            							created_at, 
+            							created_by, 
+            							updated_at, 
+            							updated_by)
+   			 						VALUES (:element_type, 
+             								:element_name, 
+             								:element_folder, 
+             								:element_description, 
+            								:element_content, 
+            								:element_class,
+            								:created_at, 
+            								:created_by, 
+            								:updated_at, 
+            								:updated_by)
+        ]]>
+	</entry>
+	<entry key="GET_BY_ID_SQL">
+        <![CDATA[
+          SELECT 
+          		id, 
+          		element_type, 
+          		element_name, 
+          		element_folder, 
+          		element_description, 
+       			element_content, 
+       			element_class,
+       			created_at, 
+       			created_by, 
+       			updated_at, 
+       			updated_by
+		  FROM 
+		  		system_elements 
+		  WHERE 
+		  		id=:id
+        ]]>
+	</entry>
+	<entry key="GET_BY_NAME_AND_PATH_SQL">
+        <![CDATA[
+          SELECT 
+          		id, 
+          		element_type, 
+          		element_name, 
+          		element_folder, 
+          		element_description, 
+       			element_content, 
+       			element_class,
+       			created_at, 
+       			created_by, 
+       			updated_at, 
+       			updated_by
+  			FROM 
+  				system_elements 
+  			WHERE 
+  				element_name=:element_name 
+  				AND 
+  				element_folder=:element_folder
+        ]]>
+	</entry>
+	<entry key="GET_BY_PATH_AND_TYPES_SQL">
+        <![CDATA[
+          SELECT 
+          		id, 
+          		element_type, 
+          		element_name, 
+          		element_folder, 
+          		element_description, 
+       			element_content, 
+       			element_class,
+       			created_at, 
+       			created_by, 
+       			updated_at, 
+       			updated_by
+  			FROM 
+  				system_elements 
+  			WHERE 
+  				element_folder=:element_folder 
+  				AND 
+  				element_type IN (:element_types)
+        ]]>
+	</entry>
+	<entry key="GET_BY_TYPES_SQL">
+        <![CDATA[
+          SELECT 
+          		id, 
+          		element_type, 
+          		element_name, 
+          		element_folder, 
+          		element_description, 
+       			element_content, 
+       			element_class,
+       			created_at, 
+       			created_by, 
+       			updated_at, 
+       			updated_by
+  			FROM 
+  				system_elements 
+  			WHERE 
+  				element_type in (:element_types)
+        ]]>
+	</entry>
+	<entry key="UPDATE_BY_ID_SQL">
+        <![CDATA[
+           UPDATE 
+           		system_elements
+  		   SET 
+  		   		element_type=:element_type, 
+  		   		element_name=:element_name, 
+  		   		element_folder=:element_folder, 
+  		   		element_description=:element_description, 
+       			element_content=:element_content, 
+       			element_class=:element_class,
+       			created_at=:created_at, 
+       			created_by=:created_by, 
+       			updated_at=:updated_at, 
+       			updated_by=:updated_by
+		 WHERE id=:id
+        ]]>
+	</entry>
+	<entry key="DELETE_BY_ID_SQL">
+        <![CDATA[
+          DELETE FROM system_elements WHERE id=:id
+        ]]>
+	</entry>
+		<entry key="DELETE_BY_CLASS_NAME">
+        <![CDATA[
+          DELETE FROM system_elements WHERE element_class=:element_class
+        ]]>
+	</entry>
+	
+	<entry key="CLEAR_OLD_SQL">
+        <![CDATA[
+          DELETE FROM system_elements WHERE created_at<:created_at AND element_type IN (:element_types)
+        ]]>
+	</entry>
+	<entry key="DELETE_BY_NAME_AND_PATH_SQL">
+        <![CDATA[
+          DELETE FROM system_elements WHERE element_name=:element_name AND element_folder=:element_folder
+        ]]>
+	</entry>
+	<entry key="DELETE_BY_PATH_AND_TYPES_SQL">
+        <![CDATA[
+          DELETE FROM system_elements WHERE element_folder=:element_folder AND element_type IN (:element_types)
+        ]]>
+	</entry>
+	<entry key="DELETE_BY_NAME_AND_TYPES_SQL">
+        <![CDATA[
+          DELETE FROM system_elements WHERE element_name=:element_name AND element_type IN (:element_types)
+        ]]>
+	</entry>
+	<entry key="UPDATE_CLASS_NAMES_SQL">
+        <![CDATA[
+          UPDATE system_elements SET element_class=:element_class WHERE id=:id
+        ]]>
+	</entry>
+	<entry key="DELETE_DUPLICATES">
+        <![CDATA[
+         DELETE FROM system_elements WHERE id NOT IN (SELECT DISTINCT ON (element_class) id FROM   system_elements ORDER  BY element_class, created_at DESC NULLS LAST, element_class);
+        ]]>
+	</entry>
+	
+</properties>

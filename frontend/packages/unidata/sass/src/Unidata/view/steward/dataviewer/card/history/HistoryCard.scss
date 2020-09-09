@@ -1,0 +1,9 @@
+$baseCls: '.un-dataviewer-card-history';
+
+#{$baseCls} {
+  .un-toolbar {
+    .#{$prefix}form-item-label {
+      vertical-align: middle;
+    }
+  }
+}

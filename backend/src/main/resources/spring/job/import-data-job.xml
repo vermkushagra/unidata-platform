@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/batch
+       http://www.springframework.org/schema/batch/spring-batch.xsd
+       http://www.hazelcast.com/schema/spring
+       http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- Import records with partitioning based on parallel execution on several nodes with Hazelcast queue transport. -->
+    <hz:queue id="importDataJobQueue" instance-ref="instance" name="importDataJobQueue" lazy-init="true" depends-on="instance"/>
+    
+    <!-- Parameters processor -->
+    <bean id="importDataJobParameterProcessor" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobParameterProcessor"/>
+    
+    <!-- Parameters -->
+    <bean id="importDataJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="importDataJob"/>
+        <property name="parameterProcessor" ref="importDataJobParameterProcessor"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="dataSetSize" value-ref="importDataJobDataSetSizeParameterExtractor"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="1000"/>
+                <entry key="initialLoad" value-type="java.lang.Boolean" value="false"/>
+                <entry key="auditLevel" value-ref="auditLevelParameterExtractor"/>
+                <entry key="usersSelector" value-type="java.lang.String" value=""/>
+                <entry key="databaseUrl"  value-type="java.lang.String" value=""/>
+                <entry key="operationId" value-type="java.lang.String" value=""/>
+                <entry key="definitionContent" value-type="java.lang.String" value=""/>
+                <entry key="skipDq" value-type="java.lang.Boolean" value="false"/>
+                <entry key="skipMatching" value-type="java.lang.Boolean" value="true"/>
+                <entry key="skipIndexing" value-type="java.lang.Boolean" value="false"/>
+                <entry key="skipNotifications" value-type="java.lang.Boolean" value="false"/>
+                <entry key="skipIndexRebuild" value-type="java.lang.Boolean" value="false"/>
+                <entry key="skipMove" value-type="java.lang.Boolean" value="false"/>
+                <entry key="indexTablespace" value-type="java.lang.String" value=""/>
+                <entry key="mergeWithPreviousVersion" value-type="java.lang.Boolean" value="false"/>
+                <entry key="resolveByMatching" value-type="java.lang.Boolean" value="false"/>
+                <entry key="processingBatchCrashes" value-type="java.lang.Boolean" value="true"/>
+            </util:map>
+        </property>
+        <property name="validators">
+            <util:map>
+                <entry key="blockSize" value-ref="positiveValueParameterValidator"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <!-- Records (lookup) partitioner -->
+    <bean id="importDataJobLookupPartitioner" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobLookupPartitioner" scope="job" />
+
+    <!-- Records (entity) partitioner -->
+    <bean id="importDataJobEntityPartitioner" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobEntityPartitioner" scope="job" />
+
+    <!-- Relations partitioner -->
+    <bean id="importDataJobRelationPartitioner" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobRelationPartitioner" scope="job" />
+
+    <!-- Reindex records partitioner. -->
+    <bean id="importDataJobReindexRecordsPartitioner" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobReindexRecordsPartitioner" scope="job"/>
+
+    <!-- Reindex relations partitioner. -->
+    <bean id="importDataJobReindexRelationsPartitioner" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobReindexRelationsPartitioner" scope="job"/>
+
+    <bean id="importDataJobGroupedPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="importDataJobData.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="importDataJobQueue"/>
+        <property name="grouped" value="true"/>
+    </bean>
+
+    <bean id="importDataJobSequentialPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="importDataJobData.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="importDataJobQueue"/>
+    </bean>
+
+    <bean id="importDataJobReindexPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="importDataJobReindex.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="importDataJobQueue"/>
+    </bean>
+
+    <!-- Job listener -->
+    <bean id="importDataJobExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobExecutionListener" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="runId" value="#{jobParameters['runId']}"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.import.data.name"/>
+        <property name="reportName"
+                  value="#{T(java.time.LocalDateTime).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd_HH:mm'))}_#{jobParameters['jobName']}_Report_#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+    <!-- BOF - Master step listeners -->
+    <!-- Record master step listeer -->
+    <bean id="importDataJobRecordsStepExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobRecordsStepExecutionListener" scope="step"/>
+    <!-- Relation master step listeer -->
+    <bean id="importDataJobRelationsStepExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobRelationsStepExecutionListener" scope="step"/>
+    <!-- EOF Master step listeners -->
+
+    <!-- BOF - Master job. -->
+    <batch:job id="importDataJob" job-repository="jobRepository">
+        <!-- Lookups -->
+        <batch:step id="importDataLookup.master" next="importDataEntity.master">
+            <batch:partition partitioner="importDataJobLookupPartitioner" handler="importDataJobGroupedPartitionHandler"/>
+        </batch:step>
+        <!-- Entities (and classifiers, if initial load == true to have keys locality) -->
+        <batch:step id="importDataEntity.master" next="importDataReindexRecords.master">
+            <batch:partition partitioner="importDataJobEntityPartitioner" handler="importDataJobSequentialPartitionHandler"/>
+            <batch:listeners>
+                <batch:listener ref="importDataJobRecordsStepExecutionListener"/>
+            </batch:listeners>
+        </batch:step>
+        <!-- Reindex entities -->
+        <batch:step id="importDataReindexRecords.master" next="importDataRelation.master">
+            <batch:partition partitioner="importDataJobReindexRecordsPartitioner" handler="importDataJobReindexPartitionHandler"/>
+        </batch:step>
+        <!-- Relations -->
+        <batch:step id="importDataRelation.master" next="importDataReindexRelations.master">
+            <batch:partition partitioner="importDataJobRelationPartitioner" handler="importDataJobSequentialPartitionHandler"/>
+            <batch:listeners>
+                <batch:listener ref="importDataJobRelationsStepExecutionListener"/>
+            </batch:listeners>
+        </batch:step>
+        <!-- Reindex relations -->
+        <batch:step id="importDataReindexRelations.master">
+            <batch:partition partitioner="importDataJobReindexRelationsPartitioner" handler="importDataJobReindexPartitionHandler"/>
+        </batch:step>
+        <batch:listeners>
+            <batch:listener ref="importDataJobExecutionListener"/>
+        </batch:listeners>
+        <!-- TODO reindex master step -->
+    </batch:job>
+    <!-- EOF - Master job. -->
+
+    <bean id="importDataJobStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="importDataJob"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="importDataJobQueue"/>
+        <property name="threadCount" value="${unidata.job.import_data.thread_count:2}"/>
+    </bean>
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="importDataJobData.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="importDataJobProcessor" reader="importDataJobReader" writer="importDataJobWriter"
+                commit-interval="${unidata.job.import_data.commit_interval:1000}"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="importDataJobStepExecutionListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <!-- Slave step listener -->
+    <bean id="importDataJobStepExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobStepExecutionListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_IMPORT_RECORDS"/>
+    </bean>
+
+    <!-- The reader. -->
+    <bean id="importDataJobReader" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobItemReader" scope="step" />
+    <!-- The processor -->
+    <bean id="importDataJobProcessor" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobItemProcessor" scope="step" />
+    <!-- The writer -->
+    <bean id="importDataJobWriter" class="com.unidata.mdm.backend.service.job.exchange.in.ImportDataJobItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <!-- BOF - Slave reindex job. -->
+    <batch:step id="importDataJobReindex.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexDataJobItemReader" processor="reindexDataJobItemProcessor" writer="reindexDataJobItemWriter"
+                commit-interval="${unidata.job.reindex_data.commit_interval:1000}"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="importDataJobReindexMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="importDataJobReindexMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_REINDEX"/>
+    </bean>
+
+    <bean id="reindexDataJobItemReader" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemReader" scope="step"/>
+
+    <bean id="reindexDataJobItemProcessor" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemProcessor" scope="step"/>
+
+    <bean id="reindexDataJobItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemWriter" scope="step"/>
+    <!-- EOF - Slave reindex job. -->
+</beans>

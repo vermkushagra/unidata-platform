@@ -1,0 +1,8 @@
+/*
+* Специальные стили для раздела "Данные"
+*/
+$baseCls: '.un-section';
+$section: 'data';
+$section-color: $un-color-section-data;
+
+@include set-section-color($baseCls, $section, $section-color);

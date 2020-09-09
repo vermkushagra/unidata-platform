@@ -1,0 +1,374 @@
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'http://www.soapui.org/repository/maven2/' }
+        maven { url 'https://repository.jboss.org/maven2/' }
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+        classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
+        classpath 'org.tmatesoft.svnkit:svnkit:1.8.9'
+        classpath 'net.nemerosa:versioning:2.5.1'
+        classpath 'com.jcraft:jsch:0.1.53'
+        classpath 'gradle.plugin.org.urbanbyte:soapui-gradle-plugin:0.4.3'
+        classpath ('com.smartbear.soapui:soapui:5.3.0'){
+            exclude module: 'commons-logging'
+            exclude module: 'log4j'
+            exclude module: 'jtidy'
+            exclude module: 'cajo'
+            exclude group: 'org.codehaus.groovy'
+        }
+        classpath files('gradle/libs/gradle-trust-all.jar')
+    }
+}
+
+plugins {
+    id 'org.sonarqube' version '2.6.2'
+    id 'org.urbanbyte.soapui' version '0.4.3'
+    id 'io.spring.dependency-management' version '1.0.3.RELEASE'
+}
+
+Properties props = new Properties()
+File propsFile = new File(project.rootDir, 'project.properties')
+props.load(propsFile.newDataInputStream())
+
+if (project.hasProperty('profile')) {
+    // попробуем подключить файл профиля по определённому свойству
+    if (file("profiles/profile-${profile}.gradle").exists()) {
+        apply(from: "profiles/profile-${profile}.gradle")
+        logger.quiet("Applied profile: profiles/profile-${profile}.gradle")
+    } else {
+        throw new StopExecutionException("Required profile profiles/profile-${profile}.gradle not found!")
+    }
+} else {
+    throw new StopExecutionException('Profile undefined! Please define property ext.profile in gradle.properties');
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.12'
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'trust-all' // handle HTTPS self-signed certificates
+
+idea {
+    project {
+        //it should work, but it doesn't
+        languageLevel = '1.8'
+    }
+}
+
+apply plugin: 'net.nemerosa.versioning'
+
+versioning{ // See my pull request: https://github.com/nemerosa/versioning/pull/33
+    branchEnv = ['CI_BUILD_REF_NAME', 'CI_COMMIT_REF_NAME', 'BRANCH_NAME']
+    dirtySuffix = ''
+
+    // Until @BUG resolved https://bugs.eclipse.org/bugs/show_bug.cgi?id=497315 for correct taq resolving it should be single - because first has precedence
+    full = { scmInfo ->
+        // Tag name, or @branch_name@. gitlab-ci use detached head (https://gitlab.com/gitlab-org/gitlab-ci/issues/13) - so var used in that case
+        (scmInfo.tag ?: scmInfo.abbreviated).toLowerCase().replaceAll(/[^a-z0-9-_\.]/, '_')
+    }
+    info.metaClass.buildTime = new Date() // Once for all + common format
+    info.metaClass.buildTimeString = info.buildTime.format('yyyy.MM.dd..HH.mm.ss')
+}
+// Outer from versioning{} to do not touch main full version info used in other places like tar build
+ext.versionFullWithBranch = versioning.info.buildTimeString + '.' + (versioning.info.tag ?: ( versioning.info.branch in ['master', 'origin/master'] ? '' : "_${versioning.info.branch}_." ) + versioning.info.build).toLowerCase().replaceAll(/[^a-z0-9-\.]/, '_')
+
+println "full version with branch: ${versionFullWithBranch}"
+
+sonarqube {
+    properties {
+        property 'sonar.sourceEncoding', 'UTF-8'
+        property "sonar.exclusions", "**/generated/**,**/CXFResponseFilter*,**/SwaggerJaxrsFilter*"
+        property "sonar.jacoco.reportPaths", "${buildDir}/jacoco/jacoco_it.exec"
+    }
+}
+
+allprojects {
+    group = 'com.unidata.mdm'
+    version = props.getProperty('version')
+
+    ext{
+        projectPprops = props
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
+}
+
+subprojects {
+}
+
+def getScmRevision(){
+    return versioning.info.build
+}
+
+clean {
+    delete 'build', 'target', 'distribution'
+}
+
+configure([project(':frontend'), project(':frontend-admin'), project(':backend'), project(':api-docs')]) {
+
+    apply plugin: 'war'
+    apply plugin: 'com.bmuschko.cargo'
+
+
+    cargo {
+        containerId = 'tomcat7x'
+        remote {
+            protocol = tomcatProtocol
+            hostname = tomcatHost
+            port = tomcatPort
+            username = tomcatUser
+            password = tomcatPassword
+        }
+    }
+
+    tasks.cargoDeployRemote.dependsOn(war)
+    tasks.cargoRedeployRemote.dependsOn(war)
+}
+
+project(':api-docs') {
+    sonarqube {
+        skipProject = true
+    }
+}
+
+project(':database') {
+    sonarqube {
+        skipProject = true
+    }
+}
+
+project(':tools') {
+    sonarqube {
+        skipProject = true
+    }
+}
+
+project(':frontend') {
+
+    sonarqube {
+        properties {
+            property "sonar.sources", "app/"
+            property "sonar.coverage.exclusions", "app/**/*.js"
+        }
+    }
+}
+
+
+/**
+ * Create version file.
+ **/
+task createversionfile {
+    doLast{
+        def folder = new File(project.rootDir, '/target')
+        // If it doesn't exist
+        if( !folder.exists() ) {
+            // Create all folders up-to and including B
+            folder.mkdirs()
+        }
+        def versionfile = new File(project.rootDir, '/target/version')
+        def filecontent = 'version: ' + project.version + "." + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+        versionfile.write filecontent
+    }
+}
+
+def copyTomcatFiles(packageDir, confDir, profile) {
+    copySpec {
+        from("conf/${profile}/Tomcat") {
+            into packageDir
+            exclude 'conf/unidata'
+        }
+        from("conf/${profile}/Tomcat/conf/unidata") {
+            into confDir
+            exclude 'backend.properties'
+        }
+        from("conf/${profile}/Tomcat/conf/unidata") {
+            into confDir
+            include 'backend.properties'
+            expand(
+                unidata_platform_version: project.version.replace('r', ''),
+                unidata_api_version: project.property('soap.api.versions')
+            )
+        }
+    }
+}
+
+/**
+ * Create distribution package.
+ **/
+task tarFile (type: Tar, group: 'distribution') {
+    dependsOn createversionfile,':migrations:prepareTool', ':backend:war', ':backend:prepareTool', ':frontend:war', ':frontend-admin:war', ':tools:tarFile', ':common:javadocJar'
+
+    destinationDir = new File(project.rootDir, '/distribution')
+    def packageDir = project.name + '-' +  project.version
+    description = 'Creates the distribution gzip file'
+
+    with copyTomcatFiles(packageDir + '/Tomcat', packageDir + '/Tomcat/conf/unidata', 'prod')
+
+    // webapps
+    from ('target/') {
+        into(packageDir + '/Tomcat/webapps')
+        include '*.war'
+    }
+
+    // sdk
+    from ('backend/src/main/resources/schemas') {
+        into(packageDir + '/sdk/schemas')
+    }
+    from ('target/') {
+        into(packageDir + '/sdk')
+        include 'common-*.jar'
+        include 'soap-api-*.jar'
+    }
+
+    // javadoc
+    from ('target/') {
+        into(packageDir + '/javadoc')
+        include '*javadoc*.jar'
+    }
+
+    /*
+    from (project.rootDir.getAbsolutePath()+'/soap-api/build/libs/') {
+        into(packageDir + '/sdk')
+        include 'soap-api*.jar'
+    }
+    */
+    // database creation sql
+    from ('database/current_schema') {
+        into(packageDir + '/database')
+        include '*.sql'
+    }
+    // ThirdParty
+    from ('toPackage/') {
+        into(packageDir)
+    }
+    //SQL migration scripts
+    from ('database/src/main/resources/db/migration') {
+        into(packageDir + '/database/migration')
+    }
+    //SQL migration sh scripts
+    from ('database/src/dist') {
+        into(packageDir + '/database')
+    }
+    // version file
+    from ('target/version') {
+        into(packageDir)
+    }
+
+    from ('distribution') {
+        into(packageDir)
+        include 'tools*.tar.gz'
+    }
+
+    classifier = (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+    extension = 'tar.gz'
+    compression = Compression.GZIP
+    println 'Within the child tarDist'
+}
+
+/************ Docker ************/
+apply plugin: 'com.bmuschko.docker-remote-api'
+import com.bmuschko.gradle.docker.tasks.image.*
+import com.bmuschko.gradle.docker.tasks.container.*
+
+ext.dockerBuildDir = file("$buildDir/docker")
+
+docker{
+    url = 'unix:///var/run/docker.sock'
+
+    registryCredentials {
+        url = 'https://docreg.your.work/v2'
+        username = 'yourname'
+        // Var should be provided from outer scope (f.e. from gitlab-ci).
+        password = System.env.YOUR_DOCKER_REGISTRY_PASSWORD
+    }
+}
+
+ext{
+    warTasksForDockerContainer = [':backend:war', ':frontend:war', ':frontend-admin:war']
+    explodedWarTasksForDockerContainer = []
+}
+warTasksForDockerContainer.each{ // Dynamically create tasks for explode wars
+    def dep = tasks.getByPath(it)
+    ext.explodedWarTasksForDockerContainer += task "explodedWar-${dep.project.name}"(type: Sync, dependsOn: dep, description: 'Produce directory with exploded war content to be used in docker container') {
+        into "${dockerBuildDir}/wars-exploded/${rootProject.name}-${dep.project.name}"
+        with dep
+    }
+}
+
+task copyTomcatFilesForDocker(type: Sync) {
+    outputs.upToDateWhen { false }
+
+    with copyTomcatFiles('tomcat', 'unidata', profile)
+    destinationDir = file("${dockerBuildDir}/configs")
+}
+
+task createMainDockerfile(type: Dockerfile, dependsOn: (explodedWarTasksForDockerContainer + copyTomcatFilesForDocker)) {
+    from 'tomcat:9-alpine'
+    environmentVariable 'TZ', 'Europe/Moscow'
+
+    runCommand '''apk add --no-cache ttf-freefont tzdata curl && \\
+        ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \\
+        rm -rf /usr/local/tomcat/webapps/* && \\
+        mkdir -p /usr/local/tomcat/unidata-integration'''
+
+    copyFile 'configs/unidata/', '/usr/local/tomcat/conf/unidata/'
+    copyFile 'configs/tomcat/conf/', '/usr/local/tomcat/conf/'
+    copyFile 'configs/tomcat/lib/', '/usr/local/tomcat/lib/'
+    copyFile 'configs/tomcat/bin/', '/usr/local/tomcat/bin/'
+
+    // Hack some parameters for docker and tomcat9 support:
+    runCommand '''sed -i 's#jdbc:postgresql://localhost:#jdbc:postgresql://unidata-db:#g' /usr/local/tomcat/conf/Catalina/localhost/unidata-backend.xml \\
+        && sed -i '/<Loader className="org.apache.catalina.loader.VirtualWebappLoader"/d;s#virtualClasspath="${catalina.base}/unidata-integration/\\*.jar" searchVirtualFirst="true"/>#<Resources className="org.apache.catalina.webresources.StandardRoot"><JarResources className="org.apache.catalina.webresources.DirResourceSet" base="/usr/local/tomcat/unidata-integration" webAppMount="/WEB-INF/lib"/></Resources>#' /usr/local/tomcat/conf/Catalina/localhost/unidata-backend.xml \\
+        && sed -i 's#^unidata.search.nodes.addresses=localhost:#unidata.search.nodes.addresses=unidata-elastic:#g' /usr/local/tomcat/conf/unidata/backend.properties \\
+        && echo -e '\\n\\nunidata.db.migrate=true' >> /usr/local/tomcat/conf/unidata/backend.properties
+'''
+
+    copyFile 'wars-exploded/', '/usr/local/tomcat/webapps/'
+
+    // Quotes must be escaped: https://github.com/bmuschko/gradle-docker-plugin/issues/656
+    defaultCommand 'sh', '-c', '(test -n \\"$LICENSE_TEXT\\" && echo \\"$LICENSE_TEXT\\" | install -D /dev/stdin /etc/unidata/license.bin || :) && catalina.sh run'
+
+    exposePort 8080
+}
+
+task buildDockerImage(type: DockerBuildImage, dependsOn: createMainDockerfile) {
+    inputDir = dockerBuildDir
+    remove = true
+    ext.buildTagName = versioning.info.full
+    tag = "docreg.your.work/unidataapp:${buildTagName}"
+}
+task pushDockerImage(type: DockerPushImage, dependsOn: buildDockerImage, description: 'Push built image into docker registry'){
+    imageName = "docreg.your.work/unidataapp:${buildDockerImage.buildTagName}"
+}
+/************ /Docker ************/
+
+/**
+ * Dump jacoco from integration test server
+ */
+configurations {
+    jacocoant
+}
+dependencies{
+    jacocoant 'org.jacoco:org.jacoco.ant:0.7.9'
+    jacocoant 'org.jacoco:org.jacoco.core:0.7.9'
+}
+
+task fetchJacocoResult{
+    group = "verification"
+    description = "Fetch coverage results from server"
+    doFirst{
+        ant.taskdef(name:'jacocodump', classname: 'org.jacoco.ant.DumpTask', classpath: configurations.jacocoant.asPath)
+        ant.jacocodump(address:tomcatHost, port:"6300", reset:"truesona", append:"false", destfile:"${buildDir}/jacoco/jacoco_it.exec" )
+    }
+}

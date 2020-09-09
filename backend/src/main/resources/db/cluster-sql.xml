@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="SELECT">
+        <![CDATA[
+            select * from matched_records as mr INNER JOIN (SELECT * FROM clusters as cl where true %s) as cl ON cl.id=mr.cluster_id
+        ]]>
+    </entry>
+    <entry key="SELECT_IDS">
+        <![CDATA[
+            select cl.id from clusters as cl where true %s
+        ]]>
+    </entry>
+    <entry key="SELECT_COUNT">
+        <![CDATA[
+            select count(*) from clusters as cl where true %s
+        ]]>
+    </entry>
+    <entry key="SELECT_RECORDS_COUNT">
+        <![CDATA[
+            select count(distinct(mr.etalon_id::text)) from clusters as cl, matched_records as mr where cl.id = mr.cluster_id %s
+        ]]>
+    </entry>
+    <entry key="INSERT_CLUSTER">
+        <![CDATA[
+            insert into clusters (cluster_identifier, rule_id, entity_name, matching_date, version)
+            values (:hash, :ruleId, :entityName, :date, :version)
+        ]]>
+    </entry>
+    <entry key="UPDATE_CLUSTER">
+        <![CDATA[
+            update clusters set matching_date = :date, version = (:version + 1), cluster_identifier =:hash where id = :id and matching_date < :date and version = :version
+        ]]>
+    </entry>
+    <entry key="INSERT_RECORDS">
+        <![CDATA[
+            insert into matched_records (cluster_id, etalon_id, etalon_date, matching_rate) values (:clusterId, :etalonId::uuid, :etalonDate, :matchingRate)
+        ]]>
+    </entry>
+    <entry key="DELETE_CLUSTERS">
+        <![CDATA[
+            delete from clusters as cl where true %s
+        ]]>
+    </entry>
+    <entry key="DELETE_RECORDS_FROM_CLUSTER_BY_ETALONS">
+        <![CDATA[
+            delete from matched_records where etalon_id in (:ids)
+        ]]>
+    </entry>
+    <entry key="DELETE_RECORDS_FROM_CLUSTER_BY_CLUSTER">
+        <![CDATA[
+            delete from matched_records where etalon_id in (:ids) and cluster_id = :id
+        ]]>
+    </entry>
+    <entry key="INSERT_INTO_BLOCK_LIST">
+        <![CDATA[
+            insert into blocked_matched_records (cluster_identifier, rule_id, entity_name, blocked_etalon_id, blocked_for_etalon_id)
+            values (:hash, :ruleId, :entityName, :blockedId::uuid, :blockedForId::uuid)
+        ]]>
+    </entry>
+    <entry key="SELECT_BLOCKED_RECORDS">
+        <![CDATA[
+            select blocked_etalon_id::text, blocked_for_etalon_id::text from blocked_matched_records as bmr where true %s
+        ]]>
+    </entry>
+    <entry key="DELETE_BLOCKED_RECORDS">
+        <![CDATA[
+            delete from blocked_matched_records as bmr where true %s
+        ]]>
+    </entry>
+</properties>

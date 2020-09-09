@@ -1,0 +1,65 @@
+$baseCls: '.un-mainmenu-item';
+
+#{$baseCls}-group > #{$baseCls}-body {
+
+  #{$baseCls}-text {
+    padding-right: $un-menu-item-group-arrow-width + 5px;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 11px;
+
+    &:after {
+      -webkit-transition: transform $un-menu-item-animation-speed;
+      transition: transform $un-menu-item-animation-speed;
+
+      font-family: $font-family-linearicons !important;
+      font-size: 7px;
+      content: "\e93a";
+      position: absolute;
+      right: 8px;
+      top: 0;
+      width: $un-menu-item-group-arrow-width;
+      text-align: center;
+    }
+  }
+}
+
+#{$baseCls}-group {
+  // стиль неактивного элемента
+  &.x-item-disabled {
+    opacity: 0.5;
+  }
+
+  // маска прозрачная
+  div.x-mask {
+    background-color: transparent;
+  }
+
+  &#{$baseCls}-group-collapsed {
+    border-top-color: red;
+
+    #{$baseCls} {
+      #{$baseCls}-body {
+        height: 0;
+      }
+
+      &#{$baseCls}-selected,
+      &#{$baseCls}-pinned,
+      &#{$baseCls}-pinned-temp {
+        #{$baseCls}-body {
+          height: $un-menu-item-inner-height;
+        }
+      }
+    }
+
+    &> #{$baseCls}-body {
+      #{$baseCls}-text {
+        &:after {
+          //content: "\e93c";
+          @include transform(rotate(-90deg));
+        }
+      }
+    }
+  }
+}

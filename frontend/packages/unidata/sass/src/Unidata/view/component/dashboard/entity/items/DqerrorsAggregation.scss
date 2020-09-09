@@ -1,0 +1,71 @@
+$baseCls: '.un-dqerrors-aggregation';
+
+#{$baseCls} {
+  .x-grid-item-focused .x-grid-cell-inner:before {
+    display: none;
+  }
+
+  .x-header .x-title-text {
+    padding-left: 6px;
+  }
+
+  td {
+    font-size: 12px;
+    font-family: Arial;
+    text-decoration: underline;
+    color: #1F4D91;
+    cursor: pointer;
+
+    .x-grid-cell-inner {
+      text-align: center !important;
+    }
+  }
+
+  td:hover {
+    color: #3386c2;
+  }
+
+  td:first-child {
+    text-decoration: none;
+    color: #000000;
+    cursor: default;
+    text-align: left;
+
+    .x-grid-cell-inner {
+      text-align: left !important;
+    }
+  }
+
+  .x-column-header {
+    text-align: center;
+    font-size: 13px;
+    font-family: Arial;
+    text-transform: lowercase;
+    background-color: #ffffff;
+    border-right: none;
+    color: #000000;
+
+    .x-column-header-inner {
+      padding: 7px 6px;
+    }
+
+    .x-column-header-text {
+      max-width: none !important;
+    }
+  }
+
+  .x-column-header:first-child {
+    text-align: left;
+  }
+
+  .x-panel-body {
+    border-top-width: 2px;
+    border-color: #dddddd;
+  }
+
+  .x-column-header:last-child,
+  table td:last-child,
+  table:last-child {
+    font-weight: bold !important;
+  }
+}

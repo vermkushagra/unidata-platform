@@ -1,0 +1,29 @@
+$ui-name: 'un-notification';
+
+$un-notification-bg-color: $color-primary-4-2;
+$un-notification-text-color: white;
+
+@include extjs-panel-ui(
+  $ui: $ui-name,
+  $ui-header-background-color: $un-notification-bg-color,
+  $ui-body-background-color: $un-notification-bg-color,
+  $ui-header-color: $un-notification-bg-color,
+  $ui-header-text-transform: uppercase
+);
+
+.x-grid.x-panel-un-notification {
+  .x-grid-item,
+  .x-grid-item-focused,
+  .x-grid-item-over .x-grid-item-focused,
+  .x-grid-cell-inner:before
+  {
+    color: $un-notification-text-color;
+    background: $un-notification-bg-color;
+    border: none;
+  }
+
+  // перенос в ячейках грида
+  .x-grid-cell-inner  {
+    white-space: normal;
+  }
+}

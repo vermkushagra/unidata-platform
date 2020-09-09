@@ -1,0 +1,100 @@
+<meta:model xmlns:meta="http://meta.mdm.taskdata.com/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://meta.mdm.taskdata.com/ ../../src/main/resources/schemas/unidata-meta-2.1.xsd"
+            storageId="default">
+    <meta:cleanseFunctions>
+        <meta:group groupName="Корень">
+            <meta:group groupName="Строковые">
+            <!--removes leading\trailing whitespaces-->
+                <meta:cleanseFunction functionName="ПроверкаПоМаске" javaClass="com.unidata.mdm.cleanse.string.CFCheckMask"/>
+                <meta:cleanseFunction functionName="УбратьПробелы" javaClass="com.taskdata.mdm.cleanse.string.CFTrim"/>
+                <!--concatenate strings, must accept more than 2 input strings-->
+                <meta:cleanseFunction functionName="Соеденить" javaClass="com.taskdata.mdm.cleanse.string.CFConcatenate"/>
+                <!--removes double+ whitespaces-->
+                <meta:cleanseFunction functionName="УбратьЛишниеПробелы" javaClass="com.taskdata.mdm.cleanse.string.CFCompressWhitespaces"/>
+                <!-- default value comes as input parameter -->
+                 <meta:cleanseFunction functionName="ЗначениеПоУмолчанию" javaClass="com.taskdata.mdm.cleanse.string.CFDefaultValue"/>
+                <!--formate input string according to some rule(rule as input parameter)-->
+                <meta:cleanseFunction functionName="Форматировать" javaClass="com.taskdata.mdm.cleanse.string.CFFormatString"/>
+               
+                <meta:cleanseFunction functionName="ВыровнятьСлева" javaClass="com.taskdata.mdm.cleanse.string.CFPadLeft"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="ВыровнятьСправа" javaClass="com.taskdata.mdm.cleanse.string.CFPadRight"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="НижнийРегистр" javaClass="com.taskdata.mdm.cleanse.string.CFToLowerCase"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="ВерхнийРегистр" javaClass="com.taskdata.mdm.cleanse.string.CFToUpperCase"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="Заголовок" javaClass="com.taskdata.mdm.cleanse.string.CFToTitleCase"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="Подстрока" javaClass="com.taskdata.mdm.cleanse.string.CFSubstring"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="РегулярноеВыражение" javaClass="com.taskdata.mdm.cleanse.string.CFRegExp"/>
+            </meta:group>
+
+            <meta:group groupName="Математические">
+            <!--ок-->
+                <meta:cleanseFunction functionName="Сумма" javaClass="com.taskdata.mdm.cleanse.math.CFSum"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Разность" javaClass="com.taskdata.mdm.cleanse.math.CFSubstract"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Произведение" javaClass="com.taskdata.mdm.cleanse.math.CFMultiply"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Деление" javaClass="com.taskdata.mdm.cleanse.math.CFDivide"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Округлить" javaClass="com.taskdata.mdm.cleanse.math.CFRound"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Максимум" javaClass="com.taskdata.mdm.cleanse.math.CFMax"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Минимум" javaClass="com.taskdata.mdm.cleanse.math.CFMin"/>
+            </meta:group>
+
+            <meta:group groupName="Логические">
+             <!--ок-->
+                <meta:cleanseFunction functionName="and" javaClass="com.taskdata.mdm.cleanse.logic.CFAnd"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="or" javaClass="com.taskdata.mdm.cleanse.logic.CFOr"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="xor" javaClass="com.taskdata.mdm.cleanse.logic.CFXor"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="not" javaClass="com.taskdata.mdm.cleanse.logic.CFNot"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Сравнить" javaClass="com.taskdata.mdm.cleanse.logic.CFCompare"/>
+                 <!--?-->
+                <meta:cleanseFunction functionName="Выбрать" javaClass="com.taskdata.mdm.cleanse.logic.CFChoose"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="IsEmpty" javaClass="com.taskdata.mdm.cleanse.logic.CFIsEmpty"/>
+            </meta:group>
+            <meta:group groupName="РазборТиповДанных">
+            	
+                <meta:cleanseFunction functionName="РазобратьBoolean" javaClass="com.taskdata.mdm.cleanse.convert.CFParseBoolean"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьDate" javaClass="com.taskdata.mdm.cleanse.convert.CFParseDate"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьNumber" javaClass="com.taskdata.mdm.cleanse.convert.CFParseNumber"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьInteger" javaClass="com.taskdata.mdm.cleanse.convert.CFParseInteger"/>
+            </meta:group>
+
+          <!--   <meta:group groupName="Адресные">
+            
+                <meta:cleanseFunction functionName="ПроверкаПоФИАС" javaClass="com.taskdata.mdm.cleanse.postaladdress.CFFiasCheck"/>
+            </meta:group>-->
+            <meta:group groupName="Разное">
+            <!-- 
+                <meta:cleanseFunction functionName="ПроверкаТелНомера" javaClass="com.taskdata.mdm.cleanse.misc.CFCheckPhoneNumber"/>-->
+                <!--checksum?-->
+                <meta:cleanseFunction functionName="ПроверкаИНН" javaClass="com.taskdata.mdm.cleanse.misc.CFCheckINN"/>
+                <!-- Duplicates search (hidden). -->
+                <meta:cleanseFunction functionName="ПоискДубликатов" javaClass="com.taskdata.mdm.cleanse.misc.CFFindDuplicates" />
+                <!--parse full name-->
+                <meta:cleanseFunction functionName="РазобратьПолноеИмя" javaClass="com.taskdata.mdm.cleanse.misc.CFParseFullName"/>
+                <meta:cleanseFunction functionName="ПроверкаСсылки"
+                                      javaClass="com.unidata.mdm.cleanse.misc.CFDataConsistency"/>
+            </meta:group>
+        </meta:group>
+    </meta:cleanseFunctions>
+    <meta:sourceSystems>
+        <meta:sourceSystem name="unidata" description="От имени этого источника данных будут производится все системные операции" weight="100" admin="true"/>
+    </meta:sourceSystems>
+ </meta:model>

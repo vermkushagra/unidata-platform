@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <!--
+        Reindex Job with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+
+    <hz:queue id="matchingJobQueue" instance-ref="instance" name="matchingJobsPartitionQueue"
+              lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="matchingJob"  job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="matchingItemListener"/>
+            <batch:listener ref="matchingJobExecutionListener"/>
+        </batch:listeners>
+
+        <batch:decision id="decision" decider="matchingUsePreprocessingDecider">
+            <batch:next on="COMPLETED" to="matching.preprocessing.master" />
+            <batch:next on="UNKNOWN" to="matching.master"/>
+            <batch:fail on="FAILED"/>
+        </batch:decision>
+
+        <batch:step id="matching.master">
+            <batch:partition partitioner="matchingPartitioner" handler="matchingPartitionHandler">
+            </batch:partition>
+        </batch:step>
+
+        <batch:step id="matching.preprocessing.master">
+            <batch:partition partitioner="matchingPreprocessingPartitioner" handler="matchingPreprocessingPartitionHandler">
+            </batch:partition>
+        </batch:step>
+
+    </batch:job>
+
+    <bean id="matchItemsProcessingJobParameters" class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="matchingJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="entityName" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="matchingName" value-type="java.lang.String" value="Имя правила"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="500"/>
+                <entry key="usePreprocessing" value-type="java.lang.Boolean" value="false"/>
+            </util:map>
+        </property>
+        <property name="validators">
+            <util:map>
+                <entry key="blockSize" value-ref="positiveValueParameterValidator"/>
+                <entry key="matchingName" value-ref="matchingRuleParameterValidator"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="matchingRuleParameterValidator"
+          class="com.unidata.mdm.backend.service.job.matching.MatchingJobMatchingRuleParameterValidator"/>
+
+    <bean id="matchingUsePreprocessingDecider" class="com.unidata.mdm.backend.service.job.matching.MatchingUsePreprocessingDecider"
+     scope="job">
+        <property name="usePreprocessing" value="#{jobParameters['usePreprocessing']}"/>
+    </bean>
+    <bean id="matchingPartitioner" class="com.unidata.mdm.backend.service.job.matching.MatchingPartitioner"
+          scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="blockSize" value="#{jobParameters['blockSize']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+    </bean>
+
+    <bean id="matchingPreprocessingPartitioner" class="com.unidata.mdm.backend.service.job.matching.MatchingPreprocessingPartitioner"
+          scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+    </bean>
+
+    <bean id="matchingItemListener" class="com.unidata.mdm.backend.service.job.matching.MatchingJobReportGenerator" scope="job">
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.matching.data.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+    </bean>
+
+    <bean id="matchingMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_MATCHING"/>
+    </bean>
+
+    <bean id="matchingJobExecutionListener" class="com.unidata.mdm.backend.service.job.matching.MatchingJobExecutionListener"  scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+    </bean>
+
+    <bean id="matchingPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="matching.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="matchingJobQueue"/>
+    </bean>
+
+    <bean id="matchingPreprocessingPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="matching.preprocessing.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="matchingJobQueue"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="matching.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="matchingRemoteItemReader"
+                         processor="matchingRemoteItemProcessor"
+                         writer="matchingRemoteItemWriter"
+                         commit-interval="20"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="matchingMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+
+    <batch:step id="matching.preprocessing.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="matchingPreprocessingItemReader"
+                         writer="matchingPreprocessingItemWritter"
+                         commit-interval="1"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="matchingMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="matchingRemoteItemReader" class="com.unidata.mdm.backend.service.job.matching.MatchingItemReader"
+          scope="step">
+        <property name="entityName" value="#{stepExecutionContext['entityName']}"/>
+        <property name="startGsn" value="#{stepExecutionContext['startGSN']}"/>
+        <property name="endGsn" value="#{stepExecutionContext['endGSN']}"/>
+    </bean>
+
+    <bean id="matchingPreprocessingItemReader"
+          class="com.unidata.mdm.backend.service.job.matching.MatchingPreprocessingItemReader"
+          scope="step">
+        <property name="blockSize" value="#{jobParameters['blockSize']}"/>
+        <property name="clusterMetaData" value="#{stepExecutionContext[clusterMetaData]}"/>
+        <property name="shardNumber" value="#{stepExecutionContext[shardNumber]}"/>
+    </bean>
+
+    <bean id="matchingRemoteItemWriter" class="com.unidata.mdm.backend.service.job.matching.MatchingItemWriter"
+          scope="step" >
+        <property name="jobRunTime" value="#{jobParameters['timestamp']}"/>
+    </bean>
+
+
+    <bean id="matchingPreprocessingItemWritter"
+          class="com.unidata.mdm.backend.service.job.matching.MatchingPreprocessingItemWritter"
+          scope="step">
+    </bean>
+
+    <bean id="matchingRemoteItemProcessor" class="com.unidata.mdm.backend.service.job.matching.MatchingItemProcessor"
+          scope="step" >
+        <property name="clusterMetaData" value="#{stepExecutionContext[clusterMetaData]}"/>
+        <property name="entityName" value="#{stepExecutionContext['entityName']}"/>
+    </bean>
+    <!-- EOF - Slave job. -->
+
+    <bean id="matchingRemoteStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobName" value="matchingJob"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="matchingJobQueue"/>
+        <property name="threadCount" value="${unidata.job.matching.thread_count:2}"/>
+    </bean>
+
+</beans>

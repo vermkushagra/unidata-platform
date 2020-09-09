@@ -1,0 +1,25 @@
+.unidata-message-box-metamodel {
+  .x-window-header {
+    background: #e0e0e0;
+    color: #202020;
+  }
+
+  .x-tool-img {
+    background-color: #e0e0e0;
+  }
+
+  .x-btn {
+    width: 200px !important;
+    height: 150px !important;
+  }
+
+  .x-btn-inner {
+    font: 300 22px/26px helvetica, arial, verdana, sans-serif;
+  }
+
+  .x-window-body .x-container, .x-window-body .x-box-item {
+    height: 0px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+  }
+}

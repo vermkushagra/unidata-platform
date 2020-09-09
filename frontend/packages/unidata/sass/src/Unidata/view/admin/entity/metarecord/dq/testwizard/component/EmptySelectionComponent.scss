@@ -1,0 +1,45 @@
+$baseCls: 'un-testwizard-emptyselection';
+$iconFontSize: 40px;
+$iconFontColor: #666;
+
+$containerBackgroundColor: #f2f2f2;
+$containerTextBackgroundColor: #FAFAFA;
+$containerTexBorderColor: #a6a6a6;
+
+.#{$baseCls} {
+  .wrapper {
+    display: table;
+    height: 100%;
+    width: 100%;
+  }
+
+  .inner-container {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+
+    // иконка
+    i {
+      font-size: $iconFontSize;
+      color: $iconFontColor;
+      padding-right: 20px;
+      opacity: 0.6;
+    }
+
+    // текст
+    span {
+      line-height: $iconFontSize;
+      vertical-align: top;
+    }
+
+    // контейнер с текстом
+    div[role=border] {
+      display: inline-block;
+      border: 1px solid $containerTexBorderColor;
+      border-radius: 5px;
+      padding: 20px;
+      background-color: $containerTextBackgroundColor;
+    }
+  }
+}

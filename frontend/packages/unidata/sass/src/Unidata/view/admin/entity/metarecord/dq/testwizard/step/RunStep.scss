@@ -1,0 +1,26 @@
+$baseCls: 'un-dq-testwzrd-runstep';
+
+.#{$baseCls} {
+  // кнопка распирает заголовок делаем отступы меньше
+  .x-panel-header {
+    padding: 8px 10px 8px 10px;
+    min-height: 39px;
+  }
+
+  .has-dqerrors  .x-grid-cell-row-checker .x-grid-cell-inner  {
+    display: block !important;
+  }
+
+  .x-grid-row-checker {
+    background-image: none;
+  }
+
+  .has-dqerrors .x-grid-row-checker:after {
+    font-family: $font-family-linearicons;
+    content: "\e956";
+    position: absolute;
+    z-index: 10000;
+    font-size: 14px;
+    color: red;
+  }
+}

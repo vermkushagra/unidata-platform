@@ -1,0 +1,156 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <!--
+    Reindex Job with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+    <hz:queue id="reindexDataJobDataQueue" instance-ref="instance" name="reindexDataJobDataQueue" lazy-init="true" depends-on="instance"/>
+    <!--
+    Thread pool for index mapping manipuations.
+    -->
+    <bean id="reindexDataJobMappingTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="${unidata.job.reindex_data.mapping.concurrency:4}"/>
+    </bean>
+
+    <bean id="reindexDataJobParameters" class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="reindexDataJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="reindexTypes" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="usersSelector" value-type="java.lang.String" value=""/>
+                <entry key="updateMappings" value-type="java.lang.Boolean" value="false"/>
+                <entry key="cleanIndexes" value-type="java.lang.Boolean" value="false"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="1000"/>
+                <entry key="reindexRecords" value-type="java.lang.Boolean" value="true"/>
+                <entry key="reindexRelations" value-type="java.lang.Boolean" value="true"/>
+                <entry key="reindexClassifiers"  value-type="java.lang.Boolean" value="true"/>
+                <entry key="reindexMatching"  value-type="java.lang.Boolean" value="true"/>
+                <entry key="skipDq" value-type="java.lang.Boolean" value="true"/>
+                <entry key="suppressConsistencyCheck" value-type="java.lang.Boolean" value="true"/>
+                <entry key="skipNotifications" value-type="java.lang.Boolean" value="true"/>
+            </util:map>
+        </property>
+        <property name="validators">
+            <util:map>
+                <entry key="blockSize" value-ref="positiveValueParameterValidator"/>
+            </util:map>
+         </property>
+    </bean>
+
+    <!-- Partition handler. -->
+    <bean id="reindexDataJobDataPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="reindexDataJobData.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="reindexDataJobDataQueue"/>
+    </bean>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="reindexDataJob" job-repository="jobRepository" restartable="false">
+        <batch:step id="reindexDataJobMapping.master" next="reindexDataJobPrepare.master">
+            <batch:partition partitioner="reindexDataJobMappingPartitioner" step="reindexDataJobMapping.slave">
+                <batch:handler task-executor="reindexDataJobMappingTaskExecutor"/>
+            </batch:partition>
+        </batch:step>
+        <batch:step id="reindexDataJobPrepare.master" next="reindexDataJobData.master">
+            <batch:partition partitioner="reindexDataJobPreparePartitioner" step="reindexDataJobPrepare.slave">
+                <batch:handler task-executor="reindexDataJobMappingTaskExecutor"/>
+            </batch:partition>
+        </batch:step>
+        <batch:step id="reindexDataJobData.master" next="reindexDataJobReset.master">
+            <batch:partition partitioner="reindexDataJobDataPartitioner" handler="reindexDataJobDataPartitionHandler"/>
+        </batch:step>
+        <batch:step id="reindexDataJobReset.master">
+            <batch:partition partitioner="reindexDataJobResetPartitioner" step="reindexDataJobReset.slave">
+                <batch:handler task-executor="reindexDataJobMappingTaskExecutor"/>
+            </batch:partition>
+        </batch:step>
+        <batch:listeners>
+            <batch:listener ref="reindexDataJobListener"/>
+        </batch:listeners>
+   	</batch:job>
+
+    <!-- Partitioners for mapping stuff. -->
+    <bean id="reindexDataJobMappingPartitioner" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingPartitioner" scope="job" />
+    <bean id="reindexDataJobPreparePartitioner" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobPreparePartitioner" scope="job"/>
+    <bean id="reindexDataJobResetPartitioner" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobResetPartitioner" scope="job"/>
+
+    <!-- Partitioner for data re-indexing. -->
+    <bean id="reindexDataJobDataPartitioner" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataPartitioner" scope="job" />
+
+    <bean id="reindexDataJobListener" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobListener" scope="job" >
+        <property name="jobDescription" value="app.job.reindex.data.name"/>
+        <property name="reindexTypes" value="#{jobParameters['reindexTypes']}"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Data slave step. -->
+    <batch:step id="reindexDataJobData.slave">
+   		<batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexDataJobDataItemReader" processor="reindexDataJobDataItemProcessor" writer="reindexDataJobDataItemWriter" commit-interval="${unidata.job.reindex_data.commit_interval:1000}"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="reindexDataJobDataStepExecutionListener"/>
+        </batch:listeners>
+   	</batch:step>
+
+    <bean id="reindexDataJobDataStepExecutionListener" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobStepExecutionListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_REINDEX"/>
+    </bean>
+
+    <bean id="reindexDataJobDataItemReader" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemReader" scope="step"/>
+    <bean id="reindexDataJobDataItemProcessor" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemProcessor" scope="step"/>
+    <bean id="reindexDataJobDataItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobDataItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <!-- BOF - Mapping slave steps. -->
+    <batch:step id="reindexDataJobMapping.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexDataJobMappingItemReader" processor="reindexDataJobMappingItemProcessor" writer="reindexDataJobMappingItemWriter" commit-interval="1"/>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="reindexDataJobPrepare.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexDataJobMappingItemReader" processor="reindexDataJobMappingItemProcessor" writer="reindexDataJobPrepareItemWriter" commit-interval="1"/>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="reindexDataJobReset.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexDataJobMappingItemReader" processor="reindexDataJobMappingItemProcessor" writer="reindexDataJobResetItemWriter" commit-interval="1"/>
+        </batch:tasklet>
+    </batch:step>
+
+    <!-- Reader, Writer, Processor. -->
+    <bean id="reindexDataJobMappingItemReader" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingItemReader" scope="step"/>
+    <bean id="reindexDataJobMappingItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor" scope="step"/>
+    <bean id="reindexDataJobMappingItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingItemWriter" scope="step"/>
+    <bean id="reindexDataJobPrepareItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobPrepareItemWriter" scope="step"/>
+    <bean id="reindexDataJobResetItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobResetItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <bean id="reindexRemoteStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+   		<property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="reindexDataJob"/>
+   		<property name="stepLocator" ref="jobStepLocator"/>
+   		<property name="queue" ref="reindexDataJobDataQueue"/>
+   		<property name="threadCount" value="${unidata.job.reindex_data.thread_count:2}"/>
+   	</bean>
+
+</beans>

@@ -1,0 +1,47 @@
+$baseCls: '.un-array-attribute-input';
+
+#{$baseCls} {
+  //border: solid 1px rgba(55, 121, 157, 0.3);
+
+  &.un-array-attribute-input-invalid {
+    border: solid 1px #cf4c35;
+  }
+
+  .un-array-attribute-wrap {
+    border-bottom: solid 1px rgba(55, 121, 157, 0.2);
+  }
+
+  .un-dataentity-attribute {
+    margin-bottom: 0;
+  }
+
+  .un-dataentity-attribute-bottom {
+    padding-left: 3px;
+  }
+
+  .un-dataentity-attribute-bottom-right {
+    margin-left: 0;
+  }
+
+  //.un-array-attribute-input-controls .x-toolbar-default {
+  //  background-color: transparent;
+  //}
+  //
+  //.un-array-attribute-input-controls .x-form-field {
+  //  margin-top: -3px;
+  //  font-weight: normal;
+  //}
+
+  //.un-array-attribute-input-controls-switch {
+  //  cursor: pointer;
+  //
+  //  span {
+  //    color: #37799d;
+  //    text-decoration: underline;
+  //  }
+  //
+  //  &:hover span {
+  //    color: #459ac7;
+  //  }
+  //}
+}

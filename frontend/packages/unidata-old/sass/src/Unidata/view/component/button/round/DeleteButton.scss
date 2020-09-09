@@ -1,0 +1,19 @@
+// обычное состояние кнопки
+a.x-btn.un-roundbutton__delete {
+  background-color: #d84315;
+}
+
+// кнопка под курсором
+a.x-btn.un-roundbutton__delete.x-btn-over {
+  background-color: #f4511e;
+}
+
+// кнопка нажата
+a.x-btn.un-roundbutton__delete.x-btn-pressed {
+  background-color: #ff7043;
+}
+
+// кнопка неактивна
+a.x-btn.un-roundbutton__delete.x-btn-disabled {
+  background-color: #d84315;
+}

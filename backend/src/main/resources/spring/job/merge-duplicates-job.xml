@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://www.springframework.org/schema/batch
+                           http://www.springframework.org/schema/batch/spring-batch.xsd
+                           http://www.hazelcast.com/schema/spring
+                           http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <bean id="duplicateItemsProcessingJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="duplicateJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="entityName" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="usersSelector" value-type="java.lang.String" value=""/>
+                <entry key="matchingName" value-type="java.lang.String" value="Имя правила"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="500"/>
+                <entry key="usePreprocessing" value-type="java.lang.Boolean" value="false"/>
+                <entry key="auditLevel" value-ref="auditLevelParameterExtractor"/>
+                <entry key="skipNotifications" value-type="java.lang.Boolean" value="false"/>
+                <entry key="upRecordsToContext" value-type="java.lang.Boolean" value="false"/>
+                <entry key="dirtyMode" value-type="java.lang.Boolean" value="false"/>
+                <entry key="mergeRelations" value-type="java.lang.Boolean" value="true"/>
+                <entry key="mergeClassifiers" value-type="java.lang.Boolean" value="true"/>
+            </util:map>
+        </property>
+        <property name="validators">
+            <util:map>
+                <entry key="blockSize" value-ref="positiveValueParameterValidator"/>
+                <entry key="matchingName" value-ref="matchingRuleParameterValidator"/>
+            </util:map>
+        </property>
+    </bean>
+
+
+    <bean id="matchingRuleParameterValidator"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicateJobMatchingRuleParameterValidator"/>
+    <!--
+        Duplicate Searching with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+
+    <hz:queue id="duplicateJobsQueue" instance-ref="instance" name="duplicatePartitionQueue"
+              lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+
+    <batch:job id="duplicateJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="duplicateItemListener"/>
+            <batch:listener ref="duplicateJobIndexListener"/>
+        </batch:listeners>
+
+        <batch:decision id="decision" decider="duplicateUsePreprocessingDecider">
+            <batch:next on="COMPLETED" to="duplicate.master.preprocessing" />
+            <batch:next on="UNKNOWN" to="duplicate.master"/>
+            <batch:fail on="FAILED"/>
+        </batch:decision>
+
+        <batch:step id="duplicate.master">
+            <batch:partition partitioner="duplicateItemPartitioner" handler="duplicateRemotePartitionHandler"/>
+        </batch:step>
+        <batch:step id="duplicate.master.preprocessing">
+            <batch:partition partitioner="duplicatePreprocessingItemPartitioner" handler="duplicatePreprocessingPartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="duplicateUsePreprocessingDecider" class="com.unidata.mdm.backend.service.job.duplicates.DuplicateUsePreprocessingDecider"
+          scope="job">
+        <property name="usePreprocessing" value="#{jobParameters['usePreprocessing']}"/>
+    </bean>
+
+    <bean id="duplicateRemotePartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="duplicateRemote.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="duplicateJobsQueue"/>
+    </bean>
+
+    <bean id="duplicatePreprocessingPartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="duplicatPreprocessing.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="duplicateJobsQueue"/>
+    </bean>
+
+    <bean id="duplicateItemPartitioner"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicateItemPartitioner"
+          scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="blockSize" value="#{jobParameters['blockSize']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+    </bean>
+
+    <bean id="duplicatePreprocessingItemPartitioner"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicatePreprocessingItemPartitioner"
+          scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+    </bean>
+
+    <bean id="duplicateItemListener" class="com.unidata.mdm.backend.service.job.duplicates.DuplicateJobReportGenerator" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.merge.duplicates.data.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+    <bean id="duplicateJobIndexListener" class="com.unidata.mdm.backend.service.job.duplicates.DuplicateJobIndexListener" scope="job">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="matchingName" value="#{jobParameters['matchingName']}"/>
+    </bean>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <bean id="duplicateRemoteStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="ProcessDuplicates"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="duplicateJobsQueue"/>
+        <property name="threadCount" value="${unidata.job.duplicate_job.thread_count:2}"/>
+    </bean>
+
+    <batch:step id="duplicateRemote.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="duplicateItemProcessor" commit-interval="${unidata.job.duplicate_job.commit_interval:1000}" reader="duplicateItemReader"
+                         writer="duplicateItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="duplicateMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <batch:step id="duplicatPreprocessing.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="duplicateItemProcessor" commit-interval="#{jobParameters[blockSize]}" reader="duplicatePreprocessingItemReader"
+                         writer="duplicateItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="duplicateMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="duplicateMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_DUPLICATE"/>
+    </bean>
+
+    <bean id="duplicateItemReader"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicateItemReader"
+          scope="step">
+        <property name="partition" value="#{stepExecutionContext[partition]}"/>
+        <property name="ids" value="#{stepExecutionContext[ids]}"/>
+    </bean>
+
+    <bean id="duplicatePreprocessingItemReader"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicatePreprocessingItemReader"
+          scope="step">
+        <property name="blockSize" value="#{jobParameters[blockSize]}"/>
+        <property name="shardNumber" value="#{stepExecutionContext[shardNumber]}"/>
+        <property name="clusterMetaData" value="#{stepExecutionContext[clusterMetaData]}"/>
+    </bean>
+
+    <bean id="duplicateItemProcessor"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicateItemProcessor"
+          scope="step">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="auditLevel" value="#{jobParameters['auditLevel']}"/>
+        <property name="skipNotifications" value="#{jobParameters['skipNotifications']}"/>
+        <property name="upRecordsToContext" value="#{jobParameters['upRecordsToContext']}"/>
+        <property name="shardNumber" value="#{stepExecutionContext[shardNumber]}"/>
+        <property name="dirtyMode" value="#{jobParameters[dirtyMode]}"/>
+        <property name="mergeRelations" value="#{jobParameters[mergeRelations]}"/>
+        <property name="mergeClassifiers" value="#{jobParameters[mergeClassifiers]}"/>
+        <property name="usePreprocessing" value="#{jobParameters['usePreprocessing']}"/>
+    </bean>
+
+    <bean id="duplicateItemWriter"
+          class="com.unidata.mdm.backend.service.job.duplicates.DuplicateItemWriter"
+          scope="step">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+    </bean>
+    <!-- EOF - Slave job. -->
+
+</beans>

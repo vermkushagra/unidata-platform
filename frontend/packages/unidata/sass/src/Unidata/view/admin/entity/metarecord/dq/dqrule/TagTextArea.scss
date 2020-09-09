@@ -1,0 +1,25 @@
+$baseCls: 'un-tagtextarea';
+$focusCls: 'un-tagtextarea-focus';
+
+.#{$baseCls} {
+  .un-container-layout {
+    border: 1px solid;
+    border-color: $form-field-border-color;
+  }
+
+  .un-preview-field {
+    border: 1px solid transparent;
+    padding: 4px 6px 3px 6px;
+    line-height: 15px;
+  }
+
+  .un-editor-field .x-form-trigger-wrap {
+    border-color: transparent;
+  }
+}
+
+.#{$focusCls} {
+  .un-container-layout {
+    border-color: $form-field-focus-border-color;
+  }
+}

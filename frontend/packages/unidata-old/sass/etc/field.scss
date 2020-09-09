@@ -1,0 +1,46 @@
+$baseCls: '.un-field';
+
+#{$baseCls} {
+  .x-form-item-label {
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    color: #336079;
+  }
+
+  .x-form-field {
+    font-weight: bold;
+    font-size: 14px;
+    color: #31627e;
+    background-color: transparent;
+    border: 1px solid transparent;
+  }
+
+  .x-form-trigger {
+    background-color: transparent;
+  }
+
+  &.x-form-dirty:not(.x-field-focus) {
+    .x-form-trigger-wrap-default {
+      border-bottom-color: transparent;
+    }
+
+    .x-form-field {
+      cursor: default;
+    }
+  }
+}
+
+#{$baseCls}__over {
+  .x-form-field {
+    border-color: #d0d0d0;
+  }
+
+  &.x-field-focus {
+    .x-form-field {
+      border-color: transparent;
+      cursor: text;
+    }
+  }
+}

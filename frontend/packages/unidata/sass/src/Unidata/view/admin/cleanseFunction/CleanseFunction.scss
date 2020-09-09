@@ -1,0 +1,16 @@
+$baseCls: 'un-cleanse-function-tree';
+
+.#{$baseCls} {
+  &.x-panel-dark.x-tree-lines .x-tree-view .x-tree-node-text {
+     margin: 0;
+     .un-tree-text {
+       margin: 0 0 0 4px;
+     }
+  }
+
+  &.x-panel-dark.x-tree-lines .x-tree-view .x-grid-item.x-grid-item-selected {
+    background-color: #878d92;
+  }
+}
+
+

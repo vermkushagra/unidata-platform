@@ -1,0 +1,13 @@
+.x-tip-default {
+  @include box-shadow(0px 2px 1px 0px rgba(0, 0, 0, 0.1));
+  font-family: $font-family-2;
+}
+
+// иконка тултипа должна быть по центру см UN-6241
+.x-tip-body-form-invalid {
+  background-position-y: center;
+
+  li:last-child {
+    margin-bottom: 0;
+  }
+}

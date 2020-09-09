@@ -1,0 +1,13 @@
+$baseCls: '.un-relation-m2mrecord';
+
+#{$baseCls} {
+  border-left: 3px solid #7392A3 !important;
+
+  >.x-panel-body {
+    .x-form-field {
+      font-weight: bold;
+      font-size: 14px;
+      color: #31627e;
+    }
+  }
+}

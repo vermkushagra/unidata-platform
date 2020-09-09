@@ -1,0 +1,16 @@
+$catalogBackgroundColor: rgb(242, 242, 242);
+$catalogBorderToolbarColor: rgb(220, 220, 220);
+
+.x-panel.un-catalog {
+  background-color: $catalogBackgroundColor;
+
+  .x-panel-body {
+    background-color: transparent;
+  }
+
+  .un-catalog-toolbar {
+    border-width: 0 !important;
+    border-left-width: 1px !important;
+    border-left-color: $catalogBorderToolbarColor;
+  }
+}

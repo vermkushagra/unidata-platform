@@ -1,0 +1,21 @@
+$baseCls: 'un-dashboard-task';
+
+.#{$baseCls} {
+  padding: 0 0 0 10px;
+
+  .un-counter {
+    margin-right: 15px;
+  }
+
+  .un-counter:last-child {
+    margin-right: 3px;
+  }
+
+  .un-icon {
+    font-size: 20px;
+    margin-right: 10px;
+    .un-icon-body {
+      margin-top: -5px;
+    }
+  }
+}

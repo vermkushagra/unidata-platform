@@ -1,0 +1,21 @@
+.x-panel.un-content-inner {
+  >.x-panel-body {
+    padding: $un-content-inner-padding;
+
+    .x-panel-un-card {
+      margin-bottom: $un-content-inner-gap;
+    }
+  }
+}
+
+.x-container.un-content-inner {
+  padding: $un-content-inner-padding;
+
+  .x-panel-un-card {
+    margin-bottom: $un-content-inner-gap;
+  }
+
+  .x-panel-un-card .x-panel-un-card{
+    margin-bottom: 0;
+  }
+}

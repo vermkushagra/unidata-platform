@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                                  http://camel.apache.org/schema/spring
+                           http://camel.apache.org/schema/spring/camel-spring.xsd">
+	<camel:camelContext id="dq-routes" xmlns="http://camel.apache.org/schema/spring">
+ 	 	<camel:package>com.unidata.mdm.backend.dq.routes</camel:package>
+	</camel:camelContext>
+    <beans profile="activeMq,rabbitMq">
+        <!-- Custom notifications/other async calls -->
+        <camel:camelContext xmlns="http://camel.apache.org/schema/spring">
+            <camel:routeContextRef ref="externalRoutes"/>
+        </camel:camelContext>
+        <bean id="camelNotifier"
+              class="com.unidata.mdm.backend.service.notification.notifiers.jms.CamelMessageNotifier"/>
+        <import resource="file:///${unidata.conf}/external-routing.xml"/>
+        <bean id="notificationCompletionHandler"
+              class="com.unidata.mdm.backend.service.notification.notifiers.jms.NotificationCompletionHandler"/>
+    </beans>
+
+    <beans profile="activeMq">
+        <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory" lazy-init="true">
+            <property name="brokerURL" value="${unidata.notification.activemq.broker.url}"/>
+            <property name="userName" value="${unidata.notification.activemq.broker.username}"/>
+            <property name="password" value="${unidata.notification.activemq.broker.password}"/>
+        </bean>
+
+        <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory"
+              init-method="start" destroy-method="stop" lazy-init="true">
+            <property name="maxConnections" value="${unidata.notification.activemq.broker.maxConnections:5}"/>
+            <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        </bean>
+
+        <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration" lazy-init="true">
+            <property name="connectionFactory" ref="pooledConnectionFactory"/>
+            <property name="concurrentConsumers" value="${unidata.notification.activemq.broker.concurrentConsumers:5}"/>
+        </bean>
+
+        <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent" lazy-init="true">
+            <property name="configuration" ref="jmsConfig"/>
+        </bean>
+    </beans>
+
+    <beans profile="rabbitMq">
+        <bean id="rabbitConnectionFactory" class="com.rabbitmq.client.ConnectionFactory" lazy-init="true">
+            <property name="host" value="${unidata.notification.rabbitmq.broker.host:localhost}"/>
+            <property name="port" value="${unidata.notification.rabbitmq.broker.port:5672}"/>
+            <property name="username" value="${unidata.notification.rabbitmq.broker.username:admin}"/>
+            <property name="password" value="${unidata.notification.rabbitmq.broker.password:admin}"/>
+            <property name="virtualHost" value="${unidata.notification.rabbitmq.broker.virtualHost:unidata}"/>
+        </bean>
+    </beans>
+
+</beans>

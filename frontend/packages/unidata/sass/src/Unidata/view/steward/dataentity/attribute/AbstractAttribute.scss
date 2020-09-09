@@ -1,0 +1,294 @@
+$baseCls: '.un-dataentity-attribute';
+$readOnly: $baseCls + '-readOnly';
+$error: $baseCls + '-error';
+$attributeIndicatorSize: 6px;
+$attributeTitleWidth: 110px;
+$attributeSwitcherWidth: 10px;
+$attributeContentPaddingTopBottom: 4px;
+$attributeContentPaddingRightLeft: 6px;
+$attributeTitleFontSize: 13px;
+$attributeContentFontSize: 12px;
+$attributeErrorMarginTop: 0;
+$attributeNotificationSize: 10px;
+$un-dataentity-text-field-body-width: 500px;
+
+#{$baseCls} {
+  padding: 0;
+  margin: 0;
+  min-height: 32px;
+}
+
+// ГРАНИЦЫ ДЛЯ ПОЛЕЙ ВВОДА (input-cont-wrapper)
+
+// невидимый бордерд вокруг инпута (по умолчанию)
+#{$baseCls} {
+  #{$baseCls}-input-cont-wrapper {
+    max-width: $un-dataentity-text-field-body-width;
+    border: solid 1px transparent;
+    @include border-radius(3px);
+  }
+  max-width: 705px;
+}
+
+// при фокусе появляется бордер
+#{$baseCls}-focus {
+  >#{$baseCls}-top > #{$baseCls}-input-cont-wrapper {
+    border-color: $color-primary-1-3;
+  }
+}
+
+// при невалидном поле появляется бордер
+#{$baseCls}-invalid {
+  >#{$baseCls}-top {
+    >#{$baseCls}-input-cont-wrapper {
+      border-color: $color-primary-3-0 !important;
+
+      // и рисуем иконку
+      >#{$baseCls}-notification {
+        display: block;
+      }
+    }
+  }
+}
+
+// wrapper для основной области (пока оставляем такое имя, как раньше)
+#{$baseCls}-top {
+  position: relative;
+  //overflow: hidden;
+}
+
+#{$baseCls}-indicator {
+  float: left;
+  overflow: visible;
+  margin-top: 8px;  // пока просто MAGIC NUMBER
+  margin-left: 2px;
+  width: $attributeIndicatorSize;
+
+  // изображение точки
+  .un-ndraw-indicatorround {
+    display: block;
+  }
+}
+
+#{$baseCls}-title {
+  float: left;
+  overflow: hidden;
+  // сдвигаем title на величину indicatorSize
+  margin: 0 0 0 $attributeIndicatorSize;
+  width: $attributeTitleWidth;
+  padding: 5px 5px 2px 0;
+  cursor: default;
+  position: relative;
+}
+
+#{$baseCls}-required {
+  position: absolute;
+  right: -1px;
+  top: 3px;
+  font-family: $font-family-1;
+  font-size: 13px;
+}
+
+#{$baseCls}-title-text {
+  line-height: 16px;
+  font-family: $font-family-2;
+  font-weight: normal;
+  font-size: $attributeTitleFontSize;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+#{$baseCls}-nowraptitle {
+  #{$baseCls}-title {
+    white-space: nowrap;
+  }
+}
+
+#{$baseCls}-switcher {
+  float: left;
+  overflow: visible;
+  margin-top: 8px;
+  margin-left: 11px;
+  position: relative;
+  z-index: 10000;
+  //width: $attributeSwitcherWidth;
+  color: $color-secondary-2-0;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+#{$baseCls}-input-cont-wrapper {
+  margin-left: $attributeTitleWidth + $attributeIndicatorSize + 13px;
+  padding: $attributeContentPaddingTopBottom $attributeContentPaddingRightLeft;
+}
+
+#{$baseCls}-notification {
+  float: right;
+  margin-right: 6px;
+  margin-top: 2px;
+  //overflow: visible;
+  width: $attributeNotificationSize;
+  display: none;
+}
+
+#{$baseCls}-notification-icon {
+  width: 14px;
+  height: 14px;
+}
+
+#{$baseCls}-invalid {
+  #{$baseCls}-input-cont {
+    padding-right: $attributeNotificationSize + 6px;
+  }
+}
+
+#{$baseCls}-input-cont {
+  .un-array-attribute-read-tagfield {
+    width: 100%;
+
+    .x-tagfield {
+      overflow: visible;
+    }
+
+    .x-tagfield ul.x-tagfield-list {
+      padding: 1px 0;
+    }
+
+    .x-form-field {
+      font-weight: normal;
+    }
+  }
+
+  .x-form-trigger {
+    line-height: 18px;
+  }
+}
+
+#{$baseCls}-input-cont__over {
+
+  .x-form-field {
+    border-color: #d0d0d0;
+  }
+
+  &.x-field-focus {
+    .x-form-field {
+      //border-color: transparent;
+      cursor: text;
+    }
+  }
+}
+
+#{$baseCls}-input {
+  &.x-form-item {
+    font-family: $font-family-3;
+    font-size: $attributeContentFontSize;
+    //width: 100%;
+  }
+
+  .x-form-field {
+    height: 18px;
+    min-height: 0;
+    font-family: $font-family-3;
+    font-weight: bold;
+    font-size: $attributeContentFontSize;
+    text-overflow: ellipsis;
+  }
+
+
+  .x-form-field,   /*фон полей прозрачный*/
+  .x-form-trigger, /*фон тригеров прозрачный*/
+  .x-form-trigger .x-form-spinner /*фон спинеров прозрачный*/ {
+    background-color: transparent
+  }
+
+  .x-form-trigger-spinner {
+    background-image: none; // фикс числовых полей - прозрачный фон ломает их вёрстку
+  }
+
+  // отключаем границу вокруг "родных" инпутов
+  .x-form-trigger-wrap {
+    border: none;
+  }
+
+  // сбрасываем паддинги у "родных" инпутов
+  .x-form-text {
+    padding: 0;
+    //height: 100%;
+  }
+}
+
+#{$baseCls}-notitle {
+  #{$baseCls}-title {
+    display: none;
+  }
+  #{$baseCls}-input-cont-wrapper {
+    margin-left: 6px;
+  }
+  #{$baseCls}-error {
+    margin-left: 6px;
+  }
+}
+
+#{$baseCls}-tip {
+  max-width: 350px;
+}
+
+#{$baseCls}-tip-title {
+  i {
+    margin-left: 8px;
+    font-size: 13px;
+  }
+}
+
+#{$baseCls}-tip-description,
+#{$baseCls}-tip-diff {
+  border-top: solid 1px #cacaca;
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+#{$baseCls}-tip-value {
+  font-weight: bold;
+  font-size: 13px;
+  font-family: Arial, serif;
+}
+
+#{$baseCls}-tip-diff,
+#{$baseCls}-tip-description,
+#{$baseCls}-tip-value,
+#{$baseCls}-tip-code-value {
+  padding-top: 4px;
+  line-height: 16px;
+}
+
+#{$baseCls}-tip-title i,
+#{$baseCls}-tip-description{
+  color: #6b6b6b;
+}
+
+//#{$baseCls}-combobox {
+//  margin: 0px 10px 0px 15px;
+//}
+
+#{$baseCls}-error {
+  margin-left: $attributeTitleWidth + $attributeIndicatorSize + 16px;
+  margin-top: $attributeErrorMarginTop;
+  //padding-left: 0;
+  padding: 0;
+  background-image: none;
+  font-size: 11px;
+}
+
+#{$readOnly} {
+  // если атрибут "только для чтения", то при фокусе не появляется бордер
+  &#{$baseCls}-focus {
+    >#{$baseCls}-top > #{$baseCls}-input-cont-wrapper {
+      border: solid 1px transparent !important;
+    }
+  }
+
+  // не отображаем пустые поля, если атрибут readonly
+  .#{$prefix}form-empty-field {
+    color: transparent;
+  }
+}

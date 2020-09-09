@@ -1,0 +1,45 @@
+project.ext{
+    cxfVersion  = '3.1.0'
+    generatedWsdlDir = file("src/main/generated")
+    wsdlDir = file("src/main/resources/schemas")
+    wsdlsToGenerate =[
+            ["$wsdlDir/unidata-api.wsdl"]
+//            ['-xjc', '-b', "$wsdlDir/serializable_binding.xml", "$wsdlDir/mywsdl1.wsdl.xml"],
+    ]
+}
+
+configurations {
+    wsdl2java
+}
+
+dependencies {
+    wsdl2java "org.apache.cxf:cxf-tools:$cxfVersion",
+            "org.apache.cxf:cxf-tools-wsdlto-databinding-jaxb:$cxfVersion",
+            "org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:$cxfVersion"
+}
+
+task wsdl2Java() {
+    inputs.files wsdlDir.listFiles()
+    outputs.files generatedWsdlDir
+    doLast {
+        wsdlsToGenerate.each { wsdlFile ->
+            createJavaFromWsdl(wsdlFile, generatedWsdlDir)
+        }
+    }
+}
+
+def createJavaFromWsdl(arguments, destinationDir) {
+
+    arguments.add(arguments.size - 1, '-impl')
+    arguments.add(arguments.size - 1, '-d')    
+    arguments.add(arguments.size - 1, generatedWsdlDir)
+    arguments.add(arguments.size - 1, '-keep')
+    
+    println "Processing " + arguments[arguments.size - 1]
+    javaexec {
+        main = 'org.apache.cxf.tools.wsdlto.WSDLToJava'
+        classpath = configurations.runtime + configurations.wsdl2java
+        args arguments
+        jvmArgs '-Dfile.encoding=UTF8'
+    }
+}

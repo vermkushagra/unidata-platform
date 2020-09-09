@@ -1,0 +1,486 @@
+import proguard.gradle.ProGuardTask
+
+ext.obfuscatedJarArchivePath = file("${jar.baseName}${jar.appendix ? "-${jar.appendix}" : ''}-${jar.version}${jar.classifier ? "-${jar.classifier}" : ''}.proguard.${jar.extension}")
+ext.camelVersion = '2.16.1'
+
+apply plugin: 'java'
+// enable if you use IDEA
+apply plugin: 'idea'
+// enable if you use Eclipse
+apply plugin: 'eclipse'
+apply plugin: 'application'
+apply plugin: 'org.urbanbyte.soapui'
+apply plugin: "jacoco"
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${project.rootDir}/gradle/dependencies.gradle"
+
+mainClassName = 'com.unidata.mdm.backend.exchange.CmdLineClient'
+
+applicationDefaultJvmArgs = ["-Xms1024m", "-Xmx4g", "-Dunidata.conf=conf", "-Dlogback.configurationFile=conf/logback.xml", "-Dcatalina.base=."]
+
+configurations {
+    umlDoclet
+}
+
+// параметры компилятора
+compileJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    dependsOn 'xsd2Java'
+    source {['src/main/generated', 'src/main/java']}
+
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    dependsOn 'xsd2Java'
+    source {['src/main/generated', 'src/main/java']}
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
+// Fat jar disabled for now
+//  from {
+//    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+//  }
+}
+
+distributions {
+    main {
+       baseName = rootProject.name + '-backend'
+       contents {
+           from { 'src/dist' }
+       }
+    }
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+idea {
+    /*
+    project {
+        //it should work, but it doesn't
+        languageLevel = '1.8'
+    }
+    */
+    module {
+        sourceDirs += file('src/main/generated')
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+buildscript {
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-cargo-plugin:2.0.3'
+        classpath 'org.tmatesoft.svnkit:svnkit:1.8.9'
+        classpath 'net.sf.proguard:proguard-gradle:5.3.3'
+    }
+}
+
+//repositories {
+//    maven {
+//        url 'http://repo.spring.io/libs-milestone'
+//        url 'https://maven.alfresco.com/nexus/content/groups/public'
+//    }
+//}
+
+dependencies {
+
+    // Ensure, the common project is built before backend
+    compile project(':common')
+    // Ensure, the soap-api project is built before backend
+    compile project(':soap-api')
+    // Ensure, the  dq-subsystem project is built before backend
+    compile project(':database')
+
+    // DB engine and Drivers
+    providedCompile 'org.postgresql:postgresql:42.2.2' // BSD like
+    providedCompile 'org.apache.tomcat:tomcat-jdbc:7.0.70'
+    providedCompile 'org.hsqldb:hsqldb:2.3.4'
+//    compile gradleApi() // For obtain Gradle source in project
+
+    // Logging
+    /*
+    providedCompile 'ch.qos.logback:logback-classic:1.1.3' // dual EPL v.1.0 and LGPL 2.1
+    providedCompile 'ch.qos.logback:logback-access:1.1.3'  // SLF4J under MIT
+    //those are required to drop other versions from dependencies
+    providedCompile 'org.slf4j:slf4j-api:1.7.12'
+    providedCompile 'org.slf4j:jul-to-slf4j:1.7.12'
+    */
+    //Camel and active-mq
+    compile 'org.apache.camel:camel-core:' + camelVersion
+    compile 'org.apache.camel:camel-spring:' + camelVersion
+    compile 'org.apache.camel:camel-jms:' + camelVersion
+    compile 'org.apache.camel:camel-amqp:'+ camelVersion
+    compile 'org.apache.camel:camel-rabbitmq:'+ camelVersion
+
+    compile 'org.apache.activemq:activemq-camel:5.12.0'
+    compile 'org.apache.activemq:activemq-client:5.12.0'
+
+    // Logging
+    compile 'ch.qos.logback:logback-classic:1.2.3' // dual EPL v.1.0 and LGPL 2.1
+    compile 'org.slf4j:jcl-over-slf4j:1.7.25' //dependency from spring-data-commons, also need to fix version
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    compile 'org.apache.logging.log4j:log4j-to-slf4j:2.10.0' // Required by elasticsearch
+
+    // POI
+    compile 'org.apache.poi:poi'
+    compile 'org.apache.poi:poi-ooxml'
+    compile 'org.apache.poi:poi-ooxml-schemas'
+
+    compile 'io.projectreactor:reactor-core'
+
+    // Java Servlet API
+    providedCompile 'javax.servlet:javax.servlet-api:3.0.1'
+
+    // Mail support
+    providedCompile 'com.sun.mail:javax.mail:1.5.1',
+            'javax.activation:activation:1.1.1'
+
+    // Validation - need to include explicitly since we don't use Hibernate
+    compile 'javax.validation:validation-api:1.1.0.Final'
+
+    // Template engine
+    compile 'org.freemarker:freemarker:2.3.22' // BSD like
+
+    // Apache Commons
+    compile 'org.apache.commons:commons-pool2:2.3', // Apache License, v.2.0
+            'commons-net:commons-net:3.3', // Apache License, v.2.0
+            'org.apache.commons:commons-lang3:3.6', // Apache License, v.2.0
+            'commons-beanutils:commons-beanutils:1.9.2' // Apache License, v.2.0
+
+    // JSON
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.2',
+            'com.fasterxml.jackson.core:jackson-core:2.9.2', // Apache License, v.2.0 (LGPL 2.1 other module jackson-core-lgpl)
+            'com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.9.2', // Apache License, v.2.0 (LGPL 2.1 other module jackson-core-lgpl)
+            'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.9.2' // Apache License, v.2.0 (LGPL 2.1 other module jackson-core-lgpl)
+
+    // UUID v1 fabric
+    compile 'com.fasterxml.uuid:java-uuid-generator:3.1.4'
+
+    // Utils
+    compile 'joda-time:joda-time:2.7' // Apache License, v.2.0
+
+    // Springframework - Apache License, v.2.0
+    compile 'org.springframework:spring-beans'
+    compile 'org.springframework:spring-jdbc'
+    compile 'org.springframework:spring-orm'
+    compile 'org.springframework:spring-context'
+    compile 'org.springframework:spring-context-support'
+    compile 'org.springframework:spring-webmvc'
+    compile 'org.springframework:spring-web'
+    compile 'org.springframework:spring-test'
+    compile 'org.springframework:spring-tx'
+    compile 'org.springframework:spring-aspects'
+    compile 'org.springframework:spring-instrument-tomcat'
+    compile 'org.springframework:spring-aop'
+    compile 'org.springframework.security:spring-security-config'
+    compile 'org.springframework.security:spring-security-web'
+    compile 'org.springframework.security:spring-security-taglibs'
+    compile 'org.springframework.data:spring-data-commons:1.10.0.RELEASE'
+
+    //compile 'cglib:cglib:3.2.5'
+
+    // JSoup for HTML validation
+    compile 'org.jsoup:jsoup:1.8.2' // MIT
+
+    // Swagger Spring-MVC integration
+    //compile "com.mangofactory:swagger-springmvc:0.9.5" // Apache License, v.2.0
+
+    // Apache License, v.2.0
+    compile ('io.swagger:swagger-jaxrs:1.5.16') {
+        //there is a newer API referenced from CXF (javax.ws.rs:javax.ws.rs-api:2.0.1)
+        exclude group: 'javax.ws.rs', module: 'jsr311-api'
+        exclude group: 'org.scala-lang', module: 'scalap'
+    }
+
+    compile 'org.flywaydb:flyway-core:3.2.1' // Apache License, v.2.0
+
+    compile 'org.hibernate:hibernate-validator:5.1.3.Final' // Apache License, v.2.0
+    testCompile 'javax.el:javax.el-api:2.2.4'
+
+    compile 'org.quartz-scheduler:quartz:2.2.1' // Apache License, v.2.0
+
+    compile 'org.jgrapht:jgrapht-core:0.9.1' // JGraphT, 0.9.1
+    //CXF - Apache License, v.2.0
+    compile ('org.apache.cxf:cxf-rt-frontend-jaxws:3.1.0') {
+        //exclude unwanted dependencies
+        exclude group: 'org.apache.geronimo.specs'
+//        providedCompile 'org.apache.geronimo.specs:geronimo-javamail_1.4_spec:1.7.1'
+//        providedCompile 'org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0'
+    }
+    compile ('org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.0') {
+        //exclude unwanted dependencies
+        exclude group: 'org.apache.geronimo.specs'
+//        providedCompile 'org.apache.geronimo.specs:geronimo-javamail_1.4_spec:1.7.1'
+//        providedCompile 'org.apache.geronimo.specs:geronimo-servlet_3.0_spec:1.0'
+    }
+    // Elasticsearch 1.7.2
+    // Currently it is not possible to fetch client only
+    compile 'org.elasticsearch:elasticsearch:5.6.1' // Apache License, v.2.0
+    compile 'org.elasticsearch.client:elasticsearch-rest-high-level-client:5.6.1' // Apache License, v.2.0
+    compile 'org.elasticsearch.client:transport:5.6.1' // Apache License, v.2.0
+
+    // Parse command line
+    compile 'com.beust:jcommander:1.48' // Apache License, v.2.0
+
+    // Simon inplace performance monitoring
+    compile 'org.javasimon:javasimon-core:4.1.0' // New BSD License
+    compile 'org.javasimon:javasimon-spring:4.1.0' // New BSD License
+    compile 'org.javasimon:javasimon-console-embed:4.1.0' // New BSD License
+
+    // Caching
+    //    compile 'net.sf.ehcache:ehcache:2.8.2' // Apache License, v.2.0
+    // Hazlecast
+    compile 'com.hazelcast:hazelcast:3.10.4'
+    compile 'com.hazelcast:hazelcast-spring:3.10.4'
+    // Hazelcast Jet
+    compile 'com.hazelcast.jet:hazelcast-jet:0.6.1'
+
+    // Monitoring
+    compile 'io.dropwizard.metrics5:metrics-servlets'
+    compile 'io.dropwizard.metrics5:metrics-jvm'
+
+    compile 'io.prometheus:simpleclient_servlet'
+    compile 'io.prometheus:simpleclient_hotspot'
+
+    // Spring Batch
+    compile 'org.springframework.batch:spring-batch-core'
+    compile 'org.springframework.batch:spring-batch-infrastructure'
+    compile 'org.springframework.batch:spring-batch-integration'
+
+    compile 'org.springframework.integration:spring-integration-core'
+    compile 'org.springframework.integration:spring-integration-jms'
+    compile 'org.springframework.integration:spring-integration-jmx'
+    compile 'org.springframework.integration:spring-integration-http'
+
+    compile 'io.protostuff:protostuff-api:1.5.9'
+    compile 'io.protostuff:protostuff-core:1.5.9'
+
+    compile 'com.google.guava:guava:23.0'
+
+    // Spring Batch Admin common classes with non-public version '2.0.0.M1'
+    compile files('extlib/spring-batch-admin-domain-2.0.0.M1.jar')
+
+    //compile 'com.verhas:license3j:1.0.7'
+    compile 'org.bouncycastle:bcpg-jdk15on:1.57'
+    compile files('extlib/license3j-1.0.8-SNAPSHOT.jar')
+
+    // Docs
+    umlDoclet 'org.umlgraph:umlgraph:5.6.6'
+
+    // mandatory dependencies for using Spock test framework
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+
+    // Activiti for process management (Apache 2.0)
+    compile 'org.activiti:activiti-engine:5.21.0',
+            'org.activiti:activiti-spring:5.21.0'
+
+    // Testing
+    testCompile 'org.hamcrest:hamcrest-core:1.3',
+            'org.hamcrest:hamcrest-library:1.3',
+            'org.spockframework:spock-core:1.1-groovy-2.4',
+            'org.mockito:mockito-inline:2.10.0',
+            'cglib:cglib:3.2.5',
+            'org.powermock:powermock-module-junit4:2.0.0-beta.5',
+            'org.powermock:powermock-api-mockito2:2.0.0-beta.5',
+            'junit:junit:4.12', // Eclipse Public License - v 1.0
+            'org.springframework:spring-test'
+    testCompile 'io.projectreactor:reactor-test'
+    testCompile 'cglib:cglib-nodep:3.2.5'
+
+    testRuntime 'org.postgresql:postgresql:42.2.4'
+
+    //compile 'org.ow2.spec.ee:ow2-jws-2.0-spec:1.0.13' FOR  java 9 UPGRADE
+}
+
+//
+// Store versions
+//
+processResources {
+    doLast{
+        //a bit ugly Ant call since built-in Gradle filter() doesn't support encoding option
+        ant.replace(file: 'build/resources/main/messages_ru.properties', encoding: 'UTF-8') {
+            replacefilter(token: '@APP_VERSION@', value: project.version)
+            replacefilter(token: '@SVN_REVISION@', value: project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision()) // использование: gradle -Psvn_revision=... build
+            replacefilter(token: '@BUILD_NUMBER@', value: project.hasProperty('build_number') ? project.build_number : 'undefined')
+            replacefilter(token: '@BUILD_DATE@', value: new Date().format('yyyy-MM-dd HH:mm:ss'))
+        }
+
+        ant.replace(file: 'build/resources/main/messages_en.properties', encoding: 'UTF-8') {
+            replacefilter(token: '@APP_VERSION@', value: project.version)
+            replacefilter(token: '@SVN_REVISION@', value: project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision()) // использование: gradle -Psvn_revision=... build
+            replacefilter(token: '@BUILD_NUMBER@', value: project.hasProperty('build_number') ? project.build_number : 'undefined')
+            replacefilter(token: '@BUILD_DATE@', value: new Date().format('yyyy-MM-dd HH:mm:ss'))
+        }
+    }
+}
+
+ext.exclusions = []
+
+jar { // https://discuss.gradle.org/t/war-layout/6778
+    from(sourceSets.main.output)
+    manifest {
+        attributes (
+            "Implementation-Title": "UniData Business Logic",
+            "Implementation-Version": project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+                + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+tasks.withType(Jar) { // Common for Jars
+    destinationDir = new File(project.rootDir, '/target')
+}
+
+/**
+ * Obfuscate code
+ * TODO: Fix proguard build. Broken for now.
+ **/
+task proguard(type: ProGuardTask){
+    dependsOn jar
+    group 'build'
+    inputs.files jar.archivePath, 'proguard.conf' // Rerun if config changed
+
+    configuration 'proguard.conf'
+
+    injars jar.archivePath
+    outjars obfuscatedJarArchivePath
+
+    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+
+    (configurations.runtime + configurations.providedRuntime).findAll{
+        it != jar.archivePath && !it.isDirectory()
+    }.each{
+        libraryjars it.path
+    }
+
+    printmapping "${project.rootDir}/target/${jar.archiveName}.obfuscation.map"
+}
+
+war {
+    dependsOn (proguardEnabled.toBoolean() ? proguard : jar)
+
+    // jar.outputs.files - original jar file
+    // files() call is not necessary on *some* gradle versions (@TODO why?)
+    classpath = configurations.runtime - configurations.providedRuntime + files( proguardEnabled.toBoolean() ? obfuscatedJarArchivePath : jar.archivePath )
+
+    archiveName = rootProject.name + '-backend.war'
+    manifest {
+        attributes(
+            'Implementation-Title': 'UniData Backend Web Archive',
+            'Implementation-Version': project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+                + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+test {
+    jacoco {
+        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+        classDumpFile = file("$buildDir/jacoco/classpathdumps")
+    }
+
+    systemProperty "spring.profiles.active", "test"
+    beforeTest { descriptor ->
+        logger.lifecycle("Running test: " + descriptor)
+    }
+
+    // listen to standard out and standard error of the test JVM(s)
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+    }
+    ignoreFailures = false
+    // failFast = false
+}
+
+task umlDocs (type: Javadoc) {
+    source = [sourceSets.main.allJava, file('src/main/generated')]
+    classpath = configurations.compile
+    // includes = ['com.unidata.mdm.*']
+    destinationDir = new File(project.buildDir, 'docs/javadoc')
+    options.docletpath = configurations.umlDoclet.files.asType(List)
+    options.doclet = 'org.umlgraph.doclet.UmlGraphDoc'
+    options.encoding = 'UTF-8'
+}
+
+apply from: 'wsdl2java.gradle'
+apply from: 'xsd2java.gradle'
+
+/**
+ * Copy command line utility into root target folder
+ **/
+task prepareTool (type: Copy, dependsOn: installDist){
+    from('build/install/' + rootProject.name + '-backend')
+    destinationDir = new File(project.rootDir, '/target/util')
+    includeEmptyDirs = false
+}
+
+// Smoke test(s)
+task runSmoke(group: 'smoke') {
+
+    // Must redeploy for smoke
+    dependsOn(tasks.cargoRedeployRemote)
+
+    println 'Adding smoke tests configuration(s)'
+
+    smokeTests.each {
+
+        def smokeTest ->
+            def testname = project.hasProperty('smoketestname') ? project.getProperty('smoketestname') : 'all'
+            if ( testname.compareTo(smokeTest.smokeTestName) != 0 && testname.compareTo('all') != 0 ) {
+                println 'Skip test: ' + smokeTest.smokeTestName
+                return
+            }
+            task("smokeTest$smokeTest.smokeTestName", type: io.byteshifter.plugins.soapui.tasks.TestTask) {
+                projectProperties = new File(project.rootDir, smokeTest.smokeTestProjectProperties)
+                projectFile = new File(project.rootDir, smokeTest.smokeTestProject)
+                settingsFile = new File(project.rootDir, smokeTest.smokeTestSoapUISettings)
+                testSuite = smokeTest.smokeTestSuites
+                outputFolder = new File(project.rootDir, "/target/smoke-test-report-$smokeTest.smokeTestName")
+                testFailIgnore = true
+                printReport = true
+                junitReport = true
+                exportAll = true
+            }
+
+            dependsOn "smokeTest$smokeTest.smokeTestName"
+    }
+
+    println 'Run test(s).'
+}
+
+startScripts {
+    applicationName = 'unidata-cli'
+
+    //we do it because we should have an ability add jars dynamically, but we can't because plugin include only own jars to classpath.
+    doLast {
+        //modify windows script
+        def windowsScriptFile = file getWindowsScript()
+        def text = windowsScriptFile.getText('UTF-8')
+        def startClassPath = text.indexOf("CLASSPATH=")
+        def endClassPath = text.indexOf("\n", startClassPath)
+        def startScript = text.substring(0, startClassPath);
+        def finishScript = text.substring(endClassPath);
+        windowsScriptFile.write(startScript + "CLASSPATH=%APP_HOME%\\lib\\*;%APP_HOME%\\lib\\migrations\\*" + finishScript)
+        //modify unix script
+        def unixScriptFile = file getUnixScript()
+        text = unixScriptFile.getText('UTF-8')
+        startClassPath = text.indexOf("CLASSPATH=")
+        endClassPath = text.indexOf("\n", startClassPath)
+        startScript = text.substring(0, startClassPath);
+        finishScript = text.substring(endClassPath);
+        unixScriptFile.write(startScript + "CLASSPATH=\$APP_HOME/lib/*:\$APP_HOME/lib/migrations/*" + finishScript)
+    }
+}

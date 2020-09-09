@@ -1,0 +1,220 @@
+$borderColor: #dcdcdc;
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.un-logincont {
+  position: relative;
+  height: 100%;
+  width: 100%;
+
+  &.un-application-usermode {
+    background: url(./resources/loginbackground-user.jpg) no-repeat center center fixed;
+  }
+
+  &.un-application-adminmode, &.un-application-devmode {
+    background: url(./resources/loginbackground-admin.jpg) no-repeat center center fixed;
+  }
+
+  .logo-container {
+    height: 70px;
+    margin-right: 40px;
+    margin-left: 10px;
+    box-sizing: border-box;
+  }
+}
+
+.un-logincont-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  border-radius: 4px;
+  overflow: hidden;
+
+  .panel-heading {
+    height: 90px;
+    padding-top: 18px;
+    text-align: center;
+    background-color: white;
+    box-sizing: border-box;
+    border-bottom: 1px solid $borderColor;
+  }
+
+  .panel-body {
+    padding: 25px;
+    font-family: "Open Sans", arial, helvetica, verdana, sans-serif;
+    background-color: white;
+
+    i.un-input-icon {
+      font-family: "Linearicons";
+      content: '\e71e';
+      font-size: 13px;
+      font-style: normal;
+    }
+    i.un-icon-user:before {
+      content: '\e71e';
+    }
+
+    i.un-icon-password:before {
+      content: '\e66e';
+    }
+
+    .input-group-addon {
+      background-color: white;
+      border-color: $borderColor;
+      padding: 0;
+
+      i {
+        border-right: 1px solid $borderColor;
+        padding: 0 8px;
+      }
+    }
+
+    .btn, .btn.disabled, .btn[disabled], .btn:focus, .btn:hover {
+      background-color: #507fba;
+      font: 600 13px/13px "Open Sans";
+      color: white;
+      cursor: default;
+      box-sizing: border-box;
+      width: 100%;
+      text-transform: uppercase;
+      outline: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      border: 1px solid $borderColor;
+      border-radius: 3px;
+
+      .input-group {
+        border: 2px solid transparent;
+        border-radius: 4px;
+        display: table;
+        width: 100%;
+      }
+
+      .input-group-addon {
+        display: table-cell;
+      }
+    }
+
+    .form-control {
+      font-size: 13px;
+      //border-left: none;
+      padding: 6px;
+      box-shadow: none;
+      box-sizing: border-box;
+      width: 100%;
+      border: none;
+      height: 30px;
+    }
+
+    .form-control:focus {
+      outline: 0;
+      box-shadow: none;
+    }
+
+    .input-group {
+      box-sizing: border-box;
+    }
+
+    .form-group.focused {
+      border: 1px solid transparent;
+
+      .input-group {
+        border: 2px solid #507fba;
+      }
+
+      .input-group-addon {
+        border-color: transparent;
+      }
+
+      .form-control {
+        border-color: transparent;
+      }
+    }
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    height: 35px;
+  }
+  .btn:focus,
+  .btn:active:focus,
+  .btn.active:focus,
+  .btn.focus,
+  .btn:active.focus,
+  .btn.active.focus {
+    outline: none;
+  }
+  .btn:hover,
+  .btn:focus,
+  .btn.focus {
+    color: #333;
+    text-decoration: none;
+  }
+  .btn:active,
+  .btn.active {
+    background-image: none;
+    outline: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+  }
+  .btn.disabled,
+  .btn[disabled],
+  fieldset[disabled] .btn {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+  }
+
+
+  .un-login-tab p[role=wrong-authorization-text] {
+    margin: 0;
+    text-align: center;
+    font-size: 12px;
+    color: red;
+    font-weight: 600;
+    margin-bottom: 10px;
+    margin-top: -15px;
+  }
+
+  .un-licenseeexpired-tab div[role=warning-wrap] {
+    font-size: 13px;
+
+    p[role=warning-title] {
+      font-weight: 600;
+      text-align: center;
+      margin: -10px 0 5px 0;
+    }
+
+    p[role=warning-text] {
+      text-align: center;
+      margin: 0 0 18px 0;
+    }
+  }
+}

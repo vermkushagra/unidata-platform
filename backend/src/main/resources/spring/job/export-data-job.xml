@@ -1,0 +1,136 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <!--
+        Export records and relations with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+    <hz:queue id="exportDataJobQueue" name="exportDataJobQueue" instance-ref="instance" lazy-init="true" depends-on="instance"/>
+
+    <bean id="exportDataJobParameterProcessor" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataParameterProcessor"/>
+
+    <bean id="exportDataJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="exportDataJob"/>
+        <property name="parameterProcessor" ref="exportDataJobParameterProcessor"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="asOf" value-type="java.lang.String" value=""/>
+                <entry key="usersSelector" value-type="java.lang.String" value=""/>
+                <entry key="updatesAfter"  value-type="java.lang.String" value=""/>
+                <entry key="skipDeleted" value-type="java.lang.Boolean" value="true"/>
+                <entry key="skipRelations" value-type="java.lang.Boolean" value="false"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="500"/>
+                <entry key="databaseUrl"  value-type="java.lang.String" value=""/>
+                <entry key="operationId" value-type="java.lang.String" value=""/>
+                <entry key="definitionContent" value-type="java.lang.String" value=""/>
+            </util:map>
+        </property>
+        <property name="validators">
+            <util:map>
+                <entry key="blockSize" value-ref="positiveValueParameterValidator"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="exportDataJobPartitioner" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataPartitioner" scope="job">
+        <property name="blockSize" value="#{jobParameters[blockSize]}"/>
+        <property name="definitionKey" value="#{jobParameters[definition]}"/>
+        <property name="operationId" value="#{jobParameters[operationId]}"/>
+        <property name="runId" value="#{jobExecutionContext[runId]}"/>
+    </bean>
+
+    <!-- Master step splitter -->
+    <bean id="exportDataJobSplitter" class="org.springframework.batch.core.partition.support.SimpleStepExecutionSplitter">
+        <property name="stepName" value="exportDataJob.slave"/>
+        <property name="partitioner" ref="exportDataJobPartitioner"/>
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <!-- Partition handler. -->
+    <bean id="exportDataJobPartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="exportDataJob.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="exportDataJobQueue"/>
+    </bean>
+
+    <!-- Partition step (special remote partition step bean) -->
+    <bean id="exportDataJobPartitionStep" class="org.springframework.batch.core.partition.support.PartitionStep">
+        <property name="stepExecutionSplitter" ref="exportDataJobSplitter"/>
+        <property name="partitionHandler" ref="exportDataJobPartitionHandler"/>
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+
+    <!-- BOF - Master job. -->
+    <bean id="exportDataJobExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataJobExecutionListener"
+        scope="job">
+        <property name="jobDescription" value="app.job.export.data.name"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="reportName" value="#{T(java.time.LocalDateTime).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd_HH:mm'))}_ExportDataJob_Report_[#{jobParameters['operationId']}].txt"/>
+    </bean>
+    <batch:job id="exportDataJob" job-repository="jobRepository">
+        <batch:step id="exportDataJob.master" parent="exportDataJobPartitionStep"/>
+        <batch:listeners>
+            <batch:listener ref="exportDataJobExecutionListener"/>
+        </batch:listeners>
+    </batch:job>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <!-- Slave item reader -->
+    <bean id="exportDataJobReader" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataItemReader" scope="step">
+        <property name="runId" value="#{stepExecutionContext['runId']}"/>
+        <property name="partition" value="#{stepExecutionContext['partition']}"/>
+        <property name="startGsn" value="#{stepExecutionContext['startGSN']}"/>
+        <property name="endGsn" value="#{stepExecutionContext['endGSN']}"/>
+        <property name="skipDeleted" value="#{jobParameters[skipDeleted]}"/>
+    </bean>
+
+    <!-- Slave item writer -->
+    <bean id="exportDataJobItemWriter" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataItemWriter" scope="step">
+        <property name="operationId" value="#{stepExecutionContext['operationId']}"/>
+        <property name="asOf" value="#{jobParameters[asOf]}"/>
+        <property name="updatesAfter" value="#{jobParameters[updatesAfter]}"/>
+    </bean>
+
+    <!-- Slave item processor -->
+    <bean id="exportDataJobItemProcessor" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataItemProcessor" scope="step" >
+        <property name="operationId" value="#{stepExecutionContext['operationId']}"/>
+        <property name="asOf" value="#{jobParameters[asOf]}"/>
+        <property name="updatesAfter" value="#{jobParameters[updatesAfter]}"/>
+    </bean>
+
+    <!-- Slave step -->
+    <bean id="exportDataStepExecutionListener" class="com.unidata.mdm.backend.service.job.exchange.out.ExportDataStepExecutionListener"/>
+    <batch:step id="exportDataJob.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="exportDataJobReader" processor="exportDataJobItemProcessor" writer="exportDataJobItemWriter" commit-interval="${unidata.job.export_data.commit_interval:1000}"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="exportDataStepExecutionListener"/>
+        </batch:listeners>
+    </batch:step>
+    <!-- EOF - Slave job. -->
+
+    <bean id="exportDataJobStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="exportDataJob"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="exportDataJobQueue"/>
+        <property name="threadCount" value="${unidata.job.export_data.thread_count:2}"/>
+    </bean>
+</beans>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="countTotalOrigins">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                origins
+            where
+                name = :origin_name
+            and coalesce(update_date, create_date) <= :endDate
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countTotalEtalons">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                etalons
+            where
+                name = :entityName
+            and coalesce(update_date, create_date) <= :endDate
+            and status <> 'INACTIVE'
+         ]]>
+    </entry>
+    <entry key="countNewOrigins">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                origins
+            where
+                version = 1
+            and name = :origin_name
+            and create_date between :startDate and :endDate
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countNewEtalons">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                etalons
+            where
+                version = 1
+            and name = :origin_name
+            and create_date between :startDate and :endDate
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countUpdatedOrigins">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                origins
+            where
+                version > 1
+            and name = :origin_name
+            and update_date between :startDate and :endDate
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countUpdatedEtalons">
+        <![CDATA[
+            select count(distinct et.id) AS cnt
+    		from
+    		    etalons et
+    		inner join origins og
+    		    on og.etalon_id = et.id
+    		inner join origins_vistory ogv
+    		    on ogv.origin_id = og.id
+    		where
+    		    ogv.create_date between  :startDate and :endDate
+    		and et.create_date not between  :startDate and :endDate
+    		and et.name = :entityName
+    		and et.status = 'ACTIVE'
+        ]]>
+    </entry>
+
+
+    <entry key="countErrorsOrigins">
+        <![CDATA[
+            select count(*) as cnt
+            from
+                origins og, dq_errors er
+            where
+                og.id = er.record_id
+            and og.name = :origin_name
+            and er.update_date between :startDate and :endDate
+        ]]>
+    </entry>
+    <entry key="countErrorsEtalons">
+        <![CDATA[
+            select count(distinct er.record_id) as cnt
+            from
+                etalons og, dq_errors er
+            where
+                og.id = er.record_id
+            and og.name = :entityName
+            and er.update_date between :startDate and :endDate
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countMergedEtalons">
+        <![CDATA[
+            select count(id) as cnt
+            from
+                etalons
+            where
+                name = :entityName
+            and coalesce(update_date, create_date) between :startDate and :endDate
+            and status = 'MERGED'
+        ]]>
+    </entry>
+    <entry key="countErrorsBySeverityAndEntity">
+        <![CDATA[
+            select count(de.id) as cnt
+            from
+            dq_errors de, etalons et
+            where
+                de.record_id = et.id
+            and et.name = :entityName
+            and severity = :severity
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countErrorsBySeverityAndSourceSystem">
+        <![CDATA[
+            select count(de.id) as cnt
+            from
+                dq_errors de, origins ot
+            where
+                de.record_id = ot.id
+            and ot.name = :origin_name
+            and severity = :severity
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countErrorsBySeverity">
+        <![CDATA[
+            select count(distinct de.record_id) as cnt
+            from
+                dq_errors de, etalons et
+            where
+                et.id = de.record_id
+            and severity = :severity
+            and status <> 'INACTIVE'
+        ]]>
+    </entry>
+    <entry key="countDuplicates">
+        <![CDATA[
+            select count(distinct case_id) as cnt
+            from
+                duplicates
+            where
+                entity_id = :entity_id
+        ]]>
+    </entry>
+    <entry key="insertNew">
+        <![CDATA[
+            insert into statistic_counters (
+                type,
+                entity,
+                at_date,
+                count,
+                created_at,
+                updated_at,
+                created_by,
+                updated_by
+            )
+            values (
+                :type,
+                :entity,
+                :at_date,
+                :count,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by
+            )
+        ]]>
+    </entry>
+    <entry key="insertStatistic">
+        <![CDATA[
+            insert into statistic_counters (
+                type,
+                entity,
+                at_date,
+                count,
+                dimension1,
+                dimension2,
+                dimension3,
+                created_at,
+                updated_at,
+                created_by,
+                updated_by
+            )
+            values (
+                :type,
+                :entity,
+                :at_date,
+                :count,
+                :dimension1,
+                :dimension2,
+                :dimension3,
+                :created_at,
+                :updated_at,
+                :created_by,
+                :updated_by
+            )
+        ]]>
+    </entry>
+    <entry key="updateStatistic">
+        <![CDATA[
+            update statistic_counters
+            set
+                type        =:type,
+                entity      =:entity,
+                at_date     =:at_date,
+                count       =:count,
+                dimension1  =:dimension1,
+                dimension2  =:dimension2,
+                dimension3  =:dimension3,
+                updated_at  =:updated_at,
+                updated_by  =:updated_by
+
+            where id=:id
+        ]]>
+    </entry>
+    <entry key="findStatisticByTypeEntityAtDate">
+        <![CDATA[
+            select * from statistic_counters a
+            where a.type=:type
+                and a.entity=:entity
+                and a.at_date=:at_date
+                and  exists (select case when :dimension1::text is null then true else a.dimension1 = :dimension1 end)
+                and  exists (select case when :dimension2::text is null then true else a.dimension2 = :dimension2 end)
+                and  exists (select case when :dimension3::text is null then true else a.dimension3 = :dimension3 end)
+        ]]>
+    </entry>
+    <entry key="getSlice">
+        <![CDATA[
+            select id, type, at_date, count
+            from
+                statistic_counters
+            where
+                entity= :entityName and type in (:types)
+            and at_date between :startDate and :endDate
+            order by
+                at_date
+        ]]>
+    </entry>
+    <entry key="getLastSlice">
+        <![CDATA[
+            select a.id, a.type, a.at_date, a.count, a.entity
+            from
+                statistic_counters a
+            inner join (
+                select entity, max(at_date) at_date
+                from
+                    statistic_counters
+                where
+                    entity = :entityName and type in (:types)
+                group by
+                    entity
+                ) b
+            on a.entity = b.entity and a.at_date = b.at_date
+            where
+               type in (:types)
+        ]]>
+    </entry>
+    <entry key="getLastSliceForAllEntities">
+        <![CDATA[
+            select a.id, a.type, a.at_date, a.count, a.entity
+            from
+                statistic_counters a
+            inner join (
+                select entity, max(at_date) at_date
+                from
+                    statistic_counters
+                where
+                    type in (:types)
+                group by
+                    entity
+                ) b
+            on a.entity = b.entity and a.at_date = b.at_date
+            where
+               type in (:types)
+        ]]>
+    </entry>
+</properties>

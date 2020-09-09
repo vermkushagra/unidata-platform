@@ -1,0 +1,30 @@
+$baseCls: '.un-warning-card';
+
+$warning-text-color: #993300;
+$warning-border-color: #FF9900;
+$warning-background-color: #FFF3E0;
+
+#{$baseCls} {
+  border: solid 1px $warning-border-color;
+  border-radius: 3px;
+  color: $warning-text-color;
+  background-color: $warning-background-color;
+  display: table;
+  font-size: 12px;
+
+  #{$baseCls}-icon {
+    font-size: 20px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: $warning-border-color;
+    display: table-cell;
+    width: 10%;
+    height: 100%;
+    color: white;
+  }
+  #{$baseCls}-text {
+    display: table-cell;
+    height: 100%;
+    vertical-align: middle;
+  }
+}

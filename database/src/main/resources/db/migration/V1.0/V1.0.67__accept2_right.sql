@@ -1,0 +1,1 @@
+insert into s_right(id, name, created_at) values(10999, 'ACCEPT2', current_timestamp);

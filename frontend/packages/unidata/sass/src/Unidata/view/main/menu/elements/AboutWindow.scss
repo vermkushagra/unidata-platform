@@ -1,0 +1,63 @@
+$ui-name: 'un-about';
+
+@include extjs-window-ui(
+  $ui: $ui-name,
+
+  $ui-header-background-color: #ffffff,
+  $ui-header-padding: 32px 0 32px 90px,
+
+  $ui-background-color: #f5f5f5,
+  $ui-body-background-color: #f5f5f5,
+
+  $ui-ignore-frame-padding: false
+);
+
+.x-window-#{$ui-name} {
+
+  .x-window-header-title-#{$ui-name} {
+    display: none;
+  }
+
+  .un-window-logo {
+    height: 76px;
+
+    object {
+      height: 76px;
+      width: 273px;
+    }
+  }
+
+  .un-close-icon {
+    top: -28px !important;
+  }
+
+  .x-docked-bottom {
+    padding: 16px;
+  }
+
+  table {
+    width: 100%;
+    font-size: 13px;
+    margin-top: 19px;
+    margin-bottom: 10px;
+    border-collapse: collapse;
+
+    td {
+      border: none;
+      padding-bottom: 12px;
+    }
+
+    td:first-child {
+      font-family: $font-family-1;
+      text-align: right;
+      width: 180px;
+    }
+
+    td:last-child {
+      font-family: $font-family-2;
+      font-weight: bold;
+      padding-left: 7px;
+    }
+  }
+
+}
