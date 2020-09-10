@@ -55,19 +55,5 @@ public class LicenseCxfInterceptor extends AbstractPhaseInterceptor<Message> {
 
     @Override
     public void handleMessage(Message inMessage) {
-
-        if (!licenseService.isLicenseValid()) {
-            throw new LicenseException("You have no valid licenses installed!",
-                    ExceptionId.EX_SECURITY_LICENSE_INVALID,
-                    licenseService.getExpirationDate()
-            );
-        }
-
-        if (!licenseService.isHardwareIdValid()) {
-            throw new LicenseException(
-                    "License is not valid for this server!",
-                    ExceptionId.EX_SECURITY_HW_FOR_LICENSE_INVALID, null
-            );
-        }
     }
 }
