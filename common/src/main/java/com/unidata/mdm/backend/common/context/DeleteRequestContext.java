@@ -33,7 +33,7 @@ import com.unidata.mdm.backend.common.types.RecordStatus;
  * Delete context.
  */
 public class DeleteRequestContext
-    extends CommonSendableContext
+    extends CommonDependableContext
     implements RecordIdentityContext, MutableValidityRangeContext, ApprovalStateSettingContext {
 
     /**
@@ -84,7 +84,7 @@ public class DeleteRequestContext
      * Constructor.
      */
     private DeleteRequestContext(DeleteRequestContextBuilder b) {
-        super();
+        super(b.parentContext);
         this.etalonKey = b.etalonKey;
         this.originKey = b.originKey;
         this.validFrom = b.validFrom;
@@ -365,6 +365,9 @@ public class DeleteRequestContext
          * This context is participating in a batch upsert. Collect artifacts instead of upserting immediately.
          */
         private boolean batchUpsert;
+
+        private CommonDependableContext parentContext;
+
         /**
          * Constructor.
          */
@@ -397,7 +400,7 @@ public class DeleteRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public DeleteRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -539,6 +542,12 @@ public class DeleteRequestContext
             this.batchUpsert = batchUpsert;
             return this;
         }
+
+        public DeleteRequestContextBuilder parentContext(final CommonDependableContext parentContext) {
+            this.parentContext = parentContext;
+            return this;
+        }
+
         /**
          * Builds a context.
          * @return a new context

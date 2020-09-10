@@ -22,6 +22,8 @@ package com.unidata.mdm.backend.common.dto.wf;
 import com.unidata.mdm.backend.common.integration.wf.WorkflowProcessTriggerType;
 import com.unidata.mdm.conf.WorkflowProcessType;
 
+import java.util.Map;
+
 /**
  * @author Mikhail Mikhailov
  *
@@ -56,6 +58,22 @@ public class WorkflowProcessDTO {
      * Process ended.
      */
     private boolean ended;
+    /**
+     * Originator user login.
+     */
+    private String originator;
+    /**
+     * Originator user full name.
+     */
+    private String originatorName;
+    /**
+     * Originator email.
+     */
+    private String originatorEmail;
+    /**
+     * Variables.
+     */
+    private Map<String, Object> variables = null;
     /**
      * Constructor.
      */
@@ -167,4 +185,38 @@ public class WorkflowProcessDTO {
         this.ended = ended;
     }
 
+    /**
+     * Variables.
+     */
+    public Map<String, Object> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
+    }
+
+    public String getOriginator() {
+        return originator;
+    }
+
+    public void setOriginator(String originator) {
+        this.originator = originator;
+    }
+
+    public String getOriginatorName() {
+        return originatorName;
+    }
+
+    public void setOriginatorName(String originatorName) {
+        this.originatorName = originatorName;
+    }
+
+    public String getOriginatorEmail() {
+        return originatorEmail;
+    }
+
+    public void setOriginatorEmail(String originatorEmail) {
+        this.originatorEmail = originatorEmail;
+    }
 }

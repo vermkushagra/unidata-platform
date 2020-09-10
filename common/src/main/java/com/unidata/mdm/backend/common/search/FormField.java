@@ -25,7 +25,6 @@ package com.unidata.mdm.backend.common.search;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import com.unidata.mdm.backend.common.types.SimpleAttribute;
@@ -116,6 +115,17 @@ public class FormField {
         this.range = new Range(leftBoundary, rightBoundary);
         this.single = null;
         this.values = null;
+        this.searchType = searchType;
+    }
+
+    public FormField(@Nonnull SimpleDataType type, @Nonnull String path, @Nonnull FormType formType,
+                      @Nullable Object single, @Nullable Collection<?> values, @Nullable Range range, SearchType searchType) {
+        this.path = path;
+        this.type = type;
+        this.formType = formType;
+        this.range = range;
+        this.single = single;
+        this.values = values;
         this.searchType = searchType;
     }
 
@@ -280,8 +290,7 @@ public class FormField {
      */
     public static FormField likeString(@Nonnull String path, @Nullable Object single) {
         Object value = single == null || single.toString().isEmpty() ? null : single;
-        //remove all ? and *
-        value = value == null ? null : "*" + value.toString().replace("*", "\\*").replace("?", "\\?") + "*";
+        value = value == null ? null : value.toString();
         return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, SearchType.LIKE);
     }
 
@@ -297,8 +306,11 @@ public class FormField {
         return new FormField(SimpleDataType.STRING, path, FormType.NEGATIVE, value, SearchType.LIKE);
     }
 
+    public static FormField booleanValue(@Nonnull String path, @Nonnull Object value) {
+        return strictValue(SimpleDataType.BOOLEAN, path, value);
+    }
+
     /**
-     * @param path - field name
      * @return form field for empty results
      */
     public static FormField noneMatch() {
@@ -439,6 +451,14 @@ public class FormField {
         return searchType;
     }
 
+
+    /**
+     * List values.
+     */
+    public Collection<?> getInitialValues() {
+        return values;
+    }
+
     /**
      * List values.
      */
@@ -483,4 +503,5 @@ public class FormField {
             return convertToType(rightBoundary);
         }
     }
+
 }

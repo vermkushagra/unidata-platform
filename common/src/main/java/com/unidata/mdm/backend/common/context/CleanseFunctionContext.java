@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.cleanse.CleanseFunctionInputParam;
 import com.unidata.mdm.backend.common.cleanse.CleanseFunctionOutputParam;
@@ -44,8 +45,6 @@ import com.unidata.mdm.backend.common.types.UpsertAction;
  * Data quality context.
  *
  * @author ilya.bykov
- * @param <T>
- *            the generic type
  */
 public class CleanseFunctionContext extends CommonRequestContext implements RecordIdentityContext, ValidityRangeContext {
     /**
@@ -109,9 +108,9 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
      */
     private final Map<String, CleanseFunctionOutputParam> output = new HashMap<>(8);
     /**
-     * Failed local validation paths. Subject for refactoring.
+     * Failed local validation paths and values. Subject for refactoring.
      */
-    private final List<String> failedValidationPaths = new ArrayList<>(4);
+    private final List<Pair<String, Attribute>> failedValidations = new ArrayList<>(4);
     /**
      * The errors.
      */
@@ -247,15 +246,13 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
         return MapUtils.isNotEmpty(input) ? input.values() : Collections.emptyList();
     }
     /**
-     * @param action the action to set
-     * @return self
+     * @param param the action to set
      */
     public void input(CleanseFunctionInputParam param) {
         input.put(param.getPortName(), param);
     }
     /**
-     * @param action the action to set
-     * @return self
+     * @param params the action to set
      */
     public void input(CleanseFunctionInputParam... params) {
         for (int i = 0; params != null && i < params.length; i++) {
@@ -263,8 +260,7 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
         }
     }
     /**
-     * @param action the action to set
-     * @return self
+     * @param params the action to set
      */
     public void input(Collection<CleanseFunctionInputParam> params) {
         for (CleanseFunctionInputParam param : params) {
@@ -281,8 +277,8 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
     /**
      * @return the failedValidationPaths
      */
-    public List<String> failedValidationPaths() {
-        return failedValidationPaths;
+    public List<Pair<String, Attribute>> failedValidations() {
+        return failedValidations;
     }
     /**
      * Input port names.
@@ -536,7 +532,7 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
             return this;
         }
         /**
-         * @param action the action to set
+         * @param param the action to set
          * @return self
          */
         public CleanseFunctionContextBuilder input(CleanseFunctionInputParam param) {
@@ -549,7 +545,7 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
             return this;
         }
         /**
-         * @param action the action to set
+         * @param params the action to set
          * @return self
          */
         public CleanseFunctionContextBuilder input(CleanseFunctionInputParam... params) {
@@ -561,7 +557,7 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
             return this;
         }
         /**
-         * @param action the action to set
+         * @param params the action to set
          * @return self
          */
         public CleanseFunctionContextBuilder input(Collection<CleanseFunctionInputParam> params) {

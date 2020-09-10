@@ -25,6 +25,7 @@ package com.unidata.mdm.backend.common.dto;
 import java.util.Date;
 
 import com.unidata.mdm.backend.common.types.RecordStatus;
+import com.unidata.mdm.backend.common.types.VistoryOperationType;
 
 /**
  * @author Mikhail Mikhailov
@@ -64,6 +65,10 @@ public class ContributorDTO {
      * Type name of the contributor.
      */
     private final String typeName;
+    /**
+     * VistoryOperationType.
+     */
+    private final VistoryOperationType operationType;
 
     /**
      * Constructor.
@@ -76,7 +81,8 @@ public class ContributorDTO {
      * @param lastUpdate date of the last update
      * @param typeName the name of the type of this contributor
      */
-    public ContributorDTO(String originId, int revision, String sourceSystem, String status, String approval, String owner, Date lastUpdate, String typeName) {
+    public ContributorDTO(String originId, int revision, String sourceSystem, String status, String approval, String owner,
+                          Date lastUpdate, String typeName, VistoryOperationType operationType) {
         super();
         this.originId = originId;
         this.revision = revision;
@@ -86,6 +92,7 @@ public class ContributorDTO {
         this.owner = owner;
         this.lastUpdate = lastUpdate;
         this.typeName = typeName;
+        this.operationType = operationType;
     }
 
 
@@ -151,6 +158,13 @@ public class ContributorDTO {
      */
     public String getTypeName() {
         return typeName;
+    }
+
+    /**
+     * @return the vistoryOperationType
+     */
+    public VistoryOperationType getOperationType() {
+        return operationType;
     }
 
 }

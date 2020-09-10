@@ -22,9 +22,14 @@
  */
 package com.unidata.mdm.backend.common.context;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.types.ApprovalState;
@@ -112,6 +117,9 @@ public class GetTasksRequestContext extends CommonRequestContext {
      * Return total count only and no other results.
      */
     private final boolean countOnly;
+
+    private final List<String> candidateGroups = new ArrayList<>();
+
     /**
      * Constructor.
      */
@@ -135,6 +143,7 @@ public class GetTasksRequestContext extends CommonRequestContext {
         this.taskStart = b.taskStart;
         this.taskEnd = b.taskEnd;
         this.countOnly = b.countOnly;
+        this.candidateGroups.addAll(b.candidateGroups);
     }
 
     /**
@@ -270,6 +279,10 @@ public class GetTasksRequestContext extends CommonRequestContext {
         return countOnly;
     }
 
+    public List<String> getCandidateGroups() {
+        return Collections.unmodifiableList(candidateGroups);
+    }
+
     /**
      * @author Mikhail Mikhailov
      * Builder class.
@@ -347,6 +360,9 @@ public class GetTasksRequestContext extends CommonRequestContext {
          * Return total count only and no other results.
          */
         private boolean countOnly;
+
+        private final List<String> candidateGroups = new ArrayList<>();
+
         /**
          * Constructor.
          */
@@ -495,6 +511,15 @@ public class GetTasksRequestContext extends CommonRequestContext {
             this.countOnly = countOnly;
             return this;
         }
+
+        public GetTasksRequestContextBuilder candidateGroups(Collection<String> assignments) {
+            this.candidateGroups.clear();
+            if (CollectionUtils.isNotEmpty(assignments)) {
+                this.candidateGroups.addAll(assignments);
+            }
+            return this;
+        }
+
         /**
          * Builder method.
          * @return new context

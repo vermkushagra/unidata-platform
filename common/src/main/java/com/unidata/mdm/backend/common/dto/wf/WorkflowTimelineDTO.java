@@ -27,6 +27,7 @@ import com.unidata.mdm.backend.common.dto.TimelineDTO;
 /**
  * @author mikhail
  * Timeline extended with workflow elements.
+ * TODO: Move timeline and interval code to internal types. Simplify and separate a new DTO objects.
  */
 public class WorkflowTimelineDTO extends TimelineDTO {
 

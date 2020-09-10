@@ -36,6 +36,14 @@
             -->
         </xs:restriction>
     </xs:simpleType>
+
+    <!-- Do not remove! This enumeration is used internally. -->
+    <xs:simpleType name="ClassifierLookupValueType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="String"/>
+            <xs:enumeration value="Integer"/>
+        </xs:restriction>
+    </xs:simpleType>
     
     <!-- BLOB -->
     <xs:complexType name="BlobValue">    
@@ -90,6 +98,9 @@
     </xs:complexType>
     
     <xs:complexType name="AbstractClassifierAttributeDef">
+        <xs:sequence>
+            <xs:element type="classifier:CustomPropertyDef" name="customProperties" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
         <xs:attribute name="name" type="classifier:KeyAttribute" use="required"/>
         <xs:attribute name="displayName" type="xs:string" use="optional" />
         <xs:attribute name="description" type="xs:string" use="optional" />
@@ -97,6 +108,8 @@
         <xs:attribute name="hidden" type="xs:boolean" use="optional" default="false"/>
         <xs:attribute name="valueType" type="classifier:ClassifierValueType" use="optional"/>
         <xs:attribute name="enumDataType" type="xs:string" use="optional"/>
+        <xs:attribute name="lookupEntityType" type="xs:string"/>
+        <xs:attribute name="lookupEntityCodeAttributeType" type="classifier:ClassifierLookupValueType"/>
         <xs:attribute name="searchable" type="xs:boolean" use="optional" default="false" />
         <xs:attribute name="displayable" type="xs:boolean" use="optional" default="false" />
         <xs:attribute name="mainDisplayable" type="xs:boolean" use="optional" default="false" />
@@ -107,6 +120,20 @@
             <xs:extension base="classifier:AbstractClassifierAttributeDef">
                 <xs:sequence>
                     <xs:element name="value" type="classifier:ClassifierValueDef"/>
+                </xs:sequence>
+                <xs:attribute name="unique" type="xs:boolean" default="true"/>
+                <xs:attribute name="mask" type="xs:string" default=""/>
+                <xs:attribute name="nullable" type="xs:boolean" default="true"/>
+                <xs:attribute name="order" type="xs:integer" default="0"/>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ArrayAttributeWithOptionalValueDef">
+        <xs:complexContent>
+            <xs:extension base="classifier:AbstractClassifierAttributeDef">
+                <xs:sequence>
+                    <xs:element name="values" type="classifier:ClassifierValueDef" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
                 <xs:attribute name="unique" type="xs:boolean" default="true"/>
                 <xs:attribute name="mask" type="xs:string" default=""/>
@@ -137,8 +164,9 @@
 
     <xs:complexType name="ClassifierNodeDef">
         <xs:sequence>
-            <xs:element name="attributes" type="classifier:SimpleAttributeWithOptionalValueDef" minOccurs="0"
-                        maxOccurs="unbounded"/>
+            <xs:element name="attributes" type="classifier:SimpleAttributeWithOptionalValueDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="arrayAttributes" type="classifier:ArrayAttributeWithOptionalValueDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="classifier:CustomPropertyDef" name="customProperties" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
         <xs:attribute name="classifierName" type="xs:string" use="required"/>
         <xs:attribute name="name" type="xs:string" use="required"/>
@@ -146,5 +174,15 @@
         <xs:attribute name="code" type="xs:string" use="optional"/>
         <xs:attribute name="id" type="xs:string" use="required"/>
         <xs:attribute name="parentId" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="CustomPropertyDef">
+        <xs:annotation>
+            <xs:documentation>
+                Дополнительное свойству сущности
+            </xs:documentation>
+        </xs:annotation>
+        <xs:attribute type="xs:string" name="name"/>
+        <xs:attribute type="xs:string" name="value"/>
     </xs:complexType>
 </xs:schema>

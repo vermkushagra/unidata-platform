@@ -50,11 +50,24 @@ public class ServiceUtils {
      * The security service
      */
     private static SecurityService securityService;
+
+    /**
+     * The user service
+     */
+    private static UserService userService;
+
     /**
      * The role service
      */
     private static RoleService roleService;
-
+    /**
+     * The WF service.
+     */
+    private static WorkflowService workflowService;
+    /**
+     * The configuration service.
+     */
+    private static ConfigurationService configurationService;
     /**
      * Constructor.
      */
@@ -68,7 +81,13 @@ public class ServiceUtils {
      * @param metaModelService the service to set
      * @param cleanseFunctionService the service to set
      * @param searchService the service to set
+     * @param securityService the service to set
+     * @param userService the service to set
+     * @param roleService the service to set
+     * @param workflowService the service instance to set
+     * @param configurationService the service to set
      */
+    @SuppressWarnings("all")
     public static void init(
             PlatformConfiguration platformConfiguration,
             DataRecordsService dataRecordsService,
@@ -76,7 +95,10 @@ public class ServiceUtils {
             CleanseFunctionService cleanseFunctionService,
             SearchService searchService,
             SecurityService securityService,
-            RoleService roleService
+            UserService userService,
+            RoleService roleService,
+            WorkflowService workflowService,
+            ConfigurationService configurationService
     ) {
 
         ServiceUtils.platformConfiguration = platformConfiguration;
@@ -85,7 +107,10 @@ public class ServiceUtils {
         ServiceUtils.metaModelService = metaModelService;
         ServiceUtils.searchService = searchService;
         ServiceUtils.securityService = securityService;
+        ServiceUtils.userService = userService;
         ServiceUtils.roleService = roleService;
+        ServiceUtils.workflowService = workflowService;
+        ServiceUtils.configurationService = configurationService;
     }
     /**
      * @return the platformConfiguration
@@ -117,12 +142,34 @@ public class ServiceUtils {
     public static SearchService getSearchService() {
         return searchService;
     }
-
+    /**
+     * @return the securityService
+     */
     public static SecurityService getSecurityService() {
         return securityService;
     }
-
+    /**
+     * @return the userService
+     */
+    public static UserService getUserService() {
+        return userService;
+    }
+    /**
+     * @return the roleService
+     */
     public static RoleService getRoleService() {
         return roleService;
+    }
+    /**
+     * @return the workflowService
+     */
+    public static WorkflowService getWorkflowService() {
+        return workflowService;
+    }
+    /**
+     * @return the configurationService
+     */
+    public static ConfigurationService getConfigurationService() {
+        return configurationService;
     }
 }

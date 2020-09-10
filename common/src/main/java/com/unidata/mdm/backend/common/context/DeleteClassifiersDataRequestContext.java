@@ -313,7 +313,7 @@ public class DeleteClassifiersDataRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public DeleteClassifiersDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -331,7 +331,7 @@ public class DeleteClassifiersDataRequestContext
         }
 
         /**
-         * @param etalonKey the etalonKey to set
+         * @param originKey the etalonKey to set
          */
         public DeleteClassifiersDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;

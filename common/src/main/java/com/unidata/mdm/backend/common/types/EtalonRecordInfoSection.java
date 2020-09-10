@@ -41,6 +41,10 @@ public class EtalonRecordInfoSection extends InfoSection {
      */
     protected Long periodId;
     /**
+     * VistoryOperationType from composeBVR
+     */
+    protected VistoryOperationType operationType;
+    /**
      * Sets entity name field.
      * @param entityName value to set
      */
@@ -68,6 +72,21 @@ public class EtalonRecordInfoSection extends InfoSection {
     public EtalonKey getEtalonKey() {
         return etalonKey;
     }
+    /**
+     * Gets entity operationType field.
+     * @return the operationType
+     */
+    public VistoryOperationType getOperationType() {
+        return operationType;
+    }
+    /**
+     * Sets entity operationType field.
+     * @param operationType
+     */
+    public void setOperationType(VistoryOperationType operationType) {
+        this.operationType = operationType;
+    }
+
     /**
      * Gets the period id (index).
      * @return the periodId
@@ -186,6 +205,15 @@ public class EtalonRecordInfoSection extends InfoSection {
      */
     public EtalonRecordInfoSection withPeriodId(Long value) {
         setPeriodId(value);
+        return this;
+    }
+    /**
+     * Fluent operation type.
+     * @param operationType the value to set
+     * @return self
+     */
+    public EtalonRecordInfoSection withOperationType(VistoryOperationType operationType) {
+        setOperationType(operationType);
         return this;
     }
 }

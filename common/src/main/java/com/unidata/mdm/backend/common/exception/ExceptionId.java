@@ -30,10 +30,6 @@ import com.unidata.mdm.backend.common.service.DataQualityService;
  */
 public enum ExceptionId {
 
-    /**
-     * Schema version validation failed.
-     */
-    EX_DB_VALIDATION_FAILED("app.db.schemaVersionValidationFailed"),
     // DQ: 0000 - 0100
     /**
      * CF not found by ID.
@@ -47,10 +43,6 @@ public enum ExceptionId {
      * Required value is missing.
      */
     EX_DQ_CLEANSE_FUNCTION_REQUIRED_VALUE_MISSING("app.dq.cleanse.function.required.value.missing"),
-    /**
-     * Invalid enrichment configuration.
-     */
-    EX_DQ_INVALID_ENRICHMENT_CONFIGURATION("app.dq.invalid.enrichment.configuration"),
     /**
      * Execution context mode is not supported by function.
      */
@@ -77,45 +69,21 @@ public enum ExceptionId {
      */
     EX_SEARCH_BULK_DELETE_NO_ENTITY_NAME("app.search.search.bulk.delete.no.entity.name"),
     /**
-     * Invalid fields supplied for prefix query.
-     */
-    EX_SEARCH_INVALID_PREFIX_FIELDS("app.search.invalidFieldsPrefixQuery"),
-    /**
      * Invalid fields supplied for term query.
      */
     EX_SEARCH_INVALID_TERM_FIELDS("app.search.invalidFieldsTermQuery"),
-    /**
-     * Invalid fields supplied for wildcard query.
-     */
-    EX_SEARCH_INVALID_WILDCARD_FIELDS("app.search.invalidFieldsWildcardQuery"),
     /**
      * IO failure from XContentFactory caught..
      */
     EX_SEARCH_MAPPING_IO_FAILURE("app.search.mappingIOFailure"),
     /**
-     * IO failure from XContentFactory caught..
-     */
-    EX_SEARCH_MAPPING_CLASSIFIER_IO_FAILURE("app.search.mappingIOFailure"),
-    /**
      * Invalid mapping of unknown type supplied.
      */
     EX_SEARCH_MAPPING_TYPE_UNKNOWN("app.search.mappingUnknownType"),
     /**
-     * Top level entity not found in model.
-     */
-    EX_SEARCH_MAPPING_ENTITY_NOT_FOUND("app.search.mappingUnknownEntity"),
-    /**
-     * Lookup entity not found in model.
-     */
-    EX_SEARCH_MAPPING_LOOKUP_ENTITY_NOT_FOUND("app.search.mappingUnknownLookupEntity"),
-    /**
      * Nested entity not found in model.
      */
     EX_SEARCH_MAPPING_NESTED_ENTITY_NOT_FOUND("app.search.mappingUnknownNestedEntity"),
-    /**
-     * Index document failed.
-     */
-    EX_SEARCH_INDEX_DOCUMENT_FAILED("app.search.indexDocumentFailed"),
     /**
      * Update document failed.
      */
@@ -141,21 +109,9 @@ public enum ExceptionId {
      */
     EX_SEARCH_MARK_DOCUMENT_FAILED("app.search.markFailed"),
     /**
-     * Update document failed.
-     */
-    EX_SEARCH_BULK_UPDATE_DOCUMENT_FAILED("app.search.bulkUpdateDocumentFailed"),
-    /**
      * Case when filter has incorrect combination.
      */
     EX_SEARCH_UNAVAILABLE_FACETS_COMBINATION("app.search.facets.combination"),
-    /**
-     * Some one try to create search form group with incorrect params.
-     */
-    EX_SEARCH_UNAVAILABLE_FORM_GROUP("app.search.formGroup.unavailable"),
-    /**
-     * Creation model index failed
-     */
-    EX_SEARCH_CREATION_MODEL_INDEX_FAILED("app.search.modelIndex.notCreated"),
     /**
      * Too many results of search.
      */
@@ -182,6 +138,14 @@ public enum ExceptionId {
     EX_SEARCH_AFTER_USER_EXIT_EXCEPTION("app.search.after.user.exit.exception"),
     // Meta: 0151 - 0200
     /**
+     * The 'to' side containment entity '{}' of the relation '{}' not found in model.
+     */
+    EX_META_TO_CONTAINMENT_ENTITY_NOT_FOUND_INIT("app.meta.to.containment.entity.not.found.init"),
+    /**
+     * The 'to' side containment entity '{}' of the relation '{}' not found in update.
+     */
+    EX_META_TO_CONTAINMENT_ENTITY_NOT_FOUND_UPDATE("app.meta.to.containment.entity.not.found.update"),
+    /**
      * Entity not found.
      */
     EX_META_ENTITY_NOT_FOUND("app.meta.entityNotFound"),
@@ -205,22 +169,6 @@ public enum ExceptionId {
      * Lookup Entity not found.
      */
     EX_META_LOOKUP_ENTITY_NOT_FOUND("app.meta.lookupEntityNotFound"),
-    /**
-     * Delete entity not found.
-     */
-    EX_META_DELETE_ENTITY_NOT_FOUND("app.meta.deleteEntityNotFound"),
-    /**
-     * Delete lookup entity not found.
-     */
-    EX_META_DELETE_LOOKUP_ENTITY_NOT_FOUND("app.meta.deleteLookupEntityNotFound"),
-    /**
-     * Entity already exists.
-     */
-    EX_META_ENTITY_ALREADY_EXISTS("app.meta.entityAlreadyExists"),
-    /**
-     * Lookup entity already exists.
-     */
-    EX_META_LOOKUP_ENTITY_ALREADY_EXISTS("app.meta.lookupEntityAlreadyExists"),
     /**
      * Cannot marshal model.
      */
@@ -334,10 +282,6 @@ public enum ExceptionId {
      */
     EX_META_CANNOT_UNMARSHAL_RELATION("app.meta.cannotUnmarshallRelation"),
     /**
-     * Cannot unmarshal relation.
-     */
-    EX_META_INVALID_REQUIRED_ATTR("app.meta.invalidRequiredAttribute"),
-    /**
      * Cannot assemble model.
      */
     EX_META_CANNOT_ASSEMBLE_MODEL("app.meta.cannotAssembleModel"),
@@ -353,10 +297,6 @@ public enum ExceptionId {
      * Import model, invalid content type.
      */
     EX_META_IMPORT_MODEL_INVALID_CONTENT_TYPE("app.meta.importModelInvalidContentType"),
-    /**
-     * Update model, invalid content type.
-     */
-    EX_META_UPDATE_MODEL_INVALID_CONTENT_TYPE("app.meta.updateModelInvalidContentType"),
     /**
      * Import model invalid file format.
      */
@@ -439,50 +379,6 @@ public enum ExceptionId {
      */
     EX_META_NESTED_ENTITIES_DUPLICATE2("app.meta.nestedEntitiesIsDuplicated2"),
     /**
-     * Model's attribute's groups section contains unavailable attribute.
-     */
-    EX_META_ATTRIBUTES_GROUPS_CONTAINS_UNAVAILABLE("app.meta.unavailableAttributesGroups"),
-    /**
-     * Model's merge section contains unavailable attribute.
-     */
-    EX_META_MERGE_ATTRIBUTES_CONTAINS_UNAVAILABLE("app.meta.unavailableMergeAttribute"),
-    /**
-     * Model's merge section contains unavailable attribute.
-     */
-    EX_META_MERGE_FACTORS_INCORRECT("app.meta.merge.factor.incorrect"),
-    /**
-     * Model's match section contains unavailable attribute.
-     */
-    EX_META_MATCH_ATTRIBUTES_CONTAINS_UNAVAILABLE("app.meta.unavailableMatchAttribute"),
-    /**
-     * Root group containы nested group which used in lookup entity or entity
-     */
-    EX_META_ROOT_GROUP_IS_NOT_EMPTY("app.meta.rootGroup.notEmpty"),
-    /**
-     * Model's dq section contains corrupted or unavailable function.
-     */
-    EX_META_CORRUPTED_OR_UNAVAILABLE_DQ_FUNCTION("app.meta.unavailableDqFunction"),
-    /**
-     * Model's dq section contains unavailable attribute.
-     */
-    EX_META_UNAVAILABLE_ATTRIBUTE_IN_DQ_FUNCTION("app.meta.unavailableDqAttribute"),
-    /**
-     * Model's dq section contains attribute with type which not equal function type.
-     */
-    EX_META_ATTRIBUTE_INCORRECT_TYPE_IN_DQ_FUNCTION("app.meta.incorrectAttributeTypeInDqFunction"),
-    /**
-     * Model's dq section contains wrong constant.
-     */
-    EX_META_CONSTANT_IN_DQ_FUNCTION_WRONG("app.meta.incorrectConstantInDqFunction"),
-    /**
-     * Model contains link to unavailable item.
-     */
-    EX_META_UNAVAILABLE_LINK("app.meta.unavailableLink"),
-    /**
-     * Model contains relation that cannot exists.
-     */
-    EX_META_RELATIONS_TIMELINE("app.meta.relationsTimeline"),
-    /**
      * Model element without id
      */
     EX_META_MODEL_ELEMENT_WITHOUT_ID("app.meta.element.withoutId"),
@@ -494,10 +390,6 @@ public enum ExceptionId {
      * Relation hasn't one of the side
      */
     EX_META_RELATION_SIDE_IS_ABSENT("app.meta.relation.side.absent"),
-    /**
-     * classifier is incorrect
-     */
-    EX_META_CLASSIFIER_INCORRECT("app.meta.classifier.incorrect"),
     /**
      * Name of a top level object is reserved.
      */
@@ -719,15 +611,23 @@ public enum ExceptionId {
     /**
      * Invalid upsert request context. No entity name was supplied. Upsert rejected.
      */
-    EX_DATA_UPSERT_NO_ENTITY_NAME("app.data.upsertNoEntityName"),
+    EX_DATA_UPSERT_NO_ID("app.data.upsertNoEntityName"),
     /**
      * Invalid upsert request context. Entity was not found by name. Upsert rejected.
      */
     EX_DATA_UPSERT_ENTITY_NOT_FOUND_BY_NAME("app.data.upsertEntityNotFoundByName"),
     /**
-     * Required attributes is not presented.
+     * Required rels is not presented.
      */
-    EX_DATA_UPSERT_REQUIRED_ATTRS_IS_NOT_PRESENTED("app.data.upsert.required.attrs.notPresented"),
+    EX_DATA_UPSERT_REQUIRED_RELS_IS_NOT_PRESENTED("app.data.upsert.required.rels.notPresented"),
+    /**
+     * Required rels is not presented.
+     */
+    EX_DATA_UPSERT_RELS_INCORRECT_TO_SIDE_PERIOD("app.data.upsert.rels.incorrect.toside.period"),
+    /**
+     * Required rels is not presented.
+     */
+    EX_DATA_UPSERT_REQUIRED_RELS_INCORRECT_TO_SIDE_PERIOD("app.data.upsert.required.rels.incorrect.toside.period"),
     /**
      * Enum attribute has a value which not present in system
      */
@@ -805,9 +705,17 @@ public enum ExceptionId {
      */
     EX_DATA_UPSERT_ETALON_INACTIVE("app.data.upsertEtalonInactive"),
     /**
-     * Upsert relation user exits errors
+     * Delete records before user exits errors
+     */
+    EX_DATA_DELETE_RECORD_BEFORE_USER_EXIT_ERROR_OLD("app.data.delete.record.before.user.exit.error.old"),
+    /**
+     * Delete records before user exits errors
      */
     EX_DATA_DELETE_RECORD_BEFORE_USER_EXIT_ERROR("app.data.delete.record.before.user.exit.error"),
+    /**
+     * Delete records after user exits errors
+     */
+    EX_DATA_DELETE_RECORD_AFTER_USER_EXIT_ERROR("app.data.delete.record.after.user.exit.error"),
     /**
      * Record can not be identified by supplied keys. Upsert rejected.
      */
@@ -825,9 +733,17 @@ public enum ExceptionId {
      */
     EX_DATA_UPSERT_INCORRECT_CLASSIFIER("app.data.upsert.incorrect.classifier"),
     /**
+     * Incorrect classifier
+     */
+    EX_DATA_UPSERT_CLASSIFIER_ENTITY_NAME_MISSING("app.data.upsert.classifier.entity.name.missing"),
+    /**
      * Incorrect classifier node
      */
     EX_DATA_UPSERT_UNAVAILABLE_CLASSIFIER_NODE("app.data.upsert.incorrect.classifier.node"),
+    /**
+     * Required attributes is not presented.
+     */
+    EX_DATA_UPSERT_REQUIRED_ATTRS_IS_NOT_PRESENTED("app.data.upsert.required.attrs.notPresented"),
     /**
      * Upsert relation user exits errors
      */
@@ -836,6 +752,18 @@ public enum ExceptionId {
      * Upsert relation user exits errors
      */
     EX_DATA_UPSERT_RELATION_AFTER_USER_EXIT_ERROR("app.data.upsert.relation.after.user.exit.error"),
+    /**
+     * Upsert origin record user exits errors
+     */
+    EX_DATA_UPSERT_ORIGIN_RECORD_BEFORE_USER_EXIT_ERROR("app.data.upsert.origin.record.before.user.exit.error"),
+    /**
+     * Upsert origin record user exits errors
+     */
+    EX_DATA_UPSERT_ORIGIN_RECORD_AFTER_USER_EXIT_ERROR("app.data.upsert.origin.record.after.user.exit.error"),
+    /**
+     * Upsert etalon record user exits errors
+     */
+    EX_DATA_UPSERT_ETALON_RECORD_AFTER_USER_EXIT_ERROR("app.data.upsert.etalon.record.after.user.exit.error"),
     /**
      * Unavailable classifier
      */
@@ -899,11 +827,15 @@ public enum ExceptionId {
     /**
      * Time line not exist
      */
-    EX_DATA_USER_DONT_HAVE_RIGHTS_TO_TIMELINE("app.data.timeline.rightsNotEnough"),
+    EX_DATA_RELATIONS_TIMELINE_NO_IDENTITY("app.data.timeline.noIdentity"),
     /**
-     * Invalid bulk request context.
+     * Time line not exist
      */
-    EX_DATA_INVALID_BULK_INPUT("app.data.invalidBulkInput"),
+    EX_DATA_RELATION_TIMELINE_NO_IDENTITY("app.data.timeline.noIdentity"),
+    /**
+     * Time line not exist
+     */
+    EX_DATA_USER_DONT_HAVE_RIGHTS_TO_TIMELINE("app.data.timeline.rightsNotEnough"),
     /**
      * Origin update failed.
      */
@@ -977,14 +909,6 @@ public enum ExceptionId {
      */
     EX_DATA_ETALON_NOT_FOUND("app.data.goldenRecordNotFound"),
     /**
-     * Golden insert failed (with NoAction reason).
-     */
-    EX_DATA_ETALON_INSERT_NO_ACTION("app.data.goldenInsertNoAction"),
-    /**
-     * Golden update failed (with NoAction reason).
-     */
-    EX_DATA_ETALON_UPDATE_NO_ACTION("app.data.goldenUpdateNoAction"),
-    /**
      * Cannot delete record because active refs still exist.
      */
     EX_DATA_CANNOT_DELETE_REF_EXIST("app.data.cannotDeleteRefExist"),
@@ -1005,21 +929,9 @@ public enum ExceptionId {
      */
     EX_DATA_INVALID_DELETE_INPUT("app.data.invalidDeleteInput"),
     /**
-     * Invalid merge input.
-     */
-    EX_DATA_INVALID_MERGE_INPUT("app.data.invalidMergeInput"),
-    /**
-     * Merge failed (winner not found).
-     */
-    EX_DATA_MERGE_WINNER_NOT_FOUND("app.data.mergeFailedWinnerNotFound"),
-    /**
      * Record not found by supplied keys.
      */
     EX_DATA_MERGE_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.merge.notFoundByKeys"),
-    /**
-     * Record not found by supplied keys.
-     */
-    EX_DATA_MERGE_DUPLICATES_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.merge.duplicatesNotFoundByKeys"),
     /**
      * Merge failed (duplicates not found).
      */
@@ -1057,17 +969,9 @@ public enum ExceptionId {
      */
     EX_DATA_JOIN_KEY_IS_ALREADY_USED_BY_ANOTHER("app.data.join.key.already.used"),
     /**
-     * Record can not be restored due to unsufficient rights.
-     */
-    EX_DATA_RESTORE_NO_RIGHTS("app.data.restore.noRestoreRights"),
-    /**
      * Invalid get golden list request context.
      */
     EX_DATA_INVALID_GET_LIST_INPUT("app.data.invalidGetGoldenListInput"),
-    /**
-     * Golden record list not found.
-     */
-    EX_DATA_ETALON_LIST_NOT_FOUND("app.data.goldenRecordListNotFound"),
     /**
      * Invalid LOB object received from front end.
      */
@@ -1084,10 +988,6 @@ public enum ExceptionId {
      * Batch insert to vistory failed.
      */
     EX_DATA_INSERT_VISTORY_BATCH_FAILED("app.data.insertVistoryBatchFailed"),
-    /**
-     * Insert origin upsert invalid input.
-     */
-    EX_DATA_INVALID_ORIGIN_UPSERT_INPUT("app.data.invalidOriginUpsertInput"),
     /**
      * DQ failed from before executor (new record).
      */
@@ -1108,14 +1008,6 @@ public enum ExceptionId {
      * Some executor failed before merge
      */
     EX_DATA_ETALON_MERGE_BEFORE("app.data.etalonMergeBeforeExecutorFailed"),
-    /**
-     * DQ failed from before executor (existing record).
-     */
-    EX_DATA_ORIGIN_UPSERT_EXISTING_DQ_FAILED_BEFORE("app.data.originUpsertExistingDQFailedBefore"),
-    /**
-     * DQ failed from after executor.
-     */
-    EX_DATA_ORIGIN_UPSERT_DQ_FAILED_AFTER("app.data.originUpsertDQFailedAfter"),
     /**
      * Deactivation failed (no key received).
      */
@@ -1177,6 +1069,15 @@ public enum ExceptionId {
      */
     EX_DATA_XLSX_IMPORT_DUPLICATED_IDS("app.data.import.duplicate.ids"),
     /**
+     * Unable to save data into temporary table.
+     */
+    EX_DATA_XLSX_IMPORT_TEMPORARY_TABLE("app.data.import.unableToSaveData"),
+    /**
+     * Record not found by supplied keys.
+     */
+
+    EX_DATA_MERGE_DUPLICATES_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.merge.duplicatesNotFoundByKeys"),
+    /**
      * Unable to parse xlsx file.
      */
     EX_DATA_XLSX_IMPORT_UNKNOWN_FILE_FORMAT("app.data.import.unknown.file.format"),
@@ -1185,10 +1086,6 @@ public enum ExceptionId {
      */
     EX_DATA_XLSX_IMPORT_UNKNOWN_ENTITY("app.data.import.unknownEntityName"),
     /**
-     * Wrong version( e.g. outdated).
-     */
-    EX_DATA_XLSX_IMPORT_UNKNOWN_VERSION("app.data.import.unknowEntityVersion"),
-    /**
      * Unable to create XLS template file.
      */
     EX_DATA_XLSX_IMPORT_UNABLE_TO_CREATE_TEMPLATE("app.data.import.unableToCreateTemplate"),
@@ -1196,10 +1093,6 @@ public enum ExceptionId {
      * Unable to export data to XLS file.
      */
     EX_DATA_EXPORT_UNABLE_TO_EXPORT_XLS("app.data.exportUnableToExportXLS"),
-    /**
-     * Unable to create XLS template file.
-     */
-    EX_DATA_EXPORT_UNABLE_TO_CREATE_XLS("app.data.exportUnableToCreateXLS"),
     /**
      * Unable to create XLS template file.
      */
@@ -1237,10 +1130,6 @@ public enum ExceptionId {
      */
     EX_DATA_IMPORT_STEP_TARGET_UNDEFINED("app.data.import.step.target.undefined"),
     /**
-     * Reference record upsert failed.
-     */
-    EX_DATA_RELATIONS_UPSERT_DUPLICATE_REFERENCE("app.data.duplicateReference"),
-    /**
      * Containment record upsert failed.
      */
     EX_DATA_RELATIONS_UPSERT_CONTAINS_FAILED("app.data.containsUpsertFailed"),
@@ -1264,10 +1153,6 @@ public enum ExceptionId {
      * Origin record upsert failed.
      */
     EX_DATA_RELATIONS_BATCH_UPSERT_ORIGIN_FAILED("app.data.originFailed"),
-    /**
-     * Version record upsert failed.
-     */
-    EX_DATA_RELATIONS_BATCH_UPSERT_VERSION_FAILED("app.data.versionFailed"),
     /**
      * From or to side is in inactive state.
      */
@@ -1317,18 +1202,6 @@ public enum ExceptionId {
      */
     EX_DATA_RELATIONS_GET_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.relations.not.found.by.keys"),
     /**
-     * From key not found.
-     */
-    EX_DATA_RELATIONS_DELETE_FROM_NOT_FOUND("app.data.fromKeyNotFound"),
-    /**
-     * To key not found.
-     */
-    EX_DATA_RELATIONS_DELETE_TO_NOT_FOUND("app.data.toKeyNotFound"),
-    /**
-     * To key not found.
-     */
-    EX_DATA_RELATIONS_DELETE_NOT_FOUND_BY_KEYS("app.data.relation.notFoundByKeys"),
-    /**
      * Relation not found by name.
      */
     EX_DATA_RELATIONS_DELETE_RELATION_NOT_FOUND("app.data.delete.relationNotFoundByName"),
@@ -1336,14 +1209,6 @@ public enum ExceptionId {
      * Relation not found.
      */
     EX_DATA_RELATIONS_DELETE_NOT_FOUND("app.data.keysNotFound"),
-    /**
-     * Origin create failed.
-     */
-    EX_DATA_RELATIONS_DELETE_ORIGIN_FAILED("app.data.deleteEnsureOriginFailed"),
-    /**
-     * Delete of target containment failed.
-     */
-    EX_DATA_RELATIONS_DELETE_CONTAINS_TARGET_FAILED("app.data.deleteContainsTargetFailed"),
     /**
      * No delete rights.
      */
@@ -1353,10 +1218,6 @@ public enum ExceptionId {
      */
     EX_DATA_RELATIONS_DELETE_INVALID_INPUT("app.data.relations.delete.invalidInput"),
     /**
-     * Soap user don't able to upsert record if record in pending state.
-     */
-    EX_DATA_RELATIONS_UPSERT_NOT_ACCEPTED_HAS_PENDING_RECORD("app.data.upsert.rels.hasPendingVersions"),
-    /**
      * Invalid relto identity.
      */
     EX_DATA_RELATION_MISSING_RELTO_KEY("app.data.rels.missingRelToKey"),
@@ -1365,10 +1226,6 @@ public enum ExceptionId {
      */
     EX_DATA_RELATION_NOT_FOUND_BY_KEY("app.data.rels.relToNotFoundByKey"),
     /**
-     * Upsert of a user event failed.
-     */
-    EX_DATA_USER_EVENT_FAILED("app.data.userEventUpsertFailed"),
-    /**
      * Upsert of a user event failed. No user.
      */
     EX_DATA_USER_EVENT_NO_USER("app.data.userEventUpsertNoUser"),
@@ -1376,10 +1233,6 @@ public enum ExceptionId {
      * Meta model type wrapper for id not found for BVT calculation.
      */
     EX_DATA_NO_TYPE_WRAPPER_FOR_BVT_CALCULATION("app.data.noTypeWrapperForBVTCalculation"),
-    /**
-     * Record in pending approval state cannot be modified.
-     */
-    EX_DATA_PENDING_RECORD_CANNOT_BE_MODIFIED("app.data.pending.record.modify"),
     /**
      * Etalon id UUID invalid.
      */
@@ -1421,6 +1274,22 @@ public enum ExceptionId {
      */
     EX_DATA_CLASSIFIER_UPSERT_WRONG_ATTRIBUTE_TYPE("app.data.classifier.upsert.wrong.attr.type"),
     /**
+     * No insert rights.
+     */
+    EX_DATA_CLASSIFIER_UPSERT_NO_INSERT_RIGHTS("app.data.classifier.noInsertRights"),
+    /**
+     * No update rights.
+     */
+    EX_DATA_CLASSIFIER_UPSERT_NO_UPDATE_RIGHTS("app.data.classifier.noUpdateRights"),
+    /**
+     * No read rights.
+     */
+    EX_DATA_CLASSIFIER_GET_NO_RIGHTS("app.data.classifier.noReadRights"),
+    /**
+     * No delete rights.
+     */
+    EX_DATA_CLASSIFIER_DELETE_NO_RIGHTS("app.data.classifier.noDeleteRights"),
+    /**
      * Classifier upsert wrong data type.
      */
     EX_DATA_VALIDITY_PERIOD_INCORRECT("app.data.validity.period.incorrect"),
@@ -1458,10 +1327,6 @@ public enum ExceptionId {
      */
     EX_SYSTEM_JAXB_CANNOT_SET_FIELD_PERMISSION("app.data.jaxbCannotSetFieldPermission"),
     /**
-     * Undefined error occurs.
-     */
-    EX_SYSTEM_UNDEFINED("app.system.undefined"),
-    /**
      * Unable to init output ports.
      */
     EX_SYSTEM_CLEANSE_INIT_OUTPUT("app.cleanse.unableToInitOutputPorts"),
@@ -1481,10 +1346,6 @@ public enum ExceptionId {
      * Unable to initialize cleanse function with reflection.
      */
     EX_SYSTEM_CLEANSE_BASIC_INIT_FAILED("app.cleanse.basicInitFailed"),
-    /**
-     * Unable to parse and init cleanse functions.
-     */
-    EX_SYSTEM_CLEANSE_PARSER_INIT_FAILED("app.cleanse.parserInitFailed"),
     /**
      * Unable to execute cleanse function.
      */
@@ -1520,20 +1381,13 @@ public enum ExceptionId {
      * Record can not be identified by supplied keys. Upsert rejected.
      */
     EX_DATA_REPUBLICATION_INCORRECT_KEYS("app.data.republiation.incorrect.keys"),
-
-    /**
-     * Invalid input. Either object is null or login name is not set.
-     */
-    EX_SECURITY_INVALID_INPUT("app.security.invalid.input"),
     EX_SECURITY_USER_ALREADY_EXIST("app.security.userExist"),
     EX_SECURITY_ROLE_ALREADY_EXISTS("app.security.roleExists"),
-    EX_SECURITY_REQUIRED_FIELD_MISSING("app.security.requiredFieldsMissing"),
     EX_SECURITY_CANNOT_DEACTIVATE_USER("app.security.cannotDeactivate"),
     EX_SECURITY_CANNOT_CREATE_USER("app.security.cannotCreate"),
     EX_SECURITY_CANNOT_LOGIN("app.security.cannotLogin"),
     EX_SECURITY_USER_HAVE_NO_RIGHTS_FOR_ENDPOINT("app.security.noRightsForEndpoint"),
     EX_SECURITY_LICENSE_INVALID("app.security.license.invalid"),
-    EX_SECURITY_LICENSE_INVALID_WHEN_LOGIN("app.security.license.invalid"),
     EX_SECURITY_HW_FOR_LICENSE_INVALID("app.security.hw.for.license.invalid"),
     EX_SECURITY_HW_FOR_LICENSE_INVALID_WHEN_LOGIN("app.security.hw.for.license.invalid"),
 
@@ -1563,12 +1417,11 @@ public enum ExceptionId {
     EX_JOB_TRIGGER_RECURSIVE_CALL("app.job.trigger.recursiveCall"),
     EX_JOB_MAPPING_INCORRECT("app.job.mapping.incorrect"),
     EX_JOB_EXECUTION_NOT_FOUND("app.job.execution.notFound"),
-    EX_JOB_PARAMETERS_VALIDATION_ERRORS("app.soap.job.parameters.validation.errors"),
+    EX_JOB_PARAMETERS_SOAP_VALIDATION_ERRORS("app.soap.job.parameters.validation.errors"),
     EX_JOB_UNKNOWN_PARAMETERS("app.job.unknown.parameters"),
     EX_JOB_PARAMETERS_NOT_SET("app.job.parameters.not.set"),
     EX_JOB_STEP_SUBMIT_FAILED("app.job.general.step.submit.failed"),
-    EX_JOB_STEP_EXECUTION_FAILED("app.job.general.step.execution.failed"),
-
+    EX_JOB_PARAMETERS_VALIDATION_ERRORS("app.job.parameters.validation.errors"),
     //--------------------------------------Bulk operations
     /**
      * Business analog for class cast exception in bulk operation service.
@@ -1582,29 +1435,10 @@ public enum ExceptionId {
      * partially filled classifier is incorrect
      */
     EX_BULK_OPERATION_MODIFY_CLASSIFIER_INCORRECT("app.bulk.operations.modify.record.incorrect"),
-
-    /**
-     * Unable to re-apply DQ rules.
-     */
-    EX_DQ_CANNOT_REAPPLY("app.dq.cannotReapply"),
-
-    /**
-     * Entity name cannot be empty.
-     */
-    EX_DQ_ENTITY_NAME_IS_EMPTY("app.dq.entityNameIsEmpty"),
-    //-------------------------- Workflow and process support
-    /**
-     * Data is outdated, approve state already changed
-     */
-    EX_WF_DECLINE_RECORD_FAILED_STATE_OUTDATED("app.data.outdated.decline"),
     /**
      * Data is outdated, approve state already changed
      */
     EX_WF_DECLINE_RECORD_FAILED_VERSIONS_UPDATE_ERROR("app.wf.versions.update.error"),
-    /**
-     * Data is outdated, approve state already changed
-     */
-    EX_WF_APPROVE_RECORD_FAILED_STATE_OUTDATED("app.data.outdated.approve"),
     /**
      * Data is outdated, approve state already changed.
      */
@@ -1625,10 +1459,6 @@ public enum ExceptionId {
      * Cannot decline record. Parameter(s) missing.
      */
     EX_WF_DECLINE_RECORD_FAILED_PARAMS_MISSING("app.wf.declineRecordChangeFailedParamsMissing"),
-    /**
-     * Cannot approve record. Parameter(s) missing.
-     */
-    EX_WF_APPROVE_RECORD_FAILED_PARAMS_MISSING("app.wf.approveRecordChangeFailedParamsMissing"),
     /**
      * Cannot complete task. Task not found.
      */
@@ -1702,8 +1532,6 @@ public enum ExceptionId {
      */
     EX_WF_CANNOT_GENERATE_DIAGRAM_PROCESS_NOT_FOUND("app.wf.cannot.generate.diagram.process.not.found"),
     EX_WF_CANNOT_GENERATE_DIAGRAM_HISTORICAL_PROCESS_NOT_FOUND("app.wf.cannot.generate.diagram.historical.process.not.found"),
-    EX_WF_CANNOT_IDENTIFY_RECORD_EDIT_REJECT("app.wf.cannot.identify.reject.record"),
-    EX_WF_CANNOT_IDENTIFY_RECORD_EDIT_ACCEPT("app.wf.cannot.identify.accept.record"),
     //-------------------------- End of Workflow and process support
 
     /**
@@ -1731,13 +1559,6 @@ public enum ExceptionId {
      */
     EX_ROLE_PROPERTY_VALIDATION_ERROR("app.role.property.validationError"),
     EX_ROLE_DATA_VALIDATION_ERROR("app.role.data.validationError"),
-    /**
-     * Matching
-     */
-    EX_MATCHING_GROUP_INCORRECT("app.matching.group.incorrect"),
-    EX_MATCHING_GROUP_INCORRECT_BLANK_NAME("app.matching.group.incorrect.blank.name"),
-    EX_MATCHING_GROUP_INCORRECT_LONG_NAME("app.matching.group.incorrect.name.long"),
-    EX_MATCHING_GROUP_INCORRECT_BLANK_ENTITY("app.matching.group.incorrect.blank.entity"),
     EX_MATCHING_FIELD_INCORRECT_ID_ABSENT("app.matching.field.incorrect.id.absent"),
     EX_MATCHING_FIELD_INCORRECT_ATTR_NAME_ABSENT("app.matching.field.incorrect.name.absent"),
     EX_MATCHING_ALGO_INCORRECT_FIELDS_EMPTY("app.matching.algo.incorrect.fields.empty"),
@@ -1751,62 +1572,39 @@ public enum ExceptionId {
     EX_MATCHING_RULE_INCORRECT_INNER_ALGOS("app.matching.rule.incorrect.inner.algos"),
     EX_MATCHING_RULE_INCORRECT("app.matching.rule.incorrect"),
     EX_MATCHING_NEED_ALGORITHMS("app.matching.rule.need.algorithms"),
-    EX_MATCHING_ONLY_NOT_EXACT_ALGOS("app.matching.rule.onlyNotExact"),
     EX_MATCHING_IMPORT_TYPE_UNSUPPORTED("app.matching.import.unsupported"),
     EX_MATCHING_GROUP_OR_RULE_NOT_FOUND("app.matching.group.rule.notFound"),
     EX_MATCHING_INCORRECT_PREPROCESSING_RULE("app.matching.rule.incorrectPreprocessing"),
-    EX_INCORRECT_TYPE_OF_ATTRIBUTE_FOR_SEARCH("app.attribute.incorrect.search"),
     EX_MATCHING_CLUSTER_NOT_FOUND("app.matching.cluster.notFound"),
     EX_MATCHING_CLUSTER_DOES_NOT_CONTAINS_RECORD("app.matching.cluster.doesNot.contains.record"),
     EX_MATCHING_CLUSTER_ALREADY_MODIFIED("app.matching.cluster.modified.concurrent"),
     EX_MATCHING_USER_SETTINGS_INCORRECT("app.matching.settings.incorrect"),
-    EX_MATCHING_GROUP_REFER_TO_UNAVAILABLE_RULE_BY_NAME("app.matching.group.rule.unavailable"),
-    EX_MATCHING_GROUP_REFER_TO_UNAVAILABLE_RULE_BY_ID("app.matching.group.rule.unavailable"),
     EX_MATCHING_RULE_CONTAIN_UNAVAILABLE_ATTRIBUTE("app.matching.rule.contain.unavailable.attribute"),
     EX_MATCHING_RULE_NAME_WAS_DUPLICATE("app.matching.rule.name.duplicate"),
-    EX_MATCHING_GROUP_NAME_WAS_DUPLICATE("app.matching.group.name.duplicate"),
-    /**
-     * Classifiers
-     */
-    EX_CLASSIFIER_INCORRECT("app.classifier.incorrect"),
-    EX_CLASSIFIER_SAME_NAME_META("app.classifier.duplicate.meta.name"),
     EX_CLASSIFIER_ALREADY_CREATED("app.classifier.exist"),
     EX_CLASSIFIER_NOT_EXIST_FOR_UPDATE("app.classifier.not.exist"),
     EX_CLASSIFIER_NODE_ATTR_DUPL("app.classifier.node.attr.dupl"),
-    EX_CLASSIFIER_NOT_EXIST_FOR_REMOVE("app.classifier.not.exist"),
-    EX_CLASSIFIER_NODE_NOT_EXIST_FOR_REMOVE("app.classifier.node.not.exist"),
-    EX_CLASSIFIER_NODE_NOT_EXIST_FOR_UPDATE("app.classifier.node.not.exist"),
-    EX_CLASSIFIER_NODE_UPDATE_FAILED("app.classifier.node.update.failed"),
-    EX_CLASSIFIER_NODE_DATA_INCORRECT("app.classifier.node.data.incorrect"),
-    EX_CLASSIFIER_NODE_ATTR_INCORRECT("app.classifier.node.attr.incorrect"),
     EX_CLASSIFIER_NODE_ATTR_NAME_INCORRECT("app.classifier.node.attr.name.incorrect"),
-    EX_CLASSIFIER_NODE_ATTR_WITH_UNAVAILABLE("app.classifier.node.attr.unavailable"),
-    EX_CLASSIFIER_UPDATED_NODE_DOES_NOT_EXIST("app.classifier.node.not.exist"),
-    EX_CLASSIFIER_MOVING_NODE_UNAVAILABLE("app.classifier.node.move.unavailable"),
     EX_CLASSIFIER_IMPORT_TYPE_UNSUPPORTED("app.classifier.content.type.unsupported"),
     EX_CLASSIFIER_IMPORT_DATA_EMPTY("app.classifier.data.empty"),
     EX_CLASSIFIER_IMPORT_BY_CODE_WITHOUT_PATTERN("app.classifier.import.by.code.without.pattern"),
-    EX_CLASSIFIER_IMPORT_BY_CODE_WITHOUT_VALIDATION_BY_LEVEL("app.classifier.import.by.code.without.validation.by.level"),
     EX_CLASSIFIER_NODE_CODE_INCORRECT("app.classifier.node.code.incorrect"),
     EX_CLASSIFIER_NODE_CODE_NOT_UNIQUE("app.classifier.node.code.notUnique"),
     EX_CLASSIFIER_CODE_PATTERN_INCORRECT("app.classifier.code.pattern.incorrect"),
     EX_CLASSIFIER_NODE_CODE_DOESNT_MATCH_PARENT("app.classifier.node.code.doesntMatchParent"),
     EX_CLASSIFIER_NODE_CODE_DOESNT_MATCH_PARENT_CODE("app.classifier.node.code.doesntMatchParentCode"),
-    EX_CLASSIFIER_CODE_PATTERN_NOT_EXIST("app.classifier.code.notExist"),
-    EX_CLASSIFIER_CODE_NOT_EXIST("app.classifier.node.code.notExist"),
-    EX_CLASSIFIER_PARENT_NOT_EXIST("app.classifier.node.parent.notExist"),
-    EX_CLASSIFIER_NODE_IS_NOT_UNIQUE("app.classifier.node.not.unique"),
+    EX_CLASSIFIER_NODE_ADD_MAXIMUM_EXCEEDED("app.classifier.node.add.maximum.exceeded"),
     EX_CLASSIFIER_SAME_CODE_AND_NAME_ON_ONE_LEVEL("app.classifier.node.code.name.notUnique"),
-    EX_CLASSIFIER_PARENT_NODE_NOT_FOUND("app.classifier.parent.node.notFound"),
-    EX_CLASSIFIER_IMPORT_NODES_INCONSISTENT("app.classifier.nodeSet.inconsistent"),
-    EX_CLASSIFIER_TREE_RESOLVER_NOT_PRESENT("app.classifier.idResolver.notPresent"),
     EX_CLASSIFIER_INVALID_ATTRIBUTE_VALUE("app.classifier.invalidAttributeValue"),
     EX_CLASSIFIER_NOT_ATTACHED_NODES_TO_ROOT("app.classifier.not.attached.nodes.to.root"),
     EX_CLASSIFIER_MORE_THEN_ONE_ROOT_NODES("app.classifier.more.then.one.root.nodes"),
     EX_CLASSIFIER_DUPLICATE_NODES("app.classifier.duplicate.nodes"),
     EX_CLASSIFIER_DUPLICATE_IDS("app.classifier.duplicate.ids"),
-    EX_CLASSIFIER_ATTRIBUTES_IS_NOT_UNIQUE("app.classifier.attributes.is.not.unique"),
+    EX_CLASSIFIER_ATTRIBUTES_WITH_SAME_NAME_EXISTS("app.classifier.attributes.with.same.name.exists"),
+    EX_CLASSIFIER_REQ_READ_ONLY_ATTRIBUTES("app.classifier.attributes.req.read.only"),
     EX_CLASSIFIER_MODIFICATION_ATTRIBUTE_WITH_DATA("app.classifier.attributes.modification.with.data"),
+    EX_CLASSIFIER_WRONG_ATTRIBUTE_VALUE_OF_TYPE("app.classifier.wrong.attribute.value.of.type"),
+    EX_CLASSIFIER_NO_PARENT_NODE("app.classifier.no.parent.node"),
 
 
     EX_CONVERSION_ATTACHMENT_TO_STEAM_FAILED("app.conversion.attachment.failed"),
@@ -1845,7 +1643,6 @@ public enum ExceptionId {
     EX_MEASUREMENT_MERGE_IMPOSSIBLE_UNIT_WAS_REMOVED("app.measurement.merge.impossible.unit.was.removed"),
     EX_MEASUREMENT_MERGE_IMPOSSIBLE_UNIT_WAS_CHANGED("app.measurement.merge.impossible.unit.was.changed"),
     EX_MEASUREMENT_VALUE_DOESNT_EXIST("app.measurement.value.doesnt.exist"),
-    EX_MEASUREMENT_ATTRIBUTE_SETTINGS_IS_NOT_DEFINE("app.measurement.attribute.settings.not.define"),
     EX_MEASUREMENT_REMOVING_FORBIDDEN("app.measurement.removing.forbidden"),
 
     EX_SYSTEM_LOG_FILE_APPENDER_NOT_FOUND_OR_MISCONFIGURED("app.sys.log.file.appender.not.found"),
@@ -1872,6 +1669,10 @@ public enum ExceptionId {
     EX_DETACH_LAST_ORIGIN("app.data.detach.last.origin"),
     EX_ORIGIN_NOT_FOUND("app.data.origin.not.found"),
 
+    // Merge User Exit
+    EX_MERGE_BEFORE_USER_EXIT_ERROR("app.data.merge.record.before.user.exit.error"),
+    EX_MERGE_AFTER_USER_EXIT_ERROR("app.data.merge.record.after.user.exit.error"),
+
     // Join User Exit
     EX_JOIN_USER_EXIT_BEFORE_ERROR("app.join.user.exit.before.error"),
     EX_JOIN_USER_EXIT_AFTER_ERROR("app.join.user.exit.after.error"),
@@ -1885,10 +1686,10 @@ public enum ExceptionId {
      */
     EX_RUN_EXIT("app.data.global.user.exit.exception"),
 
-    EX_WRONG_SANDBOX_DATARECORD_ID("app.sandbox.test.data.record.wrong.id"),
-
     EX_ERROR_WHILE_CREATING_INDEXES_LOCK_TIME_OUT("app.error.while.creating.indexes.lock.time.out"),
-    EX_ERROR_WHILE_CREATING_INDEXES_INTERRUPTED("app.error.while.creating.indexes.interrupted");
+    EX_ERROR_WHILE_CREATING_INDEXES_INTERRUPTED("app.error.while.creating.indexes.interrupted"),
+
+    EX_LOOKUP_ENTITY_HAS_CLASSIFIER_DATA("app.error.lookup.entity.has.classifier.data");
 
     /**
      * Exception code.

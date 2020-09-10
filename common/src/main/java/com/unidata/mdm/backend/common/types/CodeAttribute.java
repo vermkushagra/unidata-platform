@@ -30,7 +30,7 @@ public interface CodeAttribute<T> extends SingleValueAttribute<T> {
      * @author Mikhail Mikhailov
      * Denotes type of the contained data.
      */
-    public enum CodeDataType {
+    enum CodeDataType {
         /**
          * The string type.
          */
@@ -60,7 +60,7 @@ public interface CodeAttribute<T> extends SingleValueAttribute<T> {
     List<T> getSupplementary();
     /**
      * Sets the supplementary values.
-     * @param values to set
+     * @param value to set
      */
     void setSupplementary(List<T> value);
     /**

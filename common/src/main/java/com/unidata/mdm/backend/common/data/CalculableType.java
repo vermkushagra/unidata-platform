@@ -32,11 +32,11 @@ public enum CalculableType {
 	/**
 	 * Relation to.
 	 */
-	RELATION_TO,
+	RELATION,
 	/**
-	 * Time interval.
+	 * Time interval info.
 	 */
-	TIME_INTERVAL,
+	INFO,
 	/**
 	 * Attribute.
 	 */

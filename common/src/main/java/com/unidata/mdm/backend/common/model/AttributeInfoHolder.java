@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.unidata.mdm.meta.AbstractSimpleAttributeDef;
 import org.apache.commons.lang3.StringUtils;
 
 import com.unidata.mdm.meta.AbstractAttributeDef;
@@ -91,7 +90,6 @@ public class AttributeInfoHolder {
      * @param parent parent link
      * @param path calculated path
      * @param level depth of this attribute
-     * @param relation the relation
      */
     public AttributeInfoHolder(SimpleAttributeDef attr, AbstractEntityDef entity, AttributeInfoHolder parent, String path, int level) {
         this.attribute = attr;
@@ -111,7 +109,6 @@ public class AttributeInfoHolder {
      * @param parent parent link
      * @param path calculated path
      * @param level depth of this attribute
-     * @param relation the relation
      */
     public AttributeInfoHolder(ArrayAttributeDef attr, AbstractEntityDef entity, AttributeInfoHolder parent, String path, int level) {
         this.attribute = attr;
@@ -132,7 +129,6 @@ public class AttributeInfoHolder {
      * @param path calculated path
      * @param level depth of this attribute
      * @param isAlternative tells whether this code attr is an alternative one
-     * @param relation the relation
      */
     public AttributeInfoHolder(CodeAttributeDef attr, AbstractEntityDef entity, AttributeInfoHolder parent, String path, int level, boolean isAlternative) {
         this.attribute = attr;
@@ -152,7 +148,6 @@ public class AttributeInfoHolder {
      * @param parent parent link
      * @param path calculated path
      * @param level depth of this attribute
-     * @param relation the relation
      */
     public AttributeInfoHolder(ComplexAttributeDef attr, AbstractEntityDef entity, AttributeInfoHolder parent, String path, int level) {
         this.attribute = attr;
@@ -403,6 +398,14 @@ public class AttributeInfoHolder {
         return isSimple() ? ((SimpleAttributeDef) attribute).getSimpleDataType()
                 : isArray() ? ((ArrayAttributeDef) attribute).getArrayValueType().value()
                 : isCode() ? ((CodeAttributeDef) attribute).getSimpleDataType()
+                : null;
+    }
+    /**
+     * @return the SimpleDataType of attribute or null
+     */
+    public SimpleDataType getLookupEntityCodeAttributeType() {
+        return isLookupLink()&&isSimple() ? ((SimpleAttributeDef) attribute).getLookupEntityCodeAttributeType()
+                :isLookupLink()&&isArray()?((ArrayAttributeDef) attribute).getLookupEntityCodeAttributeType().value()
                 : null;
     }
 }

@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.unidata.mdm.backend.common.keys.EtalonKey;
 import com.unidata.mdm.backend.common.keys.OriginKey;
 
@@ -74,6 +76,10 @@ public class GetRelationsRequestContext
      */
     private final Date forDate;
     /**
+     * For a particular date range (left &lt;-&gt; right).
+     */
+    private final Pair<Date, Date> forDatesFrame;
+    /**
      * Operation id.
      */
     private final String forOperationId;
@@ -90,7 +96,11 @@ public class GetRelationsRequestContext
         this.relations = b.relations;
         this.relationNames = b.relationNames;
         this.forDate = b.forDate;
+        this.forDatesFrame = b.forDatesFrame;
         this.forOperationId = b.forOperationId;
+
+        flags.set(ContextUtils.CTX_FLAG_FETCH_TASKS, b.tasks);
+        flags.set(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS, b.includeDrafts);
     }
 
     /**
@@ -156,10 +166,31 @@ public class GetRelationsRequestContext
     }
 
     /**
+     * @return the dates frame
+     */
+    public Pair<Date, Date> getForDatesFrame() {
+        return forDatesFrame;
+    }
+
+    /**
      * @return the forOperationId
      */
     public String getForOperationId() {
         return forOperationId;
+    }
+
+    /**
+     * @return the tasks
+     */
+    public boolean isTasks() {
+        return flags.get(ContextUtils.CTX_FLAG_FETCH_TASKS);
+    }
+
+    /**
+     * @return the unpublishedState
+     */
+    public boolean isIncludeDrafts() {
+        return flags.get(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS);
     }
 
     /**
@@ -208,9 +239,21 @@ public class GetRelationsRequestContext
          */
         private Date forDate;
         /**
+         * For a particular date range (left <-> right).
+         */
+        private Pair<Date, Date> forDatesFrame;
+        /**
          * Operation id.
          */
         private String forOperationId;
+        /**
+         * Request tasks additionally. Show draft version.
+         */
+        private boolean tasks;
+        /**
+         * Show draft version.
+         */
+        private boolean includeDrafts;
         /**
          * Constructor.
          */
@@ -226,7 +269,7 @@ public class GetRelationsRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public GetRelationsRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -244,7 +287,7 @@ public class GetRelationsRequestContext
         }
 
         /**
-         * @param etalonKey the etalonKey to set
+         * @param originKey the etalonKey to set
          */
         public GetRelationsRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -285,7 +328,7 @@ public class GetRelationsRequestContext
         }
 
         /**
-         * @param relations the relations to set
+         * @param relationNames the relations to set
          * @return self
          */
         public GetRelationsRequestContextBuilder relationNames(List<String> relationNames) {
@@ -294,7 +337,7 @@ public class GetRelationsRequestContext
         }
 
         /**
-         * @param relations the relations to set
+         * @param relationNames the relations to set
          * @return self
          */
         public GetRelationsRequestContextBuilder relationNames(String... relationNames) {
@@ -311,10 +354,33 @@ public class GetRelationsRequestContext
         }
 
         /**
+         * @param forDatesFrame the forDate to set
+         */
+        public GetRelationsRequestContextBuilder forDatesFrame(Pair<Date, Date> forDatesFrame) {
+            this.forDatesFrame = forDatesFrame;
+            return this;
+        }
+
+        /**
          * @param forOperationId the forOperationId to set
          */
         public GetRelationsRequestContextBuilder forOperationId(String forOperationId) {
             this.forOperationId = forOperationId;
+            return this;
+        }
+
+        /**
+         * Request tasks additionally. Show draft version.
+         */
+        public GetRelationsRequestContextBuilder tasks(boolean tasks) {
+            this.tasks = tasks;
+            return this;
+        }
+        /**
+         * Request tasks additionally. Show draft version.
+         */
+        public GetRelationsRequestContextBuilder includeDrafts(boolean includeDrafts) {
+            this.includeDrafts = includeDrafts;
             return this;
         }
 

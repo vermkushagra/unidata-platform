@@ -85,6 +85,10 @@ public enum MeasurementContextName {
      */
     MEASURE_SOAP_GET_MODEL_ELEMENT,
     /**
+     * SOAP get entity with deps.
+     */
+    MEASURE_SOAP_GET_ENTITY_WITH_DEPS,
+    /**
      * SOAP upsert element.
      */
     MEASURE_SOAP_UPSERT_MODEL_ELEMENT,
@@ -97,9 +101,49 @@ public enum MeasurementContextName {
      */
     MEASURE_UI_GET,
     /**
+     * REST Get.
+     */
+    MEASURE_UI_CLASSIFIERS_GET,
+    /**
+     * REST Node add.
+     */
+    MEASURE_UI_CLASSIFIER_NODE_ADD,
+    /**
+     * REST Node update.
+     */
+    MEASURE_UI_CLASSIFIER_NODE_UPDATE,
+    /**
+     * REST Node delete.
+     */
+    MEASURE_UI_CLASSIFIER_NODE_DELETE,
+    /**
+     * REST Node get.
+     */
+    MEASURE_UI_CLASSIFIER_NODE_GET,
+    /**
+     * REST Get.
+     */
+    MEASURE_UI_CLASSIFIER_GET,
+    /**
+     * REST Get.
+     */
+    MEASURE_UI_CLASSIFIER_SEARCH,
+    /**
+     * REST Update.
+     */
+    MEASURE_UI_CLASSIFIER_UPDATE,
+    /**
+     * REST Delete.
+     */
+    MEASURE_UI_CLASSIFIER_DELETE,
+    /**
      * REST Create.
      */
     MEASURE_UI_CREATE,
+    /**
+     * REST Create.
+     */
+    MEASURE_UI_CLASSIFIERS_CREATE,
     /**
      * REST Update.
      */
@@ -128,6 +172,10 @@ public enum MeasurementContextName {
      * REST restore.
      */
     MEASURE_UI_RESTORE,
+    /**
+     * REST period restore.
+     */
+    MEASURE_UI_PERIOD_RESTORE,
     /**
      * REST relations Get.
      */
@@ -307,5 +355,7 @@ public enum MeasurementContextName {
     /**
      * Update indexes.
      */
-    MEASURE_STEP_UPDATE_MAPPING;
+    MEASURE_STEP_UPDATE_MAPPING,
+
+    FILTER_BY_CRITERIA
 }

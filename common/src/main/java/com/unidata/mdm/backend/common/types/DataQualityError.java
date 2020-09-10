@@ -20,18 +20,20 @@
 package com.unidata.mdm.backend.common.types;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.dq.DataQualityExecutionMode;
 
 /**
  * DQ error type. Created from JAXB artefact.
  */
-public class DataQualityError implements Serializable
-{
+public class DataQualityError implements Serializable {
     /**
      * SVUID.
      */
@@ -40,12 +42,10 @@ public class DataQualityError implements Serializable
      * Id.
      */
     private final String id;
-
     /**
      * Etalon id
      */
     private String etalonId;
-
     /**
      * Create date.
      */
@@ -59,9 +59,9 @@ public class DataQualityError implements Serializable
      */
     private final String createdBy;
     /**
-     * Problematic local paths, caused the error, if any.
+     * Paths and attributes (optional), caused this validation error.
      */
-    private final List<String> paths;
+    private final List<Pair<String, Attribute>> values;
     /**
      * Status.
      */
@@ -97,7 +97,7 @@ public class DataQualityError implements Serializable
         createDate = b.createDate;
         updateDate = b.updateDate;
         createdBy = b.createdBy;
-        paths = Objects.isNull(b.paths) ? Collections.emptyList() : b.paths;
+        values = Objects.isNull(b.values) ? Collections.emptyList() : b.values;
         status = b.status;
         ruleName = b.ruleName;
         message = b.message;
@@ -160,10 +160,10 @@ public class DataQualityError implements Serializable
         return createdBy;
     }
     /**
-     * @return the paths
+     * @return the values
      */
-    public List<String> getPaths() {
-        return paths;
+    public List<Pair<String, Attribute>> getValues() {
+        return values;
     }
     /**
      * Gets the value of the status property.
@@ -294,9 +294,9 @@ public class DataQualityError implements Serializable
          */
         private String createdBy;
         /**
-         * Problematic local paths, caused the error, if any.
+         * Paths and attributes (optional), caused this validation error.
          */
-        private List<String> paths;
+        private List<Pair<String, Attribute>> values;
         /**
          * Status.
          */
@@ -346,7 +346,7 @@ public class DataQualityError implements Serializable
             message = error.message;
             severity= error.severity;
             category = error.category;
-            paths = error.paths;
+            values = error.values;
         }
 
         /**
@@ -397,12 +397,27 @@ public class DataQualityError implements Serializable
             return this;
         }
         /**
-         * Problematic local paths, caused the error, if any.
-         * @param paths the paths to set
+         * Problematic local paths and attr values, caused the error, if any.
+         * @param values the values to set
          * @return self
          */
-        public DataQualityErrorBuilder paths(List<String> paths) {
-            this.paths = paths;
+        public DataQualityErrorBuilder values(List<Pair<String, Attribute>> values) {
+            if (Objects.isNull(this.values)) {
+                this.values = new ArrayList<>();
+            }
+            this.values.addAll(values);
+            return this;
+        }
+        /**
+         * Problematic local path and its attr value, caused the error, if any.
+         * @param value the value to set
+         * @return self
+         */
+        public DataQualityErrorBuilder value(Pair<String, Attribute> value) {
+            if (Objects.isNull(this.values)) {
+                this.values = new ArrayList<>();
+            }
+            this.values.add(value);
             return this;
         }
         /**
@@ -461,7 +476,7 @@ public class DataQualityError implements Serializable
         }
         /**
          * Sets execution mode.
-         * @param value the value to set
+         * @param executionMode Data quality execution mode
          * @return self
          */
         public DataQualityErrorBuilder executionMode(DataQualityExecutionMode executionMode) {

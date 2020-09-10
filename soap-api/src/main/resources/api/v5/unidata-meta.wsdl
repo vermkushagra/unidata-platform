@@ -42,6 +42,12 @@
 	<wsdl:message name="getElementResponseMessage">
 		<wsdl:part name="getElementResponse" element="m:getElementResponse" />
 	</wsdl:message>
+    <wsdl:message name="getEntityWithDepsRequestMessage">
+        <wsdl:part name="getEntityWithDepsRequest" element="m:getEntityWithDepsRequest" />
+    </wsdl:message>
+    <wsdl:message name="getEntityWithDepsResponseMessage">
+        <wsdl:part name="getEntityWithDepsResponse" element="m:getEntityWithDepsResponse" />
+    </wsdl:message>
 	<wsdl:message name="upsertElementRequestMessage">
 		<wsdl:part name="upsertElementRequest" element="m:upsertElementRequest" />
 	</wsdl:message>
@@ -81,6 +87,11 @@
 			<wsdl:output name="getElementResponse" message="tns:getElementResponseMessage"></wsdl:output>
 			<wsdl:fault name="fault" message="tns:fault"></wsdl:fault>
 		</wsdl:operation>
+        <wsdl:operation name="getEntityWithDeps">
+            <wsdl:input name="getEntityWithDepsRequest" message="tns:getEntityWithDepsRequestMessage"></wsdl:input>
+            <wsdl:output name="getEntityWithDepsResponse" message="tns:getEntityWithDepsResponseMessage"></wsdl:output>
+            <wsdl:fault name="fault" message="tns:fault"></wsdl:fault>
+        </wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="MetaModelServiceBinding" type="tns:MetaModelPortType">
 		<soap:binding transport="http://schemas.xmlsoap.org/soap/http"
@@ -124,6 +135,19 @@
 				<soap:header message="tns:security" part="security" />
 			</wsdl:output>
 		</wsdl:operation>
+        <wsdl:operation name="getEntityWithDeps">
+            <soap:operation soapAction="getEntityWithDeps" style="document" />
+            <wsdl:input name="getEntityWithDepsRequest">
+                <soap:body use="literal" />
+                <soap:header message="tns:info" part="info" />
+                <soap:header message="tns:security" part="security" />
+            </wsdl:input>
+            <wsdl:output name="getEntityWithDepsResponse">
+                <soap:body use="literal" />
+                <soap:header message="tns:info" part="info" />
+                <soap:header message="tns:security" part="security" />
+            </wsdl:output>
+        </wsdl:operation>
 		<wsdl:operation name="upsertElement">
 			<soap:operation soapAction="upsertElement" style="document" />
 			<wsdl:input name="upsertElementRequest">

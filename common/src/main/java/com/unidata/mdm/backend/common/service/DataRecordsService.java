@@ -19,10 +19,12 @@
 
 package com.unidata.mdm.backend.common.service;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
+import javax.annotation.Nonnull;
 
 import com.unidata.mdm.backend.common.context.DeleteClassifierDataRequestContext;
 import com.unidata.mdm.backend.common.context.DeleteClassifiersDataRequestContext;
@@ -113,14 +115,6 @@ public interface DataRecordsService {
     GetRecordsDTO getRecords(GetMultipleRequestContext ctx);
 
     /**
-     * Upsert a record.
-     *
-     * @param ctx the request context
-     * @return {@link UpsertRecordDTO}
-     */
-    UpsertRecordDTO upsertRecord(UpsertRequestContext ctx);
-
-    /**
      * Deletes a record.
      *
      * @param ctx the context
@@ -171,75 +165,20 @@ public interface DataRecordsService {
     TimelineDTO getRecordsTimeline(GetRequestContext ctx);
 
     /**
-     * Loads complete relations versions time line for the given record etalon ID and relation name.
+     * Loads relevant relations time line for the given relation identities and relation name.
      *
-     * @param recordEtalonId the etalon ID
-     * @param name relation name
-     * @param includeDrafts include draft versions
-     * @param checkPendingState include draft versions into view or not
+     * @param ctx the context
      * @return timeline
      */
-    List<TimelineDTO> getRelationsTimeline(String recordEtalonId, String name, boolean includeDrafts,
-            boolean checkPendingState);
+    List<TimelineDTO> getRelationsTimeline(GetRelationsRequestContext ctx);
 
     /**
-     * Loads relevant relations versions time line for the given record etalon ID and relation name.
+     * Loads relevant relations versions time line for the given relation identity.
      *
-     * @param recordEtalonId the etalon ID
-     * @param name relation name
-     * @param asOf filetrs versions, having this date inside their validity period
-     * @param includeDrafts include draft versions
-     * @param checkPendingState include draft versions into view or not
+     * @param ctx identity context
      * @return timeline
      */
-    List<TimelineDTO> getRelationsTimeline(String recordEtalonId, String name, Date asOf, boolean includeDrafts,
-            boolean checkPendingState);
-
-    /**
-     * Loads relevant relations versions time line for the given record etalon ID and relation name.
-     *
-     * @param recordEtalonId the etalon ID
-     * @param name relation name
-     * @param from filters versions, having this date inside their validity period or greater than this but less than to
-     * @param to filters versions, having this date inside their validity period or less than this but greater than to
-     * @param includeDrafts include draft versions
-     * @param checkPendingState include draft versions into view or not
-     * @return timeline
-     */
-    List<TimelineDTO> getRelationsTimeline(String recordEtalonId, String name, Date from, Date to,
-            boolean includeDrafts, boolean checkPendingState);
-
-    /**
-     * Loads complete relations versions time line for the given record etalon ID and relation name.
-     *
-     * @param recordEtalonId the etalon ID
-     * @return timeline
-     */
-    TimelineDTO getRelationTimeline(String recordEtalonId);
-
-    /**
-     * Loads relevant relations versions time line for the given record etalon ID and relation name.
-     *
-     * @param recordEtalonId the etalon ID
-     * @param asOf filters versions, having this date inside their validity period
-     * @param includeDrafts include draft versions
-     * @param checkPendingState include draft versions into view or not
-     * @return timeline
-     */
-    TimelineDTO getRelationTimeline(String recordEtalonId, Date asOf, boolean includeDrafts, boolean checkPendingState);
-
-    /**
-     * Loads relevant relations versions time line for the given record etalon ID and relation name.
-     *
-     * @param recordEtalonId the etalon ID
-     * @param from filters versions, having this date inside their validity period or greater than this but less than to
-     * @param to filters versions, having this date inside their validity period or less than this but greater than to
-     * @param includeDrafts include draft versions
-     * @param checkPendingState include draft versions into view or not
-     * @return timeline
-     */
-    TimelineDTO getRelationTimeline(String recordEtalonId, Date from, Date to, boolean includeDrafts,
-            boolean checkPendingState);
+    TimelineDTO getRelationTimeline(GetRelationRequestContext ctx);
 
     /**
      * Collects and returns relation's digest according to the request context.
@@ -347,13 +286,20 @@ public interface DataRecordsService {
      * @param ctx - record upsert context
      * @return {@link UpsertRecordDTO}
      */
-    UpsertRecordDTO atomicUpsert(UpsertRequestContext ctx);
+    UpsertRecordDTO upsertRecord(UpsertRequestContext ctx);
+
+    /**
+     * Upsert record with relations and classifiers with database transaction
+     * @param ctx
+     * @return
+     */
+    UpsertRecordDTO upsertFullTransactional(@Nonnull UpsertRequestContext ctx);
 
     /**
      * @param recordUpsertCtxs - collection of upsert record contexts.
      * @return collection {@link UpsertRecordDTO}
      */
-    Collection<UpsertRecordDTO> atomicBulkUpsert(Collection<UpsertRequestContext> recordUpsertCtxs);
+    Collection<UpsertRecordDTO> bulkUpsertRecords(List<UpsertRequestContext> recordUpsertCtxs);
 
     /**
      * Deletes a relation.
@@ -373,11 +319,18 @@ public interface DataRecordsService {
      * Try to restore given record.
      * If record was modified save it.
      * If it wasn't modified restore and recalculate etalon.
+     * @param ctx upsert context
      * @param isModified
-     * @param rctx restore context
      * @return <code>EtalonRecordDTO</code> if restored, otherwise<code>null</code>
      */
     EtalonRecordDTO restore(UpsertRequestContext ctx, boolean isModified);
+
+    /**
+     * Try to restore given record's period.
+     * @param ctx restore context
+     * @return <code>EtalonRecordDTO</code> if restored, otherwise<code>null</code>
+     */
+    EtalonRecordDTO restorePeriod(UpsertRequestContext ctx);
 
     /**
      * Get data quality error from the elastic search.
@@ -398,4 +351,13 @@ public interface DataRecordsService {
      * @return new etalon id, to which detach origin
      */
     SplitRecordsDTO detachOrigin(String originId);
+
+    /**
+     * Reindex record by etalon id
+     * @param ctx ctx for identify
+     * @return
+     */
+    boolean reindexEtalon(final GetRequestContext ctx);
+
+    List<String> selectCovered(List<String> etalonIds, LocalDateTime from, LocalDateTime to, boolean full);
 }

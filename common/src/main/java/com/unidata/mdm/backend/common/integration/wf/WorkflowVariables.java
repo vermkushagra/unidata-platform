@@ -127,7 +127,11 @@ public enum WorkflowVariables {
     /**
      * Process name.
      */
-    VAR_PROCESS_NAME("processName");
+    VAR_PROCESS_NAME("processName"),
+    /**
+     * Approval state.
+     */
+    VAR_PROCESS_COMPLETED("processCompleted");
     /**
      * Field value
      */

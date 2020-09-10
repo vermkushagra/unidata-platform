@@ -17,12 +17,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
 package com.unidata.mdm.backend.common.context;
 
 import java.util.Date;
+
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.keys.EtalonKey;
 import com.unidata.mdm.backend.common.keys.OriginKey;
@@ -71,22 +70,18 @@ public class GetRelationRequestContext
      */
     private final Date forDate;
     /**
+     * For a particular date range (left &lt;-&gt; right).
+     */
+    private final Pair<Date, Date> forDatesFrame;
+    /**
      * Operation id.
      */
     private final String forOperationId;
     /**
-     * Request tasks additionally. Show draft version.
-     */
-    private final boolean tasks;
-    /**
-     * Show draft version.
-     */
-    private final boolean includeDrafts;
-    /**
      * Constructor.
      */
     private GetRelationRequestContext(GetRelationRequestContextBuilder b) {
-        super();
+        super(null);
         this.etalonKey = b.etalonKey;
         this.originKey = b.originKey;
         this.externalId = b.externalId;
@@ -95,9 +90,11 @@ public class GetRelationRequestContext
         this.relationEtalonKey = b.relationEtalonKey;
         this.relationOriginKey = b.relationOriginKey;
         this.forDate = b.forDate;
+        this.forDatesFrame = b.forDatesFrame;
         this.forOperationId = b.forOperationId;
-        this.tasks = b.tasks;
-        this.includeDrafts = b.includeDrafts;
+
+        flags.set(ContextUtils.CTX_FLAG_FETCH_TASKS, b.tasks);
+        flags.set(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS, b.includeDrafts);
     }
 
     /**
@@ -164,6 +161,13 @@ public class GetRelationRequestContext
     }
 
     /**
+     * @return the dates frame
+     */
+    public Pair<Date, Date> getForDatesFrame() {
+        return forDatesFrame;
+    }
+
+    /**
      * @return the forOperationId
      */
     public String getForOperationId() {
@@ -174,15 +178,14 @@ public class GetRelationRequestContext
      * @return the tasks
      */
     public boolean isTasks() {
-        return tasks;
+        return flags.get(ContextUtils.CTX_FLAG_FETCH_TASKS);
     }
-
 
     /**
      * @return the unpublishedState
      */
     public boolean isIncludeDrafts() {
-        return includeDrafts;
+        return flags.get(ContextUtils.CTX_FLAG_INCLUDE_DRAFTS);
     }
 
     /**
@@ -239,6 +242,10 @@ public class GetRelationRequestContext
          */
         private Date forDate;
         /**
+         * For a particular date range (left <-> right).
+         */
+        private Pair<Date, Date> forDatesFrame;
+        /**
          * Operation id.
          */
         private String forOperationId;
@@ -282,7 +289,7 @@ public class GetRelationRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public GetRelationRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -301,7 +308,7 @@ public class GetRelationRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public GetRelationRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -336,6 +343,13 @@ public class GetRelationRequestContext
          */
         public GetRelationRequestContextBuilder forDate(Date forDate) {
             this.forDate = forDate;
+            return this;
+        }
+        /**
+         * @param forDatesFrame the forDate to set
+         */
+        public GetRelationRequestContextBuilder forDatesFrame(Pair<Date, Date> forDatesFrame) {
+            this.forDatesFrame = forDatesFrame;
             return this;
         }
         /**

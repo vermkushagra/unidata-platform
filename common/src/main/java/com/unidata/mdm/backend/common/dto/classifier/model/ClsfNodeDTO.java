@@ -20,8 +20,13 @@
 package com.unidata.mdm.backend.common.dto.classifier.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
+import com.unidata.mdm.backend.common.dto.CustomPropertyDefinition;
 
 /**
  * The Class NodeDTO.
@@ -52,8 +57,11 @@ public class ClsfNodeDTO {
     /** The child count. */
     private int childCount;
 
-    /** The node attrs. */
-    private List<ClsfNodeAttrDTO> nodeAttrs;
+    /** The node simple attrs. */
+    private List<ClsfNodeSimpleAttrDTO> nodeSimpleAttrs;
+
+    /** The node simple attrs. */
+    private List<ClsfNodeArrayAttrDTO> nodeArrayAttrs;
 
     /** The children. */
     private List<ClsfNodeDTO> children;
@@ -69,6 +77,10 @@ public class ClsfNodeDTO {
 
     /** The updated by. */
     private String updatedBy;
+    /**
+     * Custom properties for classifier node
+     */
+    private List<CustomPropertyDefinition> customProperties;
 
     public ClsfNodeDTO() {
     }
@@ -82,7 +94,8 @@ public class ClsfNodeDTO {
             final String parentId,
             final boolean hasOwnAttrs,
             final int childCount,
-            final List<ClsfNodeAttrDTO> nodeAttrs,
+            final List<ClsfNodeSimpleAttrDTO> nodeSimpleAttrs,
+            final List<ClsfNodeArrayAttrDTO> nodeArrayAttrs,
             final List<ClsfNodeDTO> children,
             final Date createdAt,
             final Date updatedAt,
@@ -97,7 +110,8 @@ public class ClsfNodeDTO {
         this.parentId = parentId;
         this.hasOwnAttrs = hasOwnAttrs;
         this.childCount = childCount;
-        this.nodeAttrs = nodeAttrs;
+        this.nodeSimpleAttrs = nodeSimpleAttrs;
+        this.nodeArrayAttrs = nodeArrayAttrs;
         this.children = children;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -113,7 +127,8 @@ public class ClsfNodeDTO {
             final String description,
             final String createdBy,
             final Date createdAt,
-            final List<ClsfNodeAttrDTO> nodeAttrs
+            final List<ClsfNodeSimpleAttrDTO> nodeSimpleAttrs,
+            final List<ClsfNodeArrayAttrDTO> nodeArrayAttrs
     ) {
         this.name = name;
         this.nodeId = nodeId;
@@ -122,7 +137,8 @@ public class ClsfNodeDTO {
         this.description = description;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
-        this.nodeAttrs = nodeAttrs;
+        this.nodeSimpleAttrs = nodeSimpleAttrs;
+        this.nodeArrayAttrs = nodeArrayAttrs;
     }
 
     /**
@@ -225,21 +241,38 @@ public class ClsfNodeDTO {
      *
      * @return the node attrs
      */
-    public List<ClsfNodeAttrDTO> getNodeAttrs() {
-        if (this.nodeAttrs == null) {
-            this.nodeAttrs = new ArrayList<>();
+    public List<ClsfNodeSimpleAttrDTO> getNodeSimpleAttrs() {
+        if (this.nodeSimpleAttrs == null) {
+            this.nodeSimpleAttrs = new ArrayList<>();
         }
-        return nodeAttrs;
+        return nodeSimpleAttrs;
     }
 
     /**
      * Sets the node attrs.
      *
-     * @param nodeAttrs
+     * @param nodeSimpleAttrs
      *            the new node attrs
      */
-    public void setNodeAttrs(List<ClsfNodeAttrDTO> nodeAttrs) {
-        this.nodeAttrs = nodeAttrs;
+    public void setNodeSimpleAttrs(List<ClsfNodeSimpleAttrDTO> nodeSimpleAttrs) {
+        this.nodeSimpleAttrs = nodeSimpleAttrs;
+    }
+
+    public List<ClsfNodeArrayAttrDTO> getNodeArrayAttrs() {
+        if (nodeArrayAttrs == null) {
+            nodeArrayAttrs = new ArrayList<>();
+        }
+        return nodeArrayAttrs;
+    }
+
+    public void setNodeArrayAttrs(List<ClsfNodeArrayAttrDTO> nodeArrayAttrs) {
+        this.nodeArrayAttrs = nodeArrayAttrs;
+    }
+
+    public List<ClsfNodeAttrDTO> getAllNodeAttrs() {
+        final List<ClsfNodeAttrDTO> attrs = new ArrayList<>(getNodeArrayAttrs());
+        attrs.addAll(getNodeSimpleAttrs());
+        return attrs;
     }
 
     /**
@@ -396,4 +429,31 @@ public class ClsfNodeDTO {
     }
 
 
+    /**
+     * Custom properties for classifier node
+     */
+    public List<CustomPropertyDefinition> getCustomProperties() {
+        return customProperties;
+    }
+
+    public void setCustomProperties(List<CustomPropertyDefinition> customProperties) {
+        this.customProperties = customProperties;
+    }
+    public void addAttr(ClsfNodeAttrDTO dto) {
+        if (dto.isArray()) {
+            getNodeArrayAttrs().add((ClsfNodeArrayAttrDTO) dto);
+        } else if (dto.isSimple()) {
+            getNodeSimpleAttrs().add((ClsfNodeSimpleAttrDTO) dto);
+        }
+    }
+    public void addAttrs(Collection<ClsfNodeAttrDTO> dtos) {
+
+        if (CollectionUtils.isEmpty(dtos)) {
+            return;
+        }
+
+        for (ClsfNodeAttrDTO dto : dtos) {
+            addAttr(dto);
+        }
+    }
 }

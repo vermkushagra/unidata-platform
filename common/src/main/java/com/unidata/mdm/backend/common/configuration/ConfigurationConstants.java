@@ -129,6 +129,18 @@ public interface ConfigurationConstants {
     //--------------------------------------- Classifier config -------------------------------------------------
 
     String CLASSIFIER_IMPORT_BATCH_SIZE = "unidata.classifier.import.batch.size";
+    /**
+     * Size of the cache backup.
+     */
+    String CLASSIFIER_CACHE_BACKUP_COUNT = "unidata.classifier.model.cache.backup.count";
+    /**
+     * Create near cache (consuming more memory) or not.
+     */
+    String CLASSIFIER_CACHE_USE_NEAR = "unidata.classifier.model.cache.near";
+    /**
+     * Classifiers cache entry TTL.
+     */
+    String CLASSIFIER_CACHE_ENTRY_TTL = "unidata.classifier.model.cache.ttl";
 
     String REINDEX_JOB_MAPPING_BLOCK_SIZE = "unidata.job.reindex_data.mapping.block";
 }

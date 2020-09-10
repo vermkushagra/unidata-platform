@@ -27,7 +27,7 @@ import com.unidata.mdm.backend.common.types.AttributeIterator;
 
 /**
  * @author Mikhail Mikhailov
- * Thin iterator wrapper to allow traverse -> remove actions.
+ * Thin iterator wrapper to allow traverse -&gt; remove actions.
  */
 public class AttributeIteratorImpl implements AttributeIterator {
 

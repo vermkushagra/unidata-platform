@@ -20,13 +20,18 @@
 package com.unidata.mdm.backend.common.dto.classifier.model;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
+import com.unidata.mdm.backend.common.dto.CustomPropertyDefinition;
+import com.unidata.mdm.backend.common.types.CodeAttribute;
 import com.unidata.mdm.backend.common.types.SimpleAttribute.DataType;
 
 /**
- * The Class ClsfNodeAttrDTO.
+ * The Class ClsfNodeSimpleAttrDTO.
  */
-public class ClsfNodeAttrDTO {
+public abstract class ClsfNodeAttrDTO {
+
     /** The attr name. */
     private String name;
 
@@ -35,12 +40,13 @@ public class ClsfNodeAttrDTO {
 
     /** The description. */
     private String description;
+
+    /** The data type. */
+    private String lookupEntityType;
     /**
-     * Enum data type.
+     * Lookup entity data type
      */
-    private String enumDataType;
-
-
+    private CodeAttribute.CodeDataType lookupEntityCodeAttributeType;
 
 	/** The data type. */
     private DataType dataType;
@@ -62,9 +68,6 @@ public class ClsfNodeAttrDTO {
     /** The searchable. */
     private boolean searchable;
 
-    /** The default value. */
-    private Object value;
-
     /** The created at. */
     private Date createdAt;
 
@@ -76,6 +79,12 @@ public class ClsfNodeAttrDTO {
 
     /** The updated by. */
     private String updatedBy;
+
+    private int order;
+    /**
+     * Custom properties for classifier node attr
+     */
+    private List<CustomPropertyDefinition> customProperties;
 
     /**
      * Instantiates a new clsf node attr DTO.
@@ -90,14 +99,13 @@ public class ClsfNodeAttrDTO {
      * @param displayName the display name
      * @param description the description
      * @param dataType the data type
-     * @param enumDataType the enum data type
+     * @param lookupEntityType the lookup data type
      * @param readOnly the read only
      * @param hidden the hidden
      * @param nullable the nullable
      * @param inherited the inherited
      * @param unique the unique
      * @param searchable the searchable
-     * @param value the value
      * @param createdAt the created at
      * @param updatedAt the updated at
      * @param createdBy the created by
@@ -108,35 +116,37 @@ public class ClsfNodeAttrDTO {
             final String displayName,
             final String description,
             final DataType dataType,
-            final String enumDataType,
+            final String lookupEntityType,
+            final CodeAttribute.CodeDataType lookupEntityCodeAttributeType,
             final boolean readOnly,
             final boolean hidden,
             final boolean nullable,
             final boolean inherited,
             final boolean unique,
             final boolean searchable,
-            final Object value,
             final Date createdAt,
             final Date updatedAt,
             final String createdBy,
-            final String updatedBy
+            final String updatedBy,
+            final int order
     ) {
         this.name = name;
         this.displayName = displayName;
         this.description = description;
         this.dataType = dataType;
-        this.enumDataType = enumDataType;
+        this.lookupEntityType = lookupEntityType;
+        this.lookupEntityCodeAttributeType = lookupEntityCodeAttributeType;
         this.readOnly = readOnly;
         this.hidden = hidden;
         this.nullable = nullable;
         this.inherited = inherited;
         this.unique = unique;
         this.searchable = searchable;
-        this.value = value;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdBy = createdBy;
         this.updatedBy = updatedBy;
+        this.order = order;
     }
 
     /**
@@ -144,8 +154,6 @@ public class ClsfNodeAttrDTO {
      *
      * @param name the name
      * @param dataType the data type
-     * @param enumDataType the enum data type
-     * @param value the value
      * @param displayName the display name
      * @param description the description
      * @param hidden the hidden
@@ -159,8 +167,6 @@ public class ClsfNodeAttrDTO {
     public ClsfNodeAttrDTO(
             final String name,
             final DataType dataType,
-            final String enumDataType,
-            final Object value,
             final String displayName,
             final String description,
             final boolean hidden,
@@ -169,12 +175,11 @@ public class ClsfNodeAttrDTO {
             final boolean searchable,
             final boolean unique,
             final String createdBy,
-            final Date createdAt
+            final Date createdAt,
+            final int order
     ) {
         this.name = name;
         this.dataType = dataType;
-        this.enumDataType = enumDataType;
-        this.value = value;
         this.displayName = displayName;
         this.description = description;
         this.hidden = hidden;
@@ -184,6 +189,7 @@ public class ClsfNodeAttrDTO {
         this.searchable = searchable;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
+        this.order = order;
     }
 
     /**
@@ -261,24 +267,31 @@ public class ClsfNodeAttrDTO {
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
     }
-    
-    /**
-     * Gets the enum data type.
-     *
-     * @return the enum data type
-     */
-    public String getEnumDataType() {
-		return enumDataType;
-	}
 
-	/**
-	 * Sets the enum data type.
-	 *
-	 * @param enumDataType the new enum data type
-	 */
-	public void setEnumDataType(String enumDataType) {
-		this.enumDataType = enumDataType;
-	}
+    /**
+     * Get the lookup entity type
+     * @return lookup entity type
+     */
+    public String getLookupEntityType() {
+        return lookupEntityType;
+    }
+
+    /**
+     * Set the lookup data type
+     * @param lookupEntityType lookup data type
+     */
+    public void setLookupEntityType(String lookupEntityType) {
+        this.lookupEntityType = lookupEntityType;
+    }
+
+    public CodeAttribute.CodeDataType getLookupEntityCodeAttributeType() {
+        return lookupEntityCodeAttributeType;
+    }
+
+    public void setLookupEntityCodeAttributeType(final CodeAttribute.CodeDataType lookupEntityCodeAttributeType) {
+        this.lookupEntityCodeAttributeType = lookupEntityCodeAttributeType;
+    }
+
     /**
      * Checks if is read only.
      *
@@ -393,25 +406,6 @@ public class ClsfNodeAttrDTO {
     }
 
     /**
-     * Gets the default value.
-     *
-     * @return the default value
-     */
-    public Object getDefaultValue() {
-        return value;
-    }
-
-    /**
-     * Sets the default value.
-     *
-     * @param defaultValue
-     *            the new default value
-     */
-    public void setDefaultValue(Object defaultValue) {
-        this.value = defaultValue;
-    }
-
-    /**
      * Gets the created at.
      *
      * @return the created at
@@ -487,6 +481,14 @@ public class ClsfNodeAttrDTO {
         this.updatedBy = updatedBy;
     }
 
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -510,12 +512,20 @@ public class ClsfNodeAttrDTO {
         if (getClass() != obj.getClass())
             return false;
         ClsfNodeAttrDTO other = (ClsfNodeAttrDTO) obj;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        return true;
+        return Objects.equals(name, other.name);
     }
 
+    public List<CustomPropertyDefinition> getCustomProperties() {
+        return customProperties;
+    }
+
+    public void setCustomProperties(List<CustomPropertyDefinition> customProperties) {
+        this.customProperties = customProperties;
+    }
+    public boolean isSimple() {
+        return false;
+    }
+    public boolean isArray() {
+        return false;
+    }
 }

@@ -123,7 +123,7 @@ public class StartProcessRequestContext extends CommonRequestContext {
         }
 
         /**
-         * @param process the process to set
+         * @param processDefinitionId the process to set
          */
         public StartProcessRequestContextBuilder processDefinitionId(String processDefinitionId) {
             this.processDefinitionId = processDefinitionId;

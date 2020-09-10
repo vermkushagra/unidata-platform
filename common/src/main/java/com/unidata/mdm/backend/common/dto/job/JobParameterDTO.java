@@ -22,6 +22,8 @@ package com.unidata.mdm.backend.common.dto.job;
 import java.time.ZonedDateTime;
 import java.util.Objects;
 
+import com.unidata.mdm.backend.common.job.JobParameterType;
+
 /**
  * @author Denis Kostovarov
  */

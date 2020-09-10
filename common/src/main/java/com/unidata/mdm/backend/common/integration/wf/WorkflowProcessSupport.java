@@ -19,7 +19,11 @@
 
 package com.unidata.mdm.backend.common.integration.wf;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+
+import com.unidata.mdm.backend.common.integration.auth.User;
 
 /**
  * @author Mikhail Mikhailov
@@ -44,4 +48,16 @@ public interface WorkflowProcessSupport extends WorkflowTaskGate {
      * @return workflow completion state
      */
     WorkflowProcessEndState processEnd(String processDefinitionId, Map<String, Object> variables);
+
+    default List<String> groupForUser(final User user) {
+        return Collections.emptyList();
+    }
+
+    default WorkflowProcessAfterStartState afterProcessStart(
+            final String processInstanceId,
+            final String processDefinitionId,
+            final Map<String, Object> variables
+    ) {
+        return new WorkflowProcessAfterStartState();
+    }
 }

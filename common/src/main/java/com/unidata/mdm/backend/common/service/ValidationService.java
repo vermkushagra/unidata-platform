@@ -27,9 +27,23 @@ import com.unidata.mdm.backend.common.types.DataRecord;
 public interface ValidationService {
 
     /**
-     * Validate record data and name
+     * Validate entity record data and name
      * @param record record for check
-     * @param entityName entity name
+     * @param id the id
      */
-    void checkDataRecord(DataRecord record, String entityName);
+    void checkEntityDataRecord(DataRecord record, String id);
+
+    /**
+     * Validate lookup record data and name
+     * @param record record for check
+     * @param id the id
+     */
+    void checkLookupDataRecord(DataRecord record, String id);
+
+    /**
+     * Validate relation record data and name
+     * @param record record for check
+     * @param id the id
+     */
+    void checkRelationDataRecord(DataRecord record, String id);
 }

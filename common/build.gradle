@@ -96,10 +96,15 @@ jar {
     manifest {
         attributes (
             "Implementation-Title": "UniData Backend Base Types",
-            "Implementation-Version": project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getSvnRevision())
+            "Implementation-Version": project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
                 + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
         )
     }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 tasks.withType(Jar) { // Common for Jars

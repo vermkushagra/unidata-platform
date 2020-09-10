@@ -62,6 +62,10 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
      */
     private Map<RelationStateDTO, List<UpsertRelationDTO>> relations;
     /**
+     * Delete Relations.
+     */
+    private Map<RelationStateDTO, List<DeleteRelationDTO>> deleteRelations;
+    /**
      * Classifiers.
      */
     private Map<String, List<UpsertClassifierDTO>> classifiers;
@@ -72,7 +76,6 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
     /**
      * Constructor.
      * @param type
-     * @param throwable
      */
     public UpsertRecordDTO(UpsertAction type) {
         super();
@@ -221,5 +224,14 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
 
     public void setErrors(List<ErrorInfoDTO> errors) {
         this.errors = errors;
+    }
+
+
+    public Map<RelationStateDTO, List<DeleteRelationDTO>> getDeleteRelations() {
+        return deleteRelations;
+    }
+
+    public void setDeleteRelations(Map<RelationStateDTO, List<DeleteRelationDTO>> deleteRelations) {
+        this.deleteRelations = deleteRelations;
     }
 }

@@ -110,7 +110,13 @@
             <xs:element name="afterSplit" type="conf:ListOfListenerRefs"/>
         </xs:sequence>
     </xs:complexType>
-
+    
+    <xs:complexType name="Model">
+        <xs:sequence>
+            <xs:element name="upsertDraft" type="conf:ListOfListenerRefs"/>
+            <xs:element name="applyModel" type="conf:ListOfListenerRefs"/>
+        </xs:sequence>
+    </xs:complexType>
     <xs:complexType name="Exits">
         <xs:sequence>
             <xs:element name="listeners" type="conf:ListOfListeners" minOccurs="1" maxOccurs="1"/>
@@ -120,6 +126,7 @@
             <xs:element name="search" type="conf:Search" minOccurs="1" maxOccurs="1"/>
             <xs:element name="join" type="conf:Join"/>
             <xs:element name="split" type="conf:Split"/>
+            <xs:element name="model" type="conf:Model"/>
         </xs:sequence>
     </xs:complexType>
 

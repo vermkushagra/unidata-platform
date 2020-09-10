@@ -64,9 +64,22 @@ public enum FacetName {
      */
     FACET_UN_RANGED("un_ranged"),
     /**
+     * Include inactive periods facet name.
+     */
+    FACET_NAME_INACTIVE_PERIODS("include_inactive_periods"),
+    /**
      * Published only facet name - records with at least one approve
      */
-    FACET_NAME_PUBLISHED_ONLY("published_only");
+    FACET_NAME_PUBLISHED_ONLY("published_only"),
+    /**
+     * Return operation type direct.
+     */
+    FACET_NAME_OPERATION_TYPE_DIRECT ("operation_type_direct"),
+    /**
+     * Return operation type cascaded.
+     */
+    FACET_NAME_OPERATION_TYPE_CASCADED ("operation_type_cascaded");
+
     /**
      * Constructor.
      * @param value

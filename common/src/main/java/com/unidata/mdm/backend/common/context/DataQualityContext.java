@@ -38,8 +38,6 @@ import com.unidata.mdm.meta.DQRuleDef;
  * Data quality context.
  *
  * @author ilya.bykov
- * @param <T>
- *            the generic type
  */
 public class DataQualityContext extends CommonRequestContext implements RecordIdentityContext, ValidityRangeContext {
     /**
@@ -456,7 +454,7 @@ public class DataQualityContext extends CommonRequestContext implements RecordId
             return this;
         }
         /**
-         * @param modificationBox the ModificationBox to set
+         * @param rules the rules
          * @return self
          */
         public DataQualityContextBuilder rules(List<DQRuleDef> rules) {

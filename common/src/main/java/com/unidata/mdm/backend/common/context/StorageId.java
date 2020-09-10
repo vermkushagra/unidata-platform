@@ -17,9 +17,6 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- *
- */
 package com.unidata.mdm.backend.common.context;
 
 /**
@@ -60,9 +57,21 @@ public enum StorageId {
      */
     DATA_MERGE_DUPLICATES,
     /**
-     * Golden data upon delete.
+     * Intervals + etalon data before modifications.
      */
-    DATA_DELETE_ETALON_RECORD,
+    DATA_INTERVALS_BEFORE,
+    /**
+     * Intervals + etalon data after modifications.
+     */
+    DATA_INTERVALS_AFTER,
+    /**
+     * Timeline before delete.
+     */
+    DATA_TIMELINE_BEFORE,
+    /**
+     * Timeline + etalon data after delete.
+     */
+    DATA_TIMELINE_AFTER,
     /**
      * Keys. TODO delete duplicate labels for keys.
      */
@@ -72,7 +81,7 @@ public enum StorageId {
      */
     DATA_DELETE_RIGHTS,
     /**
-     * Entity type rights.
+     * Assigned WF. TODO delete duplicate labels for WF assignments.
      */
     DATA_DELETE_WF_ASSIGNMENTS,
     /**
@@ -194,6 +203,23 @@ public enum StorageId {
      */
     IMPORT_ORIGIN_RELATIONS,
     /**
+     * Key for access rights for all types of operations, supporting access rights.
+     */
+    COMMON_ACCESS_RIGHTS,
+    /**
+     * Key for WF assignments for all types of operations, supporting WF assignments.
+     */
+    COMMON_WF_ASSIGNMENTS,
+    /**
+     * Current spring ApplicationContext context, if any. Use with care.
+     */
+    COMMON_APPLICATION_CONTEXT,
+    /**
+     * TODO: use it for all types of contexts.
+     * Record keys id.
+     */
+    RECORDS_RECORD_KEYS,
+    /**
      * From key.
      */
     RELATIONS_FROM_KEY,
@@ -234,10 +260,6 @@ public enum StorageId {
      */
     PROCESS_ERRORS,
     /**
-     * Current spring ApplicationContext context, if any. Use with care.
-     */
-    COMMON_APPLICATION_CONTEXT,
-    /**
      * Classifier keys.
      */
     CLASSIFIERS_CLASSIFIER_KEYS,
@@ -257,10 +279,6 @@ public enum StorageId {
      * Ddefault classifiers.
      */
     DEFAULT_CLASSIFIERS,
-    /**
-     * Record keys id.
-     */
-    RECORDS_RECORD_KEYS,
     /**
      * Storage contains import row num in case when import happens.
      */
@@ -288,5 +306,22 @@ public enum StorageId {
     /**
      * Classifiers data
      */
-    CLASSIFIERS_DATA
+    CLASSIFIERS_DATA,
+    /**
+     * Classifier data
+     */
+    CLASSIFIER_DATA,
+    /**
+     * vistory operation type.
+     */
+    DATA_UPSERT_VISTORY_OPERATION_TYPE,
+    /**
+     *
+     */
+    DEPENDED_CONTEXTS,
+
+    /**
+     * Delete entity by relation delete
+     */
+    DELETE_BY_RELATION
 }

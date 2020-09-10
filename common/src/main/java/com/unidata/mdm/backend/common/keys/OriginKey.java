@@ -332,7 +332,7 @@ public class OriginKey implements Serializable {
         /**
          * Sets the value of the approvedRevisions property.
          *
-         * @param value
+         * @param approvedRevisions
          *     allowed object is
          *     {@link Boolean }
          */

@@ -19,6 +19,7 @@
 
 package com.unidata.mdm.backend.common.dto;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.unidata.mdm.backend.common.keys.EtalonKey;
@@ -33,6 +34,8 @@ public class DeleteRecordDTO implements RecordDTO {
      * Record keys for short upsert.
      */
     private RecordKeys recordKeys;
+
+    private List<ErrorInfoDTO> errors;
     /**
      * Constructor for failures.
      */
@@ -76,5 +79,13 @@ public class DeleteRecordDTO implements RecordDTO {
      */
     public void setRecordKeys(RecordKeys recordKeys) {
         this.recordKeys = recordKeys;
+    }
+
+    public List<ErrorInfoDTO> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<ErrorInfoDTO> errors) {
+        this.errors = errors;
     }
 }

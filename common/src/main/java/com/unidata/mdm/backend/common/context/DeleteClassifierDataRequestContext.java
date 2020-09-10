@@ -32,8 +32,7 @@ import com.unidata.mdm.backend.common.types.ApprovalState;
  * @author Mikhail Mikhailov
  * Delete relation context.
  */
-public class DeleteClassifierDataRequestContext
-    extends CommonSendableContext implements ClassifierIdentityContext, ValidityRange {
+public class DeleteClassifierDataRequestContext extends AbstractClassifierDataRequestContext implements ValidityRange, ApprovalStateSettingContext {
     /**
      * SVUID.
      */
@@ -234,6 +233,7 @@ public class DeleteClassifierDataRequestContext
     /**
      * @return the approvalState
      */
+    @Override
     public ApprovalState getApprovalState() {
         return approvalState;
     }
@@ -295,7 +295,7 @@ public class DeleteClassifierDataRequestContext
      */
     @Override
     public RecordKeys keys() {
-        return getFromStorage(ClassifierIdentityContext.super.keysId());
+        return getFromStorage(super.keysId());
     }
 
     /**
@@ -303,7 +303,7 @@ public class DeleteClassifierDataRequestContext
      */
     @Override
     public ClassifierKeys classifierKeys() {
-        return getFromStorage(ClassifierIdentityContext.super.classifierKeysId());
+        return getFromStorage(super.classifierKeysId());
     }
 
     /**
@@ -493,7 +493,7 @@ public class DeleteClassifierDataRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public DeleteClassifierDataRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -504,7 +504,7 @@ public class DeleteClassifierDataRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public DeleteClassifierDataRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;

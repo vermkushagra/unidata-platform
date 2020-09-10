@@ -21,6 +21,8 @@ package com.unidata.mdm.backend.common.dto.job;
 
 import java.time.ZonedDateTime;
 
+import com.unidata.mdm.backend.common.job.JobExecutionBatchStatus;
+
 public class JobExecutionStepDTO {
     private final String stepName;
 

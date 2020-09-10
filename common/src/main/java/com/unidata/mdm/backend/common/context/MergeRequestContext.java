@@ -34,8 +34,8 @@ import com.unidata.mdm.backend.common.types.ApprovalState;
  * Merge request context.
  */
 public class MergeRequestContext
-    extends CommonSendableContext
-    implements RecordIdentityContext, ApprovalStateSettingContext {
+        extends CommonSendableContext
+        implements RecordIdentityContext, ApprovalStateSettingContext {
 
     /**
      * Generated SVUID.
@@ -79,6 +79,20 @@ public class MergeRequestContext
     private final short auditLevel;
 
     private final boolean batchUpsert;
+
+    private final boolean upRecordsToContext;
+
+    private final Integer shardNumber;
+
+    private final boolean dirtyMode;
+
+    private final boolean skipRelations;
+
+    private final boolean skipClassifiers;
+
+    private final boolean clearPreprocessing;
+
+
     /**
      * Constructor.
      */
@@ -94,6 +108,12 @@ public class MergeRequestContext
         this.approvalState = b.approvalState;
         this.auditLevel = b.auditLevel;
         this.batchUpsert = b.batchUpsert;
+        this.upRecordsToContext = b.upRecordsToContext;
+        this.shardNumber = b.shardNumber;
+        this.dirtyMode = b.dirtyMode;
+        this.skipRelations = b.skipRelations;
+        this.skipClassifiers = b.skipClassifiers;
+        this.clearPreprocessing = b.clearPreprocessing;
     }
 
     /**
@@ -189,6 +209,49 @@ public class MergeRequestContext
     }
 
     /**
+     * @return the bypassExtensionPoints
+     */
+    public boolean isUpRecordsToContext() {
+        return upRecordsToContext;
+    }
+
+    /**
+     * @return the shardNumber
+     */
+    public Integer getShardNumber() {
+        return shardNumber;
+    }
+
+    /**
+     * @return the dirtyMode flag
+     */
+    public boolean isDirtyMode() {
+        return dirtyMode;
+    }
+
+    /**
+     * @return the skip relations flag
+     */
+    public boolean isSkipRelations() {
+        return skipRelations;
+    }
+
+    /**
+     * @return the skip classifiers flag
+     */
+    public boolean isSkipClassifiers() {
+        return skipClassifiers;
+    }
+
+    /**
+     * @return the clear preprocessing flag
+     */
+    public boolean isClearPreprocessing() {
+        return clearPreprocessing;
+    }
+
+
+    /**
      * Builder shorthand.
      * @return builder
      */
@@ -239,8 +302,29 @@ public class MergeRequestContext
          * Force approval state.
          */
         private ApprovalState approvalState;
-
+        /**
+         * Batch upsert flag
+         */
         private boolean batchUpsert;
+
+        /**
+         * Bypass extension points during merge.
+         */
+        private boolean upRecordsToContext = true;
+        /**
+         * Shard number
+         */
+        private Integer shardNumber;
+        /**
+         * Dirty mode flag
+         */
+        private boolean dirtyMode = false;
+
+        private boolean skipRelations = false;
+
+        private boolean skipClassifiers = false;
+
+        private boolean clearPreprocessing = true;
         /**
          * @param etalonKey the goldenKey to set
          */
@@ -258,7 +342,7 @@ public class MergeRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public MergeRequestContextBuilder originKey(OriginKey originKey) {
             this.originKey = originKey != null ? originKey.getId() : null;
@@ -269,7 +353,7 @@ public class MergeRequestContext
         }
 
         /**
-         * @param etalonKey the goldenKey to set
+         * @param originKey the goldenKey to set
          */
         public MergeRequestContextBuilder originKey(String originKey) {
             this.originKey = originKey;
@@ -342,6 +426,55 @@ public class MergeRequestContext
          */
         public MergeRequestContextBuilder batchUpsert(boolean batchUpsert) {
             this.batchUpsert = batchUpsert;
+            return this;
+        }
+
+        /**
+         * @param upRecordsToContext up records to context or note
+         */
+        public MergeRequestContextBuilder upRecordsToContext(boolean upRecordsToContext) {
+            this.upRecordsToContext = upRecordsToContext;
+            return this;
+        }
+
+
+        /**
+         * @param shardNumber shard Number
+         */
+        public MergeRequestContextBuilder shardNumber(Integer shardNumber) {
+            this.shardNumber = shardNumber;
+            return this;
+        }
+
+        /**
+         * @param dirtyMode use dirty mode or note
+         */
+        public MergeRequestContextBuilder dirtyMode(boolean dirtyMode) {
+            this.dirtyMode = dirtyMode;
+            return this;
+        }
+
+        /**
+         * @param skipRelations skip relation on merge
+         */
+        public MergeRequestContextBuilder skipRelations(boolean skipRelations) {
+            this.skipRelations = skipRelations;
+            return this;
+        }
+
+        /**
+         * @param skipClassifiers skip classifiers on merge
+         */
+        public MergeRequestContextBuilder skipClassifiers(boolean skipClassifiers) {
+            this.skipClassifiers = skipClassifiers;
+            return this;
+        }
+
+        /**
+         * @param clearPreprocessing clear preprocessing
+         */
+        public MergeRequestContextBuilder clearPreprocessing(boolean clearPreprocessing) {
+            this.clearPreprocessing = clearPreprocessing;
             return this;
         }
         /**

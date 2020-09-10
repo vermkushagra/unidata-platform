@@ -48,6 +48,7 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,6 +66,7 @@ import com.unidata.mdm.api.v5.CommonSectionDef;
 import com.unidata.mdm.api.v5.CredentialsDef;
 import com.unidata.mdm.api.v5.DeleteRelationDef;
 import com.unidata.mdm.api.v5.DeleteRelationRecordDef;
+import com.unidata.mdm.api.v5.DeleteRelationsDef;
 import com.unidata.mdm.api.v5.ExecutionErrorDef;
 import com.unidata.mdm.api.v5.ExecutionMessageDef;
 import com.unidata.mdm.api.v5.ExitCodeType;
@@ -143,7 +145,6 @@ import com.unidata.mdm.backend.common.context.UpsertRelationsRequestContext;
 import com.unidata.mdm.backend.common.context.UpsertRelationsRequestContext.UpsertRelationsRequestContextBuilder;
 import com.unidata.mdm.backend.common.context.UpsertRequestContext;
 import com.unidata.mdm.backend.common.context.UpsertRequestContext.UpsertRequestContextBuilder;
-import com.unidata.mdm.backend.common.dto.SplitRecordsDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRecordDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRelationDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRelationsDTO;
@@ -156,6 +157,7 @@ import com.unidata.mdm.backend.common.dto.MergeRecordsDTO;
 import com.unidata.mdm.backend.common.dto.RelationStateDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultHitDTO;
+import com.unidata.mdm.backend.common.dto.SplitRecordsDTO;
 import com.unidata.mdm.backend.common.dto.TimeIntervalDTO;
 import com.unidata.mdm.backend.common.dto.TimelineDTO;
 import com.unidata.mdm.backend.common.dto.UpsertRecordDTO;
@@ -369,7 +371,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 handleRequestInfoGet(request, response);
             }
             // 16 bulk upsert
-            if (nonNull(request.getRequestBulkUpsert()) && nonNull(request.getRequestBulkUpsert().getUpsertRecordRequests()) && !request.getRequestBulkUpsert().getUpsertRecordRequests().isEmpty()) {
+            if (nonNull(request.getRequestBulkUpsert())) {
                 handleBulkUpsert(request, response);
             }
             // 17. Join
@@ -462,8 +464,15 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * @param response    the response
      */
     private void handleBulkUpsert(UnidataRequestBody bulkRequest, UnidataResponseBody response) {
+
+        if (CollectionUtils.isEmpty(bulkRequest.getRequestBulkUpsert().getUpsertRecordRequests())) {
+            return;
+        }
+
         MeasurementPoint.init(MeasurementContextName.MEASURE_SOAP_BULK_UPSERT);
         MeasurementPoint.start();
+
+
         List<UpsertRequestContext> upsertRequestContexts = Collections.emptyList();
 
         try {
@@ -471,12 +480,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             RequestBulkUpsert bulkRequestUpsert = bulkRequest.getRequestBulkUpsert();
             List<RequestUpsert> upsertRecordRequests = bulkRequestUpsert.getUpsertRecordRequests();
             upsertRequestContexts = upsertRecordRequests.stream()
-                    .map(request -> convertToUpsertContext(request, bulkRequest.getCommon()))
+                    .map(request -> convertToUpsertContext(request, bulkRequest.getCommon(), true))
                     .collect(Collectors.toList());
 
-            Collection<UpsertRecordDTO> result = dataRecordsService.atomicBulkUpsert(upsertRequestContexts);
+            Collection<UpsertRecordDTO> result = dataRecordsService.bulkUpsertRecords(upsertRequestContexts);
             ResponseBulkUpsert upsert = JaxbUtils.getApiObjectFactory().createResponseBulkUpsert();
-
 
             Collection<ResponseUpsert> innerResponses = result.stream()
                     .map(innerResult -> JaxbUtils.getApiObjectFactory().createResponseUpsert()
@@ -1210,33 +1218,10 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             */
 
             int totalSubmitted = 0;
-            Map<String, List<DeleteRelationRequestContext>> relations = new HashMap<>();
-            for (DeleteRelationDef delRelDef : del.getRelations().getRelation()) {
-
-                if (relations.get(delRelDef.getName()) == null) {
-                    relations.put(delRelDef.getName(), new ArrayList<>());
-                }
-
-                for (DeleteRelationRecordDef key : delRelDef.getKeys()) {
-
-                    DeleteRelationRequestContext ctx = new DeleteRelationRequestContextBuilder()
-                            // Keys
-                            .etalonKey(DumpUtils.from(key.getEtalonKey()))
-                            .originKey(DumpUtils.from(key.getOriginKey()))
-                            // Action type
-                            .inactivatePeriod(actionType == SoftDeleteActionType.SOFT_DELETE_ETALON_PERIOD)
-                            .inactivateEtalon(actionType == SoftDeleteActionType.SOFT_DELETE_ETALON)
-                            .inactivateOrigin(actionType == SoftDeleteActionType.SOFT_DELETE_ORIGIN)
-                            // Time interval
-                            .validFrom(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeFrom()) : null)
-                            .validTo(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeTo()) : null)
-                            .wipe(del.isWipe() == null ? false : del.isWipe())
-                            .build();
-                    ctx.setOperationId(request.getCommon().getOperationId());
-
-                    relations.get(delRelDef.getName()).add(ctx);
-                    ++totalSubmitted;
-                }
+            Map<String, List<DeleteRelationRequestContext>> relations =
+                    convertRelationsForDelete(request.getCommon().getOperationId(), del.getRelations(), actionType, del.isWipe(), false);
+            if(MapUtils.isNotEmpty(relations)) {
+                totalSubmitted = relations.values().stream().mapToInt(List::size).sum();
             }
 
             DeleteRelationsRequestContext dCtx = new DeleteRelationsRequestContextBuilder()
@@ -1318,7 +1303,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             for (int i = 0; relationsUpsert != null
                     && i < relationsUpsert.getRelations().getRelation().size(); i++) {
                 UpsertRelationDef relDef = relationsUpsert.getRelations().getRelation().get(i);
-                List<UpsertRelationRequestContext> innerRelations = convertToRelations(relDef, commonSection, validFrom, validTo);
+                List<UpsertRelationRequestContext> innerRelations = convertToRelations(relDef, commonSection, validFrom, validTo, false);
                 if (!innerRelations.isEmpty()) {
                     for (UpsertRelationRequestContext requestContext : innerRelations) {
                         String relName = requestContext.getRelationName();
@@ -1465,8 +1450,8 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
         UpsertRequestContext ctx = null;
 
         try {
-            ctx = convertToUpsertContext(requestUpsert, request.getCommon());
-            UpsertRecordDTO result = dataRecordsService.atomicUpsert(ctx);
+            ctx = convertToUpsertContext(requestUpsert, request.getCommon(), false);
+            UpsertRecordDTO result = dataRecordsService.upsertRecord(ctx);
             ResponseUpsert upsert = JaxbUtils.getApiObjectFactory().createResponseUpsert();
             upsert.withOriginAction(result.getAction() == null
                     ? UpsertActionType.NO_ACTION
@@ -1487,6 +1472,22 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         "No keys returned by the service or relations upsert failed.",
                         request.getCommon().getOperationId());
             }
+
+            if (CollectionUtils.isNotEmpty(ctx.getDqErrors())) {
+                ExecutionMessageDef executionMessageDef = JaxbUtils.getApiObjectFactory().createExecutionMessageDef();
+                executionMessageDef.withDqErrors(ctx.getDqErrors().stream().map(DumpUtils::to).collect(Collectors.toList()));
+
+                CommonResponseDef common = null;
+                if (response.getCommon() == null) {
+                    common = JaxbUtils.getApiObjectFactory().createCommonResponseDef();
+                    response.setCommon(common);
+                } else {
+                    common = response.getCommon();
+                }
+
+                common.setMessage(executionMessageDef);
+            }
+
         } catch (ExitException eexc) {
             if (eexc.getExitState() == ExitState.ES_UPSERT_DENIED) {
                 response.getResponseUpsert().withOriginAction(UpsertActionType.NO_ACTION);
@@ -1514,9 +1515,10 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      *
      * @param requestUpsert - upsert request
      * @param commonSection - common section
+     * @param bulkUpsert will set batch flag
      * @return the upsert request context
      */
-    private UpsertRequestContext convertToUpsertContext(RequestUpsert requestUpsert, CommonSectionDef commonSection) {
+    private UpsertRequestContext convertToUpsertContext(RequestUpsert requestUpsert, CommonSectionDef commonSection, boolean bulkUpsert) {
         AsyncSectionDef asyncSection = commonSection.getAsyncOptions();
         String entityName = requestUpsert.getOriginRecord() != null
                 ? requestUpsert.getOriginRecord().getOriginKey() != null
@@ -1552,16 +1554,27 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 .codeAttributeAliases(DumpUtils.convertAliasCodeAttrPs(requestUpsert.getAliasCodeAttributePointers()))
                 // Wait for etalon calculation to prevent authentication expiration
                 // while some calculation threads are still busy working
-                .returnEtalon(true);
+                .returnEtalon(true)
+                .batchUpsert(bulkUpsert);
 
         for (int i = 0; requestUpsert.getRelations() != null
                 && i < requestUpsert.getRelations().getRelation().size(); i++) {
             UpsertRelationDef relDef = requestUpsert.getRelations().getRelation().get(i);
-            List<UpsertRelationRequestContext> relations = convertToRelations(relDef, commonSection, validFrom, validTo);
+            List<UpsertRelationRequestContext> relations = convertToRelations(relDef, commonSection, validFrom, validTo, bulkUpsert);
             builder.addRelations(relations);
         }
+        Map<String, List<DeleteRelationRequestContext>> relationsForDelete =
+                convertRelationsForDelete(
+                        commonSection.getOperationId(),
+                        requestUpsert.getRelationsDelete(),
+                        SoftDeleteActionType.SOFT_DELETE_ETALON,
+                        false, bulkUpsert);
 
-        List<ClassifierIdentityContext> classifierRecords = convertToClassifiers(requestUpsert, commonSection);
+        if (MapUtils.isNotEmpty(relationsForDelete)) {
+            relationsForDelete.values().forEach(builder::addRelationDeletes);
+        }
+
+        List<ClassifierIdentityContext> classifierRecords = convertToClassifiers(requestUpsert, commonSection, bulkUpsert);
         List<UpsertClassifierDataRequestContext> upserts = classifierRecords.stream()
                 .filter(clc -> clc instanceof UpsertClassifierDataRequestContext)
                 .map(clc -> (UpsertClassifierDataRequestContext) clc)
@@ -1711,9 +1724,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      *
      * @param requestUpsert upsert request section
      * @param commonSection common section
+     * @param bulkUpsert TODO
      * @return list
      */
-    private List<ClassifierIdentityContext> convertToClassifiers(RequestUpsert requestUpsert, CommonSectionDef commonSection) {
+    private List<ClassifierIdentityContext> convertToClassifiers(
+            RequestUpsert requestUpsert, CommonSectionDef commonSection, boolean bulkUpsert) {
 
         List<ClassifierIdentityContext> classifierContexts = new ArrayList<>();
         List<EtalonClassifierRecord> etalonClassifiers = requestUpsert.getEtalonRecord() != null
@@ -1737,6 +1752,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .inactivateEtalon(true)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 dCtx.setOperationId(commonSection.getOperationId());
@@ -1751,6 +1767,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .status(ecr.getStatus() != null ? RecordStatus.valueOf(ecr.getStatus().name()) : null)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 uCtx.setOperationId(commonSection.getOperationId());
@@ -1769,6 +1786,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .inactivateEtalon(true)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 dCtx.setOperationId(commonSection.getOperationId());
@@ -1782,6 +1800,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .status(ocr.getStatus() != null ? RecordStatus.valueOf(ocr.getStatus().name()) : null)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 uCtx.setOperationId(commonSection.getOperationId());
@@ -1799,10 +1818,13 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * @param commonSection   the common section
      * @param parentValidFrom the parent valid from
      * @param parentValidTo   the parent valid to
+     * @param bulkUpsert TODO
      * @return list of relations
      */
     @Nonnull
-    private List<UpsertRelationRequestContext> convertToRelations(UpsertRelationDef er, CommonSectionDef commonSection, Date parentValidFrom, Date parentValidTo) {
+    private List<UpsertRelationRequestContext> convertToRelations(
+            UpsertRelationDef er, CommonSectionDef commonSection, Date parentValidFrom, Date parentValidTo, boolean bulkUpsert) {
+
         RelationDef relDef = metaModelService.getRelationById(er.getName());
         if (relDef == null) {
             throw new IllegalArgumentException("Relation not found by name [" + er.getName() + "]");
@@ -1880,7 +1902,8 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .externalId(externalId)
                     .entityName(entityName)
                     .originKey(originId)
-                    .etalonKey(etalonId);
+                    .etalonKey(etalonId)
+                    .batchUpsert(bulkUpsert);
 
             UpsertRelationRequestContext ctx = builder.build();
             ctx.setOperationId(commonSection.getOperationId());
@@ -2078,5 +2101,44 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
         common.setOperationId(operationId);
         common.setMessage(JaxbUtils.getApiObjectFactory().createExecutionMessageDef().withMessageText(op.name() + ": " + warning));
         response.setCommon(common);
+    }
+
+    private Map<String, List<DeleteRelationRequestContext>> convertRelationsForDelete(
+            String operationId, DeleteRelationsDef del, SoftDeleteActionType actionType, Boolean wipe, boolean bulkUpsert) {
+
+        if (del == null || CollectionUtils.isEmpty(del.getRelation())) {
+            return null;
+        }
+        Map<String, List<DeleteRelationRequestContext>> relations = new HashMap<>();
+        for (DeleteRelationDef delRelDef : del.getRelation()) {
+
+            if (relations.get(delRelDef.getName()) == null) {
+                relations.put(delRelDef.getName(), new ArrayList<>());
+            }
+
+            for (DeleteRelationRecordDef key : delRelDef.getKeys()) {
+
+                DeleteRelationRequestContext ctx = new DeleteRelationRequestContextBuilder()
+                        // Keys
+                        .etalonKey(DumpUtils.from(key.getEtalonKey()))
+                        .originKey(DumpUtils.from(key.getOriginKey()))
+                        .relationName(delRelDef.getName())
+                        // Action type
+                        .inactivatePeriod(actionType == SoftDeleteActionType.SOFT_DELETE_ETALON_PERIOD)
+                        .inactivateEtalon(actionType == SoftDeleteActionType.SOFT_DELETE_ETALON)
+                        .inactivateOrigin(actionType == SoftDeleteActionType.SOFT_DELETE_ORIGIN)
+                        // Time interval
+                        .validFrom(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeFrom()) : null)
+                        .validTo(key.getRange() != null ? JaxbUtils.xmlGregorianCalendarToDate(key.getRange().getRangeTo()) : null)
+                        .wipe(BooleanUtils.toBoolean(wipe))
+                        .batchUpsert(bulkUpsert)
+                        .build();
+
+                ctx.setOperationId(operationId);
+
+                relations.get(delRelDef.getName()).add(ctx);
+            }
+        }
+        return relations;
     }
 }

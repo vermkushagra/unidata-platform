@@ -271,6 +271,7 @@
             <xs:extension base="meta:AbstractAttributeDef">
                 <xs:sequence>
                     <xs:element name="lookupEntityDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="lookupEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
                 </xs:sequence>
                 <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
                 <!-- Для атрибутов ниже, значение по умолчанию является также единствено
@@ -320,6 +321,7 @@
                 <xs:sequence>
                     <xs:element name="measureSettings" type="meta:AttributeMeasurementSettingsDef" minOccurs="1" maxOccurs="1"/>
                     <xs:element name="lookupEntityDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="lookupEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
                 </xs:sequence>
                 <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
                 <xs:attribute name="nullable" type="xs:boolean" use="required" />
@@ -402,6 +404,8 @@
 
     <xs:complexType name="VersionedObjectDef">
         <xs:attribute name="version" type="xs:long"/>
+        <xs:attribute name="updatedAt" type="xs:dateTime"/>
+        <xs:attribute name="createAt" type="xs:dateTime"/>
     </xs:complexType>
 
     <xs:complexType name="AbstractEntityDef">
@@ -829,6 +833,7 @@
                 <xs:sequence>
                     <xs:element name="externalIdGenerationStrategy" type="meta:AbstractExternalIdGenerationStrategyDef" minOccurs="0" maxOccurs="1"/>
                     <xs:element name="toEntityDefaultDisplayAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+                    <xs:element name="toEntitySearchAttributes" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
                 </xs:sequence>
                 <xs:attribute name="useAttributeNameForDisplay" type="xs:boolean" use="optional" default="false" />
                 <xs:attribute name="fromEntity" type="meta:KeyAttribute" use="required" />

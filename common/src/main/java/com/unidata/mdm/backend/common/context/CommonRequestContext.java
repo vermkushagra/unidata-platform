@@ -45,7 +45,7 @@ public abstract class CommonRequestContext implements ExecutionContext, Serializ
     /*
      * Very Ugly Stuff.
      */
-    private static final String CONFIGURATION_SERVICE_FQN = "com.unidata.mdm.backend.service.configuration.ConfigurationService";
+    private static final String CONFIGURATION_SERVICE_FQN = "com.unidata.mdm.backend.common.service.ConfigurationService";
     private static final String SECURITY_CONTEXT_HOLDER_FQN = "org.springframework.security.core.context.SecurityContextHolder";
     private static final String SECURITY_CONTEXT_FQN = "org.springframework.security.core.context.SecurityContext";
 
@@ -236,7 +236,7 @@ public abstract class CommonRequestContext implements ExecutionContext, Serializ
     public AuthenticationToken getAuthenticationToken() {
 
         try {
-            if(SECURITY_CONTEXT_HOLDER_METHOD != null) {
+             if(SECURITY_CONTEXT_HOLDER_METHOD != null) {
 
                 Object securityContext = SECURITY_CONTEXT_HOLDER_METHOD.invoke(null, (Object[]) null);
                 if (securityContext != null) {

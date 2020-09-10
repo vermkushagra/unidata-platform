@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +36,6 @@ import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.CodeAttributeAlias;
 import com.unidata.mdm.backend.common.types.DataQualityError;
 import com.unidata.mdm.backend.common.types.DataRecord;
-import com.unidata.mdm.backend.common.types.EtalonRecord;
 import com.unidata.mdm.backend.common.types.RecordStatus;
 
 /**
@@ -45,7 +43,7 @@ import com.unidata.mdm.backend.common.types.RecordStatus;
  *
  */
 public class UpsertRequestContext
-    extends CommonSendableContext
+    extends CommonDependableContext
     implements ExternalIdResettingContext, MutableValidityRangeContext, ApprovalStateSettingContext, UserExitExecutableContext {
 
     /**
@@ -106,6 +104,10 @@ public class UpsertRequestContext
      */
     private  UpsertRelationsRequestContext relations;
     /**
+     * Relations
+     */
+    private  DeleteRelationsRequestContext relationDeletes;
+    /**
      * Classifier data records.
      */
     private final UpsertClassifiersDataRequestContext classifierUpserts;
@@ -125,8 +127,7 @@ public class UpsertRequestContext
      * Constructor.
      */
     private UpsertRequestContext(UpsertRequestContextBuilder b) {
-
-        super();
+        super(b.parentContext);
         this.etalonKey = b.etalonKey;
         this.originKey = b.originKey;
         this.sourceSystem = b.sourceSystem;
@@ -149,6 +150,7 @@ public class UpsertRequestContext
         flags.set(ContextUtils.CTX_FLAG_RETURN_ETALON, b.returnEtalon);
         flags.set(ContextUtils.CTX_FLAG_RETURN_INDEX_CONTEXT, b.returnIndexContext);
         flags.set(ContextUtils.CTX_FLAG_IS_RESTORE, b.isRestore);
+        flags.set(ContextUtils.CTX_FLAG_IS_PERIOD_RESTORE, b.isPeriodRestore);
         flags.set(ContextUtils.CTX_FLAG_INCLUDE_DRAFT_VERSIONS, b.includeDraftVersions);
         flags.set(ContextUtils.CTX_FLAG_MERGE_WITH_PREVIOUS_VERSION, b.mergeWithPreviousVersion);
         flags.set(ContextUtils.CTX_FLAG_SKIP_INDEX_DROP, b.skipIndexDrop);
@@ -170,6 +172,18 @@ public class UpsertRequestContext
                         .sourceSystem(getSourceSystem())
                         .entityName(getEntityName())
                         .build();
+
+        this.relationDeletes = b.relationDeletes == null || b.relationDeletes.isEmpty()
+                ? null
+                : DeleteRelationsRequestContext.builder()
+                .relations(b.relationDeletes)
+                .etalonKey(getEtalonKey())
+                .originKey(getOriginKey())
+                .externalId(getExternalId())
+                .sourceSystem(getSourceSystem())
+                .entityName(getEntityName())
+                .build();
+
         this.classifierUpserts = b.classifierUpserts == null || b.classifierUpserts.isEmpty()
                 ? null
                 : UpsertClassifiersDataRequestContext.builder()
@@ -306,6 +320,13 @@ public class UpsertRequestContext
     }
 
     /**
+     * @return define that is period restore request.
+     */
+    public boolean isPeriodRestore() {
+        return flags.get(ContextUtils.CTX_FLAG_IS_PERIOD_RESTORE);
+    }
+
+    /**
      * @return true, if this context is a part of a batch upsert
      */
     public boolean isBatchUpsert() {
@@ -372,6 +393,14 @@ public class UpsertRequestContext
      */
     public UpsertRelationsRequestContext getRelations() {
         return relations;
+    }
+
+    /**
+     * Gets relation delete records.
+     * @return the relations deletes
+     */
+    public DeleteRelationsRequestContext getRelationDeletes() {
+        return relationDeletes;
     }
     /**
      * Set relations.
@@ -611,6 +640,7 @@ public class UpsertRequestContext
 
         // Sub contexts
         b.relations = other.relations != null ? other.relations.getRelations() : null;
+        b.relationDeletes = other.relationDeletes != null ? other.relationDeletes.getRelations() : null;
         b.classifierDeletes = other.classifierDeletes != null ? other.classifierDeletes.getClassifiers() : null;
         b.classifierUpserts = other.classifierUpserts != null ? other.classifierUpserts.getClassifiers() : null;
 
@@ -704,6 +734,10 @@ public class UpsertRequestContext
          */
         private boolean isRestore;
         /**
+         * define that is restore period request.
+         */
+        private boolean isPeriodRestore;
+        /**
          * Include draft versions into various calculations or not (approver view).
          */
         private boolean includeDraftVersions;
@@ -732,6 +766,10 @@ public class UpsertRequestContext
          */
         private Map<String, List<UpsertRelationRequestContext>> relations;
         /**
+         * Relation deletes
+         */
+        private Map<String, List<DeleteRelationRequestContext>> relationDeletes;
+        /**
          * Classifier data records.
          */
         private Map<String, List<UpsertClassifierDataRequestContext>> classifierUpserts;
@@ -755,6 +793,9 @@ public class UpsertRequestContext
          * Try resolve upserted record by matching keys
          */
         private boolean resolveByMatching;
+
+        private CommonDependableContext parentContext;
+
         /**
          * Constructor.
          */
@@ -971,6 +1012,16 @@ public class UpsertRequestContext
         }
 
         /**
+         * define that that is a period restore request.
+         * @param periodRestore
+         * @return self
+         */
+        public UpsertRequestContextBuilder periodRestore(boolean periodRestore) {
+            isPeriodRestore = periodRestore;
+            return this;
+        }
+
+        /**
          * Force specific approval state.
          * @param approvalState the state
          * @return self
@@ -1009,6 +1060,36 @@ public class UpsertRequestContext
         }
 
         /**
+         * @param relation - relation context to delete
+         * @return self
+         */
+        public UpsertRequestContextBuilder addRelationDelete(DeleteRelationRequestContext relation) {
+
+            if (Objects.isNull(this.relationDeletes)) {
+                this.relationDeletes = new HashMap<>();
+            }
+
+            if (!this.relationDeletes.containsKey(relation.getRelationName())) {
+                this.relationDeletes.put(relation.getRelationName(), new ArrayList<>());
+            }
+
+            this.relationDeletes.get(relation.getRelationName()).add(relation);
+            return this;
+        }
+
+        /**
+         *
+         * @param relations - relation contexts to delete
+         * @return self
+         */
+        public UpsertRequestContextBuilder addRelationDeletes(Collection<DeleteRelationRequestContext> relations) {
+            relations.stream().forEach(this::addRelationDelete);
+            return this;
+        }
+
+
+
+        /**
          * @param cCtx - classifier data record
          * @return self
          */
@@ -1028,11 +1109,11 @@ public class UpsertRequestContext
 
         /**
          *
-         * @param relations - record relations
+         * @param cCtxts - contexts
          * @return self
          */
         public UpsertRequestContextBuilder addClassifierUpserts(Collection<UpsertClassifierDataRequestContext> cCtxts) {
-            cCtxts.stream().forEach(this::addClassifierUpsert);
+            cCtxts.forEach(this::addClassifierUpsert);
             return this;
         }
 
@@ -1056,11 +1137,11 @@ public class UpsertRequestContext
 
         /**
          *
-         * @param relations - record relations
+         * @param cCtxts - contexts
          * @return self
          */
         public UpsertRequestContextBuilder addClassifierDeletes(Collection<DeleteClassifierDataRequestContext> cCtxts) {
-            cCtxts.stream().forEach(this::addClassifierDelete);
+            cCtxts.forEach(this::addClassifierDelete);
             return this;
         }
 
@@ -1115,6 +1196,11 @@ public class UpsertRequestContext
          */
         public UpsertRequestContextBuilder resolveByMatching(boolean resolveByMatching) {
             this.resolveByMatching = resolveByMatching;
+            return this;
+        }
+
+        public UpsertRequestContextBuilder parentContext(final CommonDependableContext parentContext) {
+            this.parentContext = parentContext;
             return this;
         }
 

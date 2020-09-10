@@ -45,8 +45,8 @@ public class EtalonClassifierInfoSection extends AbstractClassifierInfoSection {
     /**
      * @param recordEtalonKey the recordEtalonKey to set
      */
-    public void setRecordEtalonKey(EtalonKey recordKey) {
-        this.recordEtalonKey = recordKey;
+    public void setRecordEtalonKey(EtalonKey recordEtalonKey) {
+        this.recordEtalonKey = recordEtalonKey;
     }
     /**
      * @return the classifierEtalonKey
@@ -57,8 +57,8 @@ public class EtalonClassifierInfoSection extends AbstractClassifierInfoSection {
     /**
      * @param classifierEtalonKey the classifierEtalonKey to set
      */
-    public void setClassifierEtalonKey(String relationOriginKey) {
-        this.classifierEtalonKey = relationOriginKey;
+    public void setClassifierEtalonKey(String classifierEtalonKey) {
+        this.classifierEtalonKey = classifierEtalonKey;
     }
     /**
      * {@inheritDoc}

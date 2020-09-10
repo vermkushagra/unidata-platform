@@ -351,7 +351,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 handleRequestInfoGet(request, response);
             }
             // 16 bulk upsert
-            if (nonNull(request.getRequestBulkUpsert()) && nonNull(request.getRequestBulkUpsert().getUpsertRecordRequests()) && !request.getRequestBulkUpsert().getUpsertRecordRequests().isEmpty()) {
+            if (nonNull(request.getRequestBulkUpsert())) {
                 handleBulkUpsert(request, response);
             }
             // 17. Join
@@ -394,6 +394,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * @param response    the response
      */
     private void handleBulkUpsert(UnidataRequestBody bulkRequest, UnidataResponseBody response) {
+
+        if (CollectionUtils.isEmpty(bulkRequest.getRequestBulkUpsert().getUpsertRecordRequests())) {
+            return;
+        }
+
         MeasurementPoint.init(MeasurementContextName.MEASURE_SOAP_BULK_UPSERT);
         MeasurementPoint.start();
         List<UpsertRequestContext> upsertRequestContexts = Collections.emptyList();
@@ -403,10 +408,10 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             RequestBulkUpsert bulkRequestUpsert = bulkRequest.getRequestBulkUpsert();
             List<RequestUpsert> upsertRecordRequests = bulkRequestUpsert.getUpsertRecordRequests();
             upsertRequestContexts = upsertRecordRequests.stream()
-                    .map(request -> convertToUpsertContext(request, bulkRequest.getCommon()))
+                    .map(request -> convertToUpsertContext(request, bulkRequest.getCommon(), true))
                     .collect(Collectors.toList());
 
-            Collection<UpsertRecordDTO> result = dataRecordsService.atomicBulkUpsert(upsertRequestContexts);
+            Collection<UpsertRecordDTO> result = dataRecordsService.bulkUpsertRecords(upsertRequestContexts);
             ResponseBulkUpsert upsert = JaxbUtils.getApiObjectFactory().createResponseBulkUpsert();
 
 
@@ -438,7 +443,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .map(UpsertRequestContext::getDqErrors)
                     .filter(Objects::nonNull)
                     .flatMap(Collection::stream)
-                    .map(e -> DumpUtils.to(e))
+                    .map(DumpUtils::to)
                     .collect(Collectors.toList());
             createError(response, exc, SoapOperation.REQUEST_BULK_UPSERT,
                     bulkRequest.getCommon().getOperationId(), dqErrors);
@@ -1099,7 +1104,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
             for (int i = 0; relationsUpsert != null
                     && i < relationsUpsert.getRelations().getRelation().size(); i++) {
                 UpsertRelationDef relDef = relationsUpsert.getRelations().getRelation().get(i);
-                List<UpsertRelationRequestContext> innerRelations = convertToRelations(relDef, commonSection, validFrom, validTo);
+                List<UpsertRelationRequestContext> innerRelations = convertToRelations(relDef, commonSection, validFrom, validTo, false);
                 if (!innerRelations.isEmpty()) {
                     for (UpsertRelationRequestContext requestContext : innerRelations) {
                         String relName = requestContext.getRelationName();
@@ -1246,8 +1251,8 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
         UpsertRequestContext ctx = null;
 
         try {
-            ctx = convertToUpsertContext(requestUpsert, request.getCommon());
-            UpsertRecordDTO result = dataRecordsService.atomicUpsert(ctx);
+            ctx = convertToUpsertContext(requestUpsert, request.getCommon(), false);
+            UpsertRecordDTO result = dataRecordsService.upsertRecord(ctx);
             ResponseUpsert upsert = JaxbUtils.getApiObjectFactory().createResponseUpsert();
             upsert.withOriginAction(result.getAction() == null
                     ? UpsertActionType.NO_ACTION
@@ -1295,9 +1300,10 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      *
      * @param requestUpsert - upsert request
      * @param commonSection - common section
+     * @param bulkUpsert will set batch flag
      * @return the upsert request context
      */
-    private UpsertRequestContext convertToUpsertContext(RequestUpsert requestUpsert, CommonSectionDef commonSection) {
+    private UpsertRequestContext convertToUpsertContext(RequestUpsert requestUpsert, CommonSectionDef commonSection, boolean bulkUpsert) {
         AsyncSectionDef asyncSection = commonSection.getAsyncOptions();
         String entityName = requestUpsert.getOriginRecord() != null
                 ? requestUpsert.getOriginRecord().getOriginKey() != null
@@ -1341,16 +1347,17 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                 .codeAttributeAliases(DumpUtils.convertAliasCodeAttrPs(requestUpsert.getAliasCodeAttributePointers()))
                 // Wait for etalon calculation to prevent authentication expiration
                 // while some calculation threads are still busy working
-                .returnEtalon(true);
+                .returnEtalon(true)
+                .batchUpsert(bulkUpsert);
 
         for (int i = 0; requestUpsert.getRelations() != null
                 && i < requestUpsert.getRelations().getRelation().size(); i++) {
             UpsertRelationDef relDef = requestUpsert.getRelations().getRelation().get(i);
-            List<UpsertRelationRequestContext> relations = convertToRelations(relDef, commonSection, validFrom, validTo);
+            List<UpsertRelationRequestContext> relations = convertToRelations(relDef, commonSection, validFrom, validTo, bulkUpsert);
             builder.addRelations(relations);
         }
 
-        List<ClassifierIdentityContext> classifierRecords = convertToClassifiers(requestUpsert, commonSection);
+        List<ClassifierIdentityContext> classifierRecords = convertToClassifiers(requestUpsert, commonSection, bulkUpsert);
         List<UpsertClassifierDataRequestContext> upserts = classifierRecords.stream()
                 .filter(clc -> clc instanceof UpsertClassifierDataRequestContext)
                 .map(clc -> (UpsertClassifierDataRequestContext) clc)
@@ -1491,9 +1498,11 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * Converts classifiers section.
      * @param requestUpsert upsert request section
      * @param commonSection common section
+     * @param bulkUpsert TODO
      * @return list
      */
-    private List<ClassifierIdentityContext> convertToClassifiers(RequestUpsert requestUpsert, CommonSectionDef commonSection) {
+    private List<ClassifierIdentityContext> convertToClassifiers(
+            RequestUpsert requestUpsert, CommonSectionDef commonSection, boolean bulkUpsert) {
 
         List<ClassifierIdentityContext> classifierContexts = new ArrayList<>();
         List<EtalonClassifierRecord> etalonClassifiers = requestUpsert.getEtalonRecord() != null
@@ -1517,6 +1526,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .inactivateEtalon(true)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 dCtx.setOperationId(commonSection.getOperationId());
@@ -1531,6 +1541,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                     .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                     .status(ecr.getStatus() != null ? RecordStatus.valueOf(ecr.getStatus().name()) : null)
+                    .batchUpsert(bulkUpsert)
                     .build();
 
                 uCtx.setOperationId(commonSection.getOperationId());
@@ -1549,6 +1560,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                         .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                         .inactivateEtalon(true)
+                        .batchUpsert(bulkUpsert)
                         .build();
 
                 dCtx.setOperationId(commonSection.getOperationId());
@@ -1562,6 +1574,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     .classifierNodeCode(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_CODE ? cp.getClassifierPointer() : null)
                     .classifierNodeName(cp != null && cp.getPointerType() == ClassifierPointerType.NODE_NAME ? cp.getClassifierPointer() : null)
                     .status(ocr.getStatus() != null ? RecordStatus.valueOf(ocr.getStatus().name()) : null)
+                    .batchUpsert(bulkUpsert)
                     .build();
 
                 uCtx.setOperationId(commonSection.getOperationId());
@@ -1579,10 +1592,13 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * @param commonSection the common section
      * @param parentValidFrom the parent valid from
      * @param parentValidTo the parent valid to
+     * @param bulkUpsert TODO
      * @return list of relations
      */
     @Nonnull
-    private List<UpsertRelationRequestContext> convertToRelations(UpsertRelationDef er, CommonSectionDef commonSection, Date parentValidFrom, Date parentValidTo) {
+    private List<UpsertRelationRequestContext> convertToRelations(
+            UpsertRelationDef er, CommonSectionDef commonSection, Date parentValidFrom, Date parentValidTo, boolean bulkUpsert) {
+
         RelationDef relDef = metaModelService.getRelationById(er.getName());
         if (relDef == null) {
             throw new IllegalArgumentException("Relation not found by name [" + er.getName() + "]");
@@ -1660,7 +1676,8 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
 	            .externalId(externalId)
 	            .entityName(entityName)
 	            .originKey(originId)
-	            .etalonKey(etalonId);
+                .etalonKey(etalonId)
+                .batchUpsert(bulkUpsert);
 
             UpsertRelationRequestContext ctx = builder.build();
             ctx.setOperationId(commonSection.getOperationId());
