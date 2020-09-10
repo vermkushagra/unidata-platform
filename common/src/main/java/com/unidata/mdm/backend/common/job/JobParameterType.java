@@ -17,11 +17,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+package com.unidata.mdm.backend.common.job;
+
+import org.apache.commons.lang3.StringUtils;
+
 /**
- * 
+ * @author Denis Kostovarov
  */
-/**
- * @author ibykov
- *
- */
-package api.v5.eh;
+public enum JobParameterType {
+
+    STRING,
+    LONG,
+    DOUBLE,
+    DATE,
+    BOOLEAN;
+
+    public static JobParameterType fromValue(final String v) {
+        for (final JobParameterType c : JobParameterType.values()) {
+            if (StringUtils.equalsIgnoreCase(v, c.toString())) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+}

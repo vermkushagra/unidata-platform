@@ -85,6 +85,10 @@ public enum MeasurementContextName {
      */
     MEASURE_SOAP_GET_MODEL_ELEMENT,
     /**
+     * SOAP get entity with deps.
+     */
+    MEASURE_SOAP_GET_ENTITY_WITH_DEPS,
+    /**
      * SOAP upsert element.
      */
     MEASURE_SOAP_UPSERT_MODEL_ELEMENT,

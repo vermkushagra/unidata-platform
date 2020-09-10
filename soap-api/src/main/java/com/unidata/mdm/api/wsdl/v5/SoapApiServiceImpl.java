@@ -143,7 +143,6 @@ import com.unidata.mdm.backend.common.context.UpsertRelationsRequestContext;
 import com.unidata.mdm.backend.common.context.UpsertRelationsRequestContext.UpsertRelationsRequestContextBuilder;
 import com.unidata.mdm.backend.common.context.UpsertRequestContext;
 import com.unidata.mdm.backend.common.context.UpsertRequestContext.UpsertRequestContextBuilder;
-import com.unidata.mdm.backend.common.dto.SplitRecordsDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRecordDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRelationDTO;
 import com.unidata.mdm.backend.common.dto.DeleteRelationsDTO;
@@ -156,6 +155,7 @@ import com.unidata.mdm.backend.common.dto.MergeRecordsDTO;
 import com.unidata.mdm.backend.common.dto.RelationStateDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultHitDTO;
+import com.unidata.mdm.backend.common.dto.SplitRecordsDTO;
 import com.unidata.mdm.backend.common.dto.TimeIntervalDTO;
 import com.unidata.mdm.backend.common.dto.TimelineDTO;
 import com.unidata.mdm.backend.common.dto.UpsertRecordDTO;
@@ -1487,6 +1487,22 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                         "No keys returned by the service or relations upsert failed.",
                         request.getCommon().getOperationId());
             }
+
+            if (CollectionUtils.isNotEmpty(ctx.getDqErrors())) {
+                ExecutionMessageDef executionMessageDef = JaxbUtils.getApiObjectFactory().createExecutionMessageDef();
+                executionMessageDef.withDqErrors(ctx.getDqErrors().stream().map(DumpUtils::to).collect(Collectors.toList()));
+
+                CommonResponseDef common = null;
+                if (response.getCommon() == null) {
+                    common = JaxbUtils.getApiObjectFactory().createCommonResponseDef();
+                    response.setCommon(common);
+                } else {
+                    common = response.getCommon();
+                }
+
+                common.setMessage(executionMessageDef);
+            }
+
         } catch (ExitException eexc) {
             if (eexc.getExitState() == ExitState.ES_UPSERT_DENIED) {
                 response.getResponseUpsert().withOriginAction(UpsertActionType.NO_ACTION);

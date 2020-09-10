@@ -18,10 +18,7 @@
  */
 
 /**
- * 
+ * @author Mikhail Mikhailov
+ * Job subpackage.
  */
-/**
- * @author ibykov
- *
- */
-package api.v5.eh;
+package com.unidata.mdm.backend.common.job;

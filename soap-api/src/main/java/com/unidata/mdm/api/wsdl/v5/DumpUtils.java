@@ -88,6 +88,7 @@ import com.unidata.mdm.backend.common.types.impl.TimeSimpleAttributeImpl;
 import com.unidata.mdm.backend.common.types.impl.TimestampArrayAttributeImpl;
 import com.unidata.mdm.backend.common.types.impl.TimestampArrayValue;
 import com.unidata.mdm.backend.common.types.impl.TimestampSimpleAttributeImpl;
+import com.unidata.mdm.data.v5.AbstractAttribute;
 import com.unidata.mdm.data.v5.ApprovalState;
 import com.unidata.mdm.data.v5.ArrayAttribute;
 import com.unidata.mdm.data.v5.ArrayDataType;
@@ -102,6 +103,7 @@ import com.unidata.mdm.data.v5.EtalonRecordInfoSection;
 import com.unidata.mdm.data.v5.IntegralRecord;
 import com.unidata.mdm.data.v5.MeasuredValue;
 import com.unidata.mdm.data.v5.NestedRecord;
+import com.unidata.mdm.data.v5.ObjectFactory;
 import com.unidata.mdm.data.v5.OriginClassifierRecord;
 import com.unidata.mdm.data.v5.OriginRecord;
 import com.unidata.mdm.data.v5.OriginRecordInfoSection;
@@ -122,6 +124,7 @@ import com.unidata.mdm.data.v5.SimpleAttribute;
  */
 public class DumpUtils {
 
+    private static final ObjectFactory V5_DATA_FACTORY = new ObjectFactory();
     /**
      * Constructor.
      */
@@ -254,7 +257,11 @@ public class DumpUtils {
                 .withSeverity(error.getSeverity() == null ? null : error.getSeverity().name())
                 .withStatus(error.getStatus() == null ? null : DataQualityStatusType.valueOf(error.getStatus().name()))
                 .withUpdateDate(JaxbUtils.dateToXMGregorianCalendar(error.getUpdateDate()))
-                .withPaths(error.getPaths());
+                .withValues(error.getValues().stream()
+                        .map(v -> V5_DATA_FACTORY.createDataQualityErrorValue()
+                                .withPath(v.getKey())
+                                .withCause(to(v.getValue())))
+                        .collect(Collectors.toList()));
     }
 
     /**
@@ -543,6 +550,26 @@ public class DumpUtils {
         return val;
     }
 
+    public static AbstractAttribute to(Attribute attribute) {
+        if (Objects.isNull(attribute)) {
+            return null;
+        }
+
+        switch (attribute.getAttributeType()) {
+        case ARRAY:
+            return to((com.unidata.mdm.backend.common.types.ArrayAttribute<?>) attribute);
+        case CODE:
+            return to((com.unidata.mdm.backend.common.types.CodeAttribute<?>) attribute);
+        case COMPLEX:
+            return to((com.unidata.mdm.backend.common.types.ComplexAttribute) attribute);
+        case SIMPLE:
+            return to((com.unidata.mdm.backend.common.types.SimpleAttribute<?>) attribute);
+        default:
+            break;
+        }
+
+        return null;
+    }
     /**
      * To.
      *

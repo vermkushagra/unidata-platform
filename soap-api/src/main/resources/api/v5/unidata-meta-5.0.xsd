@@ -47,7 +47,7 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:simpleType name="ElementType" final="restriction">
+    <xs:simpleType name="ElementType" final="restriction">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="ENTITY" />
 			<xs:enumeration value="NESTED_ENTITY" />
@@ -67,6 +67,22 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+    <xs:element name="getEntityWithDepsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="entityName" type="xs:string" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getEntityWithDepsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="entity" type="meta:EntityDef" minOccurs="1" maxOccurs="1"/>
+                <xs:element name="nestedEntity" type="meta:NestedEntityDef" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="relation" type="meta:RelationDef" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
 	<xs:element name="upsertElementRequest">
 		<xs:complexType>
 			<xs:sequence>

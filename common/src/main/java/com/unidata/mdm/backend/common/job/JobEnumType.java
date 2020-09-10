@@ -17,41 +17,46 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package com.unidata.mdm.backend.common.dto.job;
+package com.unidata.mdm.backend.common.job;
 
-import com.unidata.mdm.backend.common.job.JobParameterType;
+import java.util.List;
 
 /**
  * @author Denis Kostovarov
  */
-public class JobTemplateParameterDTO {
-    private Long id;
+public class JobEnumType {
+    private boolean multiSelect;
+    private JobParameterType parameterType;
 
-    private String name;
+    private List<?> parameters;
 
-    private JobParameterType type;
-
-    public String getName() {
-        return name;
+    public JobParameterType getParameterType() {
+        return parameterType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setParameterType(JobParameterType parameterType) {
+        this.parameterType = parameterType;
     }
 
-    public JobParameterType getType() {
-        return type;
+    public List<?> getParameters() {
+        return parameters;
     }
 
-    public void setType(JobParameterType type) {
-        this.type = type;
+    public void setParameters(List<?> parameters) {
+        this.parameters = parameters;
     }
 
-    public Long getId() {
-        return id;
+    /**
+     * @return the multiSelect
+     */
+    public boolean isMultiSelect() {
+        return multiSelect;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    /**
+     * @param multiSelect the multiSelect to set
+     */
+    public void setMultiSelect(boolean multiSelect) {
+        this.multiSelect = multiSelect;
     }
 }

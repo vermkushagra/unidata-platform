@@ -17,11 +17,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * 
- */
-/**
- * @author ibykov
- *
- */
-package api.v5.eh;
+package com.unidata.mdm.backend.common.job;
+
+public enum JobExecutionBatchStatus {
+    COMPLETED,
+    STARTING,
+    STARTED,
+    STOPPING,
+    STOPPED,
+    FAILED,
+    ABANDONED,
+    UNKNOWN
+}

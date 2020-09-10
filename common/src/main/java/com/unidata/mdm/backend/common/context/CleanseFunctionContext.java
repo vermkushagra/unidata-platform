@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import com.unidata.mdm.backend.common.cleanse.CleanseFunctionInputParam;
 import com.unidata.mdm.backend.common.cleanse.CleanseFunctionOutputParam;
@@ -109,9 +110,9 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
      */
     private final Map<String, CleanseFunctionOutputParam> output = new HashMap<>(8);
     /**
-     * Failed local validation paths. Subject for refactoring.
+     * Failed local validation paths and values. Subject for refactoring.
      */
-    private final List<String> failedValidationPaths = new ArrayList<>(4);
+    private final List<Pair<String, Attribute>> failedValidations = new ArrayList<>(4);
     /**
      * The errors.
      */
@@ -281,8 +282,8 @@ public class CleanseFunctionContext extends CommonRequestContext implements Reco
     /**
      * @return the failedValidationPaths
      */
-    public List<String> failedValidationPaths() {
-        return failedValidationPaths;
+    public List<Pair<String, Attribute>> failedValidations() {
+        return failedValidations;
     }
     /**
      * Input port names.
