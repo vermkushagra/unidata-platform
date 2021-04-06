@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MeasurementValues xmlns="http://meta.mdm.unidata.com/">
+  <value id="4" shortName="Tech" displayName="Технические единицы тест1">
+    <unit id="212" shortName="ВТ" displayName="Ватт" base="true" convectionFunction="value"/>
+    <unit id="214" shortName="КВТ" displayName="Киловатт" base="false" convectionFunction="value*1000"/>
+    <unit id="215" shortName="МЕГАВТ; ТЫС КВТ" displayName="Мегаватт; Тысяча киловатт" base="false" convectionFunction="value*1000*1000"/>
+    <unit id="215x" shortName="ТЫС КВТ" displayName="Тысяча киловатт" base="false" convectionFunction="value*1000*1000"/>
+  </value>
+  <value id="3" shortName="Tech" displayName="Технические единицы тест2">
+    <unit id="227" shortName="КВ·А" displayName="Киловольт-ампер" base="true" convectionFunction="value"/>
+    <unit id="228" shortName="МЕГАВ·А" displayName="Мегавольт-ампер" base="false" convectionFunction="value*1000"/>
+  </value>
+  <value id="1" shortName="L" displayName="Единицы длины тест3">
+    <unit id="6" shortName="М" displayName="Метр" base="true" convectionFunction="value"/>
+    <unit id="3" shortName="ММ" displayName="Миллиметр" base="false" convectionFunction="value/1000"/>
+    <unit id="4" shortName="СМ" displayName="Сантиметр" base="false" convectionFunction="value/100"/>
+    <unit id="5" shortName="ДМ" displayName="Дециметр" base="false" convectionFunction="value/10"/>
+    <unit id="8x" shortName="КМ" displayName="Километр; Тысяча метров" base="false" convectionFunction="value*1000"/>
+    <unit id="8" shortName="ТЫС М" displayName="Тысяча метров" base="false" convectionFunction="value*1000"/>
+    <unit id="9x" shortName="МЕГАМ" displayName="Мегаметр; Миллион метров" base="false" convectionFunction="value*1000000"/>
+    <unit id="9" shortName="МЛН М" displayName="Миллион метров" base="false" convectionFunction="value*1000000"/>
+    <unit id="39" shortName="ДЮЙМ" displayName="Дюйм (25,4 мм)" base="false" convectionFunction="value*25.4/1000"/>
+    <unit id="41" shortName="ФУТ" displayName="Фут (0,3048 м)" base="false" convectionFunction="value*0.3048"/>
+    <unit id="43" shortName="ЯРД" displayName="Ярд (0,9144 м)" base="false" convectionFunction="value*0.9144"/>
+    <unit id="47" shortName="МИЛЬ" displayName="Морская миля (1852 м)" base="false" convectionFunction="value*1852"/>
+  </value>
+  <value id="5" shortName="currency" displayName="Валюта">
+    <unit id="dollar" shortName="$" displayName="Доллар" base="true" convectionFunction="value"/>
+    <unit id="rouble" shortName="₽" displayName="Рубль" base="false" convectionFunction="value*58"/>
+  </value>
+  <value id="2" shortName="S" displayName="Единицы площади тест">
+    <unit id="55" shortName="М²" displayName="Квадратный метр" base="true" convectionFunction="value"/>
+    <unit id="50" shortName="ММ²" displayName="Квадратный миллиметр" base="false" convectionFunction="value/1000/1000"/>
+    <unit id="51" shortName="СМ²" displayName="Квадратный сантиметр" base="false" convectionFunction="value/100/100"/>
+    <unit id="53" shortName="ДМ²" displayName="Квадратный дециметр" base="false" convectionFunction="value/10/10"/>
+    <unit id="58" shortName="ТЫС М²" displayName="Тысяча квадратных метров" base="false" convectionFunction="value*1000"/>
+    <unit id="59" shortName="ГА" displayName="Гектар" base="false" convectionFunction="value*10000"/>
+    <unit id="61" shortName="КМ²" displayName="Квадратный километр" base="false" convectionFunction="value*1000*1000"/>
+    <unit id="71" shortName="ДЮЙМ²" displayName="Квадратный дюйм (645,16 мм²)" base="false" convectionFunction="value*645.16/1000/1000"/>
+    <unit id="73" shortName="ФУТ²" displayName="Квадратный фут (0,092903 м²)" base="false" convectionFunction="value*0.092903"/>
+    <unit id="75" shortName="ЯРД²" displayName="Квадратный ярд (0,8361274 м²)" base="false" convectionFunction="value*0.8361274"/>
+    <unit id="109" shortName="АР" displayName="Ар (100 м²)" base="false" convectionFunction="value*100"/>
+  </value>
+</MeasurementValues>

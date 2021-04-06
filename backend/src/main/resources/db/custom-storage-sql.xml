@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="upsertRecord">
+        <![CDATA[
+        WITH __update AS (
+            UPDATE s_custom_storage SET value = :value WHERE key = :key AND user_name = :user_name RETURNING key
+        ),
+        __insert AS (SELECT :key::varchar,
+                            :user_name::varchar,
+                            :value::text,
+                            current_timestamp
+                        WHERE NOT EXISTS (SELECT * FROM __update))
+        INSERT INTO s_custom_storage(key, user_name, value, update_date) SELECT * FROM __insert
+        ]]>
+    </entry>
+    <entry key="deleteRecord">
+        <![CDATA[
+            delete from
+                s_custom_storage
+            where
+                user_name = :user_name
+                and key = :key
+        ]]>
+    </entry>
+    <entry key="deleteRecordsByUser">
+        <![CDATA[
+            delete from
+                s_custom_storage
+            where
+                user_name = :user_name
+        ]]>
+    </entry>
+    <entry key="deleteRecordsByKey">
+        <![CDATA[
+            delete from
+                s_custom_storage
+            where
+                key = :key
+        ]]>
+    </entry>
+    <entry key="loadRecord">
+        <![CDATA[
+            select
+                key as key,
+                user_name as user_name,
+                value as value,
+                update_date as update_date
+            from
+                s_custom_storage
+            where
+                user_name = :user_name
+                and key = :key
+        ]]>
+    </entry>
+    <entry key="loadRecordsByUser">
+        <![CDATA[
+            select
+                key as key,
+                user_name as user_name,
+                value as value,
+                update_date as update_date
+            from
+                s_custom_storage
+            where
+                user_name = :user_name
+        ]]>
+    </entry>
+    <entry key="loadRecordsByKey">
+        <![CDATA[
+            select
+                key as key,
+                user_name as user_name,
+                value as value,
+                update_date as update_date
+            from
+                s_custom_storage
+            where
+                key = :key
+        ]]>
+    </entry>
+</properties>

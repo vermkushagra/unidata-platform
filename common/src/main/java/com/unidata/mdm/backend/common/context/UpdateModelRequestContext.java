@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
@@ -34,7 +15,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.unidata.mdm.meta.CleanseFunctionGroupDef;
-import com.unidata.mdm.meta.DefaultClassifier;
 import com.unidata.mdm.meta.EntitiesGroupDef;
 import com.unidata.mdm.meta.EntityDef;
 import com.unidata.mdm.meta.EnumerationDataType;
@@ -86,10 +66,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
      */
     private final CleanseFunctionGroupDef cleanseFunctionsUpdate;
     /**
-     * Default classifiers update.
-     */
-    private final List<DefaultClassifier> defaultClassifiersUpdate;
-    /**
      * Storage ID to apply the updates to.
      */
     private final String storageId;
@@ -114,7 +90,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
         this.storageId = b.storageId;
         this.upsertType = b.upsertType;
         this.entitiesGroupsUpdate = b.entitiesGroupsUpdate;
-        this.defaultClassifiersUpdate = b.defaultClassifiersUpdate;
     }
 
     /**
@@ -158,12 +133,7 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
     public List<RelationDef> getRelationsUpdate() {
         return relationsUpdate;
     }
-    /**
-     * @return the defaultClassifiersUpdate
-     */
-    public List<DefaultClassifier> getDefaultClassifiersUpdate() {
-        return defaultClassifiersUpdate;
-    }
+
     /**
      * @return entitiesGroupsUpdate
      */
@@ -237,14 +207,7 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
     public boolean hasSourceSystemsUpdate() {
         return sourceSystemsUpdate != null && !sourceSystemsUpdate.isEmpty();
     }
-    /**
-     * Has default classifiers update.
-     *
-     * @return true if so false otherwise
-     */
-    public boolean hasDefaultClassifiersUpdate() {
-        return defaultClassifiersUpdate != null && !defaultClassifiersUpdate.isEmpty();
-    }
+
     /**
      * Has relations update.
      *
@@ -363,10 +326,6 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
          */
         private CleanseFunctionGroupDef cleanseFunctionsUpdate;
         /**
-         * Default classifiers.
-         */
-        private List<DefaultClassifier> defaultClassifiersUpdate;
-        /**
          * Storage ID to apply the updates to.
          */
         private String storageId;
@@ -456,16 +415,7 @@ public class UpdateModelRequestContext extends CommonRequestContext implements M
             this.cleanseFunctionsUpdate = cleanseFunctionsUpdate;
             return this;
         }
-        /**
-         * Sets default classifiers.
-         *
-         * @param defaultClassifiersUpdate the update
-         * @return self
-         */
-        public UpdateModelRequestContextBuilder defaultClassifiersUpdate(List<DefaultClassifier> defaultClassifiersUpdate) {
-            this.defaultClassifiersUpdate = defaultClassifiersUpdate;
-            return this;
-        }
+
         /**
          * @param entitiesGroupsUpdate
          * @return

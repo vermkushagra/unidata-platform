@@ -1,0 +1,22 @@
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework:spring-framework-bom:4.3.12.RELEASE'
+        mavenBom 'org.springframework.security:spring-security-bom:4.2.3.RELEASE'
+        mavenBom 'org.springframework.integration:spring-integration-bom:4.3.12.RELEASE'
+        mavenBom 'io.projectreactor:reactor-bom:Bismuth-SR4'
+    }
+
+    dependencies {
+        dependencySet(group: 'org.springframework.batch', version: '3.0.8.RELEASE') {
+            entry 'spring-batch-core'
+            entry 'spring-batch-infrastructure'
+            entry 'spring-batch-integration'
+        }
+
+        dependencySet(group: 'org.apache.poi', version: '3.17') {
+            entry 'poi'
+            entry 'poi-ooxml'
+            entry 'poi-ooxml-schemas'
+        }
+    }
+}

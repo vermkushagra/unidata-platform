@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.matching;
 
 import java.io.Serializable;
@@ -34,6 +15,10 @@ public class ClusterMetaData implements Serializable {
      */
     private static final long serialVersionUID = -600312241700693220L;
     /**
+     * Matching group id
+     */
+    private Integer groupId;
+    /**
      * Matching rule id
      */
     private Integer ruleId;
@@ -45,6 +30,11 @@ public class ClusterMetaData implements Serializable {
      * Storage
      */
     private String storage;
+
+    @Nullable
+    public Integer getGroupId() {
+        return groupId;
+    }
 
     @Nullable
     public Integer getRuleId() {
@@ -68,12 +58,18 @@ public class ClusterMetaData implements Serializable {
      * Cluster metadata builder.
      */
     public static final class ClusterMetaDataBuilder {
+        private Integer groupId;
         private Integer ruleId;
         private String entityName;
         private String storage;
 
         private ClusterMetaDataBuilder() {
             super();
+        }
+
+        public ClusterMetaDataBuilder groupId(@Nullable Integer groupId) {
+            this.groupId = groupId;
+            return this;
         }
 
         public ClusterMetaDataBuilder entityName(@Nonnull String entityName) {
@@ -99,6 +95,7 @@ public class ClusterMetaData implements Serializable {
 
             ClusterMetaData clusterMetaData = new ClusterMetaData();
             clusterMetaData.ruleId = this.ruleId;
+            clusterMetaData.groupId = this.groupId;
             clusterMetaData.entityName = this.entityName;
             clusterMetaData.storage = this.storage;
             return clusterMetaData;
@@ -112,19 +109,20 @@ public class ClusterMetaData implements Serializable {
 
         ClusterMetaData that = (ClusterMetaData) o;
 
-        return Objects.equals(that.ruleId, ruleId);
+        return Objects.equals(that.ruleId, ruleId) && Objects.equals(that.groupId, groupId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ruleId);
+        return Objects.hash(ruleId, groupId);
     }
 
 
     @Override
     public String toString() {
         return "ClusterMetaData{" +
-                " ruleId=" + ruleId +
+                "groupId=" + groupId +
+                ", ruleId=" + ruleId +
                 ", entityName='" + entityName + '\'' +
                 ", storage='" + storage + '\'' +
                 '}';

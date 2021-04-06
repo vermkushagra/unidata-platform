@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="insertRuleSQL">
+        <![CDATA[
+            insert into matching_rules (name, settings, entity_name, active, storage_fkey, description)
+            values (:name, :settings, :entity_name, :active, :storage_fkey, :description)
+        ]]>
+    </entry>
+    <entry key="updateRuleSQL">
+        <![CDATA[
+            update matching_rules
+            set
+                name = :name,
+                settings = :settings,
+                entity_name = :entity_name,
+                active = :active,
+                storage_fkey = :storage_fkey,
+                description = :description
+            where id = :id
+        ]]>
+    </entry>
+    <entry key="deleteRuleByIdSQL">
+        <![CDATA[
+            delete from matching_rules where id = :id
+        ]]>
+    </entry>
+    <entry key="selectAllSQL">
+        <![CDATA[
+            select id, name, settings, entity_name, active, storage_fkey, description from matching_rules
+        ]]>
+    </entry>
+    <entry key="selectRulesByEntityNameSQL">
+        <![CDATA[
+            select id, name, settings, entity_name, active, storage_fkey, description from matching_rules
+            where entity_name = :entity_name and storage_fkey = :storage_fkey
+        ]]>
+    </entry>
+    <entry key="selectRuleByIdSQL">
+        <![CDATA[
+            select id, name, settings, entity_name, active, storage_fkey, description from matching_rules where id = :id
+        ]]>
+    </entry>
+    <entry key="selectRuleByEntityNameAndRuleNameSQL">
+        <![CDATA[
+            select id, name, settings, entity_name, active, storage_fkey, description from matching_rules
+            where entity_name = :entity_name and name = :name and storage_fkey = :storage_fkey
+        ]]>
+    </entry>
+    <entry key="deleteAlgorithmsByRuleIdSQL">
+        <![CDATA[
+            delete from matching_algorithms where rule_id = :rule_id
+        ]]>
+    </entry>
+    <entry key="insertAlgorithmSQL">
+        <![CDATA[
+            insert into matching_algorithms (algorithm_id, rule_id, data) values (:algorithm_id, :rule_id, :data)
+        ]]>
+    </entry>
+    <entry key="selectAlgorithmsByRuleIdSQL">
+        <![CDATA[
+            select id, algorithm_id, rule_id, data from matching_algorithms where rule_id = :rule_id order by id asc
+        ]]>
+    </entry>
+    <entry key="insertGroupSQL">
+        <![CDATA[
+            insert into matching_groups (name, entity_name, description, active, auto_merge) values (:name, :entity_name, :description, :active, :auto_merge)
+        ]]>
+    </entry>
+    <entry key="updateGroupSQL">
+        <![CDATA[
+            update matching_groups set name = :name, entity_name = :entity_name , description = :description, active = :active, auto_merge = :auto_merge
+             where id = :id
+        ]]>
+    </entry>
+    <entry key="deleteGroupSQL">
+        <![CDATA[
+            delete from matching_groups where id = :id
+        ]]>
+    </entry>
+    <entry key="selectGroupByIdSQL">
+        <![CDATA[
+            select
+                mg.id,
+                mg.name,
+                mg.entity_name,
+                mg.description,
+                mg.active,
+                mg.auto_merge,
+                mg.storage_fkey,
+                rgl.group_id,
+                rgl.rule_id,
+                rgl.order_number
+            from matching_groups as mg
+            left outer join matching_group_matching_rule as rgl
+            on (rgl.group_id = mg.id)
+            where mg.id = :id
+            order by rgl.order_number asc
+        ]]>
+    </entry>
+    <entry key="selectGroupByEntityNameAndGroupNameSQL">
+        <![CDATA[
+            select
+                mg.id,
+                mg.name,
+                mg.entity_name,
+                mg.description,
+                mg.active,
+                mg.auto_merge,
+                mg.storage_fkey,
+                rgl.group_id,
+                rgl.rule_id,
+                rgl.order_number
+            from matching_groups as mg
+            left outer join matching_group_matching_rule as rgl
+            on (rgl.group_id = mg.id)
+            where mg.entity_name = :entity_name and mg.name = :name
+            order by rgl.order_number asc
+        ]]>
+    </entry>
+    <entry key="selectAllGroupsSQL">
+        <![CDATA[
+            select
+                mg.id,
+                mg.name,
+                mg.entity_name,
+                mg.description,
+                mg.active,
+                mg.auto_merge,
+                mg.storage_fkey,
+                rgl.group_id,
+                rgl.rule_id,
+                rgl.order_number
+            from matching_groups as mg
+            left outer join matching_group_matching_rule as rgl
+            on (rgl.group_id = mg.id)
+            order by rgl.order_number asc
+        ]]>
+    </entry>
+    <entry key="selectGroupsByEntityNameSQL">
+        <![CDATA[
+            select
+                mg.id,
+                mg.name,
+                mg.entity_name,
+                mg.description,
+                mg.active,
+                mg.auto_merge,
+                mg.storage_fkey,
+                rgl.group_id,
+                rgl.rule_id,
+                rgl.order_number
+            from matching_groups as mg
+            left outer join matching_group_matching_rule as rgl
+            on (rgl.group_id = mg.id)
+            where mg.entity_name = :entity_name
+            order by rgl.order_number asc
+        ]]>
+    </entry>
+    <entry key="selectGroupIdsByEntityNameSQL">
+        <![CDATA[
+            select id from matching_groups where entity_name = :entity_name
+        ]]>
+    </entry>
+    <entry key="deleteRulesToGroupsAssignmentsSQL">
+        <![CDATA[
+            delete from matching_group_matching_rule where group_id = :group_id
+        ]]>
+    </entry>
+    <entry key="insertRulesToGroupsAssignmentsSQL">
+        <![CDATA[
+            insert into matching_group_matching_rule (group_id, rule_id, order_number) values (:group_id, :rule_id, :order_number)
+        ]]>
+    </entry>
+</properties>

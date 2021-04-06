@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                            http://www.springframework.org/schema/util
+                            http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- Exact strict -->
+    <bean id="exactStrictMatchAlgorithm" class="com.unidata.mdm.backend.service.matching.algorithms.ExactStrictMatchAlgorithm">
+        <property name="algorithmName" value="app.matching.algorithms.exact.strict.name"/>
+        <property name="algorithmDescription" value="app.matching.algorithms.exact.strict.description"/>
+        <property name="matchingFieldMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactStrictMatchAlgorithm).ALGORITHM_ID}"
+                       value="app.matching.algorithms.exact.strict.anyField"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Exact null match everything -->
+    <bean id="exactNullMatchEverythingAlgorithm" class="com.unidata.mdm.backend.service.matching.algorithms.ExactNullMatchEverythingAlgorithm">
+        <property name="algorithmName" value="app.matching.algorithms.exact.nullall.name"/>
+        <property name="algorithmDescription" value="app.matching.algorithms.exact.nullall.description"/>
+        <property name="matchingFieldMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactNullMatchNothingAlgorithm).ALGORITHM_ID}"
+                       value="app.matching.algorithms.exact.nullall.anyField"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Exact null match nothing -->
+    <bean id="exactNullMatchNothingAlgorithm" class="com.unidata.mdm.backend.service.matching.algorithms.ExactNullMatchNothingAlgorithm">
+        <property name="algorithmName" value="app.matching.algorithms.exact.nullnone.name"/>
+        <property name="algorithmDescription" value="app.matching.algorithms.exact.nullnone.description"/>
+        <property name="matchingFieldMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactNullMatchNothingAlgorithm).ALGORITHM_ID}"
+                       value="app.matching.algorithms.exact.nullnone.anyField"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Exact null match nothing -->
+    <bean id="exactExcludedMatchNothingAlgorithm" class="com.unidata.mdm.backend.service.matching.algorithms.ExactExcludedValueMatchNothingAlgorithm">
+        <property name="algorithmName" value="app.matching.algorithms.exact.excludedvalue.name"/>
+        <property name="algorithmDescription" value="app.matching.algorithms.exact.excludedvalue.description"/>
+        <property name="matchingFieldMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactExcludedValueMatchNothingAlgorithm).ALGORITHM_ID}"
+                       value="app.matching.algorithms.exact.excludedvalue.anyField"/>
+            </map>
+        </property>
+        <property name="matchingConstantMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactExcludedValueMatchNothingAlgorithm).EXCLUDED_VALUES}"
+                       value="app.matching.algorithms.exact.excludedvalue.exclude"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- Inexact fixed length token -->
+    <bean id="inexactFixedLengthAlgorithm" class="com.unidata.mdm.backend.service.matching.algorithms.InexactFixedLengthAlgorithm">
+        <property name="algorithmName" value="app.matching.algorithms.ifl.name"/>
+        <property name="algorithmDescription" value="app.matching.algorithms.ifl.description"/>
+        <property name="matchingFieldMap">
+            <map>
+                <entry key="#{T(com.unidata.mdm.backend.service.matching.algorithms.ExactStrictMatchAlgorithm).ALGORITHM_ID}"
+                       value="app.matching.algorithms.ifl.anyField"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--<bean id="sampleAlgorithm"-->
+          <!--class="com.unidata.mdm.backend.service.matching.algorithms.SampleMultiFieldAlgorithm">-->
+        <!--<property name="algorithmId" value="3"/>-->
+        <!--<property name="algorithmName" value="Тестовый много атрибутный алгоритм"/>-->
+        <!--<property name="algorithmDescription"-->
+                  <!--value="Не важно"/>-->
+        <!--<property name="matchingFieldMap">-->
+            <!--<map>-->
+                <!--<entry key="1" value="Индекс"/>-->
+                <!--<entry key="2" value="Город"/>-->
+                <!--<entry key="3" value="Улица"/>-->
+                <!--<entry key="4" value="Нормер дома"/>-->
+            <!--</map>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <util:map id="algorithmMap">
+        <entry key="#{exactStrictMatchAlgorithm.getAlgorithmId()}" value-ref="exactStrictMatchAlgorithm"/>
+        <entry key="#{exactNullMatchNothingAlgorithm.getAlgorithmId()}" value-ref="exactNullMatchNothingAlgorithm"/>
+        <entry key="#{exactExcludedMatchNothingAlgorithm.getAlgorithmId()}" value-ref="exactExcludedMatchNothingAlgorithm"/>
+        <!--<entry key="#{exactNullMatchEverythingAlgorithm.getAlgorithmId()}" value-ref="exactNullMatchEverythingAlgorithm"/>-->
+        <!--<entry key="#{inexactFixedLengthAlgorithm.getAlgorithmId()}" value-ref="inexactFixedLengthAlgorithm"/>-->
+    </util:map>
+
+</beans>

@@ -1,0 +1,43 @@
+// Панель фильтрации поиска
+$ui-name: 'un-search-filter';
+
+$un-search-filter-icon-size: 12px;
+
+@include un-panel-ui(
+  $ui: $ui-name,
+  $ui-header-noborder-adjust: false,
+  $ui-header-background-color: $un-search-panel-color-1,
+  $ui-header-color: $color-primary-2-0,
+  $ui-header-padding: $un-search-panel-body-padding,
+  $ui-header-font-size: 11.5px,
+  $ui-header-text-transform: uppercase,
+  $ui-body-font-size: $un-search-panel-body-font-size,
+  $ui-body-padding: 0 $un-search-panel-body-padding $un-search-panel-body-padding $un-search-panel-body-padding,
+  $ui-body-background-color: $un-search-panel-color-1
+);
+
+.x-panel-#{$ui-name} {
+
+  // стрелочка
+  .x-tool-collapse-el i {
+    font-family: $font-family-linearicons !important;
+    font-size: $un-search-filter-icon-size;
+    position: relative;
+
+    -webkit-transition: transform $animation-speed;
+    transition: transform $animation-speed;
+
+    &:before {
+      content: "\e93a";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -0.5em;
+      margin-left: -0.5em;
+    }
+  }
+
+  .x-panel-header-#{$ui-name}-collapsed .x-tool-collapse-el i {
+    @include transform(rotate(-90deg));
+  }
+}

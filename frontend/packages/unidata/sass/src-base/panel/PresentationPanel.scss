@@ -1,0 +1,55 @@
+$ui-name: 'un-presentation-panel';
+$un-presentation-panel-background-color: $color-primary-2-0;
+$un-presentation-panel-border-color: $color-primary-4-4;
+$un-presentation-panel-border-width: 1px;
+
+@include extjs-panel-ui(
+  $ui: $ui-name,
+  $ui-header-background-color: $un-presentation-panel-background-color,
+  $ui-body-background-color: $un-presentation-panel-background-color,
+  $ui-ignore-frame-padding: true,
+  $ui-padding: 0,
+
+  $ui-header-inner-border-width: 0,
+  $ui-header-border-width: $un-presentation-panel-border-width,
+  $ui-header-border-color: $un-presentation-panel-border-color,
+  $ui-header-color: $color-primary-2-3,
+  $ui-header-padding: 8px 8px 8px 13px !important,
+  $ui-header-font-family: $font-family-2,
+  $ui-header-text-transform: uppercase,
+  $ui-header-font-size: 13px,
+  $ui-header-font-weight: bold
+);
+
+.#{$prefix}panel-#{$ui-name} {
+  border-top: 1px solid transparent;
+  outline: 1px solid #ddd;
+  outline-offset: -7px;
+  padding: 6px 7px 7px 7px;
+
+  &.#{$prefix}dd-drag-current {
+    outline: 1px dashed #0072bc;
+    outline-offset: -7px;
+    >.#{$prefix}header {
+      background-color: #b2e5ff;
+    }
+  }
+
+  >.#{$prefix}panel-body {
+    @include box-shadow(0px 3px 2px -1px #ccc);
+  }
+
+  .#{$prefix}grid-with-row-lines .#{$prefix}grid-item:last-child {
+    border-bottom-width: 0px;
+  }
+}
+
+.#{$prefix}panel-#{$ui-name} {
+  .un-btn-move {
+
+  }
+}
+
+.#{$prefix}panel .#{$prefix}panel-header-#{$ui-name}-top {
+  border-bottom-width: 1px !important;
+}

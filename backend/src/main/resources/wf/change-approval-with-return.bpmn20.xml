@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.ocrv.ru/data-record-change-approval" exporter="Camunda Modeler" exporterVersion="1.2.0">
+  <process id="changeApprovalProcess" name="Согласование изменений записи" isExecutable="true">
+    <documentation>Процесс согласования изменений записи. Запускается неавторизованным пользователем и согласуется в три приема.</documentation>
+    <startEvent id="startApproval" name="Start approval process on record change" activiti:initiator="initiator"></startEvent>
+    <userTask id="zeroLevelChangesApprove" name="Изменение" activiti:assignee="${initiator}">
+      <documentation>Шаг для финального редактирования изменений. На этом шаге создаются черновики, прикрепляются связи и т. п.</documentation>
+    </userTask>
+    <exclusiveGateway id="zeroLevelApproved" name="Отправить на согласование ?"></exclusiveGateway>
+    <endEvent id="zeroLevelRejected" name="End"></endEvent>
+    <sequenceFlow id="zeroLevelApproveFlowIn" sourceRef="startApproval" targetRef="zeroLevelChangesApprove"></sequenceFlow>
+    <sequenceFlow id="zeroLevelApproveFlowOut" sourceRef="zeroLevelChangesApprove" targetRef="zeroLevelApproved"></sequenceFlow>
+    <sequenceFlow id="zeroLevelRejectedFlow" name="Изменения отменены автором" sourceRef="zeroLevelApproved" targetRef="zeroLevelRejected">
+      <documentation>Пользователь принял решение не посылать изменения на согласование. Процесс согласований останавливается. Черновые версии удаляются.</documentation>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zeroLevelChangesApprove == 'CANCEL'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="firstLevelChangesApprove" name="Согласование" activiti:candidateGroups="approvalGroup1">
+      <documentation>Согласование осуществляется пользователем с соответствующими правами</documentation>
+    </userTask>
+    <sequenceFlow id="firstLevelApproveFlowIn" name="Изменения подтверждены автором" sourceRef="zeroLevelApproved" targetRef="firstLevelChangesApprove">
+      <documentation>Пользователь отправил свои изменения на согласование. Черновики сохранены.</documentation>
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${zeroLevelChangesApprove == 'COMMIT'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="secondLevelChangesApprove" name="Утверждение" activiti:candidateGroups="approvalGroup2">
+      <documentation>Утверждение осуществляется пользователем с соответствующими правами</documentation>
+    </userTask>
+    <endEvent id="firstLevelRejected" name="End"></endEvent>
+    <endEvent id="endApproval" name="End"></endEvent>
+    <sequenceFlow id="secondLevelApprovalEndFlow" name="Утвердить" sourceRef="secondLevelApproved" targetRef="endApproval">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${secondLevelChangesApprove == 'COMMIT'}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="firstLevelApproved" name="Согласовать ?"></exclusiveGateway>
+    <sequenceFlow id="firstLevelApproveFlowOut" sourceRef="firstLevelChangesApprove" targetRef="firstLevelApproved"></sequenceFlow>
+    <sequenceFlow id="firstLevelRejectedEndFlowOut" sourceRef="Notification" targetRef="firstLevelRejected"></sequenceFlow>
+    <sequenceFlow id="secondLevelApproveFlowIn" name="Согласовать" sourceRef="firstLevelApproved" targetRef="secondLevelChangesApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstLevelChangesApprove == 'COMMIT'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="firstLevelRejectedReturnFlow" name="Отклонить с возвратом" sourceRef="firstLevelApproved" targetRef="zeroLevelChangesApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstLevelChangesApprove == 'RETURN'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="secondLevelApprovalFlowOut" sourceRef="secondLevelChangesApprove" targetRef="secondLevelApproved"></sequenceFlow>
+    <exclusiveGateway id="secondLevelApproved" name="Утвердить ?"></exclusiveGateway>
+    <sequenceFlow id="secondLevelRejectedReturnFlow" name="Отклонить с возвратом" sourceRef="secondLevelApproved" targetRef="zeroLevelChangesApprove">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${secondLevelChangesApprove == 'RETURN'}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="secondLevelRejected" name="End"></endEvent>
+    <sequenceFlow id="secondLevelRejectedEndFlow" name="Отклонить" sourceRef="secondLevelApproved" targetRef="secondLevelRejected">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${secondLevelChangesApprove == 'CANCEL'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="firstLevelRejectedEndFlowIn" name="Отклонить" sourceRef="firstLevelApproved" targetRef="Notification">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${firstLevelChangesApprove == 'CANCEL'}]]></conditionExpression>
+    </sequenceFlow>
+    <serviceTask id="Notification" name="Уведомление" activiti:type="mail">
+      <extensionElements>
+        <activiti:field name="to">
+          <activiti:expression><![CDATA[${initiatorEmail}]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="from">
+          <activiti:string><![CDATA[notification@unidata-platform.ru]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="subject">
+          <activiti:expression><![CDATA[Изменение записи ${recordTitle} отклонено]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="html">
+          <activiti:expression><![CDATA[<html>
+<head><meta charset="utf-8"><title>Отклонено!</title></head>
+<body>
+Уважаемый(ая) ${initiatorName},<br/><br/>
+Этап ${taskName} процесса Согласование изменений записи для записи ${recordTitle} был завершен пользователем ${firstLevelChangesApproveCompletedByName}.<br/><br/>
+Решение: отклонить окончательно.
+</body>
+</html>]]></activiti:expression>
+        </activiti:field>
+        <activiti:field name="charset">
+          <activiti:string><![CDATA[UTF-8]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_changeApprovalProcess">
+    <bpmndi:BPMNPlane bpmnElement="changeApprovalProcess" id="BPMNPlane_changeApprovalProcess">
+      <bpmndi:BPMNShape bpmnElement="startApproval" id="BPMNShape_startApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="31.0" y="169.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="zeroLevelChangesApprove" id="BPMNShape_zeroLevelChangesApprove">
+        <omgdc:Bounds height="55.0" width="111.0" x="111.0" y="159.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="zeroLevelApproved" id="BPMNShape_zeroLevelApproved">
+        <omgdc:Bounds height="40.0" width="40.0" x="330.0" y="166.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="zeroLevelRejected" id="BPMNShape_zeroLevelRejected">
+        <omgdc:Bounds height="35.0" width="35.0" x="333.0" y="268.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelChangesApprove" id="BPMNShape_firstLevelChangesApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="480.0" y="159.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="secondLevelChangesApprove" id="BPMNShape_secondLevelChangesApprove">
+        <omgdc:Bounds height="55.0" width="105.0" x="831.0" y="159.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelRejected" id="BPMNShape_firstLevelRejected">
+        <omgdc:Bounds height="35.0" width="35.0" x="480.0" y="271.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endApproval" id="BPMNShape_endApproval">
+        <omgdc:Bounds height="35.0" width="35.0" x="984.0" y="56.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="firstLevelApproved" id="BPMNShape_firstLevelApproved">
+        <omgdc:Bounds height="40.0" width="40.0" x="661.0" y="166.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="secondLevelApproved" id="BPMNShape_secondLevelApproved">
+        <omgdc:Bounds height="40.0" width="40.0" x="981.0" y="167.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="secondLevelRejected" id="BPMNShape_secondLevelRejected">
+        <omgdc:Bounds height="35.0" width="35.0" x="1101.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="Notification" id="BPMNShape_Notification">
+        <omgdc:Bounds height="55.0" width="105.0" x="629.0" y="261.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="zeroLevelApproveFlowIn" id="BPMNEdge_zeroLevelApproveFlowIn">
+        <omgdi:waypoint x="66.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="111.0" y="186.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="zeroLevelApproveFlowOut" id="BPMNEdge_zeroLevelApproveFlowOut">
+        <omgdi:waypoint x="222.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="186.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="zeroLevelRejectedFlow" id="BPMNEdge_zeroLevelRejectedFlow">
+        <omgdi:waypoint x="350.0" y="206.0"></omgdi:waypoint>
+        <omgdi:waypoint x="350.0" y="268.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="251.0" y="226.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelApproveFlowIn" id="BPMNEdge_firstLevelApproveFlowIn">
+        <omgdi:waypoint x="370.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="480.0" y="186.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="390.0" y="186.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApprovalEndFlow" id="BPMNEdge_secondLevelApprovalEndFlow">
+        <omgdi:waypoint x="1001.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1001.0" y="91.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="12.0" width="56.0" x="1011.0" y="114.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelApproveFlowOut" id="BPMNEdge_firstLevelApproveFlowOut">
+        <omgdi:waypoint x="585.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="661.0" y="186.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelRejectedEndFlowOut" id="BPMNEdge_firstLevelRejectedEndFlowOut">
+        <omgdi:waypoint x="629.0" y="288.0"></omgdi:waypoint>
+        <omgdi:waypoint x="515.0" y="288.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApproveFlowIn" id="BPMNEdge_secondLevelApproveFlowIn">
+        <omgdi:waypoint x="701.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="831.0" y="186.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="12.0" width="66.0" x="712.0" y="159.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelRejectedReturnFlow" id="BPMNEdge_firstLevelRejectedReturnFlow">
+        <omgdi:waypoint x="681.0" y="166.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="166.0" y="100.0"></omgdi:waypoint>
+        <omgdi:waypoint x="166.0" y="159.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="587.0" y="54.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelApprovalFlowOut" id="BPMNEdge_secondLevelApprovalFlowOut">
+        <omgdi:waypoint x="936.0" y="186.0"></omgdi:waypoint>
+        <omgdi:waypoint x="981.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelRejectedReturnFlow" id="BPMNEdge_secondLevelRejectedReturnFlow">
+        <omgdi:waypoint x="1001.0" y="207.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1000.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="586.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="166.0" y="325.0"></omgdi:waypoint>
+        <omgdi:waypoint x="166.0" y="214.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="36.0" width="100.0" x="1012.0" y="247.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="secondLevelRejectedEndFlow" id="BPMNEdge_secondLevelRejectedEndFlow">
+        <omgdi:waypoint x="1021.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1101.0" y="187.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="12.0" width="55.0" x="1020.0" y="167.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="firstLevelRejectedEndFlowIn" id="BPMNEdge_firstLevelRejectedEndFlowIn">
+        <omgdi:waypoint x="681.0" y="206.0"></omgdi:waypoint>
+        <omgdi:waypoint x="681.0" y="261.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="12.0" width="55.0" x="614.0" y="226.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

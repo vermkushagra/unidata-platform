@@ -1,0 +1,19 @@
+// обычное состояние кнопки
+a.x-btn.un-roundbutton__restore {
+  background-color: #ef6c00;
+}
+
+// кнопка под курсором
+a.x-btn.un-roundbutton__restore.x-btn-over {
+  background-color: #fb8c00;
+}
+
+// кнопка нажата
+a.x-btn.un-roundbutton__restore.x-btn-pressed {
+  background-color: #ffa726;
+}
+
+// кнопка неактивна
+a.x-btn.un-roundbutton__restore.x-btn-disabled {
+  background-color: #ef6c00;
+}

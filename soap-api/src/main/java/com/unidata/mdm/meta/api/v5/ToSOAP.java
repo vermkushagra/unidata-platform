@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.meta.api.v5;
 
 import java.time.LocalDate;
@@ -32,7 +13,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import com.unidata.mdm.backend.common.runtime.MeasurementPoint;
 import com.unidata.mdm.meta.v5.ArrayAttributeDef;
 import com.unidata.mdm.meta.v5.ArrayValueType;
 import com.unidata.mdm.meta.v5.AttributeGroupDef;
@@ -52,7 +32,6 @@ import com.unidata.mdm.meta.v5.DQRMappingDef;
 import com.unidata.mdm.meta.v5.DQROriginsDef;
 import com.unidata.mdm.meta.v5.DQRPhaseType;
 import com.unidata.mdm.meta.v5.DQRRaiseDef;
-import com.unidata.mdm.meta.v5.DQRRuleRunType;
 import com.unidata.mdm.meta.v5.DQRSourceSystemRef;
 import com.unidata.mdm.meta.v5.DQRuleClass;
 import com.unidata.mdm.meta.v5.DQRuleDef;
@@ -101,27 +80,23 @@ public class ToSOAP {
 	 * @return the entity def
 	 */
 	public static EntityDef convert(com.unidata.mdm.meta.EntityDef source) {
-	    MeasurementPoint.start();
-        try {
-    		if (source == null) {
-    			return null;
-    		}
-    		return new EntityDef().withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()))
-    				.withAttributeGroups(fromAttributeGroups(source.getAttributeGroups()))
-    				.withClassifiers(fromClassifiers(source.getClassifiers()))
-    				.withComplexAttribute(fromComplexAttributes(source.getComplexAttribute()))
-    				.withCustomProperties(fromCustomProperties(source.getCustomProperties()))
-    				.withDashboardVisible(source.isDashboardVisible())
-    				.withDataQuality(fromDataQualities(source.getDataQualities())).withDescription(source.getDescription())
-    				.withDisplayName(source.getDisplayName()).withGroupName(source.getGroupName())
-    				.withMergeSettings(fromMergeSettings(source.getMergeSettings())).withName(source.getName())
-    				.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()))
-    				.withValidityPeriod(fromValidityPeriod(source.getValidityPeriod())).withVersion(source.getVersion());
-        } finally {
-            MeasurementPoint.stop();
-        }
+		if (source == null) {
+			return null;
+		}
+		EntityDef target = new EntityDef().withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()))
+				.withAttributeGroups(fromAttributeGroups(source.getAttributeGroups()))
+				.withClassifiers(fromClassifiers(source.getClassifiers()))
+				.withComplexAttribute(fromComplexAttributes(source.getComplexAttribute()))
+				.withCustomProperties(fromCustomProperties(source.getCustomProperties()))
+				.withDashboardVisible(source.isDashboardVisible())
+				.withDataQuality(fromDataQualities(source.getDataQualities())).withDescription(source.getDescription())
+				.withDisplayName(source.getDisplayName()).withGroupName(source.getGroupName())
+				.withMergeSettings(fromMergeSettings(source.getMergeSettings())).withName(source.getName())
+				.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()))
+				.withValidityPeriod(fromValidityPeriod(source.getValidityPeriod())).withVersion(source.getVersion());
+		return target;
 	}
-
+	
 	/**
 	 * Convert.
 	 *
@@ -129,27 +104,20 @@ public class ToSOAP {
 	 * @return the nested entity def
 	 */
 	public static NestedEntityDef convert(com.unidata.mdm.meta.NestedEntityDef source) {
-
-	    MeasurementPoint.start();
-        try {
-
-            if (source == null) {
-    			return null;
-    		}
-
-    		return new NestedEntityDef().withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()))
-    				.withAttributeGroups(fromAttributeGroups(source.getAttributeGroups()))
-    				.withClassifiers(fromClassifiers(source.getClassifiers()))
-    				.withComplexAttribute(fromComplexAttributes(source.getComplexAttribute()))
-    				.withCustomProperties(fromCustomProperties(source.getCustomProperties()))
-    				.withDataQuality(fromDataQualities(source.getDataQualities())).withDescription(source.getDescription())
-    				.withDisplayName(source.getDisplayName())
-    				.withMergeSettings(fromMergeSettings(source.getMergeSettings())).withName(source.getName())
-    				.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()))
-    				.withValidityPeriod(fromValidityPeriod(source.getValidityPeriod())).withVersion(source.getVersion());
-        } finally {
-            MeasurementPoint.stop();
-        }
+		if (source == null) {
+			return null;
+		}
+		NestedEntityDef target = new NestedEntityDef().withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()))
+				.withAttributeGroups(fromAttributeGroups(source.getAttributeGroups()))
+				.withClassifiers(fromClassifiers(source.getClassifiers()))
+				.withComplexAttribute(fromComplexAttributes(source.getComplexAttribute()))
+				.withCustomProperties(fromCustomProperties(source.getCustomProperties()))
+				.withDataQuality(fromDataQualities(source.getDataQualities())).withDescription(source.getDescription())
+				.withDisplayName(source.getDisplayName())
+				.withMergeSettings(fromMergeSettings(source.getMergeSettings())).withName(source.getName())
+				.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()))
+				.withValidityPeriod(fromValidityPeriod(source.getValidityPeriod())).withVersion(source.getVersion());
+		return target;
 	}
 	/**
 	 * From validity period.
@@ -419,8 +387,7 @@ public class ToSOAP {
 		DQRuleDef target = new DQRuleDef();
 		target.getApplicable().addAll(fromApplicable(source.getApplicable()));
 		target.setCleanseFunctionName(source.getCleanseFunctionName());
-		// UN-7293
-		// target.setComplexAttributeName(source.getComplexAttributeName());
+		target.setComplexAttributeName(source.getComplexAttributeName());
 		target.setDescription(source.getDescription());
 		target.setEnrich(fromEnrich(source.getEnrich()));
 		target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
@@ -431,7 +398,6 @@ public class ToSOAP {
 		target.setRClass(fromRClass(source.getRClass()));
 		target.setSpecial(source.isSpecial());
 		target.getType().addAll(fromDQTypes(source.getType()));
-		target.setRunType(source.getRunType() == null ? null : DQRRuleRunType.valueOf(source.getRunType().name()));
 
 		return target;
 	}
@@ -605,11 +571,10 @@ public class ToSOAP {
 		DQRMappingDef target = new DQRMappingDef();
 		target.setAttributeConstantValue(fromAttributeConstantValue(source.getAttributeConstantValue()));
 		target.setAttributeName(source.getAttributeName());
-		// UN-7293
-		// target.setFilterValue(source.getFilterValue());
-		// target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
+		target.setFilterValue(source.getFilterValue());
 		target.setInputPort(source.getInputPort());
 		target.setOutputPort(source.getOutputPort());
+		target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
 
 		return target;
 	}
@@ -754,7 +719,7 @@ public class ToSOAP {
 			return Collections.emptyList();
 		}
 		List<DQApplicableType> target = new ArrayList<>();
-
+		
 		source.stream().forEach(s -> target.add(fromDQApplicableType(s)));
 
 		return target;
@@ -929,34 +894,25 @@ public class ToSOAP {
 	 * @return the lookup entity def
 	 */
 	public static LookupEntityDef convert(com.unidata.mdm.meta.LookupEntityDef source) {
-
-	    MeasurementPoint.start();
-        try {
-
-            if (source == null) {
-    			return null;
-    		}
-
-    		LookupEntityDef target = new LookupEntityDef();
-    		target.setCodeAttribute(fromCodeAttributeDef(source.getCodeAttribute()));
-    		target.setDashboardVisible(source.isDashboardVisible());
-    		target.setDataQuality(fromDataQualities(source.getDataQualities()));
-    		target.setDescription(source.getDescription());
-    		target.setDisplayName(source.getDisplayName());
-    		target.setGroupName(source.getGroupName());
-    		target.setMergeSettings(fromMergeSettings(source.getMergeSettings()));
-    		target.setName(source.getName());
-    		target.setValidityPeriod(fromValidityPeriod(source.getValidityPeriod()));
-    		target.withAliasCodeAttributes(fromCodeAttributesDef(source.getAliasCodeAttributes()));
-    		target.withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()));
-    		target.withClassifiers(fromClassifiers(source.getClassifiers()));
-    		target.withCustomProperties(fromCustomProperties(source.getCustomProperties()));
-    		target.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()));
-    		return target;
-
-        } finally {
-            MeasurementPoint.stop();
-        }
+		if (source == null) {
+			return null;
+		}
+		LookupEntityDef target = new LookupEntityDef();
+		target.setCodeAttribute(fromCodeAttributeDef(source.getCodeAttribute()));
+		target.setDashboardVisible(source.isDashboardVisible());
+		target.setDataQuality(fromDataQualities(source.getDataQualities()));
+		target.setDescription(source.getDescription());
+		target.setDisplayName(source.getDisplayName());
+		target.setGroupName(source.getGroupName());
+		target.setMergeSettings(fromMergeSettings(source.getMergeSettings()));
+		target.setName(source.getName());
+		target.setValidityPeriod(fromValidityPeriod(source.getValidityPeriod()));
+		target.withAliasCodeAttributes(fromCodeAttributesDef(source.getAliasCodeAttributes()));
+		target.withArrayAttribute(fromArrayAttribute(source.getArrayAttribute()));
+		target.withClassifiers(fromClassifiers(source.getClassifiers()));
+		target.withCustomProperties(fromCustomProperties(source.getCustomProperties()));
+		target.withSimpleAttribute(fromSimpleAttributes(source.getSimpleAttribute()));
+		return target;
 	}
 
 	/**

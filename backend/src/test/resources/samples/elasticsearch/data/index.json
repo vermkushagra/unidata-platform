@@ -1,0 +1,71 @@
+{
+    "settings" : {
+        "number_of_shards" : 1,
+        "analysis": {
+            "analyzer": {
+                "word_analyzer": {
+                    "tokenizer": "standard"
+                }
+            }
+        }
+    },
+    "mappings" : {
+        "persons" : {
+            "properties" : {
+                "name" : {
+                    "type" : "string",
+                    "analyzer" : "word_analyzer"
+                },                
+                "tax_number" : {
+                    "type" : "string",
+                    "index": "not_analyzed"
+                },                
+                "contact_data" : {
+                    "properties" : {
+                        "phones" : {
+                            "properties" : {
+                                "number" : {
+                                    "type" : "string",
+                                    "analyzer" : "word_analyzer"
+                                },
+                                
+                                "city_code" : {
+                                    "type" : "string",
+                                    "index": "not_analyzed"
+                                },
+                                
+                                "number_type" : {
+                                    "type" : "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        },
+                        "addresses" : {
+                            "properties" : {
+                                "city" : {
+                                    "type" : "string",
+                                    "analyzer" : "word_analyzer"
+                                },
+                                
+                                "street" : {
+                                    "type" : "string",
+                                    "index": "not_analyzed"
+                                },
+                                
+                                "house_no" : {
+                                    "type" : "string",
+                                    "index": "not_analyzed"
+                                },
+                                
+                                "type" : {
+                                    "type" : "string",
+                                    "index": "not_analyzed"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

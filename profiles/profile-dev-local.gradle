@@ -1,0 +1,56 @@
+ext.proguardEnabled = false
+//
+ext.tomcatProtocol = 'http'
+ext.tomcatHost = 'localhost'
+ext.tomcatPort = 8080
+ext.tomcatUser = 'tomcat'
+ext.tomcatPassword = 'tomcat'
+
+//ext.tomcatProtocol = 'https'
+//ext.tomcatHost = 'smoketest' //'37.230.153.32'
+//ext.tomcatPort = 9044
+//ext.tomcatUser = 'tomcat'
+//ext.tomcatPassword = 'tomcat'
+//ext.tomcatPassword = '3s!@vTVK~PV9'
+
+ext.databaseUrl = 'jdbc:postgresql://localhost:5432/unidata'
+ext.databaseUser = 'postgres'
+ext.databasePassword = 'postgres'
+
+ext.rubyBin = 'C:\\Ruby21-x64\\bin'
+
+ext.senchaCmdHome = 'C:\\Users\\olga.elsukova\\bin\\Sencha\\Cmd\\5.1.1.39'
+ext.senchaSdkHome = 'C:\\Sencha\\ext-5.1.0'
+ext.senchaEnvironment = 'development'
+
+// For dev-local profile it hardcoded to static URL.
+// For others default is dynamic host and port - same from frontend requested.
+ext.backendUrl = 'http://127.0.0.1:8080/' + rootProject.name + '-backend/api/'
+//ext.backendUrl = 'http://" + window.location.host + "/unidata-backend/api/'
+ext.frontendUrlUser = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend/'
+ext.frontendUrlAdmin = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend-admin/'
+
+// Smoke
+ext.smokeTests = [
+        [
+                smokeTestName : 'SOAP',
+                smokeTestSuites: ['requestAuthenticate', 'requestInfoGet', 'requestGet', 'requestRelationsGet', 'requestSearch', 'requestUpsert', 'requestRelationsUpsert', 'requestBulkUpsert', 'requestMerge', 'requestSoftDelete', 'requestRelationsSoftDelete', 'UpsertEnums', 'UpsertClassifiers', 'UpsertMeasurementUnits'],
+                smokeTestProject: '/backend/src/test/resources/smoke/unidata-soap-automation.xml',
+                smokeTestProjectProperties: '/backend/src/test/resources/smoke/smoke-test-soap.properties',
+                smokeTestSoapUISettings:"/backend/src/test/resources/smoke/soapui-settings.xml"
+        ],
+        [
+                smokeTestName : 'REST',
+                smokeTestSuites: ['Records', 'CF', 'Login', 'Roles', 'Duplicates Meta', 'Labels', 'DQ data'],
+                smokeTestProject: '/backend/src/test/resources/smoke/unidata-rest-automation_4_3.xml',
+                smokeTestProjectProperties: '/backend/src/test/resources/smoke/smoke-test-rest.properties',
+                smokeTestSoapUISettings:"/backend/src/test/resources/smoke/soapui-settings.xml"
+        ]
+]
+
+//ext.smokeTestSuites = '/backend/src/test/resources/smoke/smoke-test-soapui-project.xml'
+//ext.smokeTestProject = '/backend/src/test/resources/smoke/unidata-rest-automation-soapui-project_v4.3.xml'
+//ext.smokeTestProjectProperties = '/backend/src/test/resources/smoke/smoke-test.properties'
+
+// appMode для основной (пользовательской сборки), можно установить также dev
+ext.userAppMode = 'user'

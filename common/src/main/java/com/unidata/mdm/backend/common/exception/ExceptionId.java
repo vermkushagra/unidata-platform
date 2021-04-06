@@ -1,28 +1,7 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
 package com.unidata.mdm.backend.common.exception;
-
-import com.unidata.mdm.backend.common.service.DataQualityService;
 
 /**
  * @author Mikhail Mikhailov
@@ -34,44 +13,11 @@ public enum ExceptionId {
      * Schema version validation failed.
      */
     EX_DB_VALIDATION_FAILED("app.db.schemaVersionValidationFailed"),
-    // DQ: 0000 - 0100
-    /**
-     * CF not found by ID.
-     */
-    EX_DQ_CLEANSE_FUNCTION_NOT_FOUND("app.dq.cleanse.function.not.found"),
-    /**
-     * CF not found by ID (from {@link DataQualityService}).
-     */
-    EX_DQ_CLEANSE_FUNCTION_NOT_FOUND_DQS("app.dq.cleanse.function.not.found"),
-    /**
-     * Required value is missing.
-     */
-    EX_DQ_CLEANSE_FUNCTION_REQUIRED_VALUE_MISSING("app.dq.cleanse.function.required.value.missing"),
-    /**
-     * Invalid enrichment configuration.
-     */
-    EX_DQ_INVALID_ENRICHMENT_CONFIGURATION("app.dq.invalid.enrichment.configuration"),
-    /**
-     * Execution context mode is not supported by function.
-     */
-    EX_DQ_EXECUTION_CONTEXT_MODE_NOT_SUPPORTED("app.dq.execution.context.mode.not.supported"),
-    /**
-     * Error, while executing cleanse function {}: .
-     */
-    EX_DQ_CLEANSE_FUNCTION_EXEC("app.dq.cleanse.function.execution"),
-    /**
-     * Unknown exception caught while executing CF.
-     */
-    EX_DQ_CLEANSE_FUNCTION_EXCEPTION_CAUGHT("app.dq.cleanse.function.exception.caught"),
     // Search: 0100 - 0150
     /**
      * Elasticsearch exception caught.
      */
     EX_SEARCH_ES_ESC_CAUGHT("app.search.searchElasticSearchExceptionCaught"),
-    /**
-     * Elasticsearch exception caught.
-     */
-    EX_SEARCH_ES_NO_MAPPING_FOUND("app.search.no.mapping.found"),
     /**
      * No entity name given for bulk delete.
      */
@@ -116,10 +62,6 @@ public enum ExceptionId {
      * Index document failed.
      */
     EX_SEARCH_INDEX_DOCUMENT_FAILED("app.search.indexDocumentFailed"),
-    /**
-     * Update document failed.
-     */
-    EX_SEARCH_BUILD_DQ_ERRORS_FAILED("app.search.build.dq.errors.failed"),
     /**
      * Update document failed.
      */
@@ -512,84 +454,6 @@ public enum ExceptionId {
     EX_META_CONSISTENCY_CHECK_RULE_INVALID_INPUT("app.meta.consistency.check.rule.invalid.input"),
     //----------------- End of Meta -----------------------------------------------------------------------------
     /**
-     * Invalid input. Entity name or path blank.
-     */
-    EX_UPATH_INVALID_INPUT_ENTITY_OR_PATH_BLANK("app.upath.invalid.input.entity.or.path.blank"),
-    /**
-     * Invalid input. Path was split to zero elements.
-     */
-    EX_UPATH_INVALID_INPUT_SPLIT_TO_ZERO_ELEMENTS("app.upath.invalid.input.split.to.zero.elements"),
-    /**
-     * Invalid input. Attribute not found by path.
-     */
-    EX_UPATH_INVALID_INPUT_ATTRIBUTE_NOT_FOUND_BY_PATH("app.upath.invalid.input.attribute.not.found.by.path"),
-    /**
-     * Invalid input. Subscript expression incorrect.
-     */
-    EX_UPATH_INVALID_SUBSCRIPT_EXPRESSION("app.upath.invalid.subscript.expression"),
-    /**
-     * Invalid input. Root expression incorrect.
-     */
-    EX_UPATH_INVALID_ROOT_EXPRESSION("app.upath.invalid.root.expression"),
-    /**
-     * Invalid input. Upath for set operations must end with collecting element.
-     */
-    EX_UPATH_INVALID_SET_WRONG_END_ELEMENT("app.upath.invalid.set.wrong.end.element"),
-    /**
-     * Invalid input. Attribute and last UPath element have different names.
-     */
-    EX_UPATH_INVALID_SET_WRONG_ATTRIBUTE_NAME("app.upath.invalid.set.wrong.attribute.name"),
-    /**
-     * Invalid input. Last element of this UPath and target attribute have different value types.
-     */
-    EX_UPATH_INVALID_SET_WRONG_TARGET_ATTRIBUTE_TYPE("app.upath.invalid.set.wrong.target.attribute.type"),
-    /**
-     * Invalid state. Attribute selected for an intermediate path element is not a complex attribute.
-     */
-    EX_UPATH_INVALID_SET_NOT_A_COMPLEX_FOR_INTERMEDIATE("app.upath.invalid.set.not.complex.for.intermediate"),
-    /**
-     * Invalid input. Filtering expression denotes attribute not found in model.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_MISSING_ATTRIBUTE("app.upath.invalid.filtering.expression.missing.attribute"),
-    /**
-     * Invalid input. Filtering expression denotes string value in wrong format. Quoted 'value' is expected.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_STRING_FORMAT("app.upath.invalid.filtering.expression.string.format"),
-    /**
-     * Invalid input. Filtering expression denotes number value in wrong format. Unquoted numeric value in octal, hexadecimal, decimal possibly with type modifyer is expected.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_NUMBER_FORMAT("app.upath.invalid.filtering.expression.number.format"),
-    /**
-     * Invalid input. Filtering expression denotes date value in wrong format. ISO date is expected.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_DATE_FORMAT("app.upath.invalid.filtering.expression.date.format"),
-    /**
-     * Invalid input. Filtering expression denotes time value in wrong format. ISO time is expected.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_TIME_FORMAT("app.upath.invalid.filtering.expression.time.format"),
-    /**
-     * Invalid input. Filtering expression denotes timestamp value in wrong format. ISO timestamp is expected.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_TIMESTAMP_FORMAT("app.upath.invalid.filtering.expression.timestamp.format"),
-    /**
-     * Invalid input. Filtering expression addresses invalid attribute type. Strings, numeric types and temporal types only are supported.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_ATTRIBUTE_TYPE("app.upath.invalid.filtering.expression.attribute.type"),
-    /**
-     * Invalid input. Filtering expression denotes complex attribute as filter attribute. Filter attribute may be either simple or code or array.
-     */
-    EX_UPATH_INVALID_FILTERING_EXPRESSION_COMPLEX_ATTRIBUTE("app.upath.invalid.filtering.expression.complex.attribute"),
-    /**
-     * Invalid state. Attribute selected for an intermediate path element is not a complex attribute.
-     */
-    EX_UPATH_NOT_A_COMPLEX_ATTRIBUTE_FOR_INTERMEDIATE_PATH_ELEMENT("app.upath.invalid.state.not.complex.for.intermediate"),
-    /**
-     * Invalid state. Entity not found by name.
-     */
-    EX_UPATH_ENTITY_NOT_FOUND_BY_NAME("app.upath.invalid.state.entity.not.found.by.name"),
-
-    //----------------- End of UPath -----------------------------------------------------------------------------
-    /**
      * Put string simple attribute: Attribute exists and is not simple.
      */
     EX_DATA_ATTRIBUTE_PUT_STRING_NOT_SIMPLE("app.data.attribute.put.string.not.simple"),
@@ -661,10 +525,6 @@ public enum ExceptionId {
      * Put CLOB simple attribute: Attribute exists and is not CLOB.
      */
     EX_DATA_ATTRIBUTE_PUT_CLOB_NOT_CLOB("app.data.attribute.put.clob.not.clob"),
-    /**
-     * Put complex attribute: Attribute exists and is not complex.
-     */
-    EX_DATA_ATTRIBUTE_PUT_NOT_COMPLEX("app.data.attribute.put.not.complex"),
     /**
      * Cannot marshal Golden record.
      */
@@ -1016,10 +876,6 @@ public enum ExceptionId {
      * Record not found by supplied keys.
      */
     EX_DATA_MERGE_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.merge.notFoundByKeys"),
-    /**
-     * Record not found by supplied keys.
-     */
-    EX_DATA_MERGE_DUPLICATES_NOT_FOUND_BY_SUPPLIED_KEYS("app.data.merge.duplicatesNotFoundByKeys"),
     /**
      * Merge failed (duplicates not found).
      */
@@ -1533,9 +1389,6 @@ public enum ExceptionId {
     EX_SECURITY_CANNOT_LOGIN("app.security.cannotLogin"),
     EX_SECURITY_USER_HAVE_NO_RIGHTS_FOR_ENDPOINT("app.security.noRightsForEndpoint"),
     EX_SECURITY_LICENSE_INVALID("app.security.license.invalid"),
-    EX_SECURITY_LICENSE_INVALID_WHEN_LOGIN("app.security.license.invalid"),
-    EX_SECURITY_HW_FOR_LICENSE_INVALID("app.security.hw.for.license.invalid"),
-    EX_SECURITY_HW_FOR_LICENSE_INVALID_WHEN_LOGIN("app.security.hw.for.license.invalid"),
 
     EX_JOB_NOT_FOUND("app.job.notFound"),
     EX_JOB_DELETE_FAILED("app.job.deleteFailed"),
@@ -1754,7 +1607,6 @@ public enum ExceptionId {
     EX_MATCHING_ONLY_NOT_EXACT_ALGOS("app.matching.rule.onlyNotExact"),
     EX_MATCHING_IMPORT_TYPE_UNSUPPORTED("app.matching.import.unsupported"),
     EX_MATCHING_GROUP_OR_RULE_NOT_FOUND("app.matching.group.rule.notFound"),
-    EX_MATCHING_INCORRECT_PREPROCESSING_RULE("app.matching.rule.incorrectPreprocessing"),
     EX_INCORRECT_TYPE_OF_ATTRIBUTE_FOR_SEARCH("app.attribute.incorrect.search"),
     EX_MATCHING_CLUSTER_NOT_FOUND("app.matching.cluster.notFound"),
     EX_MATCHING_CLUSTER_DOES_NOT_CONTAINS_RECORD("app.matching.cluster.doesNot.contains.record"),
@@ -1883,12 +1735,7 @@ public enum ExceptionId {
     /**
      * Global exception for user exits
      */
-    EX_RUN_EXIT("app.data.global.user.exit.exception"),
-
-    EX_WRONG_SANDBOX_DATARECORD_ID("app.sandbox.test.data.record.wrong.id"),
-
-    EX_ERROR_WHILE_CREATING_INDEXES_LOCK_TIME_OUT("app.error.while.creating.indexes.lock.time.out"),
-    EX_ERROR_WHILE_CREATING_INDEXES_INTERRUPTED("app.error.while.creating.indexes.interrupted");
+    EX_RUN_EXIT("app.data.global.user.exit.exception");
 
     /**
      * Exception code.

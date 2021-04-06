@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="SELECT_PROPERTY_VALUE">
+        <![CDATA[
+            select * from configuration where name = :name
+        ]]>
+    </entry>
+    <entry key="SELECT_ALL_PROPERTIES">
+        <![CDATA[
+            select * from configuration
+        ]]>
+    </entry>
+    <entry key="SELECT_PROPERTY_VALUE">
+        <![CDATA[
+            select * from configuration where name = :name
+        ]]>
+    </entry>
+    <entry key="UPSERT_PROPERTIES">
+        <![CDATA[
+        WITH __update AS (
+            UPDATE configuration SET value = :value WHERE name = :name RETURNING name
+        ),
+        __insert AS (SELECT :name, :value WHERE NOT EXISTS (SELECT * FROM __update))
+        INSERT INTO configuration(name, value) SELECT * FROM __insert
+        ]]>
+    </entry>
+    <entry key="UPSERT_PROPERTIES_9_5_">
+        <![CDATA[
+            insert into configuration(name, value) values(:name, :value) on conflict (name) do update set value = :value
+        ]]>
+    </entry>
+</properties>

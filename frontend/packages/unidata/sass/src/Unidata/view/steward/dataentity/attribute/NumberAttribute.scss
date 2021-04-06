@@ -1,0 +1,13 @@
+$baseCls: '.un-dataentity-attribute';
+$un-type: 'number';
+$un-max-width: 200px;
+
+#{$baseCls}-type-#{$un-type} {
+  #{$baseCls}-input-cont-wrapper {
+    max-width: $un-max-width;
+
+    .x-form-text-field-body {
+      max-width: $un-max-width;
+    }
+  }
+}

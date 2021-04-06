@@ -1,0 +1,7 @@
+$baseCls: 'un-job-trigger';
+
+.#{$baseCls} {
+  >.#{$prefix}panel-body {
+    padding: 10px;
+  }
+}

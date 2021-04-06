@@ -1,0 +1,40 @@
+$baseCls: '.un-mainmenu-item';
+
+#{$baseCls}-logo {
+  margin: 7px 0;
+
+  #{$baseCls}-body {
+    cursor: default !important;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  #{$baseCls}-icon {
+    position: relative;
+
+    span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-top: -$un-menu-item-logo-size / 2;
+      margin-left: -$un-menu-item-logo-size / 2;
+
+      display: block;
+      width: $un-menu-item-logo-size;
+      height: $un-menu-item-logo-size;
+      overflow: hidden;
+    }
+  }
+
+  #{$baseCls}-text {
+    overflow: hidden;
+    height: $un-menu-item-logo-size;
+    margin-top: ($un-menu-item-height - $un-menu-item-logo-size) / 2;
+
+    object {
+      height: $un-menu-item-logo-size;
+    }
+  }
+}

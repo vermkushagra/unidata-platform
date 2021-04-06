@@ -1,0 +1,1 @@
+alter table if exists job_parameter alter column val_string set data type text;

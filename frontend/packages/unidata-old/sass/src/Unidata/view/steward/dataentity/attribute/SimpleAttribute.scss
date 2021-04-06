@@ -1,0 +1,32 @@
+$baseCls: '.un-simple-attribute';
+
+#{$baseCls} {
+
+  &.x-form-dirty:not(.x-field-focus) {
+    .x-form-trigger-wrap-default {
+      border-bottom-color: transparent;
+    }
+
+    .x-form-field {
+      cursor: default;
+    }
+  }
+
+  .x-form-field {
+    border: 1px solid transparent;
+  }
+}
+
+#{$baseCls}__over {
+
+  .x-form-field {
+    border-color: #d0d0d0;
+  }
+
+  &.x-field-focus {
+    .x-form-field {
+      border-color: transparent;
+      cursor: text;
+    }
+  }
+}

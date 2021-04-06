@@ -1,0 +1,37 @@
+ext.proguardEnabled = false
+
+// cargo deploy settings
+// ext.tomcatProtocol = 'https'
+//ext.tomcatHost = 'smoketest' //'37.230.153.32'
+//ext.tomcatPort = 9044
+//ext.tomcatUser = 'tomcat'
+//ext.tomcatPassword = '3s!@vTVK~PV9'
+
+ext.tomcatProtocol = 'http'
+ext.tomcatHost = 'unidata-ea.corp.taskdata.ru'
+ext.tomcatPort = 8080
+ext.tomcatUser = 'tomcat'
+ext.tomcatPassword = '3s!@vTVK~PV9'
+
+ext.databaseUrl = 'jdbc:postgresql://localhost:5432/temp'
+ext.databaseUser = 'postgres'
+ext.databasePassword = 'postgres'
+
+ext.rubyBin = 'C:/apps/Ruby21-x64/bin'
+
+ext.senchaCmdHome = '/usr/local/bin/Sencha/Cmd/6.2.2.36'
+ext.senchaSdkHome = '/Users/peat/Tools/ext-5.1.1'
+ext.senchaEnvironment = 'production'
+
+// By default dynamic host and port - same from frontend requested.
+// Feel free to replace it to something static if you want like:
+// ext.backendUrl = 'http://127.0.0.1:8080/unidata-backend/api/'
+ext.backendUrl = 'http://" + window.location.host + "/'+ rootProject.name + '-backend/api/'
+ext.frontendUrlUser = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend/'
+ext.frontendUrlAdmin = 'http://" + window.location.host + "/'+ rootProject.name + '-frontend-admin/'
+
+// Smoke
+ext.smokeTests = []
+
+// appMode для основной (пользовательской сборки), можно установить также dev
+ext.userAppMode = 'user'

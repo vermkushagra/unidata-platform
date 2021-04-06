@@ -1,0 +1,228 @@
+<meta:model xmlns:meta="http://meta.mdm.unidata.com/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://meta.mdm.unidata.com/ ../../src/main/resources/schemas/unidata-meta-2.1.xsd"
+            storageId="default">
+    <meta:cleanseFunctions>
+        <meta:group groupName="Корень">
+            <meta:group groupName="Строковые">
+            <!--removes leading\trailing whitespaces-->
+                <meta:cleanseFunction functionName="УбратьПробелы" javaClass="com.unidata.mdm.cleanse.string.CFTrim"/>
+                <!--concatenate strings, must accept more than 2 input strings-->
+                <meta:cleanseFunction functionName="Соеденить" javaClass="com.unidata.mdm.cleanse.string.CFConcatenate"/>
+                <!--removes double+ whitespaces-->
+                <meta:cleanseFunction functionName="УбратьЛишниеПробелы" javaClass="com.unidata.mdm.cleanse.string.CFCompressWhitespaces"/>
+                <!-- default value comes as input parameter -->
+                 <meta:cleanseFunction functionName="ЗначениеПоУмолчанию" javaClass="com.unidata.mdm.cleanse.string.CFDefaultValue"/>
+                <!--formate input string according to some rule(rule as input parameter)-->
+                <meta:cleanseFunction functionName="Форматировать" javaClass="com.unidata.mdm.cleanse.string.CFFormatString"/>
+               
+                <meta:cleanseFunction functionName="ВыровнятьСлева" javaClass="com.unidata.mdm.cleanse.string.CFPadLeft"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="ВыровнятьСправа" javaClass="com.unidata.mdm.cleanse.string.CFPadRight"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="НижнийРегистр" javaClass="com.unidata.mdm.cleanse.string.CFToLowerCase"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="ВерхнийРегистр" javaClass="com.unidata.mdm.cleanse.string.CFToUpperCase"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="Заголовок" javaClass="com.unidata.mdm.cleanse.string.CFToTitleCase"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="Подстрока" javaClass="com.unidata.mdm.cleanse.string.CFSubstring"/>
+                <!--ok-->
+                <meta:cleanseFunction functionName="РегулярноеВыражение" javaClass="com.unidata.mdm.cleanse.string.CFRegExp"/>
+            </meta:group>
+
+            <meta:group groupName="Математические">
+            <!--ок-->
+                <meta:cleanseFunction functionName="Сумма" javaClass="com.unidata.mdm.cleanse.math.CFSum"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Разность" javaClass="com.unidata.mdm.cleanse.math.CFSubstract"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Произведение" javaClass="com.unidata.mdm.cleanse.math.CFMultiply"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Деление" javaClass="com.unidata.mdm.cleanse.math.CFDivide"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Округлить" javaClass="com.unidata.mdm.cleanse.math.CFRound"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Максимум" javaClass="com.unidata.mdm.cleanse.math.CFMax"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Минимум" javaClass="com.unidata.mdm.cleanse.math.CFMin"/>
+                
+            </meta:group>
+
+            <meta:group groupName="Логические">
+             <!--ок-->
+                <meta:cleanseFunction functionName="and" javaClass="com.unidata.mdm.cleanse.logic.CFAnd"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="or" javaClass="com.unidata.mdm.cleanse.logic.CFOr"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="xor" javaClass="com.unidata.mdm.cleanse.logic.CFXor"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="not" javaClass="com.unidata.mdm.cleanse.logic.CFNot"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="Сравнить" javaClass="com.unidata.mdm.cleanse.logic.CFCompare"/>
+                 <!--?-->
+                <meta:cleanseFunction functionName="Выбрать" javaClass="com.unidata.mdm.cleanse.logic.CFChoose"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="IsEmpty" javaClass="com.unidata.mdm.cleanse.logic.CFIsEmpty"/>
+            </meta:group>
+            <meta:group groupName="РазборТиповДанных">
+            	
+                <meta:cleanseFunction functionName="РазобратьBoolean" javaClass="com.unidata.mdm.cleanse.convert.CFParseBoolean"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьDate" javaClass="com.unidata.mdm.cleanse.convert.CFParseDate"/>
+                 <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьNumber" javaClass="com.unidata.mdm.cleanse.convert.CFParseNumber"/>
+                <!--ок-->
+                <meta:cleanseFunction functionName="РазобратьInteger" javaClass="com.unidata.mdm.cleanse.convert.CFParseInteger"/>
+            </meta:group>
+
+          <!--   <meta:group groupName="Адресные">
+            
+                <meta:cleanseFunction functionName="ПроверкаПоФИАС" javaClass="com.unidata.mdm.cleanse.postaladdress.CFFiasCheck"/>
+            </meta:group>-->
+            <meta:group groupName="Разное">
+            <!-- 
+                <meta:cleanseFunction functionName="ПроверкаТелНомера" javaClass="com.unidata.mdm.cleanse.misc.CFCheckPhoneNumber"/>-->
+                <!--checksum?-->
+                <meta:cleanseFunction functionName="ПроверкаИНН" javaClass="com.unidata.mdm.cleanse.misc.CFCheckINN"/>
+				<!--fix phone code-->
+                <meta:cleanseFunction functionName="ПроверкаИИсправлениеТелКода" javaClass="com.unidata.mdm.cleanse.misc.CFFixPhoneCode"/>
+                <!--parse full name-->
+                <meta:cleanseFunction functionName="РазобратьПолноеИмя" javaClass="com.unidata.mdm.cleanse.misc.CFParseFullName"/>
+         		<meta:cleanseFunction functionName="ПроверкаЛицензии" javaClass="com.unidata.mdm.cleanse.misc.CFCheckLicense"/>
+         		
+         		
+         	
+         		
+            </meta:group>
+        </meta:group>
+    </meta:cleanseFunctions>
+    <meta:sourceSystems>
+        <meta:sourceSystem name="unidata" description="От имени этого источника данных будут производится все системные операции" weight="100" admin="true"/>
+        <meta:sourceSystem name="1С"  weight="80" admin="false"/>
+        <meta:sourceSystem name="SAP" weight="90" admin="false"/>
+        <meta:sourceSystem name="EGAIS-NARCO" weight="95" admin="false"/>
+    </meta:sourceSystems>
+
+	<!-- ENUMERATIONS -->
+    <meta:enumerations>
+
+        <meta:enumeration name="PhoneType">
+            <meta:enumVal code="phone" desc="Телефон"/>
+            <meta:enumVal code="fax" desc="Факс"/>
+        </meta:enumeration>
+
+    </meta:enumerations>
+
+	<!-- LOOKUP ENTITIES -->
+    <meta:lookupEntities> 
+
+        <meta:lookupEntity name="Activities" displayName="Сведения о деятельности">
+        	<meta:codeAttribute name="name" simpleDataType="String" unique="true" displayName="Название" searchable="true" displayable="true" mainDisplayable="true"/>
+        </meta:lookupEntity>
+
+        <meta:lookupEntity name="SubwayStation" displayName="Станция метро">
+            <meta:codeAttribute name="name" simpleDataType="String" unique="true" displayName="Название" searchable="true" displayable="true" mainDisplayable="true"/>
+        </meta:lookupEntity>
+        
+        <meta:lookupEntity name="CityDistrict" displayName="Район города">
+            <meta:codeAttribute name="name" simpleDataType="String" unique="true" displayName="Название" searchable="true" displayable="true" mainDisplayable="true"/>
+        </meta:lookupEntity>
+        
+        <meta:lookupEntity name="LegacyForm" displayName="Правовая форма">            
+            <meta:simpleAttribute name="fullName" simpleDataType="String" nullable="false" displayName="Полное название" displayable="true" searchable="true" mainDisplayable="true"/>
+            <meta:codeAttribute name="shortName" simpleDataType="String" unique="true" displayName="Сокращенное название" searchable="true" mainDisplayable="true"/>
+            <meta:dataQuality />                        
+        </meta:lookupEntity>
+
+    </meta:lookupEntities>
+
+	<!-- NESTED ENTITIES -->
+    <meta:nestedEntities>
+
+        <meta:nestedEntity name="AddressInfo" displayName="Адрес">
+            <meta:simpleAttribute name="addressLine1" simpleDataType="String" nullable="false" displayName="Улица" searchable="true"/>
+            <meta:simpleAttribute name="cityDistrict" lookupEntityType="CityDistrict" nullable="false" displayName="Район города" searchable="true"/>
+            <meta:simpleAttribute name="subwayStation" lookupEntityType="SubwayStation" nullable="false" displayName="Ближайшая станция метро" searchable="true"/>
+        </meta:nestedEntity>
+        
+        <meta:nestedEntity name="Phones" displayName="Телефоны">
+            <meta:simpleAttribute name="combinedValue" simpleDataType="String" nullable="false" displayName="Полный номер" searchable="true"/>
+            <meta:simpleAttribute name="type" enumDataType="PhoneType" nullable="false" displayName="Тип"/>
+        </meta:nestedEntity>
+
+        <meta:nestedEntity name="LicenseInfo" displayName="Сведения">
+        	<meta:simpleAttribute name="licenseConfirmation" simpleDataType="String" displayName="Переоформление документа" nullable="true"/>
+        	<meta:simpleAttribute name="licenseSuspension" simpleDataType="String" displayName="Приостановление действия" nullable="true"/>
+        	<meta:simpleAttribute name="licenseRenewal" simpleDataType="String" displayName="Возобновление действия" nullable="true"/>
+        	<meta:simpleAttribute name="licenseCancellation" simpleDataType="String" displayName="Аннулирование действия" nullable="true"/>
+        	<meta:simpleAttribute name="licenseTermination" simpleDataType="String" displayName="Пекращение действия" nullable="true"/>  			
+        </meta:nestedEntity>
+        
+        <meta:nestedEntity name="Phone" displayName="Телефон">
+            <meta:simpleAttribute name="cityCode" displayName="Код города" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="number" displayName="Номер" simpleDataType="String" nullable="false"/>
+        </meta:nestedEntity>
+
+        <meta:nestedEntity name="Address">
+            <meta:simpleAttribute name="postcode" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="city" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="street" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="houseNumber" simpleDataType="String" nullable="false"/>
+        </meta:nestedEntity>
+
+        <meta:nestedEntity name="ContactData" displayName="Контактные данные">
+            <meta:complexAttribute name="phone" displayName="Телефоны" nestedEntityName="Phone" minCount="0" />
+            <meta:complexAttribute name="address" displayName="Адреса" nestedEntityName="Address" minCount="1" maxCount="2" />
+        </meta:nestedEntity>
+
+    </meta:nestedEntities>
+
+	<!-- ENTITIES -->
+    <meta:entities>  
+		
+		<meta:entity name="LicenseProvider" displayName="Лицензирующий Орган">
+			
+			<meta:simpleAttribute name="fullName" displayName="Наименование лицензирующего органа" simpleDataType="String" nullable="false" />
+			<meta:simpleAttribute name="addressLine1" displayName="Адрес лицензирующего органа" simpleDataType="String"  nullable="false" />
+			
+			<meta:simpleAttribute name="cityDistrict" displayName="Район лицензирующего органа" lookupEntityType="CityDistrict" nullable="false" />
+			<meta:simpleAttribute name="activities" displayName="Лицензируемый вид деятельности" lookupEntityType="Activities" nullable="false" />
+			
+		</meta:entity>
+		
+		<meta:entity name="Licensee" displayName="Держатель Лицензии">
+		
+			<meta:simpleAttribute name="order" simpleDataType="String" displayName="№" nullable="false"/>
+			<meta:simpleAttribute name="sourceName" simpleDataType="String" displayName="Исходное имя" nullable="true"/>
+			<meta:simpleAttribute name="shortName" simpleDataType="String" displayName="Короткое имя" nullable="false" displayable="true" searchable="true" mainDisplayable="true"/>
+			<meta:simpleAttribute name="fullName" simpleDataType="String" displayName="Полное имя" nullable="false" displayable="true" searchable="true"/>
+			<meta:simpleAttribute name="directorName" simpleDataType="String" displayName="Руководитель" nullable="true" searchable="true"/>
+			<meta:simpleAttribute name="inn" simpleDataType="String" displayName="ИНН" nullable="false" displayable="true" searchable="true"/>
+			<meta:simpleAttribute name="ogrn" simpleDataType="String" displayName="ОГРН" nullable="false"/>
+			<meta:simpleAttribute name="okpo" simpleDataType="String" displayName="ОКПО" nullable="false"/>
+			<meta:simpleAttribute name="licenseNumber" simpleDataType="String" displayName="Номер лицензии"  nullable="false" searchable="true"/>
+			<meta:simpleAttribute name="decisionDate" simpleDataType="Date" displayName="Дата принятия решения о предоставлении лицензии" nullable="false"/>
+			<meta:simpleAttribute name="licenseStartDate" simpleDataType="Date" displayName="Дата начала действия лицензии" nullable="false"/>
+			
+			<meta:simpleAttribute name="legacyForm" displayName="Правовая форма" lookupEntityType="LegacyForm" nullable="false"/>
+			<meta:simpleAttribute name="activities" displayName="Сведения о деятельности" lookupEntityType="Activities" nullable="true"/>
+			
+			<meta:complexAttribute name="addressInfo" displayName="Адрес" nestedEntityName="AddressInfo" minCount="1" maxCount="1" />
+			<meta:complexAttribute name="phones" displayName="Телефоны" nestedEntityName="Phones" minCount="1" maxCount="2" subEntityKeyAttribute="type" />
+			<meta:complexAttribute name="licenseInfo" displayName="Сведения" nestedEntityName="LicenseInfo" minCount="1" maxCount="1"/>			
+			
+		</meta:entity>
+		
+		<!-- Person -->
+		<meta:entity name="Persons" displayName="Сотрудник">
+			<meta:simpleAttribute name="name" simpleDataType="String" nullable="false" displayName="Имя" searchable="true" mainDisplayable="true"/>
+			<meta:simpleAttribute name="taxNumber" simpleDataType="String" nullable="false" unique="true" displayName="ИНН" searchable="true" mainDisplayable="true"/>
+			
+			<meta:complexAttribute name="contactData" nestedEntityName="ContactData" displayName="Контактные данные" minCount="1" maxCount="1"/>
+		</meta:entity>
+    </meta:entities>
+    
+    <meta:relations />
+
+ </meta:model>

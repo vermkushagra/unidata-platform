@@ -1,0 +1,29 @@
+.unidata-admin-metarecord-attribute-errpanel ul.errorlist-list {
+    padding: 0px 0px 0px 10px;
+}
+
+.unidata-admin-metarecord-attribute-errpanel ul li {
+    padding: 3px 0px;
+}
+
+.unidata-admin-metarecord-attribute-errpanel .errorlist-header {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: red;
+    padding: 0px 10px;
+}
+
+.unidata-admin-metarecord-attribute-errpanel .errorlist-list {
+    list-style-type: none;
+    color: red;
+}
+
+.unidata-admin-metarecord-attribute-errpanel .errorlist-allerror {
+    color: blue;
+    cursor: pointer;
+}
+
+.unidata-admin-metarecord-attribute-errpanel  {
+    cursor: pointer;
+}

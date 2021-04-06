@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conf:configuration xmlns:conf="http://conf.mdm.unidata.com/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <conf:exits>
+	    <conf:listeners>
+	        <conf:listeners class="com.unidata.mdm.integration.test.TestListenerImpl" id="testListener"/>
+	        <conf:listeners class="com.unidata.mdm.integration.test.TestListenerImpl2" id="testListener2"/>
+	    </conf:listeners>
+	    <conf:upsert>
+	        <conf:beforeOriginUpsert>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:beforeOriginUpsert>
+	        <conf:afterOriginUpsert>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:afterOriginUpsert>
+	        <conf:afterEtalonComposition>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:afterEtalonComposition>
+	    </conf:upsert>
+	    <conf:merge>
+	        <conf:beforeMerge>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:beforeMerge>
+	        <conf:afterMerge>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:afterMerge>
+	    </conf:merge>
+	    <conf:delete>
+	        <conf:beforeEtalonDeactivation>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:beforeEtalonDeactivation>
+	        <conf:afterEtalonDeactivation>
+	            <conf:listenerRef listener="testListener" entity="Licensee"/>
+	            <conf:listenerRef listener="testListener2" entity="Customer"/>
+	        </conf:afterEtalonDeactivation>
+	    </conf:delete>
+    </conf:exits>
+  
+</conf:configuration>

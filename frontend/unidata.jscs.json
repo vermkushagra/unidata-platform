@@ -1,0 +1,115 @@
+/**
+ * Конфиг JSCS версии 2.7.0 и выше
+ *
+ * @author Маршалкин И.Н.
+ * @date 2015-11-01
+ */
+{
+    "validateIndentation": 4,
+    "validateQuoteMarks": "'",
+    "validateParameterSeparator": ", ",
+    "requireSemicolons": true,
+    "requireOperatorBeforeLineBreak": true,
+    "requireCommaBeforeLineBreak": true,
+    "maximumLineLength": {
+      "value": 140,
+      "allExcept": ["comments", "regex", "urlComments"]
+    },
+
+    /*правила на переменные*/
+    "requireCamelCaseOrUpperCaseIdentifiers": {"ignoreProperties": true},
+    "requireVarDeclFirst": true,
+    "requireMultipleVarDecl": true,
+    "requirePaddingNewLineAfterVariableDeclaration": true,
+    "requireLineBreakAfterVariableAssignment": true,
+
+    /*фигурные скобки*/
+    "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch"
+    ],
+
+    /*пробельные символы/пустые строки*/
+    "requirePaddingNewLinesAfterUseStrict": true,
+    "requirePaddingNewlinesBeforeKeywords": [
+        "do",
+        "for",
+        "if",
+        "while",
+        "return"
+    ],
+    "requireSpaceAfterKeywords": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "return",
+        "try",
+        "catch"
+    ],
+    "requireSpaceBeforeKeywords": [
+        "else",
+        "while",
+        "catch"
+    ],
+    "requireSpaceBeforeBinaryOperators": [
+        "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", ">>>=",
+        "&=", "|=", "^=", "+=",
+
+        "+", "-", "*", "/", "%", "<<", ">>", ">>>", "&",
+        "|", "^", "&&", "||", "===", "==", ">=",
+        "<=", "<", ">", "!=", "!=="
+    ],
+    "requireSpaceAfterBinaryOperators": true,
+    "requireSpacesInConditionalExpression": true,
+    "requireSpaceBeforeBlockStatements": true,
+    "requireSpacesInForStatement": true,
+    "requireLineFeedAtFileEnd": true,
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "requireSpaceAfterComma": true,
+    "disallowSpaceAfterPrefixUnaryOperators": true,
+    "disallowSpaceBeforePostfixUnaryOperators": true,
+    "disallowTrailingWhitespace": true,
+    "disallowMixedSpacesAndTabs": true,
+    "disallowTabs": true,
+
+    "requireSpacesInFunction": {
+        "beforeOpeningRoundBrace": true,
+        "beforeOpeningCurlyBrace": true
+    },
+
+    "disallowSpacesInCallExpression": true,
+    "disallowSpaceAfterObjectKeys": true,
+    "requireSpaceBeforeObjectValues": true,
+    "requireCapitalizedConstructors": true,
+
+    /*bad practies*/
+    "disallowTrailingComma": true,
+    "disallowMultipleLineStrings": true,
+    "disallowKeywords": [
+        "with"
+    ],
+    "disallowKeywordsOnNewLine": [
+        "else",
+        "catch"
+    ],
+    "disallowEmptyBlocks": true,
+    "disallowNestedTernaries": true,
+    "disallowImplicitTypeConversion": ["numeric", "boolean", "binary", "string"],
+    "disallowDanglingUnderscores": true,
+    "disallowMultipleLineBreaks": true,
+    "disallowSpacesInsideObjectBrackets": "all",
+    "disallowSpacesInsideArrayBrackets": "all",
+    "disallowSpacesInsideParentheses": true,
+    "disallowNewlineBeforeBlockStatements": true,
+    "disallowUnusedParams": true
+}

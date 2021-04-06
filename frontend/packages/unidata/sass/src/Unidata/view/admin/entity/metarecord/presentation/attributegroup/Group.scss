@@ -1,0 +1,15 @@
+$baseCls: 'un-presentation-attribute-group';
+
+.#{$baseCls} {
+  >.#{$prefix}panel-body {
+    padding: 8px 12px 8px 7px;
+  }
+
+  .un-entity-columnadd {
+    margin-top: 6px;
+    a span.x-btn-inner {
+      font-size: 19px;
+      line-height: 22px;
+    }
+  }
+}

@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX job_parameter_job_id_name_uindex ON job_parameter (job_id, name);

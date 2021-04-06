@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conf:configuration xmlns:conf="http://conf.mdm.unidata.com/"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://conf.mdm.unidata.com/">
+
+    <conf:exits>
+        <conf:listeners/>
+        <conf:upsert>
+            <conf:beforeOriginUpsert/>
+            <conf:afterOriginUpsert/>
+            <conf:afterEtalonComposition/>
+            <conf:beforeOriginRelationUpsert/>
+            <conf:afterOriginRelationUpsert/>
+        </conf:upsert>
+        <conf:merge>
+            <conf:beforeMerge/>
+            <conf:afterMerge/>
+        </conf:merge>
+        <conf:delete>
+            <conf:beforeEtalonDeactivation/>
+            <conf:afterEtalonDeactivation/>
+        </conf:delete>
+        <conf:search>
+            <conf:beforeSearch/>
+            <conf:afterSearch/>
+        </conf:search>
+        <conf:join>
+            <conf:beforeJoin/>
+            <conf:afterJoin/>
+        </conf:join>
+        <conf:split>
+            <conf:beforeSplit/>
+            <conf:afterSplit/>
+        </conf:split>
+    </conf:exits>
+
+    <!--conf:securityDataProviders>
+        <conf:providers>
+            <conf:provider id="sampleAuthenticationProvider"
+                           class="com.unidata.mdm.integration.example.auth.sample.SampleAuthenticationProvider"/>
+            <conf:provider id="sameplAuthorizationProvider"
+                           class="com.unidata.mdm.integration.example.auth.sample.SampleAuthorizationProvider"/>
+            <conf:provider id="sampleProfileProvider"
+                           class="com.unidata.mdm.integration.example.auth.sample.SampleProfileProvider"/>
+        </conf:providers>
+        <conf:sources>
+            <conf:source name="sampleSecuritySource" authenticationProvider="sampleAuthenticationProvider"
+                         authorizationProvider="sameplAuthorizationProvider" profileProvider="sampleProfileProvider"/>
+        </conf:sources>
+    </conf:securityDataProviders-->
+
+    <conf:securityInterceptionProviders>
+        <conf:provider id="standardSecurityInterceptionProvider"
+                       class="com.unidata.mdm.backend.service.security.impl.StandardSecurityInterceptionProvider"/>
+    </conf:securityInterceptionProviders>
+
+    <!--
+        <conf:notifications>
+            <conf:notification id="UPSERT" uri="vm:UPSERT" enabled="true">
+                <conf:routeRawDefinition>
+                    <![CDATA[
+                        <routes xmlns="http://camel.apache.org/schema/spring">
+                            <route id="upsert">
+                                <from uri="vm:UPSERT"/>
+                                <to uri="vm:TO_EXTERNAL"/>
+                            </route>
+                        </routes>
+                       ]]>
+                </conf:routeRawDefinition>
+            </conf:notification>
+        </conf:notifications>
+
+        <conf:sinks>
+            <conf:sink id="activeMq" class="com.unidata.mdm.integration.camel.component.SinkActiveMQComponent">
+                <conf:property name="jmsConcurrentConsumers" value="5"/>
+                <conf:property name="poolMaxConnections" value="5"/>
+                <conf:property name="connectionBrokerURL" value="tcp://127.0.0.1:61616"/>
+                <conf:property name="connectionUserName" value="admin"/>
+                <conf:property name="connectionPassword" value="admin"/>
+            </conf:sink>
+        </conf:sinks>
+    -->
+
+</conf:configuration>

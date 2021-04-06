@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+By default Logback rescan configuration for changes every 1 minute
+http://logback.qos.ch/manual/configuration.html#autoScan
+ -->
+<configuration scan="true">
+    <logger name="net.sf.ehcache" level="INFO"/>
+    <logger name="org.springframework.web.servlet" level="INFO"/>
+    <logger name="org.apache.cxf" level="INFO" />
+
+    <logger name="com.unidata" level="INFO"/>
+    
+    <!-- Disable Spring JdbcTemplate logging (produce too much debug logs)  -->
+    <logger name="com.unidata.mdm.backend.jdbc" level="WARN"/>
+    <logger name="com.unidata.mdm.backend.dao" level="INFO"/>
+    
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-50(%date{ISO8601} [%thread]) %-55([%mdc{request_uuid:--}] [%mdc{credential:--}]) %-5level %logger{48}.%method:%line - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

@@ -1,0 +1,28 @@
+$baseCls: '.un-mainmenu-list';
+
+#{$baseCls}-inner {
+  background-color: $un-menu-color-2 !important;
+  border-left: none;
+  border-right: none;
+  position: relative;
+
+  // разделители, сверху и снизу
+  &:after,
+  &:before {
+    content: ' ';
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: $un-menu-color-4;
+  }
+
+  &:before {
+    top: 0;
+  }
+
+  &:after {
+    bottom: 0;
+  }
+}

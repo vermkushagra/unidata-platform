@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.api.wsdl.v4;
 
 import static com.unidata.mdm.backend.common.context.SearchRequestContext.forEtalonData;
@@ -46,6 +27,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
+import com.unidata.mdm.api.v4.*;
+import com.unidata.mdm.backend.common.dto.TimeIntervalDTO;
+import com.unidata.mdm.backend.common.dto.TimelineDTO;
+import com.unidata.mdm.backend.common.model.AttributeInfoHolder;
+import com.unidata.mdm.backend.common.search.SortField;
+import com.unidata.mdm.meta.ArrayAttributeDef;
+import com.unidata.mdm.meta.ArrayValueType;
+import com.unidata.mdm.meta.CodeAttributeDef;
+import com.unidata.mdm.meta.SimpleAttributeDef;
+import com.unidata.mdm.meta.SimpleDataType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +64,6 @@ import com.unidata.mdm.api.v4.RequestAuthenticate;
 import com.unidata.mdm.api.v4.RequestBulkUpsert;
 import com.unidata.mdm.api.v4.RequestCleanse;
 import com.unidata.mdm.api.v4.RequestGet;
-import com.unidata.mdm.api.v4.RequestGetAllPeriods;
 import com.unidata.mdm.api.v4.RequestGetDataQualityErrors;
 import com.unidata.mdm.api.v4.RequestGetLookupValues;
 import com.unidata.mdm.api.v4.RequestInfoGet;
@@ -87,7 +77,6 @@ import com.unidata.mdm.api.v4.RequestUpsert;
 import com.unidata.mdm.api.v4.ResponseAuthenticate;
 import com.unidata.mdm.api.v4.ResponseBulkUpsert;
 import com.unidata.mdm.api.v4.ResponseGet;
-import com.unidata.mdm.api.v4.ResponseGetAllPeriods;
 import com.unidata.mdm.api.v4.ResponseGetDataQualityErrors;
 import com.unidata.mdm.api.v4.ResponseInfoGet;
 import com.unidata.mdm.api.v4.ResponseJoin;
@@ -112,10 +101,8 @@ import com.unidata.mdm.api.v4.UnidataResponseBody;
 import com.unidata.mdm.api.v4.UpsertActionType;
 import com.unidata.mdm.api.v4.UpsertRelationDef;
 import com.unidata.mdm.api.v4.UpsertRelationRecordDef;
-import com.unidata.mdm.backend.common.cleanse.CleanseFunctionInputParam;
 import com.unidata.mdm.backend.common.configuration.ConfigurationConstants;
 import com.unidata.mdm.backend.common.context.ClassifierIdentityContext;
-import com.unidata.mdm.backend.common.context.CleanseFunctionContext;
 import com.unidata.mdm.backend.common.context.DeleteClassifierDataRequestContext;
 import com.unidata.mdm.backend.common.context.DeleteRelationRequestContext;
 import com.unidata.mdm.backend.common.context.DeleteRelationRequestContext.DeleteRelationRequestContextBuilder;
@@ -154,8 +141,6 @@ import com.unidata.mdm.backend.common.dto.MergeRecordsDTO;
 import com.unidata.mdm.backend.common.dto.RelationStateDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultDTO;
 import com.unidata.mdm.backend.common.dto.SearchResultHitDTO;
-import com.unidata.mdm.backend.common.dto.TimeIntervalDTO;
-import com.unidata.mdm.backend.common.dto.TimelineDTO;
 import com.unidata.mdm.backend.common.dto.UpsertRecordDTO;
 import com.unidata.mdm.backend.common.dto.UpsertRelationDTO;
 import com.unidata.mdm.backend.common.dto.UpsertRelationsDTO;
@@ -508,26 +493,15 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
      * @param response the response
      */
 	private void handleRequestCleanse(UnidataRequestBody request, UnidataResponseBody response) {
-
-	    List<CleanseFunctionInputParam> input = new ArrayList<>();
-        request.getRequestCleanse().getPort().stream().forEach(sa ->
-            input.add(CleanseFunctionInputParam.of(sa.getName(), Collections.singletonList(DumpUtils.from(sa))))
-        );
-
+		Map<String, Object> input = new HashMap<>();
+		request.getRequestCleanse().getPort().stream().forEach(sa -> {
+			input.put(sa.getName(), sa);
+		});
 		try {
-
-		    CleanseFunctionContext cfc = CleanseFunctionContext.builder()
-                    .cleanseFunctionName(request.getRequestCleanse().getCleanseName())
-                    .input(input)
-                    .build();
-
-			cleanseFunctionService.execute(cfc);
-
-			List<SimpleAttribute> values = cfc.output().stream()
-                    .filter(v -> (v instanceof com.unidata.mdm.backend.common.types.SimpleAttribute))
-                    .map(v -> DumpUtils.to((com.unidata.mdm.backend.common.types.SimpleAttribute<?>) v))
-                    .collect(Collectors.toList());
-
+			Map<String, Object> output = cleanseFunctionService.executeSingle(input,
+					request.getRequestCleanse().getCleanseName());
+			List<SimpleAttribute> values = output.values().stream().filter(v -> (v instanceof SimpleAttribute))
+					.map(v -> (SimpleAttribute) v).collect(Collectors.toList());
 			response.setResponseCleanse(JaxbUtils.getApiObjectFactory().createResponseCleanse().withPort(values));
 			createSuccess(response, SoapOperation.REQUEST_CLEANSE, request.getCommon().getOperationId());
 		} catch (CleanseFunctionExecutionException e) {
@@ -1469,7 +1443,7 @@ public class SoapApiServiceImpl extends UnidataServicePortImpl {
                     ? UpsertActionType.NO_ACTION
                     : UpsertActionType.valueOf(result.getAction().name()));
 
-            if (result.isEtalon()) {
+            if (result.isEtalon() || result.isOrigin()) {
                 upsert.withEtalonKey(DumpUtils.to(result.getRecordKeys().getEtalonKey()))
                       .withOriginKey(DumpUtils.to(result.getRecordKeys().getOriginKey()));
             }

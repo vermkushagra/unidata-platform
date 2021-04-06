@@ -1,0 +1,29 @@
+/*
+ * Пульсирующий LED
+ * http://codepen.io/n33kos/pen/KdZRWM
+ * http://css3generator.com/
+ */
+
+$baseCls: '.un-ndraw-indicatorround';
+$activeState: $baseCls + '__active';
+
+$colorCodes:   white  gray    green   yellow  red     blue;
+$colors:       #fff   #ededed #d2ffd2 #ffc107 #ff8f86 #d0deff;
+$colorsActive: #fff   #bfbfbf #669900 #f2f005 #ff0000 #0068ff;
+
+
+#{$baseCls} {
+  border-radius: 50%;
+  background-color: #fff;
+  display: inline-block;
+}
+
+@for $i from 1 through length($colors) {
+  #{$baseCls}__#{nth($colorCodes, $i)} {
+    background-color: nth($colors, $i);
+
+    &#{$activeState} {
+      background-color: nth($colorsActive, $i);
+    }
+  }
+}

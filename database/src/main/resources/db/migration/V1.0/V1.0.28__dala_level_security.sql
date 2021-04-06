@@ -1,0 +1,1 @@
+alter table s_label_attribute_value add column s_label_group integer;

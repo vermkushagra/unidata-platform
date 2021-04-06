@@ -3,6 +3,7 @@
     xmlns:meta="http://meta.mdm.unidata.com/v5/" targetNamespace="http://meta.mdm.unidata.com/v5/"
     elementFormDefault="qualified" attributeFormDefault="unqualified">
 
+
 	<xs:element name="getModelRequest">
 		<xs:complexType>
 			<xs:sequence>
@@ -264,15 +265,6 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="SYSTEM" />
             <xs:enumeration value="USER_DEFINED" />
-        </xs:restriction>
-    </xs:simpleType>
-    
-    <xs:simpleType name="DQRRuleRunType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="RUN_ALWAYS" /> <!-- Skip port value validation -->
-            <xs:enumeration value="RUN_NEVER" /> <!-- Disabled -->
-            <xs:enumeration value="RUN_ON_REQUIRED_PRESENT" /> <!-- Run only if required ports have values. Other ports may miss values. -->
-            <xs:enumeration value="RUN_ON_ALL_PRESENT" /> <!-- Run only if all ports have values. Skip run otherwise. -->
         </xs:restriction>
     </xs:simpleType>
     
@@ -568,7 +560,6 @@
         <xs:attribute name="filterValue" type="xs:string" use="optional" />
         <xs:attribute name="inputPort" type="xs:string" use="optional" />
         <xs:attribute name="outputPort" type="xs:string" use="optional" />
-        <xs:attribute name="applicationMode" type="meta:DQCleanseFunctionPortApplicationMode" default="MODE_ALL"/>
     </xs:complexType>
     <xs:complexType name="DQREnrichDef">
         <xs:attribute name="sourceSystem" type="xs:string" use="optional" />
@@ -627,7 +618,6 @@
         <xs:attribute name="order" type="xs:integer" use="required" />
         <xs:attribute name="id" type="xs:string" use="optional" />
         <xs:attribute name="special" type="xs:boolean" default="false" />
-        <xs:attribute name="runType" type="meta:DQRRuleRunType" default="RUN_ON_REQUIRED_PRESENT"/>
     </xs:complexType>
     <xs:simpleType name="PhaseDef">
         <xs:restriction base="xs:string">
@@ -685,27 +675,19 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:complexType name="Port" >
-        <xs:attribute name="name" type="xs:string" use="required" />
-        <xs:attribute name="dataType" type="meta:SimpleDataType" use="required" />
-        <xs:attribute name="required" type="xs:boolean" use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
-    </xs:complexType>
-    
     <xs:complexType name="CleansePortList">
         <xs:sequence>
-            <xs:element name="port" type="meta:Port" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="port" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="dataType" type="meta:SimpleDataType"
+                        use="required" />
+                    <xs:attribute name="required" type="xs:boolean" use="required" />
+                    <xs:attribute name="description" type="xs:string" use="optional" />
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
-    <xs:simpleType name="DQCleanseFunctionPortApplicationMode">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="MODE_ALL" />
-            <xs:enumeration value="MODE_ALL_WITH_INCOMPLETE" />
-            <xs:enumeration value="MODE_ONCE" />
-        </xs:restriction>
-    </xs:simpleType>
-    
     <xs:simpleType name="DQApplicableType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="ORIGIN" />

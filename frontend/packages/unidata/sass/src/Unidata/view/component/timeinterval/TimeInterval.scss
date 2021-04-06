@@ -1,0 +1,196 @@
+.timeintervals-container {
+  padding: 0px 10px 10px 0;
+  margin: 0;
+  //margin: 10px 0px;
+
+  .x-panel {
+    padding: 0px !important;
+  }
+
+  .x-panel-header {
+    padding: 5px 0px;
+    background-color: transparent;
+  }
+
+  //.x-panel-header-collapsed {
+  //  padding: 10px 0px !important;
+  //}
+
+  .x-panel-header .x-title-text {
+    font-family: $font-family-2;
+    font-size: 13px;
+    font-weight: normal;
+    color: $color-primary-1-1;
+    padding: 0px !important;
+    text-transform: uppercase;
+  }
+
+  .x-panel-header-collapsed .x-title-text {
+    color: $color-primary-1-1;
+  }
+
+  .x-panel-body {
+    background-color: transparent;
+  }
+
+  .undocreatetimeinterval-container {
+    margin: 10px 0px 0px 0px;
+    padding: 0px 0px 0px 3px;
+  }
+
+  .undocreatetimeinterval-container a {
+    color: #571D8C;
+  }
+
+  .undocreatetimeinterval-container i {
+    padding: 0px 3px 0px 0px;
+  }
+
+  .time-interval-dataview {
+    font-family: $font-family-2;
+    font-size: 13px;
+    font-weight: normal;
+    width: 250px;
+    margin: 0px;
+    text-align: left;
+    background-color: transparent !important;
+    color: $color-primary-1-1;
+  }
+
+  .x-item-disabled .timeinterval-draft {
+    display: block;
+  }
+
+  .time-interval-dataview {
+
+    .timeinterval-inactive {
+      color: red;
+    }
+
+    .item-wrap {
+      padding: 5px 0px;
+      cursor: pointer;
+      color: $color-secondary-2-0;
+    }
+
+    .item-wrap.odd {
+
+    }
+
+    .item-wrap.even {
+
+    }
+
+    .item-wrap span {
+      text-align: right;
+      margin: 0px;
+    }
+
+    .item-wrap.x-item-selected span {
+      border-bottom: 0px;
+      font-weight: bold;
+    }
+
+    .item-wrap .timeinterval-from {
+      width: 80px;
+      text-align: left;
+      margin: 0px;
+    }
+
+    .item-wrap .timeinterval-to {
+      width: 80px;
+      text-align: left;
+      margin: 0px 10px 0px 0px;
+    }
+
+    .item-wrap .timeinterval-separator {
+      width: 20px;
+      text-align: center;
+      padding: 0px 5px;
+    }
+
+    .item-wrap.x-item-selected.timeinterval-active .timeinterval-operation {
+      display: inline !important;
+    }
+
+    .timeinterval-operation {
+      display: none;
+    }
+
+    .timeinterval-operation i {
+      color: $color-secondary-2-0;
+    }
+
+    .item-wrap.x-view-item-focused {
+      outline: 0px !important;
+    }
+
+    .item-wrap .timeinterval-accept-indicator {
+      display: inline-block;
+      border-radius: 3px;
+      width: 6px;
+      height: 6px;
+      background-color: #C62828;
+      margin: 0px 5px;
+    }
+
+    .item-wrap .timeinterval-accept-indicator-wrap {
+      width: 10px;
+      display: inline-block;
+    }
+  }
+
+  .timeinterval-over {
+    span {
+      border-bottom: none !important;
+    }
+  }
+
+  .timeinterval-picker-container {
+    margin: 10px 0px;
+  }
+
+  .timeinterval-picker-container {
+    .x-form-item-label, .timeinterval-picker-container .x-form-item-label-inner {
+      width: 20px !important;
+    }
+
+    .datepicker-from {
+      margin: 0px 20px 0px 0px;
+    }
+
+    .x-form-text-default {
+      padding: 0px 5px !important;
+    }
+  }
+
+  .x-tool-img {
+    color: $color-secondary-2-0 !important;
+  }
+
+  .timeinterval-picker-container .readonly-textfield .x-form-item-body {
+    border: 1px solid #d0d0d0 !important;
+    width: 80px;
+  }
+
+  .un-timeintervals-collapse-label {
+    a {
+      color: $color-secondary-2-0;
+    }
+  }
+
+  .x-mask {
+    background-color: transparent;
+  }
+
+  .x-masked {
+    .item-wrap span {
+      color: #a0a0a0;
+    }
+  }
+
+  .un-timeinterval-add {
+    position: absolute !important;
+    left: 160px !important;
+  }
+}

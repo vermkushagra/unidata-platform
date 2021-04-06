@@ -804,9 +804,6 @@
 Структура, описывающая ошибоку данных, ассоциированную с основной записью сущности. Используется в ответе на запрос 'RequestGetDataQualityErrors'
             </xs:documentation>
         </xs:annotation>
-        <xs:sequence>
-            <xs:element name="paths" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
         <xs:attribute name="errorId" type="xs:string" use="required"><xs:annotation><xs:documentation>Уникальный идентификатор ошибки</xs:documentation></xs:annotation></xs:attribute>
         <xs:attribute name="createDate" type="xs:dateTime" use="required"><xs:annotation><xs:documentation>Дата создания ошибки</xs:documentation></xs:annotation></xs:attribute>
         <xs:attribute name="updateDate" type="xs:dateTime" use="required"><xs:annotation><xs:documentation>Дата последненго обновления информации об ошибке</xs:documentation></xs:annotation></xs:attribute>

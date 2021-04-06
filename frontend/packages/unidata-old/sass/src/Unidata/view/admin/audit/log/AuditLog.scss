@@ -1,0 +1,16 @@
+$baseCls: '.un-auditlog';
+
+#{$baseCls} {
+  .etalon-link {
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 1px;
+    display: inline-block;
+  }
+
+  .un-success-true {
+  }
+  .un-success-false {
+    background-color: #fdd5d5;
+  }
+}

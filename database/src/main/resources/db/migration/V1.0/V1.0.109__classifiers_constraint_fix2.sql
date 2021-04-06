@@ -1,0 +1,2 @@
+alter TABLE origins_classifiers DROP CONSTRAINT uq_origins_classifiers_name_node_id_origin_id_record;
+create UNIQUE INDEX uq_origins_classifiers_name_node_id_origin_id_record on origins_classifiers (name, node_id, origin_id_record) where status = 'ACTIVE';

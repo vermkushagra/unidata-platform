@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.keys;
 
 import java.io.Serializable;
@@ -70,11 +51,6 @@ public class ClassifierKeys implements Keys, Serializable {
      */
     private final String nodeId;
     /**
-     * Node name.
-     */
-    private String nodeName;
-
-    /**
      * Global sequence number.
      */
     private final long gsn;
@@ -82,7 +58,6 @@ public class ClassifierKeys implements Keys, Serializable {
      * This origin revision.
      */
     private final int originRevision;
-
     /**
      * Constructor.
      */
@@ -91,7 +66,6 @@ public class ClassifierKeys implements Keys, Serializable {
         this.record = b.record;
         this.name = b.name;
         this.nodeId = b.nodeId;
-        this.nodeName = b.nodeName;
         this.etalonId = b.etalonId;
         this.etalonStatus = b.etalonStatus;
         this.etalonState = b.etalonState;
@@ -219,15 +193,6 @@ public class ClassifierKeys implements Keys, Serializable {
     public static ClassifierKeysBuilder builder() {
         return new ClassifierKeysBuilder();
     }
-
-    public String getNodeName() {
-        return nodeName;
-    }
-
-    public void setNodeName(String nodeName) {
-        this.nodeName = nodeName;
-    }
-
     /**
      * @author Mikhail Mikhailov
      * Builder class.
@@ -246,11 +211,6 @@ public class ClassifierKeys implements Keys, Serializable {
          * Node id.
          */
         private String nodeId;
-        /**
-         * Node name.
-         */
-        private String nodeName;
-
         /**
          * Record etalon id.
          */
@@ -298,7 +258,6 @@ public class ClassifierKeys implements Keys, Serializable {
             this.record = keys.record;
             this.name = keys.name;
             this.nodeId = keys.nodeId;
-            this.nodeName = keys.nodeName;
             this.etalonId = keys.etalonId;
             this.etalonStatus = keys.etalonStatus;
             this.etalonState = keys.etalonState;
@@ -326,13 +285,6 @@ public class ClassifierKeys implements Keys, Serializable {
          */
         public ClassifierKeysBuilder nodeId(String nodeId) {
             this.nodeId = nodeId;
-            return this;
-        }
-        /**
-         * @param nodeName the node name to set
-         */
-        public ClassifierKeysBuilder nodeName(String nodeName) {
-            this.nodeName = nodeName;
             return this;
         }
         /**

@@ -1,0 +1,6 @@
+.un-datarecord-tabpanel {
+  // магический отступ для кнопки добавления новой записи (высотка кнопки должна быть равна высоте вкладки)
+  .x-tab-bar div[data-ref="prebody"] {
+    padding: 6px 0px 6px 50px;
+  }
+}

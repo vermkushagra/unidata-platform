@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MatchSettingsDef xmlns="http://match.mdm.unidata.com/">
+  <userRules description="" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="lastName" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <algorithms algorithmId="1">
+      <fields attributeName="firstName" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <algorithms algorithmId="1">
+      <fields attributeName="middleName" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="personFullName" entityName="person"/>
+  </userRules>
+  <userRules description="" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="ueMergeAttr" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="ueMergeRule" entityName="ueMerge"/>
+  </userRules>
+  <userRules description="Правило для атрибута Строковый3" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="string3" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="rule1" entityName="RESt_R_STAT"/>
+  </userRules>
+  <userRules description="Правило для атрибута Строковый4" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="string4" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="rule2" entityName="RESt_R_STAT"/>
+  </userRules>
+  <userRules description="Правило для строк" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="string" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="stringRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для целочисленных" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="int" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="intRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для численных" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="num" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="numRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для дат" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="date" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="dateRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для времени" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="time" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="timeRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для даты-времени" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="dateTime" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="dateTimeRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для логического" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="bool" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="booleanRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для площади" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="sqr" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="sqrRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для ссылки на строковый справочник" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="sprLink" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="linkStrRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для перечислений" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="enum" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="enumRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для ссылки на целочисленный справочник" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="intSprLink" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="linkIntRule" entityName="REST_R_DUPLICATES"/>
+  </userRules>
+  <userRules description="Правило для строковых" active="false">
+    <algorithms algorithmId="1">
+      <fields attributeName="string" identifier="1" description="Любой атрибут"/>
+    </algorithms>
+    <key name="stringRule" entityName="REST_S_Duplicates"/>
+  </userRules>
+  <userGroups name="intGroup" description="Группа для целочисленных" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="intRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="numGroup" description="Группа для чисел" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="numRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="dateGroup" description="Группа для даты" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="dateRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="timeGroup" description="Группа для времени" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="timeRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="dateTimeGroup" description="Группа для даты и времени" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="dateTimeRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="booleanGroup" description="Группа для логических" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="booleanRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="sqrGroup" description="Группа для площади" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="sqrRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="linkGroup" description="Группа для ссылок на строковый справочник" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="linkStrRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="enumGroup" description="Группа для перечислений" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="enumRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="intLinkGroup" description="Группа для ссылки на целочисленный справочник" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="linkIntRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+  <userGroups name="stringGroup" description="Строковая группа" active="false" entityName="REST_S_Duplicates">
+    <ruleKeys name="stringRule" entityName="REST_S_Duplicates"/>
+  </userGroups>
+  <userGroups name="group1" description="Группа для правила1" active="false" entityName="RESt_R_STAT">
+    <ruleKeys name="rule1" entityName="RESt_R_STAT"/>
+  </userGroups>
+  <userGroups name="group2" description="Группа для правила2" active="false" entityName="RESt_R_STAT">
+    <ruleKeys name="rule2" entityName="RESt_R_STAT"/>
+  </userGroups>
+  <userGroups name="personGroup" description="" active="false" entityName="person">
+    <ruleKeys name="personFullName" entityName="person"/>
+  </userGroups>
+  <userGroups name="ueMergeGroup" description="" active="false" entityName="ueMerge">
+    <ruleKeys name="ueMergeRule" entityName="ueMerge"/>
+  </userGroups>
+  <userGroups name="stringGroup" description="Группа для строк" active="false" entityName="REST_R_DUPLICATES">
+    <ruleKeys name="stringRule" entityName="REST_R_DUPLICATES"/>
+  </userGroups>
+</MatchSettingsDef>

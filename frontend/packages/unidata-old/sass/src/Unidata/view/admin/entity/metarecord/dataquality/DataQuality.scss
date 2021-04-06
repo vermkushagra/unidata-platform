@@ -1,0 +1,45 @@
+.unidata-admin-data-quality {
+  > .x-box-inner {
+    background-color: #eaeaea !important;
+  }
+
+  .data-quality-container {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    margin-left: 10px !important;
+    margin-top: 5px !important;
+    margin-right: 20px !important;
+    margin-bottom: 20px !important;
+    border: 1px solid #e0e0e0;
+  }
+
+  .x-form-checkboxgroup .x-form-checkboxgroup-body {
+    padding: 0px 4px 25px 0px;
+  }
+
+  .unidata-admin-data-quality-dqgrid .errorrow td {
+    color: red;
+  }
+
+  .attribute-tree {
+    border: 0px;
+  }
+
+  .un-htmlcombo {
+    .x-form-trigger.x-form-arrow-trigger {
+      display: none;
+    }
+  }
+}
+
+.un-data-quality-htmlcombo-treeItem {
+  display: inline-block;
+  background-color: #e2e2e2;
+  padding: 0 5px;
+  margin: 2px;
+  @include border-radius(3px);
+
+  &:first-child {
+    margin-left: 0;
+  }
+}

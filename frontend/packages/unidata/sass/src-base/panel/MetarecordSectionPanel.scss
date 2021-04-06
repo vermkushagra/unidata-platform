@@ -1,0 +1,7 @@
+$baseCls: 'un-metarecord-section';
+
+.#{$baseCls} {
+  >.#{$prefix}panel-body {
+    background-color: #eaeaea;
+  }
+}

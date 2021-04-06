@@ -1,0 +1,65 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/jee
+        http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+
+    <bean id="exportJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="1"/>
+    </bean>
+
+    <batch:job id="exportJob">
+        <batch:step id="exportJob.master">
+            <batch:partition step="exportStep" partitioner="exportPartitioner">
+                <batch:handler grid-size="1" task-executor="exportJobChunkTaskExecutor" />
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+    <bean id="exportPartitioner"
+          class="com.unidata.mdm.backend.service.job.export.ExportPartitioner"
+          scope="job">
+        <property name="mrctxKey" value="#{jobParameters[MRCTX]}"/>
+        <property name="userNameKey" value="#{jobParameters[USER_NAME]}"/>
+    </bean>
+
+    <batch:step id="exportStep">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="exportItemProcessor" commit-interval="1" reader="exportItemReader" writer="exportItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="exportMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="exportMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_EXPORT_RECORDS"/>
+    </bean>
+
+    <bean id="exportItemReader"
+          class="com.unidata.mdm.backend.service.job.export.ExportItemReader"
+          scope="step">
+    </bean>
+
+    <bean id="exportItemWriter"
+          class="com.unidata.mdm.backend.service.job.export.ExportItemWriter"
+          scope="step">
+    </bean>
+
+    <bean id="exportItemProcessor" class="com.unidata.mdm.backend.service.job.export.ExportItemProcessor"
+          scope="step">
+    </bean>
+
+</beans>

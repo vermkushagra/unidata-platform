@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:hz="http://www.hazelcast.com/schema/spring"
+
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/jee
+                           http://www.springframework.org/schema/jee/spring-jee.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://camel.apache.org/schema/spring
+                           http://camel.apache.org/schema/spring/camel-spring.xsd
+                           http://www.hazelcast.com/schema/spring
+                           http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+
+
+
+
+	<!-- Hazelcast distributed cache -->
+	<hz:hazelcast id="instance">
+		<hz:config>
+			<hz:group name="unidata" password="password" />
+			<hz:network port="5709" port-auto-increment="true">
+				<hz:join>
+					<hz:multicast enabled="true" multicast-group="224.2.2.3"
+						multicast-port="54327" multicast-time-to-live="32"
+						multicast-timeout-seconds="2" />
+					<hz:tcp-ip enabled="false" />
+					<hz:aws enabled="false" />
+				</hz:join>
+			</hz:network>
+			<hz:map name="tokens" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" eviction-policy="LRU"
+				merge-policy="com.hazelcast.map.merge.PassThroughMergePolicy" />
+			<hz:map name="directLinks" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" />
+			<hz:map name="configFingerprint" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" />
+			<hz:map name="revertLinks" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" />
+			<hz:map name="contains" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" />
+			<hz:map name="tempPaths" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true" eviction-policy="LRU"
+				merge-policy="com.hazelcast.map.merge.PassThroughMergePolicy" />
+			<hz:map name="values" backup-count="2" max-size="0"
+				eviction-percentage="30" read-backup-data="true">
+				<hz:entry-listeners>
+					<hz:entry-listener
+						class-name="com.unidata.mdm.backend.service.measurement.MeasurementConversionServiceImpl" />
+				</hz:entry-listeners>
+			</hz:map>
+
+			<hz:topic name="cleanseTopic" />
+			<hz:topic name="sysStatusTopic" />
+			<hz:topic name="modelDeleteTopic" />
+			<hz:topic name="modelUpsertTopic" />
+		</hz:config>
+	</hz:hazelcast>
+	    <!-- Localization & Internationalization -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <array>
+                <value>classpath:messages</value>
+            </array>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+    </bean>
+  <bean id="cleanseService"
+        class="com.unidata.mdm.backend.service.cleanse.impl.CleanseFunctionServiceImpl"/>
+      <bean id="modelServiceService"
+        class="com.unidata.mdm.backend.service.cleanse.impl.MetaModelServiceDQMock"/>
+	<bean id="licenseInterceptor"
+		class="com.unidata.mdm.backend.service.security.utils.NoopInterceptor" />
+ <bean id="dqService"
+        class="com.unidata.mdm.backend.service.cleanse.DataQualityServiceImpl"/>
+</beans>

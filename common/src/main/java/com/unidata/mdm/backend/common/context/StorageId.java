@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
@@ -35,10 +16,6 @@ public enum StorageId {
      * Duplicates keys.
      */
     DATA_MERGE_DUPLICATES_KEYS,
-    /**
-     * not found etalon keys.
-     */
-    DATA_MERGE_NOT_FOUND_ETALON_KEYS,
     /**
      * Etalon keys with dates when this records need be calculate for merge
      */
@@ -104,10 +81,6 @@ public enum StorageId {
      */
     DATA_UPSERT_IS_MODIFIED,
     /**
-     * Modbox for this upsert.
-     */
-    DATA_UPSERT_MODIFICATION_BOX,
-    /**
      * Begin of processing.
      */
     DATA_UPSERT_RECORD_TIMESTAMP,
@@ -115,18 +88,6 @@ public enum StorageId {
      * Published flag.
      */
     DATA_UPSERT_IS_PUBLISHED,
-    /**
-     * Origins count for ss + ext id, being upserted.
-     */
-    DATA_DQ_ORIGINS_COUNT,
-    /**
-     * Cleanse function adapter of the function, being executed by current stack.
-     */
-    DATA_DQ_CURRENT_FUNCTION,
-    /**
-     * Copy of the current etalon data, which can be possibly modified by etalon enrichment rule.
-     */
-    DATA_DQ_ENRICH_ETALON_COPY,
     /**
      * Whole workflow timeline.
      */
@@ -284,9 +245,5 @@ public enum StorageId {
     /**
      * Classifiers vistory data as upsert objects for batch.
      */
-    DATA_BATCH_CLASSIFIERS,
-    /**
-     * Classifiers data
-     */
-    CLASSIFIERS_DATA
+    DATA_BATCH_CLASSIFIERS;
 }

@@ -1,0 +1,17 @@
+$baseCls: '.un-record-grid';
+
+#{$baseCls} {
+  .un-empty-list-label {
+    margin-left: 10px;
+    color: #eee;
+  }
+
+  .un-simple-switcher {
+    margin-left: 10px;
+    .un-hreflabel {
+      a {
+        color: #86cff9;
+      }
+    }
+  }
+}

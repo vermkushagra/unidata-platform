@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<conf:configuration xmlns:conf="http://conf.mdm.unidata.com/" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    
+    <conf:exits>
+	    <conf:listeners/>
+	    <conf:upsert>
+	        <conf:beforeOriginUpsert />
+	        <conf:afterOriginUpsert />
+	        <conf:afterEtalonComposition />
+	    </conf:upsert>
+	    <conf:merge>
+	        <conf:beforeMerge />
+	        <conf:afterMerge />
+	    </conf:merge>
+	    <conf:delete>
+	        <conf:beforeEtalonDeactivation />
+	        <conf:afterEtalonDeactivation />
+	    </conf:delete>
+    </conf:exits>
+  
+</conf:configuration>

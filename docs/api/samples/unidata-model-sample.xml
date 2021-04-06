@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<meta:model xmlns:meta="http://meta.mdm.taskdata.com/"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://meta.mdm.taskdata.com/ ../../../../backend/src/main/resources/schemas/unidata-meta-2.1.xsd"
+        storageId="МастерСотрудников">
+
+    <meta:cleanseFunctions>
+        <meta:group groupName="Корень">
+            <meta:group groupName="Строковые">
+                <meta:cleanseFunction functionName="УбратьПробелы" javaClass="com.taskdata.mdm.cleanse.string.CFTrim"/>
+                <meta:cleanseFunction functionName="Соеденить" javaClass="com.taskdata.mdm.cleanse.string.CFConcatenate"/>
+                <meta:cleanseFunction functionName="ЗначениеПоУмолчанию" javaClass="com.taskdata.mdm.cleanse.string.CFDefaultValue"/>
+                <meta:cleanseFunction functionName="Форматировать" javaClass="com.taskdata.mdm.cleanse.string.CFFormatString"/>
+                <meta:cleanseFunction functionName="ВыровнятьСлева" javaClass="com.taskdata.mdm.cleanse.string.CFPadLeft"/>
+                <meta:cleanseFunction functionName="ВыровнятьСправа" javaClass="com.taskdata.mdm.cleanse.string.CFPadRight"/>
+                <meta:cleanseFunction functionName="НижнийРегистр" javaClass="com.taskdata.mdm.cleanse.string.CFToLowerCase"/>
+                <meta:cleanseFunction functionName="ВерхнийРегистр" javaClass="com.taskdata.mdm.cleanse.string.CFToUpperCase"/>
+                <meta:cleanseFunction functionName="Заголовок" javaClass="com.taskdata.mdm.cleanse.string.CFToTitleCase"/>
+                <meta:cleanseFunction functionName="Подстрока" javaClass="com.taskdata.mdm.cleanse.string.CFSubstring"/>
+                <meta:cleanseFunction functionName="РегулярноеВыражение" javaClass="com.taskdata.mdm.cleanse.string.CFRegExp"/>
+            </meta:group>
+
+            <meta:group groupName="Математические">
+                <meta:cleanseFunction functionName="Сумма" javaClass="com.taskdata.mdm.cleanse.math.CFSum"/>
+                <meta:cleanseFunction functionName="Разность" javaClass="com.taskdata.mdm.cleanse.math.CFSubtract"/>
+                <meta:cleanseFunction functionName="Произведение" javaClass="com.taskdata.mdm.cleanse.math.CFMultiply"/>
+                <meta:cleanseFunction functionName="Деление" javaClass="com.taskdata.mdm.cleanse.math.CFDivide"/>
+                <meta:cleanseFunction functionName="Округлить" javaClass="com.taskdata.mdm.cleanse.math.CFRound"/>
+                <meta:cleanseFunction functionName="Максимум" javaClass="com.taskdata.mdm.cleanse.math.CFMax"/>
+                <meta:cleanseFunction functionName="Минимум" javaClass="com.taskdata.mdm.cleanse.math.CFMin"/>
+            </meta:group>
+
+            <meta:group groupName="Логические">
+                <meta:cleanseFunction functionName="and" javaClass="com.taskdata.mdm.cleanse.logic.CFAnd"/>
+                <meta:cleanseFunction functionName="or" javaClass="com.taskdata.mdm.cleanse.logic.CFOr"/>
+                <meta:cleanseFunction functionName="xor" javaClass="com.taskdata.mdm.cleanse.logic.CFXor"/>
+                <meta:cleanseFunction functionName="not" javaClass="com.taskdata.mdm.cleanse.logic.CFNot"/>
+                <meta:cleanseFunction functionName="Сравнить" javaClass="com.taskdata.mdm.cleanse.logic.CFCompare"/>
+                <meta:cleanseFunction functionName="Выбрать" javaClass="com.taskdata.mdm.cleanse.logic.CFChoose"/>
+                <meta:cleanseFunction functionName="IsEmpty" javaClass="com.taskdata.mdm.cleanse.logic.CFIsEmpty"/>
+            </meta:group>
+
+            <meta:group groupName="РазборТиповДанных">
+                <meta:cleanseFunction functionName="РазобратьBoolean" javaClass="com.taskdata.mdm.cleanse.convert.CFParseBoolean"/>
+                <meta:cleanseFunction functionName="РазобратьDate" javaClass="com.taskdata.mdm.cleanse.convert.CFParseDate"/>
+                <meta:cleanseFunction functionName="РазобратьNumber" javaClass="com.taskdata.mdm.cleanse.convert.CFParseNumber"/>
+                <meta:cleanseFunction functionName="РазобратьInteger" javaClass="com.taskdata.mdm.cleanse.convert.CFInteger"/>
+            </meta:group>
+
+            <meta:group groupName="Адресные">
+                <meta:cleanseFunction functionName="ПроверкаПоФИАС" javaClass="com.taskdata.mdm.cleanse.postaladdress.CFFiasCheck"/>
+            </meta:group>
+
+            <meta:group groupName="Разное">
+                <meta:cleanseFunction functionName="ПроверкаТелНомера" javaClass="com.taskdata.mdm.cleanse.misc.CFCheckPhoneNumber"/>
+                <meta:cleanseFunction functionName="ПроверкаИНН" javaClass="com.taskdata.mdm.cleanse.misc.CFCheckINN"/>
+
+                <meta:compositeCleanseFunction functionName="СуммаЧисловыхСтрок">
+                    <meta:inputPorts>
+                        <meta:port name="значение1" dataType="String" required="true"/>
+                        <meta:port name="значение2" dataType="String" required="true"/>
+                        <meta:port name="значение3" dataType="String" required="false"/>
+                    </meta:inputPorts>
+                    <meta:outputPorts>
+                        <meta:port name="результат" dataType="Number" required="true"/>
+                    </meta:outputPorts>
+                    <meta:logic>
+                        <meta:nodes>
+                            <meta:node nodeId="0" nodeType="InputPorts"/>
+                            <meta:node nodeId="1" nodeType="OutputPorts"/>
+                            <meta:node nodeId="2" nodeType="Function" functionName="РазборТиповДанных.РазобратьNumber"/>
+                            <meta:node nodeId="3" nodeType="Function" functionName="РазборТиповДанных.РазобратьNumber"/>
+                            <meta:node nodeId="4" nodeType="Function" functionName="РазборТиповДанных.РазобратьNumber"/>
+                            <meta:node nodeId="5" nodeType="Function" functionName="Математические.Сумма"/>
+                        </meta:nodes>
+                        <meta:links>
+                            <meta:nodeLink fromNodeId="0" fromPort="значение1" toNodeId="2" toPort="строка"/>
+                            <meta:nodeLink fromNodeId="0" fromPort="значение2" toNodeId="3" toPort="строка"/>
+                            <meta:nodeLink fromNodeId="0" fromPort="значение3" toNodeId="4" toPort="строка"/>
+                            <meta:nodeLink fromNodeId="2" fromPort="число" toNodeId="5" toPort="число1"/>
+                            <meta:nodeLink fromNodeId="3" fromPort="число" toNodeId="5" toPort="число2"/>
+                            <meta:nodeLink fromNodeId="4" fromPort="число" toNodeId="5" toPort="число3"/>
+                            <meta:nodeLink fromNodeId="5" fromPort="сумма" toNodeId="1" toPort="результат"/>
+                        </meta:links>
+                    </meta:logic>
+                </meta:compositeCleanseFunction>
+            </meta:group>
+        </meta:group>
+    </meta:cleanseFunctions>
+    
+    <meta:sourceSystems adminSystemName="unidata">
+        <meta:sourceSystem name="unidata" description="От имени этого источника данных будут производится все системные операции" weight="100" />
+        <meta:sourceSystem name="1С"  weight="80"/>
+        <meta:sourceSystem name="SAP" weight="90" />
+    </meta:sourceSystems>
+
+    <meta:enumerations>
+
+        <meta:enumeration name="ТипТелефона">
+            <meta:enumVal code="Персональный" desc="Персональный телефон"/>
+            <meta:enumVal code="Рабочий" desc="Рабочий телефон"/>
+            <meta:enumVal code="Домашний" desc="Домашний телефон"/>
+        </meta:enumeration>
+
+        <meta:enumeration name="ТипАдреса">
+            <meta:enumVal code="Юридический" desc="Юридический адрес"/>
+            <meta:enumVal code="Почтовый" desc="Почтовый адрес"/>
+        </meta:enumeration>
+
+    </meta:enumerations>
+
+    <meta:lookupEntities> <!-- Материализованная сущность первого уровня -->
+
+        <meta:lookupEntity name="ТелофонныеКоды">
+            <meta:simpleAttribute name="город" simpleDataType="String" nullable="false"/>
+            <meta:codeAttribute name="телефКод" unique="true" nullable="false" simpleDataType="String"/>
+        </meta:lookupEntity>
+
+        <meta:lookupEntity name="ФедеральныеОкруга">
+            <meta:simpleAttribute name="названиеОкруг" simpleDataType="String" nullable="false"/>
+            <meta:codeAttribute name="кодОкруга" />
+        </meta:lookupEntity>
+
+        <meta:lookupEntity name="СубъектыРФ">
+            <meta:simpleAttribute name="названиеСубъекта" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="кодРегиона" lookupEntityType="ФедеральныеОкруга" nullable="false"/>
+            <meta:codeAttribute name="кодОКАТО"/>
+
+            <meta:dataQuality>
+                <meta:dqRule name="ОчиститьНазваниеСубъекта" cleanseFunctionName="Строковые.УбратьПробелы" complexAttributeName="root" order="1">
+                    <meta:dqrMapping attributeName="названиеСубъекта" inputPort="строка" outputPort="результат"/>
+                    <meta:origins all="true"/>
+                </meta:dqRule>
+            </meta:dataQuality>
+        </meta:lookupEntity>
+
+    </meta:lookupEntities>
+
+    <meta:nestedEntities> <!-- Состовные части полноценных сущностей -->
+
+        <meta:nestedEntity name="Телефон">
+            <meta:simpleAttribute name="кодГорода" lookupEntityType="ТелофонныеКоды" nullable="false"/>
+            <meta:simpleAttribute name="номер" simpleDataType="Integer" nullable="false"/>
+            <meta:simpleAttribute name="типТелефона" enumDataType="ТипТелефона" nullable="false"/>
+            <meta:simpleAttribute name="датаАктивации" simpleDataType="Date" nullable="true"/>
+            <meta:simpleAttribute name="локальный" simpleDataType="Boolean" nullable="false"/>
+        </meta:nestedEntity>
+
+        <meta:nestedEntity name="Адрес">
+            <meta:simpleAttribute name="почтовыйИндекс" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="субъектРФ" lookupEntityType="СубъектыРФ" nullable="false"/>
+            <meta:simpleAttribute name="город" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="улица" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="дом" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="типАдреса" enumDataType="ТипАдреса" nullable="false"/>
+        </meta:nestedEntity>
+
+        <meta:nestedEntity name="КонтанктныеДанные">
+            <meta:complexAttribute name="телефоны" nestedEntityName="Телефон" subEntityKeyAttribute="номер" minCount="0" />
+            <meta:complexAttribute name="адреса" nestedEntityName="Адрес" subEntityKeyAttribute="типАдреса" minCount="1" maxCount="2" />
+        </meta:nestedEntity>
+
+    </meta:nestedEntities>
+
+    <meta:entities>  <!-- Материализованная сущность первого уровня -->
+
+        <meta:entity name="Сотрудник">
+            <meta:simpleAttribute name="имя" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="инн" simpleDataType="String" nullable="false" unique="true"/>
+            <meta:complexAttribute name="контактныеДанные" nestedEntityName="КонтанктныеДанные" minCount="1" maxCount="1" subEntityKeyAttribute="fake"/>
+
+            <meta:dataQuality>
+
+                <meta:dqRule name="ОчиститьАдрес" cleanseFunctionName="Адресные.ПроверкаПоФИАС" description="Некое описание" complexAttributeName="адреса" order="0">
+                    <meta:dqrMapping attributeName="имя" filterValue="домашний"/>
+                    <meta:dqrMapping attributeName="контактныеДанные">
+                        <meta:dqrMapping attributeName="адреса">
+                            <meta:dqrMapping attributeName="типАдреса" filterValue="домашний"/>
+                            <meta:dqrMapping attributeName="почтовыйИндекс" inputPort="индекс" outputPort="почтовый_индекс"/>
+                            <meta:dqrMapping attributeName="город" inputPort="город" outputPort="ст_город"/>
+                            <meta:dqrMapping attributeName="улица" inputPort="улица" outputPort="ст_улица"/>
+                            <meta:dqrMapping attributeName="дом" inputPort="дом"/>
+                        </meta:dqrMapping>
+                        <meta:dqrMapping attributeName="телефоны">
+                            <meta:dqrMapping attributeName="типТелефона" filterValue="сотовый"/>
+                            <meta:dqrMapping attributeName="кодГород" inputPort="кодГорода" />
+                        </meta:dqrMapping>
+                    </meta:dqrMapping>
+
+                    <meta:origins all="false">
+                        <meta:sourceSystem name="unidata"/>
+                        <meta:sourceSystem name="1C"/>
+                    </meta:origins>
+
+                    <meta:raise functionRaiseErrorPort="ошибка" messagePort="текстОшибки" severityPort="уровеньОшибки" categoryPort="персональные данные" />
+                </meta:dqRule>
+
+                <meta:dqRule name="ОчиститьАдрес" cleanseFunctionName="Адресные.ПроверкаПоФИАС" description="Некое описание" complexAttributeName="адреса" order="0">
+                    <meta:dqrMapping attributeName="контактныеДанные">
+                        <meta:dqrMapping attributeName="адреса">
+                            <meta:dqrMapping attributeName="типАдреса" filterValue="домашний"/>
+                            <meta:dqrMapping attributeName="почтовыйИндекс" inputPort="индекс" outputPort="индекс"/>
+                            <meta:dqrMapping attributeName="город" inputPort="город" outputPort="город"/>
+                            <meta:dqrMapping attributeName="улица" inputPort="улица" outputPort="улица"/>
+                            <meta:dqrMapping attributeName="дом" inputPort="дом"/>
+                        </meta:dqrMapping>
+                    </meta:dqrMapping>
+
+                    <meta:origins all="false">
+                        <meta:sourceSystem name="unidata"/>
+                        <meta:sourceSystem name="1C"/>
+                    </meta:origins>
+
+                    <meta:raise functionRaiseErrorPort="ошибка" messagePort="текстОшибки" severityPort="уровеньОшибки" categoryPort="персональные данные" />
+                </meta:dqRule>
+
+                <meta:dqRule name="ПроверитьТелефон" cleanseFunctionName="Разное.ПроверкаТелНомера" complexAttributeName="телефоны" order="1">
+                    <meta:dqrMapping attributeName="контактныеДанные.телефоны.Телефон.номер" inputPort="строка"/>
+                    <meta:origins all="true"/>
+                    <meta:raise functionRaiseErrorPort="ошибка" messageText="Некорректный формат телефона" severityValue="High" categoryText="персональные данные" />
+                </meta:dqRule>
+
+                <meta:dqRule name="ПроверитьИНН" cleanseFunctionName="Разное.ПроверкаИНН" complexAttributeName="root" order="2">
+                    <meta:dqrMapping attributeName="инн" inputPort="строка"/>
+                    <meta:origins all="true"/>
+                    <meta:raise functionRaiseErrorPort="ошибка" messageText="Некорректный формат ИНН" severityValue="Critical" categoryText="персональные данные" />
+                </meta:dqRule>
+            </meta:dataQuality>
+            
+            <meta:matchSettings/>
+            <meta:mergeSettings/>
+        </meta:entity>
+
+        <meta:entity name="БанковскийСчёт">
+            <meta:simpleAttribute name="номер" simpleDataType="String" nullable="false"/>
+        </meta:entity>
+
+        <meta:entity name="ОтделКомпании">
+            <meta:simpleAttribute name="номер" simpleDataType="Integer" nullable="false"/>
+            <meta:simpleAttribute name="название" simpleDataType="String" nullable="false"/>
+        </meta:entity>
+
+        <meta:entity name="Банк">
+            <meta:simpleAttribute name="имя" simpleDataType="String" nullable="false"/>
+            <meta:simpleAttribute name="инн" simpleDataType="String" nullable="false"/>
+        </meta:entity>
+
+    </meta:entities>
+
+    <meta:relations>
+        <meta:rel relName="СвязьСотрудникСчёт" fromEntity="Сотрудник" toEntity="БанковскийСчёт" relType="Contains"/>
+
+        <meta:rel relName="СвязьСотрудникОтдел" fromEntity="Сотрудник" toEntity="ОтделКомпании" relType="References" required="false">
+            <meta:simpleAttribute name="дата" nullable="false" simpleDataType="Date" />
+        </meta:rel>
+
+        <meta:rel relName="СвязьСотрудникСотрудник" fromEntity="Сотрудник" toEntity="Сотрудник" relType="ManyToMany"/>
+
+        <meta:rel relName="СвязьСчётБанк" fromEntity="БанковскийСчёт" toEntity="Банк" relType="References" required="true"/>
+
+    </meta:relations>
+
+ </meta:model>

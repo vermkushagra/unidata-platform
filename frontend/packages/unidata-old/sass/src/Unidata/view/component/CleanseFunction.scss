@@ -1,0 +1,191 @@
+.cf-body-container {
+  //background-color: #FFFFFF;
+  //background-image: linear-gradient(#E2E2E2 1px, transparent 1px), linear-gradient(90deg, #E6E6E6 1px, transparent 1px);
+  //background-size: 30px 30px;
+  //background-position: 0px 0px;
+  background: #f4f8fd;
+}
+
+.unidata-cfblock-container {
+  position: absolute;
+  cursor: pointer;
+  display: block;
+  z-index: 0 !important;
+}
+
+.unidata-cfblock-title {
+  text-align: center;
+  font-size: 11px;
+  color: #08283A;
+  font-weight: 600
+}
+
+.unidata-cfblock {
+  z-index: 2;
+  min-width: 200px;
+  display: inline-block;
+  padding: 10px 15px;
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  border-top: 2px solid #37799D;
+  box-shadow: 0 10px 6px -6px rgba(0, 0, 0, 0.2)
+}
+
+.unidata-cfblock:before, .unidata-cfblock:after {
+  //z-index: -1;
+  //position: absolute;
+  //content: "";
+  //bottom: 15px;
+  //left: 10px;
+  //width: 50%;
+  //top: 50%;
+  //max-width: 300px;
+  //background: rgba(0, 0, 0, 0.3);
+  //box-shadow: 0 15px 10px rgba(0, 0, 0, 0.2);
+  //-webkit-transform: rotate(-3deg);
+  //-moz-transform: rotate(-3deg);
+  //-o-transform: rotate(-3deg);
+  //-ms-transform: rotate(-3deg);
+  //transform: rotate(-3deg);
+}
+
+.unidata-cfblock-inputs,
+.unidata-cfblock-outputs {
+  display: table;
+  height: 100%;
+  float: left;
+}
+
+.unidata-cfblock-row {
+  display: table-row;
+}
+
+.unidata-cfblock-port span {
+  font-size: 10px;
+  color: #21ABA3;
+}
+
+.unidata-cfblock-inputs {
+  border-right: 1px solid #7392A3;
+}
+
+.unidata-cfblock-row:not(:first-child) .unidata-cfblock-port {
+  border-top: 1px solid #7392A3;
+}
+
+.unidata-cfblock-port {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: left;
+  font-size: 12px;
+  color: #757575;
+  height: 30px;
+  padding: 5px 10px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Input ports
+
+.unidata-inputports-container,
+.unidata-outputports-container {
+  margin: auto;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 80px;
+  height: 70%;
+  border: 1px solid #e7e7e7;
+  background-color: #fff;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.unidata-inputports-container {
+  left: 20px;
+  border-right: 3px solid #7392A3;
+}
+
+.unidata-outputports-container {
+  right: 20px;
+  border-left: 3px solid #7392A3;
+}
+
+.unidata-inputports,
+.unidata-outputports {
+  display: table;
+  height: 100%;
+}
+
+.unidata-inputports-row,
+.unidata-outputports-row {
+  display: table-row;
+}
+
+.unidata-inputports-port,
+.unidata-outputports-port {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+  font-size: 12px;
+  color: #424242;
+}
+
+.unidata-inputports-row:not(:first-child) .unidata-inputports-port,
+.unidata-outputports-row:not(:first-child) .unidata-outputports-port {
+  border-top: 1px solid #95ACB9;
+}
+
+.unidata-inputport-item,
+.unidata-outputport-item {
+  display: block;
+  padding: 5px 10px;
+  color: #666;
+  width: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unidata-inputport-datatype,
+.unidata-outputport-datatype {
+  font-size: 10px;
+  color: #21ABA3;
+}
+
+.cf-button-port {
+  position: absolute;
+  top: 15px;
+  right: 41px;
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  border-radius: 100%;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  transition: all 0.2s;
+}
+
+.cf-button-port.right {
+  right: 41px;
+}
+
+.cf-button-port.left {
+  left: 41px;
+}
+
+.x-btn-icon-el-default-small.x-btn-glyph {
+  opacity: 1;
+}
+
+.unidata-cfblock-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #f00;
+}

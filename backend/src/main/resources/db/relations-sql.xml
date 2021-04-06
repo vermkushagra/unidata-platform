@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="loadRelationsTimelineByRelationEtalonIdSQL">
+        <![CDATA[
+            select
+                e.id::text as relation_etalon_id,
+                i.period_id,
+                vf,
+                vt,
+                contributors,
+                e.name
+            from ud_fetch_relations_timeline_intervals(?::uuid, ?, ?) i, etalons_relations e
+            where e.id = ?::uuid
+            and e.id = i.etalon_id
+            and coalesce((
+                select status from etalons_relations_draft_states
+                where etalon_id = e.id and (? or created_by = ?)
+                order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE'
+        ]]>
+    </entry>
+    <entry key="loadRelationsTimelineByRelationEtalonIdAndAsOfSQL">
+        <![CDATA[
+            select
+                e.id::text as relation_etalon_id,
+                i.period_id,
+                vf,
+                vt,
+                contributors,
+                e.name
+            from ud_fetch_relations_timeline_intervals(?::uuid, ?, ?) i, etalons_relations e
+            where e.id = ?::uuid
+            and e.id = i.etalon_id
+            and coalesce((
+                select status from etalons_relations_draft_states
+                where etalon_id = e.id and (? or created_by = ?)
+                order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE'
+            and ? between coalesce(vf, '-infinity') and coalesce(vt, 'infinity'))
+        ]]>
+    </entry>
+    <entry key="loadRelationsTimelineByRelationEtalonIdAndFromBoundarySQL">
+        <![CDATA[
+            select
+                e.id::text as relation_etalon_id,
+                i.period_id,
+                vf,
+                vt,
+                contributors,
+                e.name
+            from ud_fetch_relations_timeline_intervals(?::uuid, ?, ?) i, etalons_relations e
+            where e.id = ?::uuid
+            and e.id = i.etalon_id
+            and coalesce((
+                select status from etalons_relations_draft_states
+                where etalon_id = e.id and (? or created_by = ?)
+                order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE'
+            and (((coalesce(vf, '-infinity') between ? and ?) or (coalesce(vt, 'infinity') between ? and ?))
+                or (coalesce(vf, '-infinity') < ? and coalesce(vt, 'infinity') > ?))
+        ]]>
+    </entry>
+    <entry key="loadCompleteRelationsTimelineByFromEtalonIdSQL">
+        <![CDATA[
+            select
+                relation_etalon_id::text,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        e.name as relation_name,
+                        ud_fetch_relations_timeline_intervals(e.id, ?, ?) as info
+                    from etalons_relations e
+                    where
+                        e.etalon_id_from = ?::uuid
+                    and coalesce((
+                        select status from etalons_relations_draft_states
+                        where etalon_id = e.id and (? or created_by = ?)
+                        order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE')
+                select
+                    relation_etalon_id,
+                    relation_name as name,
+                    (result.info).* from result ) q
+        ]]>
+    </entry>
+    <entry key="loadCompleteRelationsTimelineByToEtalonIdSQL">
+        <![CDATA[
+            select
+                relation_etalon_id::text,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        e.name as relation_name,
+                        ud_fetch_relations_timeline_intervals(e.id, ?, ?) as info
+                    from etalons_relations e
+                    where
+                        e.etalon_id_to = ?::uuid
+                    and coalesce((
+                        select status from etalons_relations_draft_states
+                        where etalon_id = e.id and (? or created_by = ?)
+                        order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE')
+                select
+                    relation_etalon_id,
+                    relation_name as name,
+                    (result.info).* from result ) q
+        ]]>
+    </entry>
+    <entry key="loadRelationsTimelineByFromEtalonIdSQL">
+        <![CDATA[
+            select
+                relation_etalon_id::text,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        ud_fetch_relations_timeline_intervals(e.id, ?, ?) as info
+                    from etalons_relations e
+                    where
+                        e.etalon_id_from = ?::uuid
+                    and e.name = ?
+                    and coalesce((
+                        select status from etalons_relations_draft_states
+                        where etalon_id = e.id and (? or created_by = ?)
+                        order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE')
+                select
+                    relation_etalon_id,
+                    ? as name,
+                    (result.info).* from result ) q
+        ]]>
+    </entry>
+    <entry key="loadRelationsTimelineByFromEtalonIdAndAsOfSQL">
+        <![CDATA[
+            select
+                relation_etalon_id::text,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        ud_fetch_relations_timeline_intervals(e.id, ?, ?) as info
+                    from etalons_relations e
+                    where
+                        e.etalon_id_from = ?::uuid
+                    and e.name = ?
+                    and coalesce((
+                        select status from etalons_relations_draft_states
+                        where etalon_id = e.id and (? or created_by = ?)
+                        order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE')
+                select
+                    relation_etalon_id,
+                    ? as name,
+                    (result.info).* from result ) q
+            where (? between coalesce(q.vf, '-infinity') and coalesce(q.vt, 'infinity'))
+        ]]>
+    </entry>
+    <entry key="loadRelationsTimelineByFromEtalonIdAndFromBoundarySQL">
+        <![CDATA[
+            select
+                relation_etalon_id::text,
+                period_id,
+                vf,
+                vt,
+                contributors,
+                name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        ud_fetch_relations_timeline_intervals(e.id, ?, ?) as info
+                    from etalons_relations e
+                    where
+                        e.etalon_id_from = ?::uuid
+                    and e.name = ?
+                    and coalesce((
+                        select status from etalons_relations_draft_states
+                        where etalon_id = e.id and (? or created_by = ?)
+                        order by revision desc fetch first 1 rows only), e.status) = 'ACTIVE')
+                select
+                    relation_etalon_id,
+                    ? as name,
+                    (result.info).* from result ) q
+            where
+                ((coalesce(q.vf, '-infinity') between ? and ?) or (coalesce(q.vt, 'infinity') between ? and ?))
+              or (coalesce(q.vf, '-infinity') < ? and coalesce(q.vt, 'infinity') > ?)
+        ]]>
+    </entry>
+    <entry key="loadRelationsBoundaryByFromEtalonIdSQL">
+        <![CDATA[
+            select
+                case when max(coalesce(q.vf, '-infinity')) = '-infinity' then null else max(coalesce(q.vf, '-infinity')) end as vf,
+                case when min(coalesce(q.vt, 'infinity')) = 'infinity' then null else min(coalesce(q.vt, 'infinity')) end as vt,
+                min(q.create_date) as create_date,
+                max(q.update_date) as update_date,
+                q.etalon_gsn,
+                q.period_id,
+                (select
+                    er.created_by
+                 from etalons_relations er
+                 where
+                     er.etalon_id_from = ?::uuid
+                 and er.name = ? order by er.create_date fetch first 1 rows only) as created_by,
+                (select
+                    v1.created_by
+                 from origins_relations o, origins_relations_vistory v1, etalons_relations e
+                 where e.etalon_id_from = ?::uuid
+                 and e.name = ?
+                 and o.etalon_id = e.id
+                 and v1.origin_id = o.id order by v1.create_date desc fetch first 1 rows only) as updated_by,
+                array_agg((q.contributors::contributor[])[1])::text[] as contributors,
+                'ACTIVE' as status,
+                'APPROVED' as approval,
+                ? as name
+            from (
+                with result as (
+                    select
+                        e.id as relation_etalon_id,
+                        ud_fetch_relations_etalon_boundary(e.id, ?, ?, ?) as info
+                    from
+                        etalons_relations e
+                    where e.etalon_id_from = ?::uuid
+                    and e.name = ?)
+                select
+                    relation_etalon_id,
+                    (result.info).* from result ) q
+            where
+                q.status in ('ACTIVE'::record_status)
+        ]]>
+    </entry>
+    <entry key="loadRelationsBoundaryByEtalonIdSQL">
+        <![CDATA[
+            with result as (
+                select
+                    e.id as relation_etalon_id,
+                    ud_fetch_relations_etalon_boundary(e.id, ?, ?, ?) as info
+                from
+                    etalons_relations e
+                where
+                    e.id = ?::uuid)
+            select relation_etalon_id, (result.info).* from result
+        ]]>
+    </entry>
+    <entry key="acquireOriginRelationLockSQL">
+        <![CDATA[
+            select pg_advisory_xact_lock(o.gsn) from origins_relations o where o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="putRelationVersionJaxbSQL">
+        <![CDATA[
+            insert into origins_relations_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_a,
+                created_by,
+                status,
+                approval,
+                major,
+                minor,
+                shift
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select max(prev.revision) + 1 from origins_relations_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                ?::record_status,
+                ?::approval_state,
+                ?,
+                ?,
+                ?::data_shift
+        ]]>
+    </entry>
+    <entry key="putRelationVersionProtostuffSQL">
+        <![CDATA[
+            insert into origins_relations_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_b,
+                created_by,
+                status,
+                approval,
+                major,
+                minor,
+                shift
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select max(prev.revision) + 1 from origins_relations_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                ?::record_status,
+                ?::approval_state,
+                ?,
+                ?,
+                ?::data_shift
+        ]]>
+    </entry>
+    <entry key="insertOriginRelationSQL">
+        <![CDATA[
+            insert into origins_relations (
+                id, etalon_id, name, origin_id_from, origin_id_to, version, source_system, created_by, status)
+            select ?::uuid, ?::uuid, ?, ?::uuid, ?::uuid, ?, ?, ?, ?::record_status
+        ]]>
+    </entry>
+    <entry key="insertEtalonRelationSQL">
+        <![CDATA[
+            insert into etalons_relations (
+                id, name, etalon_id_from, etalon_id_to, created_by, status, approval, version, operation_id)
+            select ?::uuid, ?, ?::uuid, ?::uuid, ?, ?::record_status, ?::approval_state, ?, ?
+        ]]>
+    </entry>
+    <entry key="insertEtalonRelationStateDraft">
+        <![CDATA[
+            insert into etalons_relations_draft_states(etalon_id, revision, status, created_by)
+            select ?::uuid, coalesce((select max(prev.revision) + 1 from etalons_relations_draft_states prev where prev.etalon_id = ?::uuid), 1), ?::record_status, ?
+        ]]>
+    </entry>
+    <entry key="cleanupEtalonRelationStateDrafts">
+        <![CDATA[
+            delete from etalons_relations_draft_states where etalon_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadLastEtalonRelationStateDraftByEtalonIdSQL">
+        <![CDATA[
+            select id::text, etalon_id::text, revision, status, create_date, created_by
+            from etalons_relations_draft_states where etalon_id = ?::uuid
+            order by revision desc
+            fetch first 1 rows only
+        ]]>
+    </entry>
+    <entry key="loadEtalonRelationsByFromNameAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_from::text, etalon_id_to::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_relations
+            where
+                etalon_id_from = :etalon_id_from::uuid
+            and name = :name
+            and status::text in (:status)
+        ]]>
+    </entry>
+    <entry key="loadEtalonRelationsByToNameAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_from::text, etalon_id_to::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_relations
+            where
+                etalon_id_to = :etalon_id_to::uuid
+            and name = :name
+            and status::text in (:status)
+        ]]>
+    </entry>
+    <entry key="loadEtalonRelationsByToSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_from::text, etalon_id_to::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_relations
+            where
+                etalon_id_to = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadEtalonRelationsByIdSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_from::text, etalon_id_to::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_relations
+            where
+                id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadEtalonRelationByFromToNameAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_from::text, etalon_id_to::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_relations
+            where
+                etalon_id_from = ?::uuid
+            and etalon_id_to = ?::uuid
+            and name = ?
+            and status::record_status in (?)
+        ]]>
+    </entry>
+    <entry key="loadOriginRelationByFromToNameAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, origin_id_from::text, origin_id_to::text, create_date, created_by, update_date, updated_by, status, etalon_id::text, source_system
+            from
+                origins_relations
+            where
+                origin_id_from = ?::uuid
+            and origin_id_to = ?::uuid
+            and name = ?
+            and status::record_status in (?)
+        ]]>
+    </entry>
+    <entry key="loadOriginRelationByIdSQL">
+        <![CDATA[
+            select
+                id::text, name, origin_id_from::text, origin_id_to::text, create_date, created_by, update_date, updated_by, status, etalon_id::text, source_system
+            from
+                origins_relations
+            where
+                id = ?::uuid
+            and status::record_status in (?)
+        ]]>
+    </entry>
+    <entry key="loadOriginRelationByRelationEtalonIdAndSourceSystemSQL">
+        <![CDATA[
+            select
+                id::text, name, origin_id_from::text, origin_id_to::text, create_date, created_by, update_date, updated_by, status, etalon_id::text, source_system
+            from
+                origins_relations
+            where
+                etalon_id = ?::uuid
+            and source_system = coalesce(?, source_system)
+        ]]>
+    </entry>
+    <entry key="loadMissingOriginRelationByFromNameFromIdsActiveIdsAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, origin_id_from::text, origin_id_to::text, create_date, created_by, update_date, updated_by, status, etalon_id::text, source_system
+            from
+                origins_relations
+            where
+                name = :name
+            and origin_id_from = :origin_id_from::uuid
+            and status in (:status)
+            and id not in (:id)
+        ]]>
+    </entry>
+    <entry key="loadRelationVersionsByEtalonIdAndDateJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id::text as relation_etalon_id,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from origins_relations_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_relations o, origins_relations_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'
+                and (orv.approval <> 'DECLINED' and (orv.approval <> 'PENDING' or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_relations o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadRelationVersionsByEtalonIdAndDateProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id::text as relation_etalon_id,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from origins_relations_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_relations o, origins_relations_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'
+                and (orv.approval <> 'DECLINED' and (orv.approval <> 'PENDING' or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_relations o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadRelationVersionsByEtalonIdOperationIdAndDateJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id::text as relation_etalon_id,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from origins_relations_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_relations o, origins_relations_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'
+                and (orv.approval <> 'DECLINED' and (orv.approval <> 'PENDING' or (? = 'true' or orv.created_by = ?)))
+                and coalesce(orv.create_date, '-infinity') <=
+                        (select create_date from origins_relations_vistory where operation_id = ? and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                group by orv.origin_id ) as s, origins_relations o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadRelationVersionsByEtalonIdOperationIdAndDateProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id::text as relation_etalon_id,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from origins_relations_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_relations o, origins_relations_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'
+                and (orv.approval <> 'DECLINED' and (orv.approval <> 'PENDING' or (? = 'true' or orv.created_by = ?)))
+                and coalesce(orv.create_date, '-infinity') <=
+                        (select create_date from origins_relations_vistory where operation_id = ? and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                group by orv.origin_id ) as s, origins_relations o
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+        ]]>
+    </entry>
+    <entry key="loadPendingVersionsByEtalonIdJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id::text as relation_etalon_id,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from
+                origins_relations_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins_relations_vistory t, origins_relations o
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and t.approval = 'PENDING'
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    group by t.origin_id
+                ) as p, origins_relations o
+            where
+                v.origin_id = p.origin_id
+            and v.origin_id = o.id
+            and v.revision <= p.revision
+            and v.approval = 'PENDING'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.revision > (
+                coalesce((select max(t.revision)
+                from
+                    origins_relations_vistory t
+                where
+                    t.origin_id = v.origin_id
+                and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                and t.approval = 'APPROVED'), 0)
+            )
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="loadPendingVersionsByEtalonIdProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::uuid,
+                v.origin_id::uuid,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status,
+                v.approval,
+                v.major,
+                v.minor,
+                v.shift,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.etalon_id as relation_etalon_id,
+                -- from
+                o.origin_id_from,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system
+            from
+                origins_relations_vistory v, (
+                    select
+                        t.origin_id,
+                        max(t.revision) as revision
+                    from
+                        origins_relations_vistory t, origins_relations o
+                    where
+                        o.etalon_id = ?::uuid
+                    and t.origin_id = o.id
+                    and t.approval = 'PENDING'
+                    and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                    group by t.origin_id
+                ) as p, origins_relations o
+            where
+                v.origin_id = p.origin_id
+            and v.origin_id = o.id
+            and v.revision <= p.revision
+            and v.approval = 'PENDING'
+            and (? between coalesce(v.valid_from, '-infinity') and coalesce(v.valid_to, 'infinity'))
+            and v.revision > (
+                coalesce((select max(t.revision)
+                from
+                    origins_relations_vistory t
+                where
+                    t.origin_id = v.origin_id
+                and (? between coalesce(t.valid_from, '-infinity') and coalesce(t.valid_to, 'infinity'))
+                and t.approval = 'APPROVED'), 0)
+            )
+            order by v.revision asc
+        ]]>
+    </entry>
+    <entry key="calcTotalCountByNameDateAndFromEtalonIdSQL">
+        <![CDATA[
+            select
+                count(*) as cnt
+            from etalons_relations e
+            where
+                e.status in ('ACTIVE')
+            and e.etalon_id_from = ?::uuid
+            and e.name = ?
+        ]]>
+    </entry>
+    <entry key="calcTotalCountByNameDateAndToEtalonIdSQL">
+        <![CDATA[
+            select
+                count(*) as cnt
+            from etalons_relations e
+            where
+                e.status in ('ACTIVE')
+            and e.etalon_id_to = ?::uuid
+            and e.name = ?
+        ]]>
+    </entry>
+    <entry key="calcTotalCountByFromEtalonIdSQL">
+        <![CDATA[
+            select
+                count(er.id)
+            from etalons_relations er, etalons e
+            where
+                er.etalon_id_from = ?::uuid
+            and er.etalon_id_to = e.id
+            and e.status = ?::record_status
+            and er.status = ?::record_status
+        ]]>
+    </entry>
+    <entry key="checkUsageByFromEtalonIdsSQL">
+        <![CDATA[
+            select distinct er.etalon_id_from as etalon_id_from
+            from etalons_relations er, etalons e
+            where
+                er.etalon_id_from in (:etalon_id_from)
+            and er.etalon_id_to = e.id
+            and e.status = 'ACTIVE'
+            and er.status = 'ACTIVE'
+            and er.name = :name
+        ]]>
+    </entry>
+    <entry key="calcTotalCountByToEtalonIdSQL">
+        <![CDATA[
+            select
+                count(er.id)
+            from etalons_relations er, etalons e
+            where
+                er.etalon_id_to = ?::uuid
+            and er.etalon_id_from = e.id
+            and e.status = ?::record_status
+            and er.status = ?::record_status
+        ]]>
+    </entry>
+    <entry key="calcTotalCountByRelName">
+        <![CDATA[
+            select
+                count(er.id)
+            from etalons_relations er
+            where er.name = ?
+        ]]>
+    </entry>
+
+    <entry key="checkExistByRelName">
+        <![CDATA[
+            select exists(
+            select 1
+            from etalons_relations er
+            where er.name = ?)
+        ]]>
+    </entry>
+    <entry key="loadToEtalonIdsByNameDateAndFromEtalonIdSQL">
+        <![CDATA[
+            select
+                e.etalon_id_to::text
+            from etalons_relations e
+            where e.status in ('ACTIVE')
+            and e.etalon_id_from = ?::uuid
+            and e.name = ?
+            offset ?
+            limit ?
+        ]]>
+    </entry>
+    <entry key="loadFromEtalonIdsByNameDateAndToEtalonIdSQL">
+        <![CDATA[
+            select
+                e.etalon_id_from::text
+            from etalons_relations e
+            where e.status in ('ACTIVE')
+            and e.etalon_id_to = ?::uuid
+            and e.name = ?
+            offset ?
+            limit ?
+        ]]>
+    </entry>
+    <entry key="updateOriginRelationSQL">
+        <![CDATA[
+            update origins_relations set update_date = ?, updated_by = ?, status = ?::record_status where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="updateEtalonRelationSQL">
+        <![CDATA[
+            update etalons_relations set update_date = ?, updated_by = ?, status = ?::record_status, approval = ?::approval_state, operation_id = ? where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deactivateRelationByNameSQL">
+        <![CDATA[
+            update etalons_relations set update_date = ?, status = ?::record_status where name = ?
+        ]]>
+    </entry>
+    <entry key="changeEtalonApprovalSQL">
+        <![CDATA[
+            update etalons_relations set
+                update_date = current_timestamp,
+                updated_by = ?,
+                approval = ?::approval_state
+            where
+                id = ?::uuid and approval <> ?::approval_state
+        ]]>
+    </entry>
+    <entry key="markEtalonRelationsMergedByFromSide">
+        <![CDATA[
+            update etalons_relations
+            set status = :status::record_status, update_date = :update_date, updated_by = :updated_by, operation_id = :operation_id
+            where etalon_id_from in (:etalon_id_from)
+            and name not in (:name)
+        ]]>
+    </entry>
+    <entry key="remapToEtalonRelations">
+        <![CDATA[
+            update etalons_relations
+            set etalon_id_to = :etalon_id_to_new,
+            update_date = :update_date,
+            updated_by = :updated_by,
+            operation_id = :operation_id
+            where id in (
+                select distinct on (etalon_id_from) id from etalons_relations t
+                where t.etalon_id_to in (:etalon_id_to)
+                and not exists (
+                    select true from etalons_relations sub
+                    where sub.etalon_id_to = :etalon_id_to_new
+                    and sub.name = t.name
+                    and sub.etalon_id_from = t.etalon_id_from
+                )
+            )
+        ]]>
+    </entry>
+    <entry key="remapFromEtalonRelations">
+        <![CDATA[
+            update etalons_relations
+            set etalon_id_from = :etalon_id_from_new,
+            update_date = :update_date,
+            updated_by = :updated_by,
+            operation_id = :operation_id
+            where id in (
+                select distinct on (etalon_id_to) id from etalons_relations t
+                where t.etalon_id_from in (:etalon_id_from)
+                and t.name in (:name)
+                and not exists (
+                    select true from etalons_relations sub
+                    where sub.etalon_id_from = :etalon_id_from_new
+                    and sub.name = t.name
+                    and sub.etalon_id_to = t.etalon_id_to
+                )
+            )
+        ]]>
+    </entry>
+    <!-- Keys -->
+    <entry key="loadKeysByRelationOriginIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_relations_vistory v where v.origin_id = o.id) as origin_revision,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_from::text,
+                (select status from etalons where id = e.etalon_id_from) as etalon_from_status,
+                (select approval from etalons where id = e.etalon_id_from) as etalon_from_state,
+                (select name from etalons where id = e.etalon_id_from) as etalon_from_name,
+                -- to
+                e.etalon_id_to::text,
+                (select status from etalons where id = e.etalon_id_to) as etalon_to_status,
+                (select approval from etalons where id = e.etalon_id_to) as etalon_to_state,
+                (select name from etalons where id = e.etalon_id_to) as etalon_to_name
+            from
+                origins_relations o, etalons_relations e
+            where
+                o.etalon_id = e.id
+            and o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByRelationEtalonIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_relations_vistory v where v.origin_id = o.id) as origin_revision,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_from::text,
+                (select status from etalons where id = e.etalon_id_from) as etalon_from_status,
+                (select approval from etalons where id = e.etalon_id_from) as etalon_from_state,
+                (select name from etalons where id = e.etalon_id_from) as etalon_from_name,
+                -- to
+                e.etalon_id_to::text,
+                (select status from etalons where id = e.etalon_id_to) as etalon_to_status,
+                (select approval from etalons where id = e.etalon_id_to) as etalon_to_state,
+                (select name from etalons where id = e.etalon_id_to) as etalon_to_name
+            from
+                etalons_relations e
+            left outer join origins_relations o
+            on (o.etalon_id = e.id and o.source_system = ?)
+            where e.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByOriginIdsSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_relations_vistory v where v.origin_id = o.id) as origin_revision,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_from::text,
+                (select status from etalons where id = e.etalon_id_from) as etalon_from_status,
+                (select approval from etalons where id = e.etalon_id_from) as etalon_from_state,
+                (select name from etalons where id = e.etalon_id_from) as etalon_from_name,
+                -- to
+                e.etalon_id_to::text,
+                (select status from etalons where id = e.etalon_id_to) as etalon_to_status,
+                (select approval from etalons where id = e.etalon_id_to) as etalon_to_state,
+                (select name from etalons where id = e.etalon_id_to) as etalon_to_name
+            from
+                origins_relations o, etalons_relations e
+            where
+                o.etalon_id = e.id
+            and e.status <> 'MERGED'
+            and o.origin_id_from = ?::uuid
+            and o.origin_id_to = ?::uuid
+            and o.name = ?
+        ]]>
+    </entry>
+    <entry key="loadKeysByEtalonIdsSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_relations_vistory v where v.origin_id = o.id) as origin_revision,
+                -- from
+                o.origin_id_from::text,
+                (select status from origins where id = o.origin_id_from) as origin_from_status,
+                (select external_id from origins where id = o.origin_id_from) as origin_from_external_id,
+                (select name from origins where id = o.origin_id_from) as origin_from_name,
+                (select source_system from origins where id = o.origin_id_from) as origin_from_source_system,
+                -- to
+                o.origin_id_to::text,
+                (select status from origins where id = o.origin_id_to) as origin_to_status,
+                (select external_id from origins where id = o.origin_id_to) as origin_to_external_id,
+                (select name from origins where id = o.origin_id_to) as origin_to_name,
+                (select source_system from origins where id = o.origin_id_to) as origin_to_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_from::text,
+                (select status from etalons where id = e.etalon_id_from) as etalon_from_status,
+                (select approval from etalons where id = e.etalon_id_from) as etalon_from_state,
+                (select name from etalons where id = e.etalon_id_from) as etalon_from_name,
+                -- to
+                e.etalon_id_to::text,
+                (select status from etalons where id = e.etalon_id_to) as etalon_to_status,
+                (select approval from etalons where id = e.etalon_id_to) as etalon_to_state,
+                (select name from etalons where id = e.etalon_id_to) as etalon_to_name
+            from
+                etalons_relations e
+            left outer join origins_relations o
+            on (o.etalon_id = e.id and o.source_system = ?)
+            where
+                e.etalon_id_from = ?::uuid
+            and e.etalon_id_to = ?::uuid
+            and e.name = ?
+        ]]>
+    </entry>
+    <entry key="deleteVistoryByOriginId">
+        <![CDATA[
+            delete from origins_relations_vistory where origin_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteOriginById">
+        <![CDATA[
+            delete from origins_relations where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteEtalonById">
+        <![CDATA[
+            delete from etalons_relations where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="updatePendingVersionsSQL">
+        <![CDATA[
+            update origins_relations_vistory
+            set approval = ?::approval_state
+            from
+                origins_relations_vistory v,
+                origins_relations o,
+                etalons_relations e
+            where
+                e.id = ?::uuid
+            and o.etalon_id = e.id
+            and o.id = v.origin_id
+            and v.approval = 'PENDING'
+            and origins_relations_vistory.id = v.id
+        ]]>
+    </entry>
+</properties>

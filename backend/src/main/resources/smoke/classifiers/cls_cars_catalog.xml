@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FullClassifierDef xmlns="http://classifier.mdm.unidata.com/">
+  <classifier name="cars_catalog" displayName="Каталог марок/моделей" description="" codePattern=""/>
+  <classifierNodes name="Каталог марок/моделей" id="cars_catalog.root"/>
+  <classifierNodes name="Minelli" id="230" parentId="cars_catalog.root"/>
+  <classifierNodes name="MINI" id="231" parentId="cars_catalog.root"/>
+  <classifierNodes name="Audi" id="110" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mitsubishi" id="232" parentId="cars_catalog.root"/>
+  <classifierNodes name="Austin" id="111" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mitsuoka" id="233" parentId="cars_catalog.root"/>
+  <classifierNodes name="Autobianchi" id="112" parentId="cars_catalog.root"/>
+  <classifierNodes name="Morgan" id="234" parentId="cars_catalog.root"/>
+  <classifierNodes name="Baltijas Dzips" id="113" parentId="cars_catalog.root"/>
+  <classifierNodes name="Morris" id="235" parentId="cars_catalog.root"/>
+  <classifierNodes name="Batmobile" id="114" parentId="cars_catalog.root"/>
+  <classifierNodes name="Nissan" id="236" parentId="cars_catalog.root"/>
+  <classifierNodes name="Beijing" id="115" parentId="cars_catalog.root"/>
+  <classifierNodes name="Noble" id="237" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bentley" id="116" parentId="cars_catalog.root"/>
+  <classifierNodes name="Oldsmobile" id="238" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bertone" id="117" parentId="cars_catalog.root"/>
+  <classifierNodes name="Opel" id="239" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bilenkin" id="118" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bitter" id="119" parentId="cars_catalog.root"/>
+  <classifierNodes name="Osca" id="240" parentId="cars_catalog.root"/>
+  <classifierNodes name="Packard" id="241" parentId="cars_catalog.root"/>
+  <classifierNodes name="Borgward" id="120" parentId="cars_catalog.root"/>
+  <classifierNodes name="Pagani" id="242" parentId="cars_catalog.root"/>
+  <classifierNodes name="Brabus" id="121" parentId="cars_catalog.root"/>
+  <classifierNodes name="Panoz" id="243" parentId="cars_catalog.root"/>
+  <classifierNodes name="Brilliance" id="122" parentId="cars_catalog.root"/>
+  <classifierNodes name="Volvo" id="1" parentId="cars_catalog.root"/>
+  <classifierNodes name="260 Series" id="10" parentId="1"/>
+  <classifierNodes name="300 Series" id="11" parentId="1"/>
+  <classifierNodes name="440" id="12" parentId="1"/>
+  <classifierNodes name="460" id="13" parentId="1"/>
+  <classifierNodes name="480" id="14" parentId="1"/>
+  <classifierNodes name="66" id="15" parentId="1"/>
+  <classifierNodes name="740" id="16" parentId="1"/>
+  <classifierNodes name="760" id="17" parentId="1"/>
+  <classifierNodes name="780" id="18" parentId="1"/>
+  <classifierNodes name="850" id="19" parentId="1"/>
+  <classifierNodes name="XC90" id="2" parentId="1"/>
+  <classifierNodes name="XC90 I" id="3" parentId="2"/>
+  <classifierNodes name="XC90 I рестайлинг" id="4" parentId="2"/>
+  <classifierNodes name="XC90 II" id="5" parentId="2"/>
+  <classifierNodes name="120 Series" id="6" parentId="1"/>
+  <classifierNodes name="140 Series" id="7" parentId="1"/>
+  <classifierNodes name="164" id="8" parentId="1"/>
+  <classifierNodes name="240 Series" id="9" parentId="1"/>
+  <classifierNodes name="940" id="20" parentId="1"/>
+  <classifierNodes name="960" id="21" parentId="1"/>
+  <classifierNodes name="C30" id="22" parentId="1"/>
+  <classifierNodes name="C70" id="23" parentId="1"/>
+  <classifierNodes name="Laplander" id="24" parentId="1"/>
+  <classifierNodes name="P1800" id="25" parentId="1"/>
+  <classifierNodes name="P1900" id="26" parentId="1"/>
+  <classifierNodes name="S40" id="27" parentId="1"/>
+  <classifierNodes name="S60" id="28" parentId="1"/>
+  <classifierNodes name="S60 Cross Country" id="29" parentId="1"/>
+  <classifierNodes name="S70" id="30" parentId="1"/>
+  <classifierNodes name="S80" id="31" parentId="1"/>
+  <classifierNodes name="S90" id="32" parentId="1"/>
+  <classifierNodes name="V40" id="33" parentId="1"/>
+  <classifierNodes name="V40 Cross Country" id="34" parentId="1"/>
+  <classifierNodes name="V50" id="35" parentId="1"/>
+  <classifierNodes name="V60" id="36" parentId="1"/>
+  <classifierNodes name="V60 Cross Country" id="37" parentId="1"/>
+  <classifierNodes name="V70" id="38" parentId="1"/>
+  <classifierNodes name="V90" id="39" parentId="1"/>
+  <classifierNodes name="V90 Cross Country" id="40" parentId="1"/>
+  <classifierNodes name="XC60" id="41" parentId="1"/>
+  <classifierNodes name="XC70" id="42" parentId="1"/>
+  <classifierNodes name="XC70 I" id="43" parentId="42"/>
+  <classifierNodes name="XC70 I рестайлинг" id="44" parentId="42"/>
+  <classifierNodes name="XC70 II" id="45" parentId="42"/>
+  <classifierNodes name="XC70 II рестайлинг" id="46" parentId="42"/>
+  <classifierNodes name="Perodua" id="244" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bristol" id="123" parentId="cars_catalog.root"/>
+  <classifierNodes name="Peugeot" id="245" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bufori" id="124" parentId="cars_catalog.root"/>
+  <classifierNodes name="PGO" id="246" parentId="cars_catalog.root"/>
+  <classifierNodes name="Bugatti" id="125" parentId="cars_catalog.root"/>
+  <classifierNodes name="Piaggio" id="247" parentId="cars_catalog.root"/>
+  <classifierNodes name="Buick" id="126" parentId="cars_catalog.root"/>
+  <classifierNodes name="Plymouth" id="248" parentId="cars_catalog.root"/>
+  <classifierNodes name="BYD" id="127" parentId="cars_catalog.root"/>
+  <classifierNodes name="Pontiac" id="249" parentId="cars_catalog.root"/>
+  <classifierNodes name="Byvin" id="128" parentId="cars_catalog.root"/>
+  <classifierNodes name="Cadillac" id="129" parentId="cars_catalog.root"/>
+  <classifierNodes name="Porsche" id="250" parentId="cars_catalog.root"/>
+  <classifierNodes name="Premier" id="251" parentId="cars_catalog.root"/>
+  <classifierNodes name="Callaway" id="130" parentId="cars_catalog.root"/>
+  <classifierNodes name="Proton" id="252" parentId="cars_catalog.root"/>
+  <classifierNodes name="Carbodies" id="131" parentId="cars_catalog.root"/>
+  <classifierNodes name="PUCH" id="253" parentId="cars_catalog.root"/>
+  <classifierNodes name="Caterham" id="132" parentId="cars_catalog.root"/>
+  <classifierNodes name="Puma" id="254" parentId="cars_catalog.root"/>
+  <classifierNodes name="Changan" id="133" parentId="cars_catalog.root"/>
+  <classifierNodes name="Qoros" id="255" parentId="cars_catalog.root"/>
+  <classifierNodes name="ChangFeng" id="134" parentId="cars_catalog.root"/>
+  <classifierNodes name="Qvale" id="256" parentId="cars_catalog.root"/>
+  <classifierNodes name="Chery" id="135" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ravon" id="257" parentId="cars_catalog.root"/>
+  <classifierNodes name="Chevrolet" id="136" parentId="cars_catalog.root"/>
+  <classifierNodes name="Reliant" id="258" parentId="cars_catalog.root"/>
+  <classifierNodes name="Chrysler" id="137" parentId="cars_catalog.root"/>
+  <classifierNodes name="Renaissance" id="259" parentId="cars_catalog.root"/>
+  <classifierNodes name="Citroen" id="138" parentId="cars_catalog.root"/>
+  <classifierNodes name="Cizeta" id="139" parentId="cars_catalog.root"/>
+  <classifierNodes name="Renault" id="260" parentId="cars_catalog.root"/>
+  <classifierNodes name="Coggiola" id="140" parentId="cars_catalog.root"/>
+  <classifierNodes name="Renault Samsung" id="261" parentId="cars_catalog.root"/>
+  <classifierNodes name="Rezvani" id="262" parentId="cars_catalog.root"/>
+  <classifierNodes name="Dacia" id="141" parentId="cars_catalog.root"/>
+  <classifierNodes name="Rimac" id="263" parentId="cars_catalog.root"/>
+  <classifierNodes name="Dadi" id="142" parentId="cars_catalog.root"/>
+  <classifierNodes name="Rolls-Royce" id="264" parentId="cars_catalog.root"/>
+  <classifierNodes name="Daewoo" id="143" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ronart" id="265" parentId="cars_catalog.root"/>
+  <classifierNodes name="Daihatsu" id="144" parentId="cars_catalog.root"/>
+  <classifierNodes name="Rover" id="266" parentId="cars_catalog.root"/>
+  <classifierNodes name="Daimler" id="145" parentId="cars_catalog.root"/>
+  <classifierNodes name="Saab" id="267" parentId="cars_catalog.root"/>
+  <classifierNodes name="Datsun" id="146" parentId="cars_catalog.root"/>
+  <classifierNodes name="Saleen" id="268" parentId="cars_catalog.root"/>
+  <classifierNodes name="De Tomaso" id="147" parentId="cars_catalog.root"/>
+  <classifierNodes name="Santana" id="269" parentId="cars_catalog.root"/>
+  <classifierNodes name="Delage" id="148" parentId="cars_catalog.root"/>
+  <classifierNodes name="DeLorean" id="149" parentId="cars_catalog.root"/>
+  <classifierNodes name="BMW" description="" code="" id="47" parentId="cars_catalog.root"/>
+  <classifierNodes name="02 (E10)" id="48" parentId="47"/>
+  <classifierNodes name="1er" id="49" parentId="47"/>
+  <classifierNodes name="1M" id="50" parentId="47"/>
+  <classifierNodes name="2000 C/CS" id="51" parentId="47"/>
+  <classifierNodes name="2er" id="52" parentId="47"/>
+  <classifierNodes name="2er Active Tourer" id="53" parentId="47"/>
+  <classifierNodes name="2er Grand Tourer" id="54" parentId="47"/>
+  <classifierNodes name="3/15" id="55" parentId="47"/>
+  <classifierNodes name="315" id="56" parentId="47"/>
+  <classifierNodes name="3200" id="57" parentId="47"/>
+  <classifierNodes name="321" id="58" parentId="47"/>
+  <classifierNodes name="326" id="59" parentId="47"/>
+  <classifierNodes name="327" id="60" parentId="47"/>
+  <classifierNodes name="340" id="61" parentId="47"/>
+  <classifierNodes name="3er" id="62" parentId="47"/>
+  <classifierNodes name="4er" id="63" parentId="47"/>
+  <classifierNodes name="501" id="64" parentId="47"/>
+  <classifierNodes name="502" id="65" parentId="47"/>
+  <classifierNodes name="503" id="66" parentId="47"/>
+  <classifierNodes name="507" id="67" parentId="47"/>
+  <classifierNodes name="5er" id="68" parentId="47"/>
+  <classifierNodes name="600" id="69" parentId="47"/>
+  <classifierNodes name="6er" id="70" parentId="47"/>
+  <classifierNodes name="700" id="71" parentId="47"/>
+  <classifierNodes name="7er" id="72" parentId="47"/>
+  <classifierNodes name="8er" id="73" parentId="47"/>
+  <classifierNodes name="E3" id="74" parentId="47"/>
+  <classifierNodes name="E9" id="75" parentId="47"/>
+  <classifierNodes name="i3" id="76" parentId="47"/>
+  <classifierNodes name="BMW i8" id="77" parentId="47"/>
+  <classifierNodes name="M2" id="78" parentId="47"/>
+  <classifierNodes name="M3" id="79" parentId="47"/>
+  <classifierNodes name="M4" id="80" parentId="47"/>
+  <classifierNodes name="M5" id="81" parentId="47"/>
+  <classifierNodes name="M6" id="82" parentId="47"/>
+  <classifierNodes name="New Class" id="83" parentId="47"/>
+  <classifierNodes name="X1" id="84" parentId="47"/>
+  <classifierNodes name="X3" id="86" parentId="47"/>
+  <classifierNodes name="X4" id="87" parentId="47"/>
+  <classifierNodes name="X5" id="88" parentId="47"/>
+  <classifierNodes name="X5 M" id="89" parentId="47"/>
+  <classifierNodes name="X6" id="90" parentId="47"/>
+  <classifierNodes name="X7" id="91" parentId="47"/>
+  <classifierNodes name="Z1" id="92" parentId="47"/>
+  <classifierNodes name="Z3" id="93" parentId="47"/>
+  <classifierNodes name="Z3 M" id="94" parentId="47"/>
+  <classifierNodes name="Z4" id="95" parentId="47"/>
+  <classifierNodes name="Z4 M" id="96" parentId="47"/>
+  <classifierNodes name="Z8" id="97" parentId="47"/>
+  <classifierNodes name="Saturn" id="270" parentId="cars_catalog.root"/>
+  <classifierNodes name="Derways" id="150" parentId="cars_catalog.root"/>
+  <classifierNodes name="Scion" id="271" parentId="cars_catalog.root"/>
+  <classifierNodes name="DeSoto" id="151" parentId="cars_catalog.root"/>
+  <classifierNodes name="SEAT" id="272" parentId="cars_catalog.root"/>
+  <classifierNodes name="Shanghai Maple" id="273" parentId="cars_catalog.root"/>
+  <classifierNodes name="Dodge" id="152" parentId="cars_catalog.root"/>
+  <classifierNodes name="ShuangHuan" id="274" parentId="cars_catalog.root"/>
+  <classifierNodes name="DongFeng" id="153" parentId="cars_catalog.root"/>
+  <classifierNodes name="Skoda" id="275" parentId="cars_catalog.root"/>
+  <classifierNodes name="Doninvest" id="154" parentId="cars_catalog.root"/>
+  <classifierNodes name="Smart" id="276" parentId="cars_catalog.root"/>
+  <classifierNodes name="Donkervoort" id="155" parentId="cars_catalog.root"/>
+  <classifierNodes name="Soueast" id="277" parentId="cars_catalog.root"/>
+  <classifierNodes name="DS" id="156" parentId="cars_catalog.root"/>
+  <classifierNodes name="Spectre" id="278" parentId="cars_catalog.root"/>
+  <classifierNodes name="E-Car" id="157" parentId="cars_catalog.root"/>
+  <classifierNodes name="Spyker" id="279" parentId="cars_catalog.root"/>
+  <classifierNodes name="Eagle" id="158" parentId="cars_catalog.root"/>
+  <classifierNodes name="Eagle Cars" id="159" parentId="cars_catalog.root"/>
+  <classifierNodes name="SsangYong" id="280" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ecomotors" id="160" parentId="cars_catalog.root"/>
+  <classifierNodes name="Steyr" id="281" parentId="cars_catalog.root"/>
+  <classifierNodes name="Excalibur" id="161" parentId="cars_catalog.root"/>
+  <classifierNodes name="Subaru" id="282" parentId="cars_catalog.root"/>
+  <classifierNodes name="FAW" id="162" parentId="cars_catalog.root"/>
+  <classifierNodes name="Suzuki" id="283" parentId="cars_catalog.root"/>
+  <classifierNodes name="Talbot" id="284" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ferrari" id="163" parentId="cars_catalog.root"/>
+  <classifierNodes name="TATA" id="285" parentId="cars_catalog.root"/>
+  <classifierNodes name="Fiat" id="164" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tatra" id="286" parentId="cars_catalog.root"/>
+  <classifierNodes name="Fisker" id="165" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tazzari" id="287" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ford" id="166" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tesla" id="288" parentId="cars_catalog.root"/>
+  <classifierNodes name="Foton" id="167" parentId="cars_catalog.root"/>
+  <classifierNodes name="Think" id="289" parentId="cars_catalog.root"/>
+  <classifierNodes name="FSO" id="168" parentId="cars_catalog.root"/>
+  <classifierNodes name="Fuqi" id="169" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tianma" id="290" parentId="cars_catalog.root"/>
+  <classifierNodes name="Geely" id="170" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tianye" id="291" parentId="cars_catalog.root"/>
+  <classifierNodes name="Genesis" id="171" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tofas" id="292" parentId="cars_catalog.root"/>
+  <classifierNodes name="Geo" id="172" parentId="cars_catalog.root"/>
+  <classifierNodes name="Toyota" id="293" parentId="cars_catalog.root"/>
+  <classifierNodes name="GMC" id="173" parentId="cars_catalog.root"/>
+  <classifierNodes name="Trabant" id="294" parentId="cars_catalog.root"/>
+  <classifierNodes name="Tramontana" id="295" parentId="cars_catalog.root"/>
+  <classifierNodes name="Gonow" id="174" parentId="cars_catalog.root"/>
+  <classifierNodes name="Triumph" id="296" parentId="cars_catalog.root"/>
+  <classifierNodes name="Gordon" id="175" parentId="cars_catalog.root"/>
+  <classifierNodes name="TVR" id="297" parentId="cars_catalog.root"/>
+  <classifierNodes name="Great Wall" id="176" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ultima" id="298" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hafei" id="177" parentId="cars_catalog.root"/>
+  <classifierNodes name="Vauxhall" id="299" parentId="cars_catalog.root"/>
+  <classifierNodes name="Haima" id="178" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hanomag" id="179" parentId="cars_catalog.root"/>
+  <classifierNodes name="Haval" id="180" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hawtai" id="181" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hindustan" id="182" parentId="cars_catalog.root"/>
+  <classifierNodes name="Holden" id="183" parentId="cars_catalog.root"/>
+  <classifierNodes name="Honda" description="" code="" id="184" parentId="cars_catalog.root">
+    <attributes unique="false" nullable="true" name="weight" displayName="Вес [кг]" description="" readOnly="false" hidden="false" valueType="Integer" searchable="false" displayable="false" mainDisplayable="false">
+      <value path="weight" type="Integer"/>
+    </attributes>
+  </classifierNodes>
+  <classifierNodes name="HuangHai" id="185" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hudson" id="186" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hummer" id="187" parentId="cars_catalog.root"/>
+  <classifierNodes name="Hyundai" id="188" parentId="cars_catalog.root"/>
+  <classifierNodes name="Infiniti" id="189" parentId="cars_catalog.root"/>
+  <classifierNodes name="Innocenti" id="190" parentId="cars_catalog.root"/>
+  <classifierNodes name="Invicta" id="191" parentId="cars_catalog.root"/>
+  <classifierNodes name="Iran Khodro" id="192" parentId="cars_catalog.root"/>
+  <classifierNodes name="Isdera" id="193" parentId="cars_catalog.root"/>
+  <classifierNodes name="Isuzu" id="194" parentId="cars_catalog.root"/>
+  <classifierNodes name="JAC" id="195" parentId="cars_catalog.root"/>
+  <classifierNodes name="Jaguar" id="196" parentId="cars_catalog.root"/>
+  <classifierNodes name="Jeep" id="197" parentId="cars_catalog.root"/>
+  <classifierNodes name="Jensen" id="198" parentId="cars_catalog.root"/>
+  <classifierNodes name="JMC" id="199" parentId="cars_catalog.root"/>
+  <classifierNodes name="AC" id="98" parentId="cars_catalog.root"/>
+  <classifierNodes name="Acura" id="99" parentId="cars_catalog.root"/>
+  <classifierNodes name="Vector" id="300" parentId="cars_catalog.root"/>
+  <classifierNodes name="Venturi" id="301" parentId="cars_catalog.root"/>
+  <classifierNodes name="Volkswagen" id="302" parentId="cars_catalog.root"/>
+  <classifierNodes name="Vortex" id="303" parentId="cars_catalog.root"/>
+  <classifierNodes name="Kia" id="200" parentId="cars_catalog.root"/>
+  <classifierNodes name="Koenigsegg" id="201" parentId="cars_catalog.root"/>
+  <classifierNodes name="KTM AG" id="202" parentId="cars_catalog.root"/>
+  <classifierNodes name="LADA (ВАЗ)" id="203" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lamborghini" id="204" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lancia" id="205" parentId="cars_catalog.root"/>
+  <classifierNodes name="Land Rover" id="206" parentId="cars_catalog.root"/>
+  <classifierNodes name="Landwind" id="207" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lexus" id="208" parentId="cars_catalog.root"/>
+  <classifierNodes name="Liebao Motor" id="209" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lifan" id="210" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lincoln" id="211" parentId="cars_catalog.root"/>
+  <classifierNodes name="Lotus" id="212" parentId="cars_catalog.root"/>
+  <classifierNodes name="LTI" id="213" parentId="cars_catalog.root"/>
+  <classifierNodes name="Luxgen" id="214" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mahindra" id="215" parentId="cars_catalog.root"/>
+  <classifierNodes name="Marcos" id="216" parentId="cars_catalog.root"/>
+  <classifierNodes name="Marlin" id="217" parentId="cars_catalog.root"/>
+  <classifierNodes name="Marussia" id="218" parentId="cars_catalog.root"/>
+  <classifierNodes name="Maruti" id="219" parentId="cars_catalog.root"/>
+  <classifierNodes name="Maserati" id="220" parentId="cars_catalog.root"/>
+  <classifierNodes name="Maybach" id="221" parentId="cars_catalog.root"/>
+  <classifierNodes name="Adler" id="100" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mazda" id="222" parentId="cars_catalog.root"/>
+  <classifierNodes name="Alfa Romeo" id="101" parentId="cars_catalog.root"/>
+  <classifierNodes name="McLaren" id="223" parentId="cars_catalog.root"/>
+  <classifierNodes name="Alpina" id="102" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mega" id="224" parentId="cars_catalog.root"/>
+  <classifierNodes name="Alpine" id="103" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mercedes-Benz" id="225" parentId="cars_catalog.root"/>
+  <classifierNodes name="AM General" id="104" parentId="cars_catalog.root"/>
+  <classifierNodes name="Mercury" id="226" parentId="cars_catalog.root"/>
+  <classifierNodes name="AMC" id="105" parentId="cars_catalog.root"/>
+  <classifierNodes name="Metrocab" id="227" parentId="cars_catalog.root"/>
+  <classifierNodes name="Ariel" id="106" parentId="cars_catalog.root"/>
+  <classifierNodes name="MG" id="228" parentId="cars_catalog.root"/>
+  <classifierNodes name="Aro" id="107" parentId="cars_catalog.root"/>
+  <classifierNodes name="Microcar" id="229" parentId="cars_catalog.root"/>
+  <classifierNodes name="Asia" id="108" parentId="cars_catalog.root"/>
+  <classifierNodes name="Aston Martin" id="109" parentId="cars_catalog.root"/>
+</FullClassifierDef>

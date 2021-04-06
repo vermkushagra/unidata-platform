@@ -1,0 +1,21 @@
+$baseCls: '.un-workflow-process-assignment';
+
+#{$baseCls} {
+  .x-grid-item-container {
+    margin-bottom: 80px;
+  }
+
+  .x-form-trigger-wrap {
+    border: none !important;
+  }
+
+  .x-form-trigger {
+    display: none;
+  }
+
+  .x-grid-item-over {
+    .x-form-trigger {
+      display: table-cell !important;
+    }
+  }
+}

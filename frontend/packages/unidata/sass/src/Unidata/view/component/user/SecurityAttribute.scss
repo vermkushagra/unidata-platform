@@ -1,0 +1,26 @@
+$baseCls: '.un-securitylabel-container';
+
+#{$baseCls} {
+  overflow: visible;
+  padding: 8px 0;
+  border-top: 1px solid rgb(220, 220, 220);
+
+  &:after {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    margin-left: -17px;
+    content: 'или';
+    padding: 0px 6px;
+    background-color: white;
+  }
+
+  &:first-child {
+    padding-top: 0;
+    border-top: none;
+
+    &:after {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,7 @@
+$bePropGroupBackgroundColor: rgb(230, 230, 229);
+
+.x-panel.un-beprop-propgroup {
+  > .x-panel-header {
+    background-color: $bePropGroupBackgroundColor;
+  }
+}

@@ -1,0 +1,86 @@
+{
+    "lookupEntities" : [
+    { 
+        "name" : "CityDistrict",
+        "@type" : "CSV",
+        "importOrder" : 0, 
+        "unique" : true, 
+        "sourceSystem" : "EGAIS-NARCO",
+        "naturalKey" :  { "@type" : "CSV", "foreignIdIndex" : 0 }, 
+        "fields" : [
+            { "name" : "name", "@type" : "CSV", "codeAttribute" : true, "index" : 3 }
+        ] 
+    },
+	{ 
+        "name" : "SubwayStation",
+        "@type" : "CSV",
+        "importOrder" : 1, 
+        "unique" : true, 
+        "sourceSystem" : "EGAIS-NARCO",
+        "naturalKey" :  { "@type" : "CSV", "foreignIdIndex" : 0 }, 
+        "fields" : [{ "name" : "name", "@type" : "CSV", "codeAttribute" : true, "index" : 4 }] }
+	],
+	"entities" : [
+	{ 
+	    "name" : "Licensee", 
+	    "@type" : "CSV",
+	    "importOrder" : 2,
+	    "unique" : false, 
+        "sourceSystem" : "EGAIS-NARCO",
+	    "naturalKey" :  { "@type" : "CSV", "foreignIdIndex" : 0 },
+	    "fields" : [
+            { "name" : "sourceName", "@type" : "CSV", "index" : 1 },
+            { "name" : "shortName", "@type" : "CSV", "index" : 1, "transformations" : [
+                { "@type" : "REGEX_SPLITTER", "split" : [";", ",", "\\h{5,}?"], "part" : 1, "skipEmpty" : true }
+    		]
+    		},
+    		{ "name" : "fullName", "@type" : "CSV", "index" : 1, "transformations" : [
+                { "@type" : "REGEX_SPLITTER", "split" : [";", ",", "\\h{5,}?"], "part" : 0, "skipEmpty" : true }
+            ]
+    		},
+    		{ "name" : "addressInfo.addressLine1", "@type" : "CSV", "index" : 2 },
+    		{ "name" : "addressInfo.cityDistrict", "@type" : "CSV", "index" : 3 },
+    		{ "name" : "addressInfo.subwayStation", "@type" : "CSV", "index" : 4 },
+    		{ "name" : "phones.combinedValue", "@type" : "CSV", "index" : 5, "expansions" : [ {"level" : 0, "expand" : true } ]},
+    		{ "name" : "phones.type", "@type" : "CSV", "value" : "phone", "expansions" : [ {"level" : 0, "expand" : false } ]},
+    		{ "name" : "phones.combinedValue", "@type" : "CSV", "index" : 6, "expansions" : [ {"level" : 0, "expand" : true } ]},
+    		{ "name" : "phones.type", "@type" : "CSV", "value" : "fax", "expansions" : [ {"level" : 0, "expand" : false } ]},
+    		{ "name" : "directorName", "@type" : "CSV", "index" : 7 },
+    		{ "name" : "inn", "@type" : "CSV", "index" : 8 },
+    		{ "name" : "ogrn", "@type" : "CSV", "index" : 9 },
+    		{ "name" : "okpo", "@type" : "CSV", "index" : 10 },
+    		{ "name" : "licenseNumber", "@type" : "CSV", "index": 16 },
+    		{ "name" : "decisionDate", "@type" : "CSV", "index": 17, "transformations" : [
+    			{ "@type" : "TEMPORAL_PARSER", "pattern" : "dd.MM.yyyy", "lenient" : false }
+    		]
+    		},
+    		{ "name" : "licenseStartDate", "@type" : "CSV", "index": 18, "transformations" : [
+    			{ "@type" : "TEMPORAL_PARSER", "pattern" : "dd.MM.yyyy", "lenient" : false }
+    		]
+    		},
+    		{ "name" : "licenseInfo.licenseConfirmation", "@type" : "CSV", "index" : 19 },
+    		{ "name" : "licenseInfo.licenseSuspension", "@type" : "CSV", "index" : 20 },
+    		{ "name" : "licenseInfo.licenseRenewal", "@type" : "CSV", "index" : 21 },
+    		{ "name" : "licenseInfo.licenseCancellation", "@type" : "CSV", "index" : 22 },
+    		{ "name" : "licenseInfo.licenseTermination", "@type" : "CSV", "index" : 23 } 
+			]
+		},
+		{ 
+		    "name" : "LicenseProvider", 
+		    "@type" : "CSV",
+		    "importOrder" : 3, 
+		    "unique" : true,
+		    "sourceSystem" : "EGAIS-NARCO",
+		    "naturalKey" :  { "@type" : "CSV", "foreignIdIndex" : 0 }, 
+		    "fields" : [
+    			{ "name" : "fullName", "@type" : "CSV", "index" : 12 },
+    			{ "name" : "addressLine1", "@type" : "CSV", "index" : 13 },
+    			{ "name" : "cityDistrict", "@type" : "CSV", "index" : 14 }
+			]
+		}
+	],
+	"settings" : {
+        "fieldSeparator" : "\\|",
+        "charset" : "UTF-8"
+    }
+}

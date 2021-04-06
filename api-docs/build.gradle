@@ -1,0 +1,19 @@
+
+//
+// WAR packaging
+//
+war {
+    war.destinationDir = new File(project.rootDir, '/target')
+    war.archiveName = 'api-docs.war'
+    war.from projectDir
+    war.exclude("build/**")
+    war.exclude("src/**")
+    war.exclude("**.gradle")
+    war.exclude("**.iml")
+    war.manifest {
+        attributes(
+                'Implementation-Title': 'Swagger UI',
+                'Implementation-Version': '2.0.24'
+        )
+    }
+}

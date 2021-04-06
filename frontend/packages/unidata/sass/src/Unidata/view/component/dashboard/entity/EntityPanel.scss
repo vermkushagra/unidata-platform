@@ -1,0 +1,51 @@
+$baseCls: '.un-dashboard-entity';
+
+#{$baseCls} {
+
+  > .x-panel-header {
+    border-color: $un-color-section-main;
+  }
+
+  > .x-panel-body {
+    padding: 9px 21px;
+  }
+
+  &-inner {
+    > .x-header {
+      background-color: transparent;
+      padding-left: 0;
+
+      .x-title-text {
+        font-family: $font-family-1;
+        font-size: 12px;
+        font-weight: bold;
+        color: #000000;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .un-entity-combobox {
+    cursor: pointer !important;
+
+    .x-form-item-body,
+    .x-form-trigger-wrap {
+      border: none !important;
+      padding: 0 !important;
+    }
+
+    input {
+      font-family: $font-family-1;
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+
+  hr {
+    border-width: 0;
+    border-top-width: 1px;
+    border-style: solid;
+    border-color: #E8E8E8;
+    margin-bottom: 15px;
+  }
+}

@@ -1,0 +1,168 @@
+$baseCls: '.un-dataentity-attribute';
+//$searchable: '.un-dataentity-searchable';
+$readOnly: $baseCls + '__readOnly';
+$error: $baseCls + '__error';
+//$approve: $baseCls + '__approve';
+
+//#{$baseCls} {
+//  padding: 7px 5px;
+//  margin: 0 0 6px 0;
+//
+//  .x-form-field,   /*фон полей прозрачный*/
+//  .x-form-trigger, /*фон тригеров прозрачный*/
+//  .x-form-trigger .x-form-spinner /*фон спинеров прозрачный*/ {
+//    background-color: transparent
+//  }
+//
+//  .x-form-trigger-spinner {
+//    background-image: none; // фикс числовых полей - прозрачный фон ломает их вёрстку
+//  }
+//}
+
+//#{$baseCls}#{$searchable}__searched {
+//  background-color: #ecffd7;
+//}
+
+//#{$baseCls}#{$searchable}__searchedAndActive {
+//  background-color: #f0ff7d;
+//}
+
+//#{$baseCls}-title {
+//  font-weight: bold;
+//  font-size: 14px;
+//  line-height: 1.2;
+//  margin-bottom: 2px;
+//  //color: #336079;
+//  display: inline-block;
+//}
+
+//#{$baseCls}-switcher {
+//  margin-left: 7px;
+//  //color: #4e93bc;
+//  cursor: pointer;
+//  display: inline-block;
+//  overflow: visible;
+//  font-size: 1em;
+//}
+
+//#{$baseCls}-visibleValue {
+//  display: none;
+//  font-weight: normal;
+//  color: #2D5B75;
+//
+//  #{$readOnly} & {
+//    display: block;
+//  }
+//}
+
+//#{$baseCls}-input-cont {
+//  display: block;
+//
+//  #{$readOnly} & {
+//    display: none;
+//  }
+//
+//  >.file-uploaddownload-field {
+//    padding: 0px;
+//    margin: 0px;
+//    .x-panel-body {
+//      background-color: transparent;
+//    }
+//  }
+//
+//  >.x-form-item {
+//
+//    &.x-form-dirty:not(.x-field-focus) {
+//      .x-form-trigger-wrap-default {
+//        border-bottom-color: transparent;
+//      }
+//
+//      .x-form-field {
+//        cursor: default;
+//      }
+//    }
+//
+//    .x-form-field {
+//      border: 1px solid transparent;
+//    }
+//  }
+//}
+
+//#{$baseCls}-input-cont__over {
+//
+//  .x-form-field {
+//    border-color: #d0d0d0;
+//  }
+//
+//  &.x-field-focus {
+//    .x-form-field {
+//      //border-color: transparent;
+//      cursor: text;
+//    }
+//  }
+//}
+
+//#{$baseCls}-top {
+//  margin-left: 12px;
+//  font-weight: normal;
+//  font-size: 14px;
+//  color: #31627e;
+//}
+
+//#{$baseCls}-bottom {
+//  position: relative;
+//
+//  .x-form-field {
+//    font-weight: normal;
+//    font-size: 14px;
+//    color: #31627e;
+//  }
+//}
+
+//#{$baseCls}-bottom-left {
+//  position: absolute;
+//  left: 0;
+//  top: 0;
+//  bottom: 0;
+//  width: 10px;
+//}
+
+//#{$baseCls}-bottom-right {
+//  margin-left: 12px;
+//}
+
+//$indicatorSize: 6px;
+
+//#{$baseCls}-indicator {
+//  position: absolute;
+//  left: 50%;
+//  top: 50%;
+//  width: $indicatorSize;
+//  height: $indicatorSize;
+//  margin-top: #{-$indicatorSize / 2};
+//  margin-left: #{-$indicatorSize / 2};
+//
+//  .un-ndraw-indicatorround {
+//    display: block;
+//  }
+//}
+
+//#{$error}#{$approve} {
+//
+//  #{$baseCls}-indicator__approve {
+//    margin-top: #{-$indicatorSize - 2px};
+//  }
+//
+//  #{$baseCls}-indicator__error {
+//    margin-top: 2px;
+//  }
+//}
+
+//#{$baseCls}-combobox {
+//  margin: 0px 10px 0px 15px;
+//}
+//
+//#{$baseCls}-error {
+//  margin-left: 12px;
+//  margin-top: 5px;
+//}

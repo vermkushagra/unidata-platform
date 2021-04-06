@@ -1,0 +1,71 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <bean id="reindexMappingsJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="${unidata.job.reindex_data.mapping.concurrency:4}"/>
+    </bean>
+
+    <bean id="reindexMappingsJobParameters" class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="reindexMappingsJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="reindexTypes" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="usersSelector" value-type="java.lang.String" value=""/>
+                <entry key="updateMappings" value-type="java.lang.Boolean" value="false"/>
+                <entry key="cleanIndexes" value-type="java.lang.Boolean" value="false"/>
+                <entry key="recreateAudit" value-type="java.lang.Boolean" value="false"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="reindexMappingsJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="updateSystemMappingIndexes"/>
+        </batch:listeners>
+        <batch:step id="reindexMappingsJob.master">
+            <batch:partition partitioner="reindexMappingsJobPartitioner" step="reindexMappingsJob.slave">
+                <batch:handler task-executor="reindexMappingsJobChunkTaskExecutor"/>
+            </batch:partition>
+        </batch:step>
+   	</batch:job>
+
+    <bean id="reindexMappingsJobPartitioner" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingPartitioner" scope="job" />
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="reindexMappingsJob.slave">
+   		<batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexMappingsJobItemReader" processor="reindexMappingsJobItemProcessor" writer="reindexMappingsJobItemWriter" commit-interval="1"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="reindexMappingsJobMeasurementListener"/>
+        </batch:listeners>
+   	</batch:step>
+
+    <bean id="updateSystemMappingIndexes" class="com.unidata.mdm.backend.service.job.reindexMeta.ReindexMetaMappingListener" scope="job">
+        <property name="recreateAudit" value="#{jobParameters['recreateAudit']}"/>
+    </bean>
+
+    <bean id="reindexMappingsJobMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_UPDATE_MAPPING"/>
+    </bean>
+
+    <!-- Reader, Writer, Processor. -->
+    <bean id="reindexMappingsJobItemReader" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingItemReader" scope="step"/>
+    <bean id="reindexMappingsJobItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor" scope="step"/>
+    <bean id="reindexMappingsJobItemWriter" class="com.unidata.mdm.backend.service.job.reindex.ReindexDataJobMappingItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+</beans>

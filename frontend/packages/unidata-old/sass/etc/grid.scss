@@ -1,0 +1,15 @@
+$baseCls: '.un-grid';
+
+#{$baseCls}-searchresult {
+  .x-grid-item-over {
+    color: #2f4fed;
+    text-decoration: underline;
+    .x-grid-td {
+      cursor: pointer;
+    }
+  }
+
+  .paging-toolbar {
+    margin-top: 10px;
+  }
+}

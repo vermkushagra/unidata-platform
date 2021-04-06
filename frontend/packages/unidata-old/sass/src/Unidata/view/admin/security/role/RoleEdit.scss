@@ -1,0 +1,28 @@
+$baseCls: '.un-role-edit';
+
+#{$baseCls} {
+  .un-right-warning {
+    background-color: #ffe1b3;
+  }
+
+  .un-grid-td-right-warning {
+    .x-grid-checkcolumn {
+      outline: 2px solid #f2fa9e;
+    }
+  }
+
+  .un-right-msg-warning {
+    padding: 0 3px;
+    background-color: #ffe1b3;
+  }
+
+  .un-role-panel, .un-role-panel-inner {
+    >.#{$prefix}panel-body {
+      background: transparent;
+    }
+  }
+
+  .x-panel-body-un-card {
+    padding: 0;
+  }
+}

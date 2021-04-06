@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FullClassifierDef xmlns="http://classifier.mdm.unidata.com/">
+	<classifier name="cls_REST_1" displayName="РЕСТ классификатор1" description="" codePattern=""/>
+	<classifierNodes name="РЕСТ классификатор1" description="" code="" id="cls_REST_1.root"/>
+	<classifierNodes name="узел2" description="" code="" id="df747684-1110-46ba-89a6-cc4f61136d0d" parentId="cls_REST_1.root"/>
+	<classifierNodes name="узел2-2" description="" code="" id="4bb43f2a-9ac6-41b5-acec-82032f992949" parentId="df747684-1110-46ba-89a6-cc4f61136d0d"/>
+	<classifierNodes name="узел2-1" description="" code="" id="469f2a3d-7d10-4a71-931a-6314034b86c8" parentId="df747684-1110-46ba-89a6-cc4f61136d0d"/>
+	<classifierNodes name="узел1" description="" code="" id="81d34457-b3ec-41f4-ba56-bf4e2b5c9736" parentId="cls_REST_1.root"/>
+	<classifierNodes name="узел1-1" description="" code="" id="69d187e6-8497-4003-9a8a-2394c89361e2" parentId="81d34457-b3ec-41f4-ba56-bf4e2b5c9736"/>
+	<classifierNodes name="узел1-2" description="" code="" id="bcc7d3be-b369-4187-9c8e-68199eb88696" parentId="81d34457-b3ec-41f4-ba56-bf4e2b5c9736"/>
+</FullClassifierDef>

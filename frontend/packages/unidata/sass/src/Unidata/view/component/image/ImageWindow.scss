@@ -1,0 +1,23 @@
+$baseCls: 'un-imagewindow';
+
+.#{$baseCls} {
+  background-color: transparent;
+  >.x-window-body {
+    background-color: rgba(0,0,0,0.6);
+  }
+
+  img {
+    max-width: 90%;
+    max-height: 90%;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.un-image-active {
+  cursor: pointer;
+}

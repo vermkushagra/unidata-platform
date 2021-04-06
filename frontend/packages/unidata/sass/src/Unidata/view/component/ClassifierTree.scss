@@ -1,0 +1,24 @@
+$baseCls: '.un-classifier-tree';
+$selected-item-color: #90CAF9;
+$focused-item-color: #e1e4e8;
+$focused-item-color-dark: #878d92;
+
+@include un-tree-panel-ui (
+  $ui: 'dark',
+  $color: $color-primary-2-0,
+  $border-bottom-over: 1px solid $color-primary-1-4,
+  $background-color-focus: $focused-item-color-dark
+);
+
+#{$baseCls} {
+  .x-grid-editor {
+    .x-form-trigger-wrap {
+      .x-form-text {
+        padding-top: 0;
+        padding-bottom: 0;
+        border: none;
+        font-size: 13px !important;
+      }
+    }
+  }
+}

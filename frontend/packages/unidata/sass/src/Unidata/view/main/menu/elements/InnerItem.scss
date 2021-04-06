@@ -1,0 +1,173 @@
+$baseCls: '.un-mainmenu-item';
+
+#{$baseCls}-inner {
+  overflow: hidden;
+
+  #{$baseCls}-icon,
+  #{$baseCls}-text,
+  #{$baseCls}-body {
+    height: $un-menu-item-inner-height;
+    line-height: $un-menu-item-inner-height;
+  }
+
+  #{$baseCls}-icon {
+    position: relative;
+
+    span {
+      font-size: 18px;
+      color: #ffffff;
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: $un-menu-item-inner-icon-size;
+      height: $un-menu-item-inner-icon-size;
+      line-height: $un-menu-item-inner-icon-size;
+      margin-left: -$un-menu-item-inner-icon-size / 2;
+      margin-top: -$un-menu-item-inner-icon-size / 2;
+      background-color: #454545;
+      border: 0 solid #ccc;
+      @include border-radius(50px);
+
+      -webkit-transition: all $un-menu-item-animation-speed;
+      transition: all $un-menu-item-animation-speed;
+
+      &:before {
+        vertical-align: middle;
+        display: block;
+        position: relative;
+        line-height: 18px;
+        top: 50%;
+        left: 50%;
+        margin-left: -9px;
+        margin-top: -9px;
+        width: 18px;
+      }
+    }
+  }
+
+  // стиль неактивного элемента
+  &.x-item-disabled {
+    opacity: 0.5;
+  }
+
+  // маска прозрачная
+  div.x-mask {
+    background-color: transparent;
+  }
+
+  // при наведении на body
+  #{$baseCls}-body:hover,
+  // при выборе
+  &#{$baseCls}-selected {
+    #{$baseCls}-icon {
+      span {
+        color: #3F3F3F;
+        transform: scale(1.28);
+      }
+    }
+
+    #{$baseCls}-text {
+      padding-left: 5px;
+    }
+  }
+
+  #{$baseCls}-body:hover {
+    background-color: $un-menu-color-3;
+  }
+
+  // при выборе и наведении на el
+  &#{$baseCls}-selected,
+  &:hover:not(.x-item-disabled) {
+    #{$baseCls}-icon span {
+      background-color: #AAB2BD;
+      border-color: #AAB2BD;
+    }
+
+    // генерим цвета
+    @for $colorIndex from 1 through length($un-menu-item-colors) {
+      $color: nth($un-menu-item-colors, $colorIndex);
+
+      #{$baseCls}-color-#{$colorIndex} {
+        #{$baseCls}-icon span {
+          background-color: $color;
+          border-color: $color;
+          color: #ffffff;
+          //border-color: lighten($color, 20%);
+        }
+      }
+    }
+
+    #{$baseCls}-icon {
+      span {
+        color: #3F3F3F;
+      }
+    }
+  }
+
+
+  #{$baseCls}-text {
+    -webkit-transition: padding-right $un-menu-item-animation-speed;
+    transition: padding-right $un-menu-item-animation-speed;
+
+    position: relative;
+    padding-right: $un-menu-item-height;
+  }
+
+  #{$baseCls}-pin {
+    display: block;
+    cursor: pointer !important;
+    font-size: 10px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: $un-menu-item-inner-pin-width;
+    height: $un-menu-item-inner-height;
+    line-height: $un-menu-item-inner-height;
+    @include opacity(0.5);
+
+    span {
+      display: block;
+      width: 16px;
+      text-align: center;
+    }
+
+    span:after {
+      font-family: $font-family-linearicons !important;
+      content: "\e98d";
+      display: none;
+    }
+
+    &:hover {
+      @include opacity(1);
+      font-size: 12px;
+
+      span:after {
+        display: block;
+      }
+    }
+  }
+
+  &#{$baseCls}-pinned {
+    #{$baseCls}-pin span:after {
+      content: "\e999";
+      display: block;
+    }
+  }
+
+  #{$baseCls}-icon {
+    -webkit-transition: font-size $un-menu-item-animation-speed;
+    transition: font-size $un-menu-item-animation-speed;
+  }
+
+  #{$baseCls}-text {
+    -webkit-transition: padding-left $un-menu-item-animation-speed;
+    transition: padding-left $un-menu-item-animation-speed;
+  }
+
+  &:hover {
+    #{$baseCls}-pin span:after {
+      display: block;
+    }
+  }
+}

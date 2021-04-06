@@ -1,0 +1,31 @@
+// Данный класс используется для карточки данных в режиме сравнения
+// В частности для отображения карточки данных на экране консолидации и экране исходных записей
+// dataviewer.card.origin.OriginItem, cluster.merge.MergeDataRecord
+$baseCls: 'un-compare';
+
+.#{$baseCls} {
+  .un-dataentity-attribute:not(.un-dataentity-highlight-winner),
+  .un-flat-attribute-tablet:not(.un-dataentity-highlight-winner)
+  {
+    margin: 0;
+    border-bottom: 1px solid $color-primary-4-4;
+  }
+
+  .un-array-attribute-fake-tag-empty {
+    display: none;
+  }
+
+  .un-array-attribute-read .x-tagfield-item {
+    max-width: 33%;
+  }
+
+  .un-dataentity-attribute {
+    .un-no-data {
+      display: none;
+    }
+  }
+
+  .un-dataentity-attribute {
+    min-height: initial
+  }
+}

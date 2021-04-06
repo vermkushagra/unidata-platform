@@ -1,0 +1,20 @@
+.un-job-executions {
+
+  .x-tool-play:before {
+    color: green;
+  }
+
+  .x-tool-stop:before {
+    color: red;
+  }
+
+  .x-tool-refresh:before {
+    color: #2a98ff;
+  }
+}
+
+.un-job-steps {
+  .x-tool-play:before {
+    color: green;
+  }
+}

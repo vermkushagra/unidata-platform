@@ -1,0 +1,141 @@
+$baseCls: '.un-dataentity';
+$un-highlight-winner-color: #dfdfdf;
+$un-highlight-winner-strip-color: #507fba;
+$un-highlight-winner-strip-width: 3px;
+$un-highlight-winner-text-color: #3b73af;
+
+$un-highlight-diff-color: #fffbd6;
+$un-highlight-diff-strip-color: #f26522;
+$un-highlight-diff-strip-width: 3px;
+$un-highlight-diff-text-color: #3b73af;
+$un-highlight-diff-title-text-color: #f26522;
+
+#{$baseCls} {
+  padding: 0;
+
+  .x-form-date-trigger {
+
+  }
+
+  #{$baseCls}-attribute {
+    margin: 0 0 6px 0;
+  }
+}
+
+
+
+#{$baseCls}-highlight-winner {
+  &#{$baseCls}-attribute {
+    background-color: $un-highlight-winner-color;
+    border-left: $un-highlight-winner-strip-width solid $un-highlight-winner-strip-color;
+
+    #{$baseCls}-attribute-input-cont-wrapper {
+      padding-left: 5px;
+    }
+
+    .un-array-attribute-read {
+      .un-array-attribute-fake-tag {
+        .x-tagfield-item:hover .x-tagfield-item-text,
+        .x-tagfield-item-text {
+          color: #888;
+        }
+      }
+
+    }
+  }
+
+  &.un-flat-attribute-tablet, &.un-dataentity-attrgroup {
+    >.#{$prefix}panel-header {
+      background-color: $un-highlight-winner-color;
+      border-left: $un-highlight-winner-strip-width solid $un-highlight-winner-strip-color !important;
+
+      .x-tool-collapse-el {
+        background-color: transparent;
+        padding-left: 0;
+
+        .#{$prefix}tool-img {
+          padding-right: 0;
+        }
+      }
+
+      .#{$prefix}panel-header-title {
+        margin-left: -3px;
+      }
+    }
+  }
+}
+
+#{$baseCls}-attribute#{$baseCls}-highlight-winner,
+.un-flat-attribute-tablet#{$baseCls}-highlight-winner,
+#{$baseCls}-attrgroup#{$baseCls}-highlight-winner {
+  margin: 0 0 1px 0 !important;
+  border-bottom: none;
+
+  >.#{$prefix}panel-body {
+    .#{$prefix}title-text {
+      color: $un-highlight-winner-text-color;
+    }
+
+    #{$baseCls}-attribute-title {
+      color: $un-highlight-winner-text-color;
+    }
+
+    #{$baseCls}-attribute-input {
+      .#{$prefix}form-field {
+        color: $un-highlight-winner-text-color;
+      }
+    }
+  }
+}
+
+#{$baseCls}-highlight-diff {
+  &#{$baseCls}-attribute {
+    background-color: $un-highlight-diff-color;
+    border-left: $un-highlight-diff-strip-width solid $un-highlight-diff-strip-color;
+
+    #{$baseCls}-attribute-input-cont-wrapper {
+      padding-left: #{$attributeContentPaddingRightLeft - $un-highlight-diff-strip-width};
+    }
+
+    .un-array-attribute-read {
+      .un-array-attribute-fake-tag {
+        .x-tagfield-item:hover .x-tagfield-item-text,
+        .x-tagfield-item-text {
+          color: #888;
+        }
+      }
+
+    }
+  }
+}
+
+#{$baseCls}-attribute#{$baseCls}-highlight-diff,
+#{$baseCls}-attrgroup#{$baseCls}-highlight-diff {
+  margin: 0 0 1px 0 !important;
+  border-bottom: none;
+
+  >.#{$prefix}panel-body {
+    .#{$prefix}title-text {
+      color: $un-highlight-diff-text-color;
+    }
+
+    #{$baseCls}-attribute-title {
+      color: $un-highlight-diff-text-color;
+    }
+
+    #{$baseCls}-attribute-input {
+      .#{$prefix}form-field {
+        color: $un-highlight-diff-text-color;
+      }
+    }
+  }
+}
+
+.#{$prefix}panel-un-card#{$baseCls}-highlight-diff {
+  >.#{$prefix}panel-header {
+    .#{$prefix}title-text {
+      color: $un-highlight-diff-title-text-color;
+      text-decoration: underline dashed;
+    }
+  }
+}

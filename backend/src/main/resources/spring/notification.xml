@@ -1,0 +1,17 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- CALLER_RUNS : Instead of throwing an exception or discarding tasks,
+    that policy will simply force the thread that is calling the submit method to run the task itself. -->
+    <task:executor id="notificationHandlerExecutor" pool-size="1-10" queue-capacity="500" rejection-policy="CALLER_RUNS"/>
+
+</beans>

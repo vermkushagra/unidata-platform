@@ -1,0 +1,7 @@
+export JAVA_HOME=/opt/jdk1.8.0_45
+export UNISTORE_DB_HOST=localhost
+export UNISTORE_DB_PORT=5432
+export UNISTORE_DB_NAME=unidata
+export UNISTORE_DB_USER_NAME=postgres
+export UNISTORE_DB_USER_PASSWORD=postgres
+export UNISTORE_DB_SCHEMA=public

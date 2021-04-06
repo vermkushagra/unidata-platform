@@ -1,0 +1,1 @@
+update s_resource set display_name='Групповые операции' where display_name='Оператор пакетных операций';

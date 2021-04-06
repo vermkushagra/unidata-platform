@@ -1,0 +1,9 @@
+$baseCls: '.un-validity-period';
+
+#{$baseCls}-panel {
+  margin-left: 15px;
+
+  #{$baseCls}-datefield-end {
+    margin-left: 30px;
+  }
+}

@@ -1,0 +1,70 @@
+a.x-btn.un-roundbutton {
+  border-radius: 50%;
+  border: none;
+}
+
+// тень
+a.x-btn.un-roundbutton.un-roundbutton-shadowed,
+a.x-btn.un-roundbutton.un-roundbutton-shadowed.x-btn-pressed,
+a.x-btn.un-roundbutton.un-roundbutton-shadowed.x-btn-focus {
+  -webkit-box-shadow: 5px 5px 5px 0 rgba(0, 0, 0, 0.35);
+  box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.35);
+}
+
+// обычное состояние кнопки
+a.x-btn.un-roundbutton {
+  background-color: #4E93BC;
+}
+
+// состояние иконки кнопки
+a.x-btn.un-roundbutton .x-btn-icon-el {
+  color: #ffffff;
+}
+
+// кнопка под курсором
+a.x-btn.un-roundbutton.x-btn-over {
+  background-color: #3386c2;
+}
+
+// кнопка нажата
+a.x-btn.un-roundbutton.x-btn-menu-active,
+a.x-btn.un-roundbutton.x-btn-pressed {
+  background-color: #034A7C;
+}
+
+// кнопка неактивна
+a.x-btn.un-roundbutton.x-btn-disabled {
+  background-color: #437FA1;
+}
+
+// размеры иконки для кнопки BIG
+a.x-btn.un-roundbutton__big .x-btn-icon-el {
+  font-size: 30px;
+  line-height: 30px;
+  width: 30px;
+  height: 30px;
+}
+
+// размеры иконки для кнопки MEDIUM
+a.x-btn.un-roundbutton__medium .x-btn-icon-el {
+  font-size: 22px;
+  line-height: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+// размеры иконки для кнопки SMALL
+a.x-btn.un-roundbutton__small .x-btn-icon-el {
+  font-size: 16px;
+  line-height: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+// размеры иконки для кнопки EXTRASMALL
+a.x-btn.un-roundbutton__extrasmall .x-btn-icon-el {
+  font-size: 12px;
+  line-height: 12px;
+  width: 12px;
+  height: 12px;
+}

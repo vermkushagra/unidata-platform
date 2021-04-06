@@ -1,0 +1,33 @@
+$baseCls: '.un-measurement';
+
+#{$baseCls} {
+  .x-toolbar {
+    padding: 10px;
+  }
+
+  .file-upload-field {
+    margin: 5px;
+    padding: 0;
+  }
+
+  // обычное состояние кнопки
+  a.x-btn.un-roundbutton__save {
+    margin-left: 5px;
+    background-color: #4E93BC;
+  }
+
+  // кнопка под курсором
+  a.x-btn.un-roundbutton__save.x-btn-over {
+    background-color: #3386c2;
+  }
+
+  // кнопка нажата
+  a.x-btn.un-roundbutton__save.x-btn-pressed {
+    background-color: #034A7C;
+  }
+
+  // кнопка неактивна
+  a.x-btn.un-roundbutton__save.x-btn-disabled {
+    background-color: #437FA1;
+  }
+}

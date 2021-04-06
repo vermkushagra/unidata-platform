@@ -1,0 +1,101 @@
+$ui-name: 'un-underlined';
+
+$un-underlined-tabpanel-background-color: #ffffff;
+$un-underlined-tabpanel-active-color: $color-secondary-2-0;
+$un-underlined-tabpanel-font-color: gray;
+$un-underlined-tabpanel-border-color: lightgray;
+$un-underlined-tabpanel-border-width: 3px;
+
+// миксин для переопределения цвета
+@mixin set-un-underlined-color($color) {
+  $ui-name: 'un-underlined';
+
+  .x-tab-#{$ui-name} {
+    &.x-tab-active {
+      border-color: $color !important;
+    }
+
+    &.x-tab-over,
+    &.x-tab-focus,
+    &.x-tab-active {
+      .x-tab-inner-#{$ui-name} {
+        color: $color !important;
+      }
+
+      .#{$prefix}tab-glyph {
+        color: $color !important;
+      }
+    }
+  }
+}
+
+
+@include extjs-tab-panel-ui(
+  $ui: $ui-name,
+
+  $ui-tab-padding: 4px 5px,
+  $ui-tab-margin: 0 8px 0 0,
+
+  $ui-tab-font-size: 13px,
+
+  $ui-tab-background-color: transparent,
+  $ui-tab-background-color-focus: transparent,
+  $ui-tab-background-color-over: transparent,
+  $ui-tab-background-color-active: transparent,
+  $ui-tab-background-color-focus-over: transparent,
+  $ui-tab-background-color-focus-active: transparent,
+  $ui-tab-background-color-disabled: transparent,
+
+  $ui-tab-border-color: transparent,
+  $ui-tab-border-color-focus: transparent,
+  $ui-tab-border-color-over: transparent,
+  $ui-tab-border-color-active: $un-underlined-tabpanel-active-color,
+  $ui-tab-border-color-focus-over: transparent,
+  $ui-tab-border-color-focus-active: $un-underlined-tabpanel-active-color,
+  $ui-tab-border-color-disabled: transparent,
+
+  $ui-tab-color: $un-underlined-tabpanel-font-color,
+  $ui-tab-color-focus: $un-underlined-tabpanel-active-color,
+  $ui-tab-color-over: $un-underlined-tabpanel-active-color,
+  $ui-tab-color-active: $un-underlined-tabpanel-active-color,
+  $ui-tab-color-focus-over: $un-underlined-tabpanel-active-color,
+  $ui-tab-color-focus-active: $un-underlined-tabpanel-active-color,
+  //$ui-tab-color-disabled: null,
+
+  $ui-bar-padding: $un-content-inner-gap $un-content-inner-padding 0 $un-content-inner-padding,
+  $ui-bar-background-color: $un-underlined-tabpanel-background-color,
+  $ui-tab-icon-width: 16px,
+  $ui-tab-icon-height: 16px,
+
+  $ui-tab-glyph-color: $un-underlined-tabpanel-font-color,
+  $ui-tab-glyph-color-focus: $un-underlined-tabpanel-active-color,
+  $ui-tab-glyph-color-over: $un-underlined-tabpanel-active-color,
+  $ui-tab-glyph-color-active: $un-underlined-tabpanel-active-color,
+  $ui-tab-glyph-color-focus-over: $un-underlined-tabpanel-active-color,
+  $ui-tab-glyph-color-focus-active: $un-underlined-tabpanel-active-color
+
+);
+
+.x-tab-bar-#{$ui-name} {
+  position: relative;
+
+  .x-tab-#{$ui-name} {
+    margin-left: 0 !important;
+    border-width: 0;
+    @include border-radius(0);
+    text-transform: uppercase;
+  }
+
+  .x-tab-bar-strip-#{$ui-name} {
+    height: $un-underlined-tabpanel-border-width;
+    background-color: $un-underlined-tabpanel-border-color !important;
+  }
+
+  &.x-docked-top .x-tab-#{$ui-name} {
+    border-bottom-width: $un-underlined-tabpanel-border-width !important;
+  }
+
+  &.x-docked-bottom .x-tab-#{$ui-name} {
+    border-top-width: $un-underlined-tabpanel-border-width !important;
+  }
+}

@@ -1,0 +1,116 @@
+/**
+** Миксин генерит стили с путями к иконкам дерева
+** Без режимо rtl и no lines
+**/
+@mixin un-tree-panel-ui(
+  $ui: null,
+  $color: null,
+  $border-bottom-over: null,
+  $background-color-focus: null,
+  $color-focus: null,
+  $background-color-selected: null,
+  $use-elbow: false, // признак необходимости использования ui-иконок для простых линий
+  $font-size: 12px
+) {
+  @if $ui == null {
+    $ui: '';
+  }
+
+  @if $color == null {
+    $color: $color-primary-1-0;
+  }
+
+  @if $color-focus == null {
+    $color-focus: $color;
+  }
+
+  .#{$prefix}panel-#{$ui} {
+    >.#{$prefix}panel-body {
+      background: transparent;
+    }
+
+    >.#{$prefix}toolbar {
+      background: transparent;
+      padding: 0 0 5px 0;
+
+      .#{$prefix}toolbar-item {
+        margin: 0;
+      }
+    }
+
+    &.#{$prefix}tree-lines {
+      .#{$prefix}tree-view {
+        .#{$prefix}grid-item {
+          color: $color;
+          font-size: $font-size;
+          background-color: transparent;
+        }
+
+        .x-tree-node-text {
+          padding: 0;
+          margin: 0 0 0 4px;
+          border-bottom: 1px solid transparent;
+          display: inline;
+        }
+
+        @if $background-color-selected != null {
+          .x-grid-item-selected {
+            .x-grid-cell {
+              color: $color;
+              background-color: $background-color-selected !important;
+            }
+          }
+        }
+
+        @if $border-bottom-over != null {
+          .x-grid-item-over {
+            .x-tree-node-text {
+              border-bottom: $border-bottom-over;
+            }
+          }
+        }
+
+        @if $background-color-focus != null {
+          .x-grid-item-focused {
+            &.x-grid-cell {
+              color: $color-focus;
+              background-color: $background-color-focus;
+            }
+          }
+        }
+
+        // theme images for minus/plus
+        .#{$prefix}tree-elbow-plus {
+          background-image: theme-background-image('tree/elbow-plus-#{$ui}');
+        }
+
+        .#{$prefix}tree-elbow-end-plus {
+          background-image: theme-background-image('tree/elbow-end-plus-#{$ui}');
+        }
+
+        .#{$prefix}grid-tree-node-expanded .#{$prefix}tree-elbow-plus {
+          background-image: theme-background-image('tree/elbow-minus-#{$ui}');
+        }
+
+        .#{$prefix}grid-tree-node-expanded .#{$prefix}tree-elbow-end-plus {
+          background-image: theme-background-image('tree/elbow-end-minus-#{$ui}');
+        }
+
+        @if $use-elbow == true {
+          // theme images for elbow lines
+          .#{$prefix}tree-elbow {
+            background-image: theme-background-image('tree/elbow-#{$ui}');
+          }
+
+          .#{$prefix}tree-elbow-end {
+            background-image: theme-background-image('tree/elbow-end-#{$ui}');
+          }
+
+          .#{$prefix}tree-elbow-line {
+            background-image: theme-background-image('tree/elbow-line-#{$ui}');
+          }
+        }
+      }
+    }
+  }
+}

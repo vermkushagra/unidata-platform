@@ -1,0 +1,1 @@
+insert into s_resource(name, display_name, r_type) values('BULK_OPERATIONS_OPERATOR', 'Оператор пакетных операций', 'SYSTEM');

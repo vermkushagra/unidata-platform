@@ -1,0 +1,105 @@
+// Samples
+ext.springVersion = '4.1.6.RELEASE'
+ext.springSecurityVersion = '4.0.1.RELEASE'
+ext.camelVersion = '2.16.1'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'io.spring.dependency-management'
+
+apply from: "${project.rootDir}/gradle/dependencies.gradle"
+
+// параметры компилятора
+compileJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    source {['src/main/java']}
+
+}
+compileTestJava {
+    options.encoding = 'UTF-8'
+    options.debug = true
+    source {['src/main/java']}
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+idea {
+    /*
+    project {
+        //it should work, but it doesn't
+        languageLevel = '1.8'
+    }
+    */
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.tmatesoft.svnkit:svnkit:1.8.9'
+        classpath 'net.sf.proguard:proguard-gradle:5.2.1'
+    }
+}
+
+repositories {
+    maven {
+        url 'http://repo.spring.io/libs-milestone'
+        url 'https://maven.alfresco.com/nexus/content/groups/public'
+    }
+}
+
+dependencies {
+
+    // Ensure, the common project is built before backend
+    compile project(':common')
+
+    // Java Servlet API
+    compile 'javax.servlet:javax.servlet-api:3.0.1'
+
+    // Springframework - Apache License, v.2.0
+    compile 'org.springframework:spring-beans:' + springVersion,
+            'org.springframework:spring-context:' + springVersion,
+            'org.springframework:spring-context-support:' + springVersion
+
+    // Spring Batch
+    compile 'org.springframework.batch:spring-batch-core:3.0.7.RELEASE'
+    compile 'org.springframework.batch:spring-batch-infrastructure:3.0.7.RELEASE'
+
+    //Camel and active-mq
+    compile 'org.apache.camel:camel-core:' + camelVersion
+    compile 'org.apache.camel:camel-spring:' + camelVersion
+    compile 'org.apache.camel:camel-jms:' + camelVersion
+    compile 'org.apache.camel:camel-amqp:'+ camelVersion
+    compile 'org.apache.camel:camel-rabbitmq:'+ camelVersion
+
+    // ActiveMQ
+    compile 'org.apache.activemq:activemq-camel:5.12.0'
+    compile 'org.apache.activemq:activemq-client:5.12.0'
+
+    // Logger
+    compile 'org.slf4j:slf4j-api:1.7.12'
+}
+
+jar {
+    from(sourceSets.main.output)
+    manifest {
+        attributes (
+            "Implementation-Title": "UniData Samples (user exists, notification sinks, etc.)",
+            "Implementation-Version": project.version + '.' + (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+                + '/' + new Date().format('yyyy-MM-dd HH:mm:ss')
+        )
+    }
+}
+
+tasks.withType(Jar) { // Common for Jars
+    destinationDir = new File(project.rootDir, '/target')
+}
+

@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tdapi:samples xmlns:tdapi="http://api.mdm.unidata.com/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:meta="http://meta.mdm.unidata.com/"
+               xmlns:data="http://data.mdm.unidata.com/"
+               xsi:schemaLocation="http://api.mdm.taskdata.com/ ../../../backend/src/main/resources/schemas/unidata-api-2.1.xsd
+                                   http://meta.mdm.taskdata.com/ ../../../backend/src/main/resources/schemas/unidata-meta-2.1.xsd
+                                   http://data.mdm.taskdata.com/ ../../../backend/src/main/resources/schemas/unidata-data-2.1.xsd">
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:credentials username="ivanov" password="asd123@$"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestAuthenticate doLogin="false"/>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321345" exitCode="Success" processingTime="100"/>
+            <tdapi:responseAuthenticate isAdmin="false">
+                <tdapi:role name="Оператор Справочников"/>
+                <tdapi:role name="Аналитик"/>
+            </tdapi:responseAuthenticate>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:credentials username="ivanov" password="asd123@$"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestAuthenticate doLogin="true"/>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321345" exitCode="Success" processingTime="100"/>
+            <tdapi:responseAuthenticate isAdmin="false">
+                <tdapi:sessionToken token="st12354667123213"/>
+                <tdapi:role name="Оператор Справочников"/>
+                <tdapi:role name="Аналитик"/>
+            </tdapi:responseAuthenticate>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:credentials username="admin" password="admin"/>
+                </tdapi:security>
+            </tdapi:common>
+
+            <tdapi:requestGetLookupValues>
+                <tdapi:lookupEntity entityName="СубъектыРФ" codeValue="79"/>
+            </tdapi:requestGetLookupValues>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321345" exitCode="Error" processingTime="100">
+                <tdapi:message messageText="Не известное имя lookup сущности [СубъектыРФ1]">
+                    <tdapi:stackTrace>Some Java stacktrace .... </tdapi:stackTrace>
+                    <tdapi:error errorCode="core-23" userMessage="Неизвестное имя lookup сущности [СубъектыРФ1]" internalMessage="Failed to find provided lookup entity, reason is  ..."/>
+                </tdapi:message>
+            </tdapi:common>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security><tdapi:sessionToken token="st12354667123213"/></tdapi:security>
+            </tdapi:common>
+            <tdapi:requestGetLookupValues>
+                <tdapi:lookupEntity entityName="СубъектыРФ" codeValue="79"/>
+            </tdapi:requestGetLookupValues>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321347" exitCode="AuthorizationError" processingTime="100">
+                <tdapi:message messageText="Не хватает прав для чтений объекта [СубъектыРФ]">
+                    <tdapi:stackTrace>Some Java stacktrace .... </tdapi:stackTrace>
+                    <tdapi:error errorCode="security-2" userMessage="Не хватает прав для чтений объекта [СубъектыРФ]" internalMessage="Not enough privileges for accessing..."/>
+                </tdapi:message>
+            </tdapi:common>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security><tdapi:credentials username="admin" password="qwert"/></tdapi:security>
+            </tdapi:common>
+            <tdapi:requestGetLookupValues><tdapi:lookupEntity entityName="СубъектыРФ" codeValue="79"/></tdapi:requestGetLookupValues>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321346" exitCode="AuthenticationError" processingTime="100">
+                <tdapi:message messageText="Неправильное имя пользователя или пароль">
+                    <tdapi:stackTrace>Some Java stacktrace .... </tdapi:stackTrace>
+                    <tdapi:error errorCode="security-1" userMessage="Неправильное имя пользователя или пароль" internalMessage="Unknown username or password ..."/>
+                </tdapi:message>
+            </tdapi:common>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security><tdapi:sessionToken token="st12354667123213"/></tdapi:security>
+            </tdapi:common>
+            <tdapi:requestGetLookupValues>
+                <tdapi:lookupEntity entityName="СубъектыРФ" codeValue="79"/>
+            </tdapi:requestGetLookupValues>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321347" exitCode="Success" processingTime="100"/>
+            <tdapi:responseGetLookupValues>
+                <tdapi:etalonRecord entityName="СубъектыРФ">
+                    <data:simpleAttributes name="названиеСубъекта" type="String"><data:stringValue>Республика Адыгея</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="кодРегиона" type="String"><data:stringValue>ЦФО</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="кодОКАТО" type="String"><data:stringValue>79</data:stringValue></data:simpleAttributes>
+                    <data:etalonKey id="235"/>
+                </tdapi:etalonRecord>
+            </tdapi:responseGetLookupValues>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security><tdapi:sessionToken token="st12354667123213"/></tdapi:security>
+            </tdapi:common>
+            <tdapi:requestCleanse cleanseName="Строковые.Соеденить">
+                <tdapi:port name="разделитель" type="String"><data:stringValue>_</data:stringValue></tdapi:port>
+                <tdapi:port name="строка1" type="String"><data:stringValue>Иванов</data:stringValue></tdapi:port>
+                <tdapi:port name="строка2" type="String"><data:stringValue>Иван</data:stringValue></tdapi:port>
+                <tdapi:port name="строка3" type="String"><data:stringValue>Иванович</data:stringValue></tdapi:port>
+            </tdapi:requestCleanse>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321348" exitCode="Success" processingTime=""/>
+            <tdapi:responseCleanse>
+                <tdapi:port name="результат" type="String"><data:stringValue>Иванов_Иван_Иванович</data:stringValue></tdapi:port>
+            </tdapi:responseCleanse>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security><tdapi:sessionToken token="st12354667123213"/></tdapi:security>
+            </tdapi:common>
+            <tdapi:requestUpsert skipCleanse="true" bypassExtensionPoints="true">
+                <tdapi:originRecord rangeFrom="2015-02-23T00:00:00" rangeTo="2015-10-23T00:00:00">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>812</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>495</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234568</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Рабочий</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>true</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>345678</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>40</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Санкт-Петербург</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Невский</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>20</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Почтовый</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:originKey externalId="1234567890" sourceSystem="1C" entityName="Сотрудник" id=""/>
+                    <data:relations>
+                        <data:integralEntities relName="СвязьСотрудникСчёт">
+                            <data:originRecord rangeFrom="2015-02-23T00:00:00" rangeTo="2015-10-23T00:00:00">
+                                <data:simpleAttributes name="номер" type="String"><data:stringValue>123456789012345</data:stringValue></data:simpleAttributes>
+                                <data:originKey externalId="76543" sourceSystem="1C" id="" entityName="БанковскийСчёт"/>
+                                <data:relations>
+                                    <data:relationsTo relName="СвязьСчётБанк">
+                                        <data:toOriginKey externalId="1237644" sourceSystem="1C" entityName="Банк" id=""/>
+                                    </data:relationsTo>
+                                </data:relations>
+                            </data:originRecord>
+                        </data:integralEntities>
+                        <data:integralEntities relName="СвязьСотрудникСчёт">
+                            <data:originRecord rangeFrom="2015-02-23T00:00:00" rangeTo="2015-10-23T00:00:00">
+                                <data:simpleAttributes name="номер" type="String"><data:stringValue>12345678954</data:stringValue></data:simpleAttributes>
+                                <data:originKey externalId="76544" sourceSystem="1C" id="" entityName="БанковскийСчёт"/>
+                                <data:relations>
+                                    <data:relationsTo relName="СвязьСчётБанк">
+                                        <data:toOriginKey externalId="1237645" sourceSystem="1C" id="" entityName="Банк"/>
+                                    </data:relationsTo>
+                                </data:relations>
+                            </data:originRecord>
+                        </data:integralEntities>
+                        <data:relationsTo relName="СвязьСотрудникОтдел">
+                            <data:toOriginKey externalId="12346787" sourceSystem="1C" id="" entityName="Отдел"/>
+                            <data:simpleAttributes name="дата" type="Date"><data:dateValue>2015-04-20T00:00:00</data:dateValue></data:simpleAttributes>
+                        </data:relationsTo>
+                    </data:relations>
+                </tdapi:originRecord>
+            </tdapi:requestUpsert>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321348" exitCode="Success" processingTime="100"/>
+            <tdapi:responseUpsert originAction="UpsertOrigin">
+                <tdapi:originKey externalId="1234567890" sourceSystem="1C" id="678" entityName="Сотрудник"/>
+                <tdapi:etalonKey id="123"/>
+            </tdapi:responseUpsert>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestMerge entityName="Сотрудник">
+                <tdapi:winnerEtalonKey id="123"/>
+                <tdapi:looserOriginKey externalId="1234567567" sourceSystem="1C" entityName="Сотрудник" id=""/>
+                <tdapi:looserEtalonKey id="865"/>
+            </tdapi:requestMerge>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321349" exitCode="Success" processingTime="100"/>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestSoftDelete entityName="Сотрудник" >
+                <tdapi:etalonKey id="123"/>
+                <tdapi:originKey externalId="1234567567" sourceSystem="1C" entityName="Сотрудник" id=""/>
+                <tdapi:etalonKey id="865"/>
+                <tdapi:range rangeFrom="2010-01-01T00:00:00" rangeTo="2011-12-31T00:00:00"/>
+            </tdapi:requestSoftDelete>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321349" exitCode="Warning" processingTime="100">
+                <tdapi:message messageText="Origin with id [1234567567] cannot be deleted, because it is referenced by another entity"/>
+            </tdapi:common>
+            <tdapi:responseSoftDelete>
+                <tdapi:originKeys externalId="1234567567" sourceSystem="1C" revision="r1" rangeFrom="2010-01-01T00:00:00" rangeTo="2011-12-31T00:00:00"/>
+                <tdapi:etalonKeys id="123"/>
+                <tdapi:etalonKeys id="865"/>
+            </tdapi:responseSoftDelete>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestGet entityName="Сотрудник" forLifePoint="2015-04-19T00:00:00" originsForLifePoint="true" etalonHistory="true" softDeleted="true">
+                <tdapi:etalonKey id="123"/>
+            </tdapi:requestGet>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321349" exitCode="Warning" processingTime="100">
+                <tdapi:message messageText="Origin with id [1234567567] cannot be deleted, because it is referenced by another entity"/>
+            </tdapi:common>
+            <tdapi:responseGet rangeFromMin="2001-02-23T00:00:00">
+                <tdapi:etalonRecord entityName="Сотрудник">
+                    <data:simpleAttributes name="имя" type="String">
+                        <data:stringValue>Иванов Иван Иванович</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String">
+                        <data:stringValue>1234567890</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>812</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:etalonKey id="123"/>
+                </tdapi:etalonRecord>
+                <tdapi:originRecords entityName="Сотрудник" rangeFrom="2001-02-23T00:00:00" rangeTo="2008-10-23T00:00:00">
+                    <data:simpleAttributes name="имя" type="String">
+                        <data:stringValue>Иванов Ваня Иванович</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String">
+                        <data:stringValue>1234567890</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные"/>
+                    <data:originKey externalId="1234567890" sourceSystem="1C" entityName="Сотрудник" id="1234"/>
+                </tdapi:originRecords>
+                <tdapi:originRecords entityName="Сотрудник" rangeFrom="2008-10-24T00:00:00" rangeTo="2014-04-13T00:00:00">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные"/>
+                    <data:originKey externalId="1234567890" sourceSystem="1C" entityName="Сотрудник" id="1235"/>
+                </tdapi:originRecords>
+                <tdapi:originRecords entityName="Сотрудник" rangeFrom="2014-04-14T00:00:00" rangeTo="2015-10-23T00:00:00">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>812</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса"/>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:originKey externalId="1234567890" sourceSystem="1C" entityName="Сотрудник" id="1236"/>
+                </tdapi:originRecords>
+                <tdapi:originRecords entityName="Сотрудник">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные"><data:nestedRecord>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:originKey externalId="123" sourceSystem="SAP" entityName="Сотрудник" id="4321"/>
+                </tdapi:originRecords>
+
+                <tdapi:etalonHistoryRecords entityName="Сотрудник" historyRecordId="7890" historyCreateDate="2014-03-15T00:00:00">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные"/>
+                    <data:etalonKey id="123"/>
+                </tdapi:etalonHistoryRecords>
+
+                <tdapi:etalonHistoryRecords entityName="Сотрудник" historyRecordId="8234" historyCreateDate="2014-10-14T00:00:00">
+                    <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>812</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса"/>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:etalonKey id="123"/>
+                </tdapi:etalonHistoryRecords>
+
+                <tdapi:etalonHistoryRecords entityName="Сотрудник" historyRecordId="8234" historyCreateDate="2015-04-22T00:00:00">
+                    <data:simpleAttributes name="имя" type="String">
+                        <data:stringValue>Иванов Иван Иванович</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String">
+                        <data:stringValue>1234567890</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String">
+                                        <data:stringValue>812</data:stringValue>
+                                    </data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:etalonKey id="123"/>
+                </tdapi:etalonHistoryRecords>
+            </tdapi:responseGet>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:credentials username="admin" password="qwert"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestSearch entityName="Сотрудник" pageNumber="0" pageSize="2" doCountOnly="true"
+                                 returnCount="true">
+                <tdapi:searchCondition>
+                    <tdapi:and>
+                        <tdapi:atom attributeName="Сотрудник.имя" operator="LIKE" constant="Иван"/>
+                        <tdapi:atom attributeName="Сотрудник.инн" operator="NOT_EQUALS" constant="123456"/>
+                        <tdapi:atom attributeName="Сотрудник.возраст" operator="GREATER" constant="27"/>
+                        <tdapi:or>
+                            <tdapi:atom attributeName="Сотрудник.контактныеДанные.телефоны.кодГорода" operator="EQUALS" constant="812"/>
+                            <tdapi:atom attributeName="Сотрудник.контактныеДанные.адреса.город" operator="LIKE" constant="Санкт"/>
+                        </tdapi:or>
+                    </tdapi:and>
+                </tdapi:searchCondition>
+            </tdapi:requestSearch>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321350" exitCode="Success" processingTime="100"/>
+            <tdapi:responseSearch count="38" pageSize="2" pageNumber="1"/>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:credentials username="admin" password="qwert"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestSearch entityName="Сотрудник" pageNumber="5" pageSize="2" doCountOnly="false"
+                                 returnCount="false">
+                <tdapi:searchCondition>
+                    <tdapi:and>
+                        <tdapi:atom attributeName="Сотрудник.имя" operator="LIKE" constant="Иван"/>
+                        <tdapi:atom attributeName="Сотрудник.инн" operator="NOT_EQUALS" constant="123456"/>
+                        <tdapi:atom attributeName="Сотрудник.возраст" operator="GREATER" constant="27"/>
+                        <tdapi:or>
+                            <tdapi:atom attributeName="Сотрудник.контактныеДанные.телефоны.кодГорода" operator="EQUALS" constant="812"/>
+                            <tdapi:atom attributeName="Сотрудник.контактныеДанные.адреса.город" operator="LIKE" constant="Санкт"/>
+                        </tdapi:or>
+                    </tdapi:and>
+                </tdapi:searchCondition>
+            </tdapi:requestSearch>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321351" exitCode="Success" processingTime="100"/>
+            <tdapi:responseSearch pageSize="2" pageNumber="5">
+                <tdapi:etalonRecord entityName="Сотрудник">
+                    <data:simpleAttributes name="имя" type="String">
+                        <data:stringValue>Иванов Иван Иванович</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String">
+                        <data:stringValue>1234567890</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>812</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>1234567</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Персональный</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>false</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:etalonKey id="123"/>
+                </tdapi:etalonRecord>
+                <tdapi:etalonRecord entityName="Сотрудник">
+                    <data:simpleAttributes name="имя" type="String">
+                        <data:stringValue>Иванов Петр Сергеевич</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:simpleAttributes name="инн" type="String">
+                        <data:stringValue>1987654321</data:stringValue>
+                    </data:simpleAttributes>
+                    <data:complexAttributes name="контактныеДанные">
+                        <data:nestedRecord>
+                            <data:complexAttributes name="телефоны">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="кодГорода" type="String"><data:stringValue>495</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="номер" type="Integer"><data:intValue>76554321</data:intValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типТелефона" type="String"><data:stringValue>Рабочий</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="локальный" type="Boolean"><data:boolValue>true</data:boolValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                            <data:complexAttributes name="адреса">
+                                <data:nestedRecord>
+                                    <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>345678</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>40</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="город" type="String"><data:stringValue>Санкт-Петербург</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="улица" type="String"><data:stringValue>Невский</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="дом" type="String"><data:stringValue>20</data:stringValue></data:simpleAttributes>
+                                    <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Почтовый</data:stringValue></data:simpleAttributes>
+                                </data:nestedRecord>
+                            </data:complexAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    <data:etalonKey id="124"/>
+                </tdapi:etalonRecord>
+            </tdapi:responseSearch>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestGetDataQualityErrors entityName="Сотрудник" forDate="2015-04-19T00:00:00">
+                <tdapi:etalonKey id="123"/>
+            </tdapi:requestGetDataQualityErrors>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321351" exitCode="Success" processingTime="100"/>
+            <tdapi:responseGetDataQualityErrors>
+                <tdapi:dqError errorId="1235" createDate="2014-03-13T00:00:00" updateDate="2014-04-19T00:00:00" status="new" ruleName="ОчиститьАдрес" message="" severity="" category=""/>
+                <tdapi:dqError errorId="1236" createDate="2014-03-13T00:00:00" updateDate="2014-05-20T00:00:00" status="resolved" ruleName="" message="" severity="" category=""/>
+                <tdapi:dqError errorId="1237" createDate="2014-03-13T00:00:00" updateDate="2014-04-19T00:00:00" status="new" ruleName="" message="" severity="" category=""/>
+            </tdapi:responseGetDataQualityErrors>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestMetaGetCleanseFunctionDesc cleanseFunctionName="Строковые.Соеденить"/>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321451" exitCode="Success" processingTime="100"/>
+            <tdapi:responseMetaGetCleanseFunctionDesc>
+                <tdapi:cleanseFunction functionName="Строковые.Соеденить" javaClass="com.taskdata.mdm.cleanse.string.CFConcatenate" description="Конкатенация строк в одну">
+                    <meta:inputPorts>
+                        <meta:port name="значение1" dataType="String" required="true" description="Первая строка для склеевания"/>
+                        <meta:port name="значение2" dataType="String" required="true" description="Вторая строка для склеевания"/>
+                        <meta:port name="значение3" dataType="String" required="false"/>
+                        <meta:port name="значение4" dataType="String" required="false"/>
+                        <meta:port name="значение5" dataType="String" required="false"/>
+                    </meta:inputPorts>
+                    <meta:outputPorts>
+                        <meta:port name="результат" dataType="String" required="true" description="Результат соеденения всех строк"/>
+                    </meta:outputPorts>
+                </tdapi:cleanseFunction>
+            </tdapi:responseMetaGetCleanseFunctionDesc>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sample>
+        <tdapi:requestBody>
+            <tdapi:common storageId="sampleDatabase">
+                <tdapi:security>
+                    <tdapi:sessionToken token="st12354667123213"/>
+                </tdapi:security>
+            </tdapi:common>
+            <tdapi:requestMetaGetCleanseFunctionList/>
+        </tdapi:requestBody>
+
+        <tdapi:responseBody>
+            <tdapi:common operationId="op12321452" exitCode="Success" processingTime="100"/>
+            <tdapi:responseMetaGetCleanseFunctionList>
+                <tdapi:cleanseFunctions>
+                    <meta:group groupName="Корень" description="Системная группа, содержащая все остальные группы">
+                        <meta:group groupName="Строковые">
+                            <meta:cleanseFunction functionName="УбратьПробелы"
+                                                  javaClass="com.taskdata.mdm.cleanse.string.CFTrim"
+                                                  description="Убирает все пробельные символы с начала и конца строки"/>
+                            <meta:cleanseFunction functionName="Соеденить"
+                                                  javaClass="com.taskdata.mdm.cleanse.string.CFConcatenate"/>
+                        </meta:group>
+
+                        <meta:group groupName="Математические">
+                            <meta:group groupName="Тринонометрические">
+                                <meta:cleanseFunction functionName="Синус"
+                                                      javaClass="com.taskdata.mdm.cleanse.math.CFSin"/>
+                            </meta:group>
+                            <meta:cleanseFunction functionName="Сумма" javaClass="com.taskdata.mdm.cleanse.math.CFSum"/>
+                            <meta:cleanseFunction functionName="Разность"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFSubtract"/>
+                            <meta:cleanseFunction functionName="Произведение"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFMultiply"/>
+                            <meta:cleanseFunction functionName="Деление"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFDivide"/>
+                            <meta:cleanseFunction functionName="Округлить"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFRound"/>
+                            <meta:cleanseFunction functionName="Максимум"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFMax"/>
+                            <meta:cleanseFunction functionName="Минимум"
+                                                  javaClass="com.taskdata.mdm.cleanse.math.CFMin"/>
+                        </meta:group>
+                    </meta:group>
+                </tdapi:cleanseFunctions>
+            </tdapi:responseMetaGetCleanseFunctionList>
+        </tdapi:responseBody>
+    </tdapi:sample>
+
+    <tdapi:sampleJMSMessage eventDate="2015-04-23T13:31:45" publishDate="2015-04-23T13:31:46" eventType="Upsert">
+        <tdapi:upsertEventDetails upsertActionType="Insert">
+            <tdapi:originRecord entityName="Сотрудник">
+                <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                <data:complexAttributes name="контактныеДанные">
+                    <data:nestedRecord>
+                        <data:complexAttributes name="адреса">
+                            <data:nestedRecord>
+                                <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                            </data:nestedRecord>
+                        </data:complexAttributes>
+                    </data:nestedRecord>
+                </data:complexAttributes>
+                <data:originKey externalId="123" sourceSystem="SAP" entityName="Сотрудник" id="4321"/>
+            </tdapi:originRecord>
+            <tdapi:etalonRecord entityName="Сотрудник">
+                <data:simpleAttributes name="имя" type="String">
+                    <data:stringValue>Иванов Иван Иванович</data:stringValue>
+                </data:simpleAttributes>
+                <data:simpleAttributes name="инн" type="String">
+                    <data:stringValue>1234567890</data:stringValue>
+                </data:simpleAttributes>
+                <data:complexAttributes name="контактныеДанные">
+                    <data:nestedRecord>
+                        <data:complexAttributes name="адреса">
+                            <data:nestedRecord>
+                                <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                                <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                            </data:nestedRecord>
+                        </data:complexAttributes>
+                    </data:nestedRecord>
+                </data:complexAttributes>
+                <data:etalonKey id="123"/>
+            </tdapi:etalonRecord>
+        </tdapi:upsertEventDetails>
+    </tdapi:sampleJMSMessage>
+
+    <tdapi:sampleJMSMessage eventDate="2015-04-25T23:56:13" publishDate="2015-04-25T23:56:15" eventType="Merge">
+        <tdapi:mergeEventDetails>
+            <tdapi:winningEtalonRecord entityName="Сотрудник">
+                <data:simpleAttributes name="имя" type="String"><data:stringValue>Иванов Иван Иванович</data:stringValue></data:simpleAttributes>
+                <data:simpleAttributes name="инн" type="String"><data:stringValue>1234567890</data:stringValue></data:simpleAttributes>
+                <data:complexAttributes name="контактныеДанные">
+                    <data:nestedRecord>
+                    <data:complexAttributes name="адреса">
+                        <data:nestedRecord>
+                            <data:simpleAttributes name="почтовыйИндекс" type="String"><data:stringValue>123456</data:stringValue></data:simpleAttributes>
+                            <data:simpleAttributes name="субъектРФ" type="String"><data:stringValue>45</data:stringValue></data:simpleAttributes>
+                            <data:simpleAttributes name="город" type="String"><data:stringValue>Москва</data:stringValue></data:simpleAttributes>
+                            <data:simpleAttributes name="улица" type="String"><data:stringValue>Тверская</data:stringValue></data:simpleAttributes>
+                            <data:simpleAttributes name="дом" type="String"><data:stringValue>1</data:stringValue></data:simpleAttributes>
+                            <data:simpleAttributes name="типАдреса" type="String"><data:stringValue>Юридический</data:stringValue></data:simpleAttributes>
+                        </data:nestedRecord>
+                    </data:complexAttributes>
+                    </data:nestedRecord>
+                </data:complexAttributes>
+                <data:etalonKey id="123"/>
+            </tdapi:winningEtalonRecord>
+            <tdapi:looserEtalonKey id="754"/>
+            <tdapi:looserEtalonKey id="12367"/>
+        </tdapi:mergeEventDetails>
+    </tdapi:sampleJMSMessage>
+</tdapi:samples>

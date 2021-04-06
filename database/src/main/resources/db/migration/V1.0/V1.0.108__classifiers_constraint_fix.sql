@@ -1,0 +1,2 @@
+alter TABLE etalons_classifiers DROP CONSTRAINT uq_etalons_classifiers_name_etalon_id_record;
+create UNIQUE INDEX uq_etalons_classifiers_name_etalon_id_record on etalons_classifiers (name, etalon_id_record) where status = 'ACTIVE';

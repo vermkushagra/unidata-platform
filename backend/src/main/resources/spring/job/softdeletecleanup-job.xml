@@ -1,0 +1,93 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+        SoftDelete records cleanup Job with partitioning based on parallel execution in different threads on main node.
+    -->
+
+    <bean id="softDeleteCleanupJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="8"/>
+    </bean>
+
+    <batch:job id="softDeleteCleanupJob">
+        <batch:listeners>
+            <batch:listener ref="softDeleteCleanupJobListener"/>
+        </batch:listeners>
+        <batch:step id="softDeleteCleanup.master">
+            <batch:partition step="softDeleteCleanup.slave" partitioner="softDeleteCleanupPartitioner">
+                <batch:handler grid-size="10" task-executor="softDeleteCleanupJobChunkTaskExecutor" />
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+
+    <bean id="softDeleteCleanupJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="softDeleteCleanupJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="blockSize" value-type="java.lang.Long" value="500"/>
+                <entry key="cleanType" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="overdueDays" value-type="java.lang.Long" value="10"/>
+                <entry key="auditLevel" value-ref="auditLevelParameterExtractor"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="softDeleteCleanupPartitioner" class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupPartitioner"
+        scope="job">
+        <property name="blockSize" value="#{jobParameters[blockSize]}"/>
+        <property name="type" value="#{jobParameters[cleanType]}"/>
+        <property name="overdueDays" value="#{jobParameters[overdueDays]}"/>
+    </bean>
+
+    <batch:step id="softDeleteCleanup.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk commit-interval="1"
+                processor="softDeleteCleanupItemProcessor"
+                reader="softDeleteCleanupItemReader"
+                writer="softDeleteCleanupItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="softDeleteCleanupJobStepExecutionListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="softDeleteCleanupJobListener" class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupJobReportGenerator" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.soft.delete.cleanup.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+
+    <bean id="softDeleteCleanupItemReader"
+          class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupItemReader"
+          scope="step">
+        <property name="ids" value="#{stepExecutionContext[ids]}"/>
+        <property name="resourceName" value="#{stepExecutionContext[entityName]}-#{stepExecutionContext[partition]}"/>
+    </bean>
+
+    <bean id="softDeleteCleanupItemWriter"
+          class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupItemWriter"
+          scope="step">
+    </bean>
+
+    <bean id="softDeleteCleanupItemProcessor" class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupItemProcessor"
+          scope="step">
+    </bean>
+
+    <bean id="softDeleteCleanupJobStepExecutionListener" class="com.unidata.mdm.backend.service.job.softdeletecleanup.SoftDeleteCleanupJobStepExecutionListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_DELETE"/>
+    </bean>
+</beans>

@@ -1,0 +1,32 @@
+$baseCls: 'un-warningbubble';
+
+.#{$baseCls} {
+  height: 50px;
+  background-color: #fff3e0;
+  border: 1px solid #ff9800;
+  width: 100%;
+  position: relative;
+  @include border-radius(3px);
+  .#{$baseCls}-icon {
+    position: absolute;
+    padding: 13px 0 0 14px;
+    height: 100%;
+    top: 0px;
+    width: 50px;
+    color: #ffffff;
+    background-color: #ff9900;
+    span {
+      font-size: 20px;
+    }
+  }
+
+  .#{$baseCls}-text {
+    left: 50px;
+    position: absolute;
+    font-size: 12px;
+    padding: 15px 6px 0 6px;
+    top: 0px;
+    height: 100%;
+    color: #993300;
+  }
+}

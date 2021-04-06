@@ -1,0 +1,26 @@
+$baseCls: '.un-dataviewer-card-origin';
+
+#{$baseCls} {
+  .x-table-layout {
+    .x-table-layout-cell {
+      .x-panel-un-card {
+        margin-right: 8px;
+      }
+    }
+
+    .x-table-layout-cell:last-child {
+      .x-panel-un-card {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .un-toolbar-paging {
+    background-color: transparent;
+    padding: ($un-content-inner-padding / 2) $un-content-inner-padding;
+  }
+
+  .un-content-inner {
+    padding-top: 0 !important;
+  }
+}

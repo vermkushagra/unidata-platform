@@ -1,0 +1,184 @@
+//$baseCls: '.un-resultset';
+//
+//#{$baseCls} {
+//  .x-grid-view-default .x-grid-cell-inner {
+//    white-space: normal;
+//  }
+//
+//  .x-panel-header, .x-panel-header-default, .x-panel-body, .x-toolbar, .x-tool, .x-tool-img {
+//    //background: #52839D !important;
+//  }
+//
+//  .x-grid-empty {
+//    padding: 10px 10px 10px 20px;
+//    //color: #e5e5e5;
+//    //background: #52839D;
+//  }
+//
+//  .x-grid-item {
+//    //color: #fff;
+//    //background: #52839D;
+//    border: none;
+//  }
+//
+//  .x-grid-cell-inner {
+//    //border-bottom: 1px solid #fff;
+//    padding: 10px;
+//  }
+//
+//  .x-grid-cell p {
+//    margin: 5px 0px;
+//  }
+//
+//  .x-grid-item-focused .x-grid-cell-inner {
+//    //color: #fff;
+//    border: 0;
+//  }
+//
+//  .x-grid-item.x-grid-item-over {
+//    border: 0;
+//  }
+//
+//  .x-grid-item-over .x-grid-cell {
+//    //color: #50768C !important;
+//  }
+//
+//  .x-grid-item-over .x-grid-item-focused .x-grid-cell-inner,
+//  .x-grid-item-over .x-grid-item-focused,
+//  .x-grid-item-over {
+//    //background: #f0f0f0 !important;
+//    //color: #50768C !important;
+//    border: 0px !important;
+//    cursor: pointer !important;
+//  }
+//
+//  //&.un-results-split {
+//  //  .x-grid-item,
+//  //  .x-grid-item-over {
+//  //    border-color: #85abbf;
+//  //    border-top: solid 1px #85abbf !important;
+//  //  }
+//  //}
+//
+//  .x-grid-cell-checkcolumn {
+//    vertical-align: middle;
+//  }
+//
+//  .x-grid-cell-checkcolumn {
+//    vertical-align: middle;
+//  }
+//
+//  .x-grid-cell-row-checker .x-grid-cell-inner {
+//    padding: 0 !important;
+//    display: none;
+//  }
+//
+//  .x-grid-item-over {
+//    .x-grid-cell-row-checker .x-grid-cell-inner {
+//      display: block;
+//    }
+//  }
+//
+//  &.un-editmode-disabled {
+//    .x-grid-cell-row-checker .x-grid-cell-inner {
+//      display: none !important;
+//    }
+//  }
+//
+//  &.un-editmode-selection {
+//    .x-grid-cell-row-checker .x-grid-cell-inner {
+//      display: block !important;
+//    }
+//  }
+//
+//  &.un-editmode-query {
+//    .x-grid-row-checker {
+//      background-position: -30px -15px !important;
+//    }
+//    .x-grid-cell-row-checker .x-grid-cell-inner {
+//      display: block !important;
+//    }
+//  }
+//
+//  .x-column-header-focus .x-column-header,
+//  .x-column-header-over,
+//  .x-column-header,
+//  .x-grid-header-ct {
+//    //color: #fff !important;
+//    border: none !important;
+//    //background-color: transparent !important;
+//  }
+//
+//  .x-column-header-focus .x-column-header-inner:before {
+//    display: none !important;
+//  }
+//
+//  .x-grid-item-selected {
+//    border-width: 0;
+//    //background-color: #6191ab;
+//  }
+//
+//  .x-grid-item-over,
+//  .x-grid-item-over + .x-grid-item,
+//  .x-grid-item-selected + .x-grid-item {
+//    border-width: 0;
+//  }
+//
+//  .x-grid-item-selected:last-child {
+//    border-bottom-width: 0px;
+//  }
+//
+//  .x-grid-cell-inner:before {
+//    border: 0px;
+//  }
+//
+//  .paging-toolbar .x-toolbar-text{
+//    //color: #ffffff !important;
+//  }
+//
+//  .paging-toolbar .x-form-text{
+//    padding: 0px 5px !important;
+//  }
+//
+//  .paging-toolbar .x-tbar-page-prev {
+//    background-image: url(../resources/page-prev.png);
+//  }
+//
+//  .paging-toolbar .x-tbar-page-next {
+//    background-image: url(../resources/page-next.png);
+//  }
+//
+//  .paging-toolbar .x-tbar-page-first {
+//    background-image: url(../resources/page-first.png);
+//  }
+//
+//  .paging-toolbar .x-tbar-page-last {
+//    background-image: url(../resources/page-last.png);
+//  }
+//
+//  .paging-toolbar .x-btn-over {
+//    //background: #6caccc !important;
+//    //border: 1px solid #7ac2e6 !important;
+//  }
+//
+//  .x-header {
+//    padding: 10px 10px 10px 0px;
+//  }
+//
+//  .x-collapsed {
+//    padding: 10px;
+//  }
+//
+//  .x-header .x-title-item {
+//    //color: #fff;
+//  }
+//
+//  .x-collapsed .x-title-item {
+//    //color: #fff;
+//    padding-left: 10px;
+//  }
+//
+//  >.x-panel-body {
+//    padding: 10px;
+//  }
+//}

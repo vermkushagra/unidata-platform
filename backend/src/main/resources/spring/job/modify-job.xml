@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <!--
+        Modifying records with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+    <hz:queue id="modifyJobsQueue" instance-ref="instance" name="modifyPartitionQueue" lazy-init="true"
+              depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+
+    <batch:job id="modifyJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="modifyJobListener"/>
+        </batch:listeners>
+        <batch:step id="modify.master">
+            <batch:partition partitioner="modifyItemPartitioner" handler="modifyRemotePartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="modifyRemotePartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="modifyRemote.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="modifyJobsQueue"/>
+    </bean>
+
+    <bean id="modifyItemPartitioner"
+          class="com.unidata.mdm.backend.service.job.modify.ModifyItemPartitioner"
+          scope="job">
+        <property name="batchSize" value="${modify.batch.size:500}"/>
+        <property name="recordKey" value="#{jobParameters['record']}"/>
+        <property name="classifiersKey" value="#{jobParameters['classifiers']}"/>
+        <property name="relationsKey" value="#{jobParameters['relations']}"/>
+        <property name="idsKey" value="#{jobParameters['idsKey']}"/>
+        <property name="userKey" value="#{jobParameters['user']}"/>
+    </bean>
+
+    <bean id="modifyJobListener" class="com.unidata.mdm.backend.service.job.modify.ModifyJobReportGenerator" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.batch.modify.data.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <bean id="modifyRemoteStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="ModifyRecords"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="modifyJobsQueue"/>
+        <property name="threadCount" value="${unidata.job.batch_modify_data.thread_count:4}"/>
+    </bean>
+
+    <batch:step id="modifyRemote.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="modifyProcessor" commit-interval="${unidata.job.batch_modify_data.commit_interval:500}" reader="modifyReader"
+                         writer="modifyWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="authAdjusterModify"/>
+            <batch:listener ref="modifyItemJobStepExecutionListener"/>
+        </batch:listeners>
+    </batch:step>
+
+
+    <bean id="authAdjusterModify" class="com.unidata.mdm.backend.service.job.AuthAdjuster" scope="step">
+        <property name="userName" value="#{jobParameters[userName]}"/>
+        <property name="userToken" value="#{jobParameters[userToken]}"/>
+    </bean>
+
+    <bean id="modifyReader"
+          class="org.springframework.batch.item.support.IteratorItemReader"
+          scope="step">
+        <constructor-arg value="#{stepExecutionContext['ids']}"/>
+    </bean>
+
+    <bean id="modifyProcessor"
+          class="com.unidata.mdm.backend.service.job.modify.ModifyItemProcessor"
+          scope="step">
+        <property name="etalonRecord" value="#{stepExecutionContext['record']}"/>
+        <property name="classifiers" value="#{stepExecutionContext['classifiers']}"/>
+        <property name="relations" value="#{stepExecutionContext['relations']}"/>
+        <property name="asOf" value="#{stepExecutionContext['asOf']}"/>
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="operationExecutor" value="#{jobParameters['userName']}"/>
+    </bean>
+
+    <bean id="modifyWriter"
+          class="com.unidata.mdm.backend.service.job.modify.ModifyItemWriter"
+          scope="step">
+    </bean>
+
+    <bean id="modifyItemJobStepExecutionListener" class="com.unidata.mdm.backend.service.job.modify.ModifyItemJobStepExecutionListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_MODIFY"/>
+    </bean>
+    <!-- EOF - Slave job. -->
+</beans>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+
+    <!--Removing records with partitioning based on parallel execution on several nodes with Hazelcast queue transport.-->
+    <hz:queue id="removeRelationsJobsQueue" instance-ref="instance" name="removeRelationsQueue" lazy-init="true"
+              depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+
+    <batch:job id="removeRelationsJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="removeRelationsJobListener"/>
+        </batch:listeners>
+        <batch:step id="removeRelations.master">
+            <batch:partition partitioner="removeRelationsItemPartitioner" handler="removeRelationsRemotePartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="removeRelationsRemotePartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="removeRelations.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="removeRelationsJobsQueue"/>
+    </bean>
+
+    <bean id="removeRelationsItemPartitioner"
+          class="com.unidata.mdm.backend.service.job.removerelations.RemoveRelationsItemPartitioner"
+          scope="job">
+        <property name="batchSize" value="${remove.relations.batch.size:500}"/>
+        <property name="userKey" value="#{jobParameters['user']}"/>
+        <property name="idsKey" value="#{jobParameters['idsKey']}"/>
+        <property name="relationsNamesKey" value="#{jobParameters['relationsNamesKey']}"/>
+    </bean>
+
+    <bean id="removeRelationsJobListener" class="com.unidata.mdm.backend.service.job.removerelations.RemoveRelationsJobReportGenerator" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.batch.remove.relations.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <bean id="removeRelationsRemoteStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="removeRelations"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="removeRelationsJobsQueue"/>
+        <property name="threadCount" value="2"/>
+    </bean>
+
+    <batch:step id="removeRelations.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="removeRelationsProcessor" commit-interval="1" reader="removeRelationsReader"
+                         writer="removeRelationsWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="removeRelationsMeasurementListener"/>
+            <batch:listener ref="authAdjusterRemoveRelations"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="removeRelationsMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_REMOVE_RELATIONS"/>
+    </bean>
+
+    <bean id="authAdjusterRemoveRelations" class="com.unidata.mdm.backend.service.job.AuthAdjuster" scope="step">
+        <property name="userName" value="#{jobParameters[userName]}"/>
+        <property name="userToken" value="#{jobParameters[userToken]}"/>
+    </bean>
+
+    <bean id="removeRelationsReader"
+          class="org.springframework.batch.item.support.IteratorItemReader"
+          scope="step">
+        <constructor-arg value="#{stepExecutionContext['ids']}"/>
+    </bean>
+
+    <bean id="removeRelationsProcessor"
+          class="com.unidata.mdm.backend.service.job.removerelations.RemoveRelationsItemProcessor"
+          scope="step">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="forDate" value="#{jobParameters['forDate']}"/>
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="operationExecutor" value="#{jobParameters['userName']}"/>
+        <property name="relationsNames" value="#{stepExecutionContext['relationsNames']}"/>
+    </bean>
+
+    <bean id="removeRelationsWriter"
+          class="com.unidata.mdm.backend.service.job.removerelations.RemoveRelationsItemWriter"
+          scope="step"/>
+    <!-- EOF - Slave job. -->
+</beans>

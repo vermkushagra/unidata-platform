@@ -1,0 +1,19 @@
+// обычное состояние кнопки
+a.x-btn.un-roundbutton__save {
+  background-color: #2e7d32;
+}
+
+// кнопка под курсором
+a.x-btn.un-roundbutton__save.x-btn-over {
+  background-color: #43a047;
+}
+
+// кнопка нажата
+a.x-btn.un-roundbutton__save.x-btn-pressed {
+  background-color: #66bb6a;
+}
+
+// кнопка неактивна
+a.x-btn.un-roundbutton__save.x-btn-disabled {
+  background-color: #2e7d32;
+}

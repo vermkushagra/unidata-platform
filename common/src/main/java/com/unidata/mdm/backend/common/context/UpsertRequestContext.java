@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.context;
 
 import java.util.ArrayList;
@@ -24,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -37,7 +17,6 @@ import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.CodeAttributeAlias;
 import com.unidata.mdm.backend.common.types.DataQualityError;
 import com.unidata.mdm.backend.common.types.DataRecord;
-import com.unidata.mdm.backend.common.types.EtalonRecord;
 import com.unidata.mdm.backend.common.types.RecordStatus;
 
 /**
@@ -92,7 +71,6 @@ public class UpsertRequestContext
      * Data quality errors.
      */
     private final List<DataQualityError> dqErrors = new ArrayList<>();
-
     /**
      * Origin status to put.
      */
@@ -152,13 +130,11 @@ public class UpsertRequestContext
         flags.set(ContextUtils.CTX_FLAG_INCLUDE_DRAFT_VERSIONS, b.includeDraftVersions);
         flags.set(ContextUtils.CTX_FLAG_MERGE_WITH_PREVIOUS_VERSION, b.mergeWithPreviousVersion);
         flags.set(ContextUtils.CTX_FLAG_SKIP_INDEX_DROP, b.skipIndexDrop);
-        flags.set(ContextUtils.CTX_FLAG_SKIP_MATCHING_PREPROCESSING, b.skipMatchingPreprocessing);
+        flags.set(ContextUtils.CTX_FLAG_SKIP_MATCHING, b.skipMatching);
         flags.set(ContextUtils.CTX_FLAG_SUPPRESS_AUDIT, b.suppressAudit);
         flags.set(ContextUtils.CTX_FLAG_BATCH_UPSERT, b.batchUpsert);
         flags.set(ContextUtils.CTX_FLAG_INITIAL_LOAD, b.initialLoad);
         flags.set(ContextUtils.CTX_FLAG_SKIP_CONSISTENCY_CHECKS, b.skipConsistencyChecks);
-        flags.set(ContextUtils.CTX_FLAG_SKIP_MATCHING, b.skipMatching);
-        flags.set(ContextUtils.CTX_FLAG_RESOLVE_BY_MATCHING, b.resolveByMatching);
 
         this.relations = b.relations == null || b.relations.isEmpty()
                 ? null
@@ -250,13 +226,6 @@ public class UpsertRequestContext
     }
 
     /**
-     * @return the skipMatching preprocessing
-     */
-    public boolean isSkipMatchingPreprocessing() {
-        return flags.get(ContextUtils.CTX_FLAG_SKIP_MATCHING_PREPROCESSING);
-    }
-
-    /**
      * @return the skipMatching
      */
     public boolean isSkipMatching() {
@@ -317,13 +286,6 @@ public class UpsertRequestContext
      */
     public boolean isInitialLoad() {
         return flags.get(ContextUtils.CTX_FLAG_INITIAL_LOAD);
-    }
-
-    /**
-     * @return true, if need resolve keys by matching or not
-     */
-    public boolean isResolveByMatching() {
-        return flags.get(ContextUtils.CTX_FLAG_RESOLVE_BY_MATCHING);
     }
 
     /**
@@ -602,12 +564,10 @@ public class UpsertRequestContext
         b.includeDraftVersions = other.flags.get(ContextUtils.CTX_FLAG_INCLUDE_DRAFT_VERSIONS);
         b.mergeWithPreviousVersion = other.flags.get(ContextUtils.CTX_FLAG_MERGE_WITH_PREVIOUS_VERSION);
         b.skipIndexDrop = other.flags.get(ContextUtils.CTX_FLAG_SKIP_INDEX_DROP);
-        b.skipMatchingPreprocessing = other.flags.get(ContextUtils.CTX_FLAG_SKIP_MATCHING_PREPROCESSING);
+        b.skipMatching = other.flags.get(ContextUtils.CTX_FLAG_SKIP_MATCHING);
         b.suppressAudit = other.flags.get(ContextUtils.CTX_FLAG_SUPPRESS_AUDIT);
         b.batchUpsert = other.flags.get(ContextUtils.CTX_FLAG_BATCH_UPSERT);
         b.initialLoad = other.flags.get(ContextUtils.CTX_FLAG_INITIAL_LOAD);
-        b.skipMatching = other.flags.get(ContextUtils.CTX_FLAG_SKIP_MATCHING);
-        b.resolveByMatching = other.flags.get(ContextUtils.CTX_FLAG_RESOLVE_BY_MATCHING);
 
         // Sub contexts
         b.relations = other.relations != null ? other.relations.getRelations() : null;
@@ -643,9 +603,9 @@ public class UpsertRequestContext
          */
         private boolean skipConsistencyChecks;
         /**
-         * Skip matching preprocessing part of the upsert.
+         * Skip matching part of the upsert.
          */
-        private boolean skipMatchingPreprocessing;
+        private boolean skipMatching;
         /**
          * Suppress audit upon upsert.
          */
@@ -747,14 +707,6 @@ public class UpsertRequestContext
          * Audit level.
          */
         private short auditLevel = AuditLevel.AUDIT_SUCCESS;
-        /**
-         * Skip matching main phase part of the upsert.
-         */
-        private boolean skipMatching;
-        /**
-         * Try resolve upserted record by matching keys
-         */
-        private boolean resolveByMatching;
         /**
          * Constructor.
          */
@@ -862,10 +814,10 @@ public class UpsertRequestContext
 
 
         /**
-         * @param skipMatchingPreprocessing skip matching preprocessing or not
+         * @param skipMatching skip matching or not
          */
-        public UpsertRequestContextBuilder skipMatchingPreprocessing(boolean skipMatchingPreprocessing) {
-            this.skipMatchingPreprocessing = skipMatchingPreprocessing;
+        public UpsertRequestContextBuilder skipMatching(boolean skipMatching) {
+            this.skipMatching = skipMatching;
             return this;
         }
 
@@ -1100,24 +1052,6 @@ public class UpsertRequestContext
            this.auditLevel = auditLevel;
            return this;
        }
-
-
-        /**
-         * @param skipMatching skip matching main phase or not
-         */
-        public UpsertRequestContextBuilder skipMatching(boolean skipMatching) {
-            this.skipMatching = skipMatching;
-            return this;
-        }
-
-        /**
-         * @param  resolveByMatching try resolve upserted record by matching rules or not
-         */
-        public UpsertRequestContextBuilder resolveByMatching(boolean resolveByMatching) {
-            this.resolveByMatching = resolveByMatching;
-            return this;
-        }
-
        /**
         * Builds a context.
         * @return a new context

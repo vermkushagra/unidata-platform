@@ -1,0 +1,12 @@
+$un-date-icon-fontsize: 16px;
+
+.x-form-date-trigger {
+  background-image: none;
+  font-family: $font-family-linearicons;
+  font-size: $un-date-icon-fontsize;
+  line-height: 25px;
+}
+
+.x-form-date-trigger:before {
+  content: '\e789'; // icon-calendar-full
+}

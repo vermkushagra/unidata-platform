@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+                            http://www.springframework.org/schema/jee
+                            http://www.springframework.org/schema/jee/spring-jee-3.2.xsd
+                            http://www.springframework.org/schema/context
+       						http://www.springframework.org/schema/context/spring-context.xsd"
+    profile="standalone,default">
+
+	<bean id="daoHelper" class="com.unidata.mdm.backend.dao.impl.DaoHelper" autowire="byName">
+     <property name="createIdQuery" value="select nextval(?)"/>
+     <property name="createIdsQuery" value="select * from generate_ids(?, ?)"/>
+     <property name="commonSequenceName" value="common_seq"/>
+
+     <property name="createTmpIdTableQuery">
+         <value> <!--character(2048)-->
+             <![CDATA[ create temporary table if not exists t_tmp_id ( list_id bigint, id bigint, some_text text, some_number bigint ) on commit drop ]]>
+         </value>
+     </property>
+     <property name="insertTmpIdQuery">
+         <value>
+             <![CDATA[ insert into t_tmp_id (list_id, id) values (?, ?) ]]>
+         </value>
+     </property>
+     <property name="insertStringsToTempQuery">
+         <value>
+             <![CDATA[ insert into t_tmp_id (list_id, some_text) values (?, ?) ]]>
+         </value>
+     </property>
+ </bean>
+
+
+</beans>

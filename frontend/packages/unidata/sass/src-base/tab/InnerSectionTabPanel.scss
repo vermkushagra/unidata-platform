@@ -1,0 +1,7 @@
+$ui-name: 'un-inner-section';
+
+@include extjs-tab-panel-ui(
+  $ui: $ui-name,
+  $ui-tab-icon-width: 16px,
+  $ui-tab-icon-height: 16px
+);

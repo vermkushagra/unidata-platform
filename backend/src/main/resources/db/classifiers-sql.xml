@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="SELECT_CHILD_NODE_IDS">
+        <![CDATA[
+        SELECT NODE_ID FROM
+            (WITH RECURSIVE CHILDS( NODE_ID, PARENT_NODE_ID ) AS
+            (SELECT NODE_ID,
+                 PARENT_NODE_ID
+             FROM CLSF_NODE
+             WHERE PARENT_NODE_ID = :NODE_ID
+                   AND clsf_id = :clsf_id
+             UNION ALL
+             SELECT T.NODE_ID,
+                 T.PARENT_NODE_ID
+             FROM CHILDS C
+                 JOIN CLSF_NODE T
+                     ON C.NODE_ID = T.PARENT_NODE_ID WHERE clsf_id = :clsf_id
+            )
+            SELECT * FROM CHILDS
+            ) AS NODES
+        ]]>
+	</entry>
+    <entry key="SELECT_PARENT_NODE_IDS">
+        <![CDATA[
+        SELECT NODE_ID FROM
+            (WITH RECURSIVE PARENTS( NODE_ID, PARENT_NODE_ID ) AS
+            ( SELECT NODE_ID, PARENT_NODE_ID FROM CLSF_NODE WHERE NODE_ID = :node_id AND clsf_id = :clsf_id
+              UNION ALL
+              SELECT T.NODE_ID,
+                  T.PARENT_NODE_ID
+              FROM PARENTS P
+                  JOIN CLSF_NODE T
+                      ON P.PARENT_NODE_ID = T.NODE_ID where clsf_id = :clsf_id
+            )
+            SELECT * FROM PARENTS
+            ) AS NODES
+        ]]>
+	</entry>
+    <entry key="SELECT_NODE_ATTRS">
+	 <![CDATA[
+        SELECT
+            ID,
+            CLSF_NODE_ID,
+            ATTR_NAME,
+            DISPLAY_NAME,
+            DESCRIPTION,
+            DATA_TYPE,
+            IS_READ_ONLY,
+            IS_HIDDEN,
+            IS_NULLABLE,
+            IS_UNIQUE,
+            IS_SEARCHABLE,
+            DEFAULT_VALUE,
+            CREATED_AT,
+            UPDATED_AT,
+            CREATED_BY,
+            UPDATED_BY
+        FROM CLSF_NODE_ATTR
+        WHERE CLSF_NODE_ID IN
+              ( SELECT ID FROM
+                  (WITH RECURSIVE PARENTS(ID, NODE_ID, PARENT_NODE_ID ) AS
+                  ( SELECT ID, NODE_ID, PARENT_NODE_ID FROM CLSF_NODE WHERE NODE_ID = :node_id AND clsf_id = :clsf_id
+                    UNION ALL
+                    SELECT T.ID,
+                        T.NODE_ID,
+                        T.PARENT_NODE_ID
+                    FROM PARENTS P
+                        JOIN CLSF_NODE T
+                            ON P.PARENT_NODE_ID = T.NODE_ID where clsf_id = :clsf_id
+                  )
+                  SELECT * FROM PARENTS
+                  ) AS NODES
+              )
+        ORDER  BY ATTR_NAME, CLSF_NODE_ID DESC, ID
+        ]]>
+	</entry>
+    <entry key="SELECT_ONLY_NODE_ATTRS">
+        <![CDATA[
+        SELECT cna.*
+        FROM clsf_node_attr AS cna, clsf_node AS cn
+        WHERE cna.clsf_node_id = cn.id AND cn.node_id = :node_id AND cn.clsf_id = :clsf_id
+        ]]>
+    </entry>
+    <entry key="SELECT_ALL_CLASSIFIER_NODE_ATTRS">
+	 <![CDATA[
+        SELECT DISTINCT ON (ATTR_NAME)
+            ID,
+            CLSF_NODE_ID,
+            ATTR_NAME,
+            DISPLAY_NAME,
+            DESCRIPTION,
+            DATA_TYPE,
+            IS_READ_ONLY,
+            is_hidden,
+            IS_NULLABLE,
+            IS_UNIQUE,
+            IS_SEARCHABLE,
+            DEFAULT_VALUE,
+            CREATED_AT,
+            UPDATED_AT,
+            CREATED_BY,
+            UPDATED_BY
+        FROM CLSF_NODE_ATTR
+        WHERE CLSF_NODE_ID IN
+              (  SELECT ID FROM
+                  (WITH RECURSIVE CHILDS( ID, NODE_ID, PARENT_NODE_ID ) AS
+                  (SELECT ID, NODE_ID,
+                       PARENT_NODE_ID
+                   FROM CLSF_NODE
+                   WHERE PARENT_NODE_ID = :name||'.'||:node_id AND clsf_id = :clsf_id
+                   UNION ALL
+                   SELECT T.ID,
+                       T.NODE_ID,
+                       T.PARENT_NODE_ID
+                   FROM CHILDS C
+                       JOIN CLSF_NODE T
+                           ON C.NODE_ID = T.PARENT_NODE_ID  where clsf_id = :clsf_id
+                  )
+                  SELECT * FROM CHILDS
+                  ) AS NODES
+                 UNION ALL (
+                     SELECT ID FROM CLSF_NODE WHERE NODE_ID=:name||'.'||:node_id))
+        ORDER  BY ATTR_NAME, CLSF_NODE_ID DESC, ID
+        ]]>
+	</entry>
+    <entry key="INSERT_CLSF">
+<![CDATA[
+        INSERT INTO clsf(
+            name, display_name, code_pattern, description, created_at,
+            updated_at, created_by, updated_by, validate_code_by_level)
+        VALUES (:name, :display_name, :code_pattern, :description, :created_at,
+                :updated_at, :created_by, :updated_by, :validate_code_by_level)
+        ]]>
+	</entry>
+    <entry key="INSERT_CLSF_NODE">
+<![CDATA[
+        INSERT INTO clsf_node(
+            clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by)
+        VALUES (:clsf_id, :code, :name, :description, :node_id, :parent_node_id,
+                :created_at, :updated_at, :created_by, :updated_by)
+        ]]>
+	</entry>
+    <entry key="SELECT_ALL_CLSF_NODES">
+<![CDATA[
+        SELECT cn.id as id, cn.clsf_id as clsf_id, cn.code as code, cn.name as name, cn.description as description, cn.node_id as node_id, cn.parent_node_id as parent_node_id,
+               cn.created_at as created_at, cn.updated_at as updated_at, cn.created_by as created_by, cn.updated_by as updated_by, cna.id as _id, cna.clsf_node_id as _clsf_node_id, cna.attr_name as _attr_name, cna.display_name as _display_name, cna.description as _description, cna.data_type as _data_type,
+               cna.is_read_only as _is_read_only, cna.is_hidden as _is_hidden, cna.is_nullable as _is_nullable, cna.is_unique as _is_unique, cna.is_searchable as _is_searchable,
+               cna.default_value as _default_value, cna.created_at as _created_at, cna.updated_at as _updated_at, cna.created_by as _created_by, cna.updated_by as _updated_by
+        FROM clsf_node cn inner join clsf c on cn.clsf_id=c.id left join clsf_node_attr cna on cn.id=cna.clsf_node_id WHERE c.name=:CLSF_NAME
+        ]]>
+	</entry>
+    <entry key="SELECT_ALL_CLSF">
+<![CDATA[
+        SELECT id, name, display_name, code_pattern, description, created_at, updated_at, created_by,
+            updated_by, validate_code_by_level FROM clsf ORDER BY LOWER(display_name) asc
+        ]]>
+	</entry>
+    <entry key="UPDATE_CLSF_BY_NAME">
+<![CDATA[
+        UPDATE clsf
+        SET display_name=:display_name, code_pattern=:code_pattern, description=:description, updated_at=:updated_at, updated_by=:updated_by
+        WHERE name=:name
+        ]]>
+	</entry>
+    <entry key="UPDATE_CLSF_NODE_BY_NODE_ID">
+<![CDATA[
+        UPDATE clsf_node
+        SET  code=:code, name=:name, description=:description, node_id=:node_id, parent_node_id=:parent_node_id, updated_at=:updated_at, updated_by=:updated_by
+        WHERE node_id=:node_id AND clsf_id = :clsf_id]]>
+	</entry>
+    <entry key="SELECT_CLSF_DB_ID">
+<![CDATA[
+        SELECT id FROM clsf WHERE name=:name
+        ]]>
+	</entry>
+    <entry key="SELECT_CLSF_NODE_DB_ID">
+<![CDATA[
+        SELECT id FROM clsf_node WHERE node_id=:node_id AND clsf_id = :clsf_id
+        ]]>
+	</entry>
+    <entry key="DELETE_CLSF_BY_NAME">
+<![CDATA[
+        DELETE FROM clsf WHERE name=:name
+        ]]>
+	</entry>
+    <entry key="DELETE_CLSF_NODE_BY_NODE_ID">
+<![CDATA[
+        DELETE FROM clsf_node WHERE node_id=:node_id AND clsf_id = :clsf_id
+        ]]>
+	</entry>
+    <entry key="SELECT_CLSF_BY_NAME">
+<![CDATA[
+        SELECT id, name, display_name, code_pattern, description, created_at,
+            updated_at, created_by, updated_by, validate_code_by_level FROM clsf WHERE name=:name
+        ]]>
+	</entry>
+    <entry key="SELECT_CLSF_NODE_BY_NODE_ID">
+<![CDATA[
+        SELECT id, clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by
+        FROM clsf_node WHERE node_id = :node_id AND clsf_id = :clsf_id ORDER BY code ASC, name ASC
+        ]]>
+</entry>
+    <entry key="SELECT_CLSF_ROOT_NODE">
+<![CDATA[
+        SELECT id, clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by
+        FROM clsf_node WHERE clsf_id = :clsf_id AND parent_node_id IS NULL ORDER BY code ASC, name ASC
+        ]]>
+</entry>
+    <entry key="SELECT_CLSF_NODE_BY_PARENT_ID">
+<![CDATA[
+        SELECT id, clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by
+        FROM clsf_node WHERE parent_node_id=:parent_node_id AND clsf_id = :clsf_id ORDER BY code ASC, name ASC
+        ]]>
+</entry>
+    <entry key="SELECT_CLSF_NODE_WITH_CHILD_COUNT_AND_HAS_ATTRS_BY_PARENT_ID">
+        <![CDATA[
+        SELECT
+            cn.id AS id,
+            cn.clsf_id AS clsf_id,
+            cn.code AS code,
+            cn.name AS name,
+            cn.description AS description,
+            cn.node_id AS node_id,
+            cn.parent_node_id AS parent_node_id,
+            cn.created_at AS created_at,
+            cn.updated_at AS updated_at,
+            cn.created_by AS created_by,
+            cn.updated_by AS updated_by,
+            (SELECT count(ccn.id)
+             FROM clsf_node ccn
+             WHERE ccn.parent_node_id = cn.node_id AND ccn.clsf_id = cn.clsf_id
+             GROUP BY ccn.parent_node_id) AS count,
+            count(cna.id) <> 0 AS hasAttrs
+        FROM clsf_node cn
+            INNER JOIN clsf c ON cn.clsf_id = c.id
+            LEFT OUTER JOIN clsf_node_attr cna ON cn.id = cna.clsf_node_id
+        WHERE
+            cn.parent_node_id = :parent_node_id
+            AND c.name = :name
+        GROUP BY cn.id
+        ORDER BY code ASC, name ASC
+        ]]>
+    </entry>
+    <entry key="INSERT_CLSF_NODE_ATTRS">
+        <![CDATA[
+        INSERT INTO clsf_node_attr(
+            clsf_node_id,
+            attr_name,
+            display_name,
+            description,
+            data_type,
+            is_read_only,
+            is_hidden,
+            is_nullable,
+            is_unique,
+            is_searchable,
+            default_value,
+            created_at,
+            created_by
+        )
+            SELECT
+                cn.id,
+                :attr_name,
+                :display_name,
+                :description,
+                :data_type,
+                :is_read_only,
+                :is_hidden,
+                :is_nullable,
+                :is_unique,
+                :is_searchable,
+                :default_value,
+                :created_at,
+                :created_by
+            FROM clsf_node cn LEFT JOIN clsf c ON cn.clsf_id = c.id
+            WHERE cn.node_id = :node_id AND c.name = :name
+        ]]>
+    </entry>
+    <entry key="INSERT_CLSF_NODE_ATTRS_FOR_DIFFERENT_NODES">
+        <![CDATA[
+        INSERT INTO clsf_node_attr(
+            clsf_node_id,
+            attr_name,
+            display_name,
+            description,
+            data_type,
+            is_read_only,
+            is_hidden,
+            is_nullable,
+            is_unique,
+            is_searchable,
+            default_value,
+            created_at,
+            created_by
+        )
+            SELECT
+                cn.id,
+                :attr_name,
+                :display_name,
+                :description,
+                :data_type,
+                :is_read_only,
+                :is_hidden,
+                :is_nullable,
+                :is_unique,
+                :is_searchable,
+                :default_value,
+                :created_at,
+                :created_by
+            FROM clsf_node cn
+            WHERE cn.node_id = :node_id AND cn.clsf_id = :clsf_id
+        ]]>
+    </entry>
+    <entry key="SELECT_NODE_ATTRS_BY_NODE_DB_ID">
+<![CDATA[
+        SELECT id, clsf_node_id, attr_name, display_name, description, data_type,
+            is_read_only, is_hidden, is_nullable, is_unique, is_searchable,
+            default_value, created_at, updated_at, created_by, updated_by
+        FROM clsf_node_attr WHERE clsf_node_id = :clsf_node_id AND clsf_id = :clsf_id ORDER BY attr_name
+        ]]>
+</entry>
+    <entry key="DELETE_CLSF_NODE_ATTRS">
+<![CDATA[
+        DELETE FROM clsf_node_attr WHERE clsf_node_id = :clsf_node_id
+        ]]>
+</entry>
+    <entry key="SELECT_NODE_ID_BY_PATH">
+<![CDATA[
+        WITH RECURSIVE temp1 (id, name, node_id, parent_node_id, PATH, LEVEL) AS (
+            SELECT T1.id, T1.name, T1.node_id,T1.parent_node_id, T1.name::text, 1
+            FROM clsf_node T1, clsf WHERE T1.parent_node_id IS NULL AND T1.clsf_id = clsf.id
+                                          and clsf.name = :clsf_id
+            union
+            select T2.id, T2.name, T2.node_id, T2.parent_node_id, concat(temp1.PATH, '.', T2.name), LEVEL + 1
+            FROM clsf_node T2 INNER JOIN temp1 ON (temp1.node_id = T2.parent_node_id))
+        select n.id, n.clsf_id, n.code, n.name, n.description, n.node_id, n.parent_node_id, n.created_at, n.updated_at, n.created_by, n.updated_by
+        from clsf_node n, temp1 t WHERE t.PATH = :path and t.id = n.id
+        ]]>
+    </entry>
+    <entry key="SELECT_CLSF_NODE_BY_CODE">
+        <![CDATA[
+        SELECT id, clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by
+        FROM clsf_node WHERE code = :code AND clsf_id = :clsf_id
+        ]]>
+    </entry>
+    <entry key="SELECT_CLSF_NODE_BY_CODE_AND_NAME_AND_PARENT_ID">
+        <![CDATA[
+        SELECT id, clsf_id, code, name, description, node_id, parent_node_id,
+            created_at, updated_at, created_by, updated_by
+        FROM clsf_node WHERE code = :code AND name = :name AND parent_node_id = :parent_node_id AND clsf_id = :clsf_id
+        ]]>
+    </entry>
+
+    <entry key="DELETE_NODES_BY_CLSF_ID">
+        <![CDATA[
+        DELETE FROM clsf_node WHERE clsf_id = :clsfId
+        ]]>
+    </entry>
+    <entry key="DELETE_ORIGINS_CLASSIFIERS_WHERE_NODES_NOT_EXISTS">
+        <![CDATA[
+        DELETE FROM origins_classifiers WHERE name = :clsfName AND node_id NOT IN (SELECT cn.node_id FROM clsf_node cn WHERE cn.clsf_id = :clsfId)
+        ]]>
+    </entry>
+    <entry key="DELETE_ETALONS_CLASSIFIERS_WHERE_NO_CLASSIFIERS">
+        <![CDATA[
+        DELETE FROM etalons_classifiers WHERE name = :clsfName AND id NOT IN (SELECT oc.etalon_id FROM origins_classifiers oc WHERE oc.name = :clsfName)
+        ]]>
+    </entry>
+    <entry key="SELECT_ALL_CLASSIFIERS">
+        <![CDATA[
+        SELECT * FROM clsf
+        ]]>
+    </entry>
+    <entry key="SELECT_ATTRIBUTES_IN_CLASSIFIER_BY_NAME">
+        <![CDATA[
+        SELECT cna.*, cn.name AS classifierNodeName
+        FROM clsf_node_attr cna, clsf_node cn, clsf c
+        WHERE cna.attr_name IN (:attrs_names) AND cna.clsf_node_id = cn.id AND cn.clsf_id = c.id AND c.name = :clsfName AND cn.node_id <> :nodeId
+        ]]>
+    </entry>
+</properties>
+    

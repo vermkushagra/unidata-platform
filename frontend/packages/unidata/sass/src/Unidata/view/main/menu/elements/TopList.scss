@@ -1,0 +1,8 @@
+$baseCls: '.un-mainmenu-list';
+
+#{$baseCls}-top {
+  -webkit-transition: padding-bottom $un-menu-item-animation-speed;
+  transition: padding-bottom $un-menu-item-animation-speed;
+
+  padding-bottom: $un-menu-top-list-padding;
+}

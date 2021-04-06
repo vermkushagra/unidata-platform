@@ -1,72 +1,45 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.exception;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The Class CleanseFunctionException.
  */
-public class CleanseFunctionExecutionException extends SystemRuntimeException {
+public class CleanseFunctionExecutionException extends Exception {
     /**
      * Serial version UID.
      */
     private static final long serialVersionUID = -8171957635042513810L;
+    /** The error messages. */
+    private List<String> errorMessages = new ArrayList<>();
+
+    /** The cleanse function id. */
+    private String cleanseFunctionId;
+
+    /** The cause. */
+    private Exception cause;
+
     /**
      * Instantiates a new cleanse function exception.
      */
-    public CleanseFunctionExecutionException(String message, Throwable cause, ExceptionId id, Object... args) {
-        super(message, cause, id, args);
-    }
-    /**
-     * Constructor.
-     * @param message
-     * @param id
-     * @param args
-     */
-    public CleanseFunctionExecutionException(String message, ExceptionId id, Object... args) {
-        super(message, id, args);
-    }
-    /**
-     * Constructor.
-     * @param cause
-     * @param id
-     * @param args
-     */
-    public CleanseFunctionExecutionException(Throwable cause, ExceptionId id, Object... args) {
-        super(cause, id, args);
+    private CleanseFunctionExecutionException() {
+        super();
     }
 
     /**
      * Instantiates a new cleanse function exception.
-     * Special form, used by CF implementations.
      *
-     * @param cleanseFunctionId
+     * @param cleansefunctionId
      *            the cleansefunction id
      * @param errorMessages
      *            the error messages
      */
-    public CleanseFunctionExecutionException(String cleanseFunctionId, String... errorMessages) {
-        this(constructExecMessage(cleanseFunctionId, errorMessages),
-             ExceptionId.EX_DQ_CLEANSE_FUNCTION_EXEC,
-             constructExecArgs(cleanseFunctionId, errorMessages));
+    public CleanseFunctionExecutionException(String cleansefunctionId, String... errorMessages) {
+        this();
+        this.cleanseFunctionId = cleansefunctionId;
+        this.errorMessages = Arrays.asList(errorMessages);
     }
 
     /**
@@ -76,49 +49,42 @@ public class CleanseFunctionExecutionException extends SystemRuntimeException {
      * @param cause the cause
      * @param errorMessages the error messages
      */
-    public CleanseFunctionExecutionException(String cleanseFunctionId, Throwable cause, String... errorMessages) {
-        this(constructExecMessage(cleanseFunctionId, errorMessages),
-             cause,
-             ExceptionId.EX_DQ_CLEANSE_FUNCTION_EXEC,
-             constructExecArgs(cleanseFunctionId, errorMessages));
+    public CleanseFunctionExecutionException(String cleansefunctionId, Exception cause, String... errorMessages) {
+        this();
+        this.cleanseFunctionId = cleansefunctionId;
+        this.cause = cause;
+        this.errorMessages = Arrays.asList(errorMessages);
     }
 
     /**
-     * Constructs exec message.
-     * @param id CF id
-     * @param errors errors
-     * @return message
+     * Instantiates a new cleanse function exception.
+     *
+     * @param cleanseFunctionId
+     *            the cleansefunction id
+     * @param errorMessages
+     *            the error messages
      */
-    private static String constructExecMessage(String id, String... errors) {
-        return errors == null || errors.length == 0
-                ? "Error, while executing cleanse function {}: Unspecified."
-                : "Error, while executing cleanse function {}: Details: {}.";
+    public CleanseFunctionExecutionException(String cleanseFunctionId, List<String> errorMessages) {
+        this();
+        this.cleanseFunctionId = cleanseFunctionId;
+        this.errorMessages = errorMessages;
     }
+
     /**
-     * Constructs exec args.
-     * @param id CF id
-     * @param errors errors
-     * @return args
+     * Gets the error messages.
+     *
+     * @return the error messages
      */
-    private static Object[] constructExecArgs(String id, String... errors) {
+    public List<String> getErrorMessages() {
+        return this.errorMessages;
+    }
 
-        final Object[] args = errors == null || errors.length == 0
-                ? new Object[1]
-                : new Object[2];
-
-        args[0] = id;
-        if (errors != null && errors.length > 0) {
-
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < errors.length; i++) {
-                sb.append(StringUtils.LF)
-                  .append("- ")
-                  .append(errors[i]);
-            }
-
-            args[1] = sb.toString();
-        }
-
-        return args;
+    /**
+     * Gets the cleanse function id.
+     *
+     * @return the cleanse function id
+     */
+    public String getCleanseFunctionId() {
+        return this.cleanseFunctionId;
     }
 }

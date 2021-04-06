@@ -1,0 +1,31 @@
+$baseCls: '.un-classifier-filter-list';
+
+#{$baseCls} {
+  >.x-panel-body {
+    padding: 0 !important;
+  }
+
+  .un-classifier-nodepicker {
+    padding-left: $un-search-panel-body-padding;
+    padding-right: $un-search-panel-body-padding;
+    margin-bottom: 0 !important;
+  }
+
+  .un-classifier-margin .x-autocontainer-innerCt {
+    height: $un-search-panel-body-padding;
+  }
+
+  .un-search-attribute-filter-empty {
+    padding-top: $un-search-panel-body-padding;
+
+    .x-panel-body {
+      color: #999999;
+    }
+  }
+
+  .un-search-attribute-filter-panel {
+    .x-panel-header-title {
+      font-weight: normal;
+    }
+  }
+}

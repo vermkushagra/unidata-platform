@@ -1,0 +1,19 @@
+$baseCls: '.un-dataentity-attribute';
+$un-type: 'date';
+$un-max-width: 120px;
+
+#{$baseCls}-type-#{$un-type} {
+  #{$baseCls}-input-cont-wrapper {
+    max-width: $un-max-width;
+
+    .x-form-text-field-body {
+      max-width: $un-max-width;
+    }
+  }
+}
+
+#{$baseCls}-input-date {
+  .x-form-date-trigger {
+    color: $color-primary-1-2;
+  }
+}

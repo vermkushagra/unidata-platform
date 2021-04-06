@@ -1,0 +1,78 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/jee
+        http://www.springframework.org/schema/jee/spring-jee.xsd
+        http://www.springframework.org/schema/task
+        http://www.springframework.org/schema/task/spring-task.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+        Stat Job with partitioning based on parallel execution in different threads on main node.
+    -->
+
+    <bean id="statJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="1"/>
+    </bean>
+
+    <bean id="statProcessingJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="statJob"/>
+    </bean>
+
+    <batch:job id="statJob">
+        <batch:listeners>
+            <batch:listener ref="statItemListener"/>
+        </batch:listeners>
+        <batch:step id="statJob.master">
+            <batch:partition step="statStep" partitioner="statPartitioner">
+                <batch:handler grid-size="1" task-executor="statJobChunkTaskExecutor" />
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+
+    <bean id="statItemListener" class="com.unidata.mdm.backend.service.job.reports.SimpleNotificationJobListener" scope="job">
+        <property name="jobDescription" value="app.job.collect.stats.data.name"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+    </bean>
+
+    <bean id="statPartitioner" class="com.unidata.mdm.backend.service.job.stat.StatPartitioner">
+    </bean>
+
+    <batch:step id="statStep">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="statItemProcessor" commit-interval="1" reader="statItemReader" writer="statItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="statMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="statMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_STAT"/>
+    </bean>
+
+    <bean id="statItemReader"
+          class="com.unidata.mdm.backend.service.job.stat.StatItemReader"
+          scope="step">
+    </bean>
+
+    <bean id="statItemWriter"
+          class="com.unidata.mdm.backend.service.job.stat.StatItemWriter"
+          scope="step">
+    </bean>
+
+    <bean id="statItemProcessor" class="com.unidata.mdm.backend.service.job.stat.StatItemProcessor"
+          scope="step">
+    </bean>
+
+</beans>

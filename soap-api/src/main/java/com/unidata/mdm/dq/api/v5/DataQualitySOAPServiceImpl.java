@@ -1,41 +1,16 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.dq.api.v5;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +18,8 @@ import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
+import com.unidata.mdm.backend.common.service.ValidationService;
+import com.unidata.mdm.util.ClientIpUtil;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,26 +34,16 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.unidata.mdm.api.v5.SessionTokenDef;
 import com.unidata.mdm.api.wsdl.v5.DumpUtils;
-import com.unidata.mdm.backend.common.configuration.PlatformConfiguration;
-import com.unidata.mdm.backend.common.context.DataQualityContext;
-import com.unidata.mdm.backend.common.data.ModificationBox;
-import com.unidata.mdm.backend.common.dq.DataQualityExecutionMode;
+import com.unidata.mdm.backend.common.context.DQContext;
 import com.unidata.mdm.backend.common.integration.auth.AuthenticationSystemParameter;
-import com.unidata.mdm.backend.common.keys.OriginKey;
 import com.unidata.mdm.backend.common.runtime.MeasurementContextName;
 import com.unidata.mdm.backend.common.runtime.MeasurementPoint;
 import com.unidata.mdm.backend.common.security.Endpoint;
 import com.unidata.mdm.backend.common.service.DataQualityService;
 import com.unidata.mdm.backend.common.service.MetaModelService;
 import com.unidata.mdm.backend.common.service.SecurityService;
-import com.unidata.mdm.backend.common.service.ValidationService;
-import com.unidata.mdm.backend.common.types.ApprovalState;
 import com.unidata.mdm.backend.common.types.DataQualityError;
-import com.unidata.mdm.backend.common.types.DataShift;
-import com.unidata.mdm.backend.common.types.OriginRecord;
-import com.unidata.mdm.backend.common.types.OriginRecordInfoSection;
-import com.unidata.mdm.backend.common.types.RecordStatus;
-import com.unidata.mdm.backend.common.types.impl.OriginRecordImpl;
+import com.unidata.mdm.backend.common.types.DataRecord;
 import com.unidata.mdm.dq.v5.ApplyDQRequest;
 import com.unidata.mdm.dq.v5.ApplyDQResponse;
 import com.unidata.mdm.dq.v5.ApplyDQResponse.Payload;
@@ -94,7 +61,6 @@ import com.unidata.mdm.meta.DQApplicableType;
 import com.unidata.mdm.meta.DQRSourceSystemRef;
 import com.unidata.mdm.meta.DQRuleDef;
 import com.unidata.mdm.meta.PeriodBoundaryDef;
-import com.unidata.mdm.util.ClientIpUtil;
 
 
 /**
@@ -122,9 +88,6 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 	@Autowired
 	private ValidationService validationService;
 
-	@Autowired
-    private PlatformConfiguration platformConfiguration;
-
 	/** The jaxws context. */
 	@Resource
 	private WebServiceContext jaxwsContext;
@@ -143,7 +106,7 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see com.unidata.mdm.dq.api.v5.ApplyDQImpl#getResults(com.unidata.mdm.dq.v5.
 	 * GetResultsRequest, javax.xml.ws.Holder, javax.xml.ws.Holder)
 	 */
@@ -162,7 +125,7 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 
 	/*
 	 * (non-Javadoc)
-	 *
+	 * 
 	 * @see com.unidata.mdm.dq.api.v5.ApplyDQImpl#applyDQ(com.unidata.mdm.dq.v5.
 	 * ApplyDQRequest, javax.xml.ws.Holder, javax.xml.ws.Holder)
 	 */
@@ -183,12 +146,12 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 			List<DQRuleDef> rules = filterRules(info, request.getInfo());
 			if (records.size() == 1) {
 				// TODO: refactoring
-				applyRule(request, info, results, defaultStart, defaultEnd, rules, records.get(0));
+				applyRule(request, info, results, defaultStart, defaultEnd, rules, records.get(0), false);
 			} else {
 				ForkJoinPool pool = new ForkJoinPool(getThreads());
 				pool.submit(() -> records.parallelStream().forEach(r -> {
 					// TODO: refactoring
-					applyRule(request, info, results, defaultStart, defaultEnd, rules, r);
+					applyRule(request, info, results, defaultStart, defaultEnd, rules, r, false);
 
 				})).get();
 			}
@@ -234,73 +197,49 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 	 * @param defaultEnd            the default end
 	 * @param rules            the rules
 	 * @param r            the r
+	 * @param isPar            the is par
 	 */
 	private void applyRule(ApplyDQRequest request, Holder<InfoType> info,
 			CopyOnWriteArrayList<DataQualityResultType> results, Date defaultStart, Date defaultEnd,
-			List<DQRuleDef> rules, DQRecordType r) {
-
-	    Date dt = new Date();
-        OriginRecord origin = new OriginRecordImpl()
-                .withDataRecord(DumpUtils.from(r))
-                .withInfoSection(new OriginRecordInfoSection()
-                        .withApproval(ApprovalState.APPROVED)
-                        .withCreateDate(dt)
-                        .withMajor(platformConfiguration.getPlatformMajor())
-                        .withMinor(platformConfiguration.getPlatformMinor())
-                        .withOriginKey(OriginKey.builder()
-                                .entityName(info.value.getEntityName())
-                                .externalId(r.getId())
-                                .sourceSystem(metamodelService.getAdminSourceSystem().getName())
-                                .status(RecordStatus.ACTIVE)
-                                .build())
-                        .withShift(DataShift.PRISTINE)
-                        .withStatus(RecordStatus.ACTIVE)
-                        .withUpdateDate(dt)
-                        .withValidFrom(r.getValidFrom() == null ? defaultStart : r.getValidFrom().toGregorianCalendar().getTime())
-                        .withValidTo(r.getValidTo() == null ? defaultEnd : r.getValidTo().toGregorianCalendar().getTime()));
-
-        DataQualityContext dCtx = DataQualityContext.builder()
-                .rules(rules)
-                .entityName(origin.getInfoSection().getOriginKey().getEntityName())
-                .sourceSystem(origin.getInfoSection().getOriginKey().getSourceSystem())
-                .externalId(origin.getInfoSection().getOriginKey().getExternalId())
-                .validFrom(origin.getInfoSection().getValidFrom())
-                .validTo(origin.getInfoSection().getValidTo())
-                .modificationBox(ModificationBox.of(Collections.emptyList(), origin))
-                .executionMode(DataQualityExecutionMode.MODE_ONLINE)
-                .build();
-
-        dCtx.setOperationId(info.value.getRequestId());
-        dqService.apply(dCtx);
+			List<DQRuleDef> rules, DQRecordType r, boolean isPar) {
+		DataRecord record = DumpUtils.from(r);
+		String entityName = info.value.getEntityName();
 
 		// validate entity name and  supplied data consistency
 		//Temporary disabled by request from RR
 //		validationService.checkDataRecord(record, entityName);
 
-		if (request.getInfo().getMode() == DQApplyModeType.BATCH && CollectionUtils.isNotEmpty(dCtx.getErrors())) {
+		DQContext<DataRecord> context = new DQContext<>()
+				.withEntityName(info.value.getEntityName())
+				.withRecord(record)
+				.withRules(rules)
+				.withRecordValidFrom(
+						r.getValidFrom() == null ? defaultStart : r.getValidFrom().toGregorianCalendar().getTime())
+				.withRecordId(r.getId()).withRecordValidTo(
+						r.getValidTo() == null ? defaultEnd : r.getValidTo().toGregorianCalendar().getTime());
+		context.setOperationId(info.value.getRequestId());
+		dqService.applyRules(context);
+		if (request.getInfo().getMode() == DQApplyModeType.BATCH) {
 			Map<String, Object> headers = new HashMap<>();
 			headers.put("USER_NAME", String.class);
-			headers.put("ENTITY_NAME", dCtx.getEntityName());
-			headers.put("RECORD_ID", dCtx.getExternalId());
-			headers.put("REQUEST_ID", dCtx.getOperationId());
-			errorRouteSave.sendBodyAndHeaders(dCtx.getErrors(), headers);
+			headers.put("ENTITY_NAME", context.getEntityName());
+			headers.put("RECORD_ID", context.getRecordId());
+			headers.put("REQUEST_ID", context.getOperationId());
+			errorRouteSave.sendBodyAndHeaders(context.getErrors(), headers);
 		}
-
 		DataQualityResultType result = new DataQualityResultType();
-		if (!CollectionUtils.isEmpty(dCtx.getErrors())) {
+		if (!CollectionUtils.isEmpty(context.getErrors())) {
 			result.getStatus().add(DQApplyStatusType.CONTAINS_ERRORS);
-			result.getErrors().addAll(DumpUtils.to(dCtx.getErrors()));
+			result.getErrors().addAll(DumpUtils.to(context.getErrors()));
 
 		} else {
 			result.getStatus().add(DQApplyStatusType.VALID);
 		}
-
-		boolean isModified = dCtx.getModificationBox().count(ModificationBox.toBoxKey(dCtx)) > 1;
-		if (dCtx.getRules().stream().anyMatch(dr -> dr.getType().contains(com.unidata.mdm.meta.DQRuleType.ENRICH)) && isModified) {
-		    result.setRecord(DumpUtils.to(dCtx.getModificationBox().pop(ModificationBox.toBoxKey(dCtx)).getValue()));
+		if (context.getRules().stream().anyMatch(dr -> dr.getType().contains(com.unidata.mdm.meta.DQRuleType.ENRICH))
+				&& context.isModified()) {
+			result.setRecord(DumpUtils.to(context.getRecord()));
 			result.getStatus().add(DQApplyStatusType.ENRICHED);
 		}
-
 		result.setId(r.getId());
 		results.add(result);
 	}
@@ -315,43 +254,23 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 	 * @return the list
 	 */
 	private List<DQRuleDef> filterRules(Holder<InfoType> info, DQApplyInfoType applyInfo) {
-
-	    List<DQRuleDef> toFilter = metamodelService.getLookupEntityById(info.value.getEntityName()) == null
-	            ? metamodelService.getEntityByIdNoDeps(info.value.getEntityName()).getDataQualities()
-		        : metamodelService.getLookupEntityById(info.value.getEntityName()).getDataQualities();
-
+		List<DQRuleDef> toFilter = metamodelService.getLookupEntityById(info.value.getEntityName()) == null
+				? metamodelService.getEntityByIdNoDeps(info.value.getEntityName()).getDataQualities()
+				: metamodelService.getLookupEntityById(info.value.getEntityName()).getDataQualities();
 		// if no info provided return all rules
-        List<DQRuleDef> selected = null;
-        if (CollectionUtils.isEmpty(applyInfo.getRuleName())
-         && CollectionUtils.isEmpty(applyInfo.getApplicable())
-         && CollectionUtils.isEmpty(applyInfo.getSourceSystem())) {
-            selected = toFilter;
-        // filter only by rule names if they are provided
-        } else if (CollectionUtils.isNotEmpty(applyInfo.getRuleName())) {
-            selected = toFilter.stream().filter(r -> applyInfo.getRuleName().contains(r.getName()))
-                    .collect(Collectors.toList());
-        } else if (CollectionUtils.isNotEmpty(applyInfo.getApplicable())) {
-            selected = filterFor(applyInfo.getApplicable(), toFilter, applyInfo.getSourceSystem());
-        }
-
-        // reorder
-        if (CollectionUtils.isNotEmpty(selected)) {
-
-            List<DQRuleDef> result = new ArrayList<>(selected.size());
-            selected.stream()
-                .filter(rule -> rule.getApplicable().contains(DQApplicableType.ORIGIN))
-                .sorted(Comparator.comparing(DQRuleDef::getOrder))
-                .collect(Collectors.toCollection(() -> result));
-
-            selected.stream()
-                .filter(rule -> rule.getApplicable().contains(DQApplicableType.ETALON))
-                .sorted(Comparator.comparing(DQRuleDef::getOrder))
-                .collect(Collectors.toCollection(() -> result));
-
-            selected = result;
-        }
-
-        return selected;
+		if (CollectionUtils.isEmpty(applyInfo.getRuleName()) && CollectionUtils.isEmpty(applyInfo.getApplicable())
+				&& CollectionUtils.isEmpty(applyInfo.getSourceSystem())) {
+			return toFilter;
+		}
+		// filter only by rule names if they are provided
+		if (!CollectionUtils.isEmpty(applyInfo.getRuleName())) {
+			return toFilter.stream().filter(r -> applyInfo.getRuleName().contains(r.getName()))
+					.collect(Collectors.toList());
+		}
+		if (!CollectionUtils.isEmpty(applyInfo.getApplicable())) {
+			return filterFor(applyInfo.getApplicable(), toFilter, applyInfo.getSourceSystem());
+		}
+		return toFilter;
 	}
 
 	/**
@@ -420,42 +339,38 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 	 * @return the list
 	 */
 	private List<DQRuleDef> filterFor(List<DQRuleType> types, List<DQRuleDef> toFilter, List<String> ss) {
+		List<DQRuleDef> result = new ArrayList<>();
+		for (DQRuleDef dqr : toFilter) {
+			if (types.contains(DQRuleType.ETALON) && dqr.getApplicable().contains(DQApplicableType.ETALON)) {
+				result.add(dqr);
+			} else if (types.contains(DQRuleType.ORIGIN) && dqr.getApplicable().contains(DQApplicableType.ORIGIN)) {
+				List<String> sourceSystems = new ArrayList<>();
+				if (dqr.getEnrich() != null && !StringUtils.isEmpty(dqr.getEnrich().getSourceSystem())) {
+					sourceSystems.add(dqr.getEnrich().getSourceSystem());
 
-	    boolean selectEtalonPhaseRules = types.contains(DQRuleType.ETALON);
-        boolean selectOriginPhaseRules = types.contains(DQRuleType.ORIGIN);
+				}
 
-        Set<DQRuleDef> result = new LinkedHashSet<>(toFilter.size());
-        for (DQRuleDef dqr : toFilter) {
+				if (dqr.getOrigins() != null && dqr.getOrigins().getSourceSystem() != null
+						&& dqr.getOrigins().getSourceSystem().size() != 0) {
+					List<DQRSourceSystemRef> dqssrs = dqr.getOrigins().getSourceSystem();
+					for (DQRSourceSystemRef dqssr : dqssrs) {
+						if (!StringUtils.isEmpty(dqssr.getName())) {
+							sourceSystems.add(dqssr.getName());
+						}
+					}
+				}
+				if (dqr.getOrigins().isAll() || ss.contains("ALL") || CollectionUtils.isEmpty(ss)
+						|| CollectionUtils.isEmpty(sourceSystems)) {
+					result.add(dqr);
+				} else {
+					if (CollectionUtils.containsAny(sourceSystems, ss)) {
+						result.add(dqr);
+					}
+				}
+			}
+		}
+		return result;
 
-            if (selectEtalonPhaseRules && dqr.getApplicable().contains(DQApplicableType.ETALON)) {
-                result.add(dqr);
-                continue;
-            }
-
-            if (selectOriginPhaseRules && dqr.getApplicable().contains(DQApplicableType.ORIGIN)) {
-
-                if (dqr.getOrigins().isAll() || CollectionUtils.isEmpty(ss) || ss.contains("ALL")) {
-                    result.add(dqr);
-                    continue;
-                }
-
-                Set<String> sourceSystems = Stream.concat(
-                    dqr.getEnrich() != null && !StringUtils.isEmpty(dqr.getEnrich().getSourceSystem())
-                        ? Stream.of(dqr.getEnrich().getSourceSystem())
-                        : Stream.empty(),
-                    !dqr.getOrigins().getSourceSystem().isEmpty()
-                        ? dqr.getOrigins().getSourceSystem().stream().map(DQRSourceSystemRef::getName).filter(Objects:: nonNull)
-                        : Stream.empty())
-                        .collect(Collectors.toSet());
-
-                boolean hasMatch = sourceSystems.stream().anyMatch(ss::contains);
-                if (hasMatch) {
-                    result.add(dqr);
-                }
-            }
-        }
-
-        return new ArrayList<>(result);
 	}
 
 	/**
@@ -498,7 +413,7 @@ public class DataQualitySOAPServiceImpl extends ApplyDQImpl {
 
 		/*
 		 * (non-Javadoc)
-		 *
+		 * 
 		 * @see com.google.common.cache.CacheLoader#load(java.lang.Object)
 		 */
 		@Override

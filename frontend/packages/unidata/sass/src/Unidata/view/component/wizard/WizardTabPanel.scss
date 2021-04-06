@@ -1,0 +1,241 @@
+$ui-name: 'un-wizard';
+$baseCls: '.un-wizard';
+
+$un-wizard-tab-icon-width: 24px;
+$un-wizard-tab-icon-color: #2196F3;
+$un-wizard-tab-icon-disabled-color: #9F9F9F;
+$un-wizard-tab-line-color: #E1E1E1;
+$un-wizard-tab-color: #999999;
+$un-wizard-tab-active-color: #336699;
+
+@include extjs-tab-panel-ui(
+  $ui: $ui-name,
+
+  $ui-tab-background-color: transparent,
+  $ui-tab-background-color-focus: transparent,
+  $ui-tab-background-color-over: transparent,
+  $ui-tab-background-color-active: transparent,
+  $ui-tab-background-color-focus-over: transparent,
+  $ui-tab-background-color-focus-active: transparent,
+  $ui-tab-background-color-disabled: transparent,
+
+  $ui-tab-border-radius: 0,
+  $ui-tab-border-width: 0,
+  $ui-tab-margin: 0,
+  $ui-tab-padding: 15px,
+  $ui-tab-text-padding: 0,
+
+  //$ui-tab-border-color: blue,
+  //$ui-tab-border-color-focus: null,
+  //$ui-tab-border-color-over: null,
+  //$ui-tab-border-color-active: null,
+  //$ui-tab-border-color-focus-over: null,
+  //$ui-tab-border-color-focus-active: null,
+  //$ui-tab-border-color-disabled: null,
+
+  $ui-tab-cursor: $tab-cursor,
+  $ui-tab-cursor-disabled: $tab-cursor-disabled,
+
+  $ui-tab-font-size: 12px,
+  //$ui-tab-font-size-focus: null,
+  //$ui-tab-font-size-over: null,
+  //$ui-tab-font-size-active: null,
+  //$ui-tab-font-size-focus-over: null,
+  //$ui-tab-font-size-focus-active: null,
+  //$ui-tab-font-size-disabled: null,
+
+  $ui-tab-font-weight: normal,
+  //$ui-tab-font-weight-focus: null,
+  //$ui-tab-font-weight-over: null,
+  //$ui-tab-font-weight-active: null,
+  //$ui-tab-font-weight-focus-over: null,
+  //$ui-tab-font-weight-focus-active: null,
+  //$ui-tab-font-weight-disabled: null,
+
+  $ui-tab-font-family: $font-family-1,
+  //$ui-tab-font-family-focus: null,
+  //$ui-tab-font-family-over: null,
+  //$ui-tab-font-family-active: null,
+  //$ui-tab-font-family-focus-over: null,
+  //$ui-tab-font-family-focus-active: null,
+  //$ui-tab-font-family-disabled: null,
+
+  $ui-tab-line-height: 20px, //$tab-line-height,
+
+  $ui-tab-color: $un-wizard-tab-color,
+  $ui-tab-color-focus: $un-wizard-tab-color,
+  $ui-tab-color-over: $un-wizard-tab-color,
+  $ui-tab-color-active: $un-wizard-tab-color,
+  $ui-tab-color-focus-over: $un-wizard-tab-color,
+  $ui-tab-color-focus-active: $un-wizard-tab-color,
+  $ui-tab-color-disabled: $un-wizard-tab-color,
+
+  $ui-tab-background-gradient: null,
+  $ui-tab-background-gradient-focus: null,
+  $ui-tab-background-gradient-over: null,
+  $ui-tab-background-gradient-active: null,
+  $ui-tab-background-gradient-focus-over: null,
+  $ui-tab-background-gradient-focus-active: null,
+  $ui-tab-background-gradient-disabled: null,
+
+  $ui-tab-inner-border-width: null,
+  $ui-tab-inner-border-width-focus: null,
+  $ui-tab-inner-border-width-over: null,
+  $ui-tab-inner-border-width-active: null,
+  $ui-tab-inner-border-width-focus-over: null,
+  $ui-tab-inner-border-width-focus-active: null,
+  $ui-tab-inner-border-width-disabled: null,
+
+  $ui-tab-inner-border-color: null,
+  $ui-tab-inner-border-color-focus: null,
+  $ui-tab-inner-border-color-over: null,
+  $ui-tab-inner-border-color-active: null,
+  $ui-tab-inner-border-color-focus-over: null,
+  $ui-tab-inner-border-color-focus-active: null,
+  $ui-tab-inner-border-color-disabled: null,
+
+  $ui-tab-inner-border-collapse: null,
+  $ui-tab-inner-border-collapse-focus: null,
+  $ui-tab-inner-border-collapse-over: null,
+  $ui-tab-inner-border-collapse-active: null,
+  $ui-tab-inner-border-collapse-focus-over: null,
+  $ui-tab-inner-border-collapse-focus-active: null,
+  $ui-tab-inner-border-collapse-disabled: null,
+
+  $ui-tab-body-outline-width-focus: $tab-body-outline-width-focus,
+  $ui-tab-body-outline-style-focus: $tab-body-outline-style-focus,
+  $ui-tab-body-outline-color-focus: $tab-body-outline-color-focus,
+
+  $ui-tab-icon-width: $un-wizard-tab-icon-width,
+  $ui-tab-icon-height: $un-wizard-tab-icon-width,
+  $ui-tab-icon-spacing: 0,
+  //$ui-tab-icon-background-position: $tab-icon-background-position,
+
+  $ui-tab-glyph-color: #ffffff,
+  //$ui-tab-glyph-color-focus: null,
+  //$ui-tab-glyph-color-over: null,
+  //$ui-tab-glyph-color-active: null,
+  //$ui-tab-glyph-color-focus-over: null,
+  //$ui-tab-glyph-color-focus-active: null,
+  //$ui-tab-glyph-color-disabled: null,
+
+  $ui-tab-glyph-opacity: $tab-glyph-opacity,
+  $ui-tab-glyph-opacity-disabled: $tab-glyph-opacity-disabled,
+
+  $ui-tab-opacity-disabled: 1,
+  $ui-tab-text-opacity-disabled: 1,
+  $ui-tab-icon-opacity-disabled: 1,
+
+  $ui-strip-height: $tabbar-strip-height,
+  $ui-strip-border-width: $tabbar-strip-border-width,
+  $ui-strip-border-color: $tabbar-strip-border-color,
+  $ui-strip-background-color: $tabbar-strip-background-color,
+
+  $ui-bar-border-width: 0,
+  //$ui-bar-border-color: $tabbar-border-color,
+  $ui-bar-padding: 0,
+  $ui-bar-background-color: #ffffff
+  //$ui-bar-background-gradient: $tabbar-background-gradient,
+  //$ui-bar-scroller-width: $tabbar-scroller-width,
+
+  //$ui-bar-scroller-cursor: $tabbar-scroller-cursor,
+  //$ui-bar-scroller-cursor-disabled: $tabbar-scroller-cursor-disabled,
+  //$ui-bar-scroller-opacity: $tabbar-scroller-opacity,
+  //$ui-bar-scroller-opacity-over: $tabbar-scroller-opacity-over,
+  //$ui-bar-scroller-opacity-pressed: $tabbar-scroller-opacity-pressed,
+  //$ui-bar-scroller-opacity-disabled: $tabbar-scroller-opacity-disabled,
+
+  //$ui-tab-closable-icon-width: $tab-closable-icon-width,
+  //$ui-tab-closable-icon-height: $tab-closable-icon-height,
+  //$ui-tab-closable-icon-top: $tab-closable-icon-top,
+  //$ui-tab-closable-icon-right: $tab-closable-icon-right,
+  //$ui-tab-closable-icon-spacing: $tab-closable-icon-spacing
+);
+
+// таб бар
+.x-tab-bar-#{$ui-name} {
+}
+
+// таб
+.x-tab-#{$ui-name} {
+
+  .x-tab-button-#{$ui-name} {
+    height: auto !important;
+  }
+
+  // иконка таба
+  .x-tab-icon-el-#{$ui-name} {
+    color: #ffffff;
+    display: block;
+    margin: 0 auto;
+    background-color: $un-wizard-tab-icon-color;
+    @include border-radius($un-wizard-tab-icon-width / 2);
+    text-align: center;
+    line-height: $un-wizard-tab-icon-width;
+    width: $un-wizard-tab-icon-width;
+    position: relative;
+
+    // соединительные линии
+    &:before,
+    &:after {
+      content: ' ';
+      overflow: hidden;
+      height: 1px;
+      width: 300px;
+      background-color: $un-wizard-tab-line-color;
+      position: absolute;
+      top: 50%;
+    }
+
+    &:before {
+      right: 100%;
+      margin-right: 2px;
+    }
+
+    &:after {
+      left: 100%;
+      margin-left: 2px;
+    }
+  }
+
+  &:first-child {
+    .x-tab-icon-el-#{$ui-name}:before {
+      display: none;
+    }
+  }
+
+  &:last-child {
+    .x-tab-icon-el-#{$ui-name}:after {
+      display: none;
+    }
+  }
+
+  &.x-tab-disabled {
+    .x-tab-icon-el-#{$ui-name} {
+      background-color: $un-wizard-tab-icon-disabled-color;
+    }
+  }
+
+  &.x-tab-active {
+    .x-tab-inner-#{$ui-name} {
+      color: $un-wizard-tab-active-color;
+    }
+  }
+
+  // текст таба
+  .x-tab-inner-#{$ui-name} {
+    padding-top: 10px;
+  }
+}
+
+// общие стили для визарда
+#{$baseCls} {
+  > .x-panel-body {
+    padding: 0;
+
+    // отступ для внутренних панелек
+    > .x-tabpanel-child > .x-panel-body {
+      padding: ($un-content-inner-padding / 2) $un-content-inner-padding;
+    }
+  }
+}

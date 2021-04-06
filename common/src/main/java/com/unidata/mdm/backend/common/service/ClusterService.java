@@ -1,27 +1,7 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.service;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nonnull;
@@ -36,12 +16,20 @@ import com.unidata.mdm.backend.common.types.EtalonRecord;
  */
 public interface ClusterService {
 
+    /**
+     * Upsert cluster
+     * @param cluster cluster
+
+     */
+    void upsertCluster(@Nonnull Cluster cluster);
 
     /**
      * Upsert cluster
      * @param cluster cluster
+     * @param useCache if true, result will be added to cluster cache
      */
-    void upsertCluster(@Nonnull Cluster cluster, Boolean checkBlocked, boolean checkExist);
+    void upsertCluster(@Nonnull Cluster cluster, boolean useCache);
+
     /**
      * @param clusterMetaData - cluster meta data
      * @return collection of cluster ids.
@@ -73,55 +61,43 @@ public interface ClusterService {
 
     /**
      * @param clusterMetaData - cluster meta data
-     * @param atDate optional filter for date
      * @param limit           - limit
      * @param offset          - offset
-     * @param  preprocessing - use cluster preprocessing mode
      * @return collection of clusters
      */
     @Nonnull
-    Collection<Cluster> getClusters(@Nonnull ClusterMetaData clusterMetaData,
-                                    @Nullable Date atDate,
-                                    int limit,
-                                    int offset,
-                                    boolean preprocessing);
-
-    Collection<Cluster> getClustersPreprocessing(@Nonnull ClusterMetaData clusterMetaData, int limit, int offset,
-                                    Integer shardNumber);
+    Collection<Cluster> getClusters(@Nonnull ClusterMetaData clusterMetaData, int limit, int offset, Integer shardNumber);
 
     /**
      * @param etalonId - etalon id
-     * @param  preprocessing - use cluster preprocessing mode
      * @return collection of clusters
      */
     @Nonnull
-    Collection<Cluster> getClusters(@Nonnull String etalonId, boolean preprocessing);
+    Collection<Cluster> getClusters(@Nonnull String etalonId, int limit, int offset);
 
 
     /**
      * @param clusterMetaData - cluster meta data
-     * @param  preprocessing - use cluster preprocessing mode
      * @return number of clusters
      */
     @Nonnull
-    Long getClustersCount(ClusterMetaData clusterMetaData, boolean preprocessing);
+    Long getClustersCount(ClusterMetaData clusterMetaData);
 
-
+    Collection<Cluster> getClusters(@Nonnull EtalonRecord etalonRecord, @Nonnull Integer groupId, @Nonnull Integer ruleId, boolean virtual);
 
     /**
      * @param etalonId - etalon id
-     * @param  preprocessing - use cluster preprocessing mode
      * @return number of clusters which contains etalon
      */
     @Nonnull
-    Long getClustersCount(@Nonnull String etalonId, boolean preprocessing);
+    Long getClustersCount(@Nonnull String etalonId);
 
     /**
      * @param clusterMetaData - cluster meta data
      * @return count of unique etalons in clusters
      */
     @Nonnull
-    Long getUniqueEtalonsCount(@Nonnull ClusterMetaData clusterMetaData, @Nullable Date atDate);
+    Long getUniqueEtalonsCount(@Nonnull ClusterMetaData clusterMetaData);
 
     /**
      * Exclude record from cluster
@@ -162,14 +138,13 @@ public interface ClusterService {
      */
     void dropEveryThingForRule(@Nonnull String entityName, @Nonnull Integer ruleId);
 
-    Map<String, Date> getEtalonIdsForAutoMerge(EtalonRecord etalonRecord);
-
     /**
-     * Search new clusters by matching rules
-     * @param etalon etalon record for search
-     * @param date date for search
-     * @param ruleId rule identifier, if null then search by all rules
-     * @return clusters
+     * Drop clusters and block lists for rule;
+     *
+     * @param entityName - entity name
+     * @param groupId    - group id
      */
-    Collection<Cluster> searchNewClusters(@Nonnull EtalonRecord etalon, @Nonnull Date date, Integer ruleId, boolean virtual);
+    void dropEveryThingForGroup(@Nonnull String entityName, @Nonnull Integer groupId);
+
+    Map<String, Date> getEtalonIdsForAutoMerge(EtalonRecord etalonRecord);
 }

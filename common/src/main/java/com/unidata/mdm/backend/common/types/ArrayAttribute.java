@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.types;
 
 import java.time.LocalDate;
@@ -174,21 +155,8 @@ public interface ArrayAttribute<T> extends Attribute, Iterable<ArrayValue<T>> {
      * Empty mark.
      * @return true, if empty, false otherwise
      */
-    @Override
     default boolean isEmpty() {
         return getValue() == null || getValue().isEmpty();
-    }
-
-    /**
-     * Returns the underlaying objects as a collection.
-     * @return collection
-     */
-    @SuppressWarnings("unchecked")
-    default<V> List<V> toList() {
-        return getValue().stream()
-                .map(ArrayValue::getValue)
-                .map(v -> (V) v)
-                .collect(Collectors.toList());
     }
 
     /**
@@ -196,12 +164,14 @@ public interface ArrayAttribute<T> extends Attribute, Iterable<ArrayValue<T>> {
      * @return array of values
      */
     default Object[] toArray() {
-
         if (isEmpty()) {
             return null;
         }
 
-        return toList().toArray();
+        return getValue().stream()
+                .map(ArrayValue::getValue)
+                .collect(Collectors.toList())
+                .toArray();
     }
 
     /**
@@ -210,9 +180,9 @@ public interface ArrayAttribute<T> extends Attribute, Iterable<ArrayValue<T>> {
      * @return array of values
      */
     default T[] toArray(Class<T[]> cl) {
-        Object[] array = toArray();
-        if(array != null){
-            return Arrays.copyOf(array, array.length, cl);
+        Object[] arr = toArray();
+        if(arr != null){
+            return Arrays.copyOf(arr, arr.length, cl);
         } else {
             return null;
         }

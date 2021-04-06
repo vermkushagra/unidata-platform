@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <camel:routeContext id="externalRoutes" xmlns="http://camel.apache.org/schema/spring">
+        <route>
+            <from ref="startPoint"/>
+            <onCompletion onCompleteOnly="true">
+                <process ref="notificationCompletionHandler"/>
+            </onCompletion>
+            <log message="Message was recieved" loggingLevel="ERROR"/>
+            <to uri="activemq:queue:there"/>
+            <!-- write own routers here! -->
+        </route>
+    </camel:routeContext>
+
+    <camel:errorHandler id="defaultErrorHandler" type="DefaultErrorHandler">
+        <camel:redeliveryPolicy redeliveryDelay="10000" maximumRedeliveries="2" maximumRedeliveryDelay="20000"
+                                backOffMultiplier="2" useExponentialBackOff="true"/>
+    </camel:errorHandler>
+
+    <camel:endpoint uri="vm:notification" id="startPoint"/>
+</beans>

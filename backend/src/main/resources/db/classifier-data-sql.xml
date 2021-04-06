@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <entry key="markEtalonClassifiersMergedByEtalonRecordIdSQL">
+        <![CDATA[
+            update etalons_classifiers
+            set status = :status::record_status, update_date = :update_date, updated_by = :updated_by, operation_id = :operation_id
+            where etalon_id_record in (:etalon_id_record)
+        ]]>
+    </entry>
+    <entry key="deleteVistoryByOriginIdSQL">
+        <![CDATA[
+            delete from origins_classifiers_vistory where origin_id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteOriginByIdSQL">
+        <![CDATA[
+            delete from origins_classifiers where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="deleteEtalonByIdSQL">
+        <![CDATA[
+            delete from etalons_classifiers where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="updateOriginClassifierSQL">
+        <![CDATA[
+            update origins_classifiers set update_date = ?, updated_by = ?, status = ?::record_status where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="updateEtalonClassifierSQL">
+        <![CDATA[
+            update etalons_classifiers set update_date = ?, updated_by = ?, status = ?::record_status, approval = ?::approval_state, operation_id = ? where id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="acquireOriginClassifierLockSQL">
+        <![CDATA[
+            select pg_advisory_xact_lock(o.gsn) from origins_classifiers o where o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="putClassifierVersionJaxbSQL">
+        <![CDATA[
+            insert into origins_classifiers_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_a,
+                created_by,
+                status,
+                approval,
+                major,
+                minor
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select max(prev.revision) + 1 from origins_classifiers_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                ?::record_status,
+                ?::approval_state,
+                ?,
+                ?
+        ]]>
+    </entry>
+    <entry key="putClassifierVersionProtostuffSQL">
+        <![CDATA[
+            insert into origins_classifiers_vistory (
+                id,
+                origin_id,
+                operation_id,
+                revision,
+                valid_from,
+                valid_to,
+                data_b,
+                created_by,
+                status,
+                approval,
+                major,
+                minor
+            )
+            select
+                ?::uuid,
+                ?::uuid,
+                ?,
+                coalesce((select max(prev.revision) + 1 from origins_classifiers_vistory prev where prev.origin_id = ?::uuid), 1),
+                ?,
+                ?,
+                ?,
+                ?,
+                ?::record_status,
+                ?::approval_state,
+                ?,
+                ?
+        ]]>
+    </entry>
+    <entry key="insertOriginClassifierSQL">
+        <![CDATA[
+            insert into origins_classifiers (
+                id, etalon_id, name, node_id, origin_id_record, version, source_system, created_by, status)
+            select ?::uuid, ?::uuid, ?, ?, ?::uuid, ?, ?, ?, ?::record_status
+        ]]>
+    </entry>
+    <entry key="insertEtalonClassifierSQL">
+        <![CDATA[
+            insert into etalons_classifiers (
+                id, name, etalon_id_record, created_by, status, approval, version, operation_id)
+            select ?::uuid, ?, ?::uuid, ?, ?::record_status, ?::approval_state, ?, ?
+        ]]>
+    </entry>
+    <entry key="loadEtalonClassifierByIdSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_record::text, create_date, created_by, update_date, updated_by, status::text, approval::text, gsn, operation_id
+            from
+                etalons_classifiers
+            where
+                id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadOriginClassifierByIdSQL">
+        <![CDATA[
+            select
+                id::text, name, node_id, etalon_id::text, source_system, origin_id_record::text, create_date, created_by, update_date, updated_by, status::text
+            from
+                origins_classifiers
+            where
+                id = ?::uuid
+            and status = any(array[?]::record_status[])
+        ]]>
+    </entry>
+    <entry key="loadOriginClassifiersByIdAndSourceSystemSQL">
+        <![CDATA[
+            select
+                id::text, name, node_id, etalon_id::text, source_system, origin_id_record::text, create_date, created_by, update_date, updated_by, status::text
+            from
+                origins_classifiers
+            where
+                etalon_id = ?::uuid
+            and source_system = coalesce(?, source_system)
+        ]]>
+    </entry>
+    <entry key="loadEtalonClassifiersByFromNameAndStatusSQL">
+        <![CDATA[
+            select
+                id::text, name, etalon_id_record::text, create_date, created_by, update_date, updated_by, status, approval, gsn, operation_id
+            from
+                etalons_classifiers
+            where
+                etalon_id_record = ?::uuid
+            and name = ?
+            and status = ?::record_status
+        ]]>
+    </entry>
+    <entry key="loadClassifierVersionsByEtalonIdAndDateJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status::text,
+                v.approval::text,
+                v.major,
+                v.minor,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.node_id,
+                o.etalon_id::text as etalon_id,
+                -- record
+                o.origin_id_record::text,
+                ro.status::text as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system
+            from origins_classifiers_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_classifiers o, origins_classifiers_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'::record_status
+                and (orv.approval <> 'DECLINED'::approval_state and (orv.approval <> 'PENDING'::approval_state or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_classifiers o, origins ro
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+            and o.origin_id_record = ro.id
+        ]]>
+    </entry>
+    <entry key="loadClassifierVersionsByEtalonIdAndDateProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status::text,
+                v.approval::text,
+                v.major,
+                v.minor,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.node_id,
+                o.etalon_id::text as etalon_id,
+                -- record
+                o.origin_id_record::text,
+                ro.status::text as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system
+            from origins_classifiers_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_classifiers o, origins_classifiers_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and orv.status <> 'MERGED'::record_status
+                and (orv.approval <> 'DECLINED'::approval_state and (orv.approval <> 'PENDING'::approval_state or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_classifiers o, origins ro
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+            and o.origin_id_record = ro.id
+        ]]>
+    </entry>
+    <entry key="loadClassifierVersionsByEtalonIdOperationIdAndDateJaxbSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_a,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status::text,
+                v.approval::text,
+                v.major,
+                v.minor,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.node_id,
+                o.etalon_id::text as etalon_id,
+                -- record
+                o.origin_id_record::text,
+                ro.status::text as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system
+            from origins_classifiers_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_classifiers o, origins_classifiers_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and coalesce(orv.create_date, '-infinity') <=
+                        (select create_date from origins_classifiers_vistory where operation_id = ? and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                and orv.status <> 'MERGED'::record_status
+                and (orv.approval <> 'DECLINED'::approval_state and (orv.approval <> 'PENDING'::approval_state or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_classifiers o, origins ro
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+            and o.origin_id_record = ro.id
+        ]]>
+    </entry>
+    <entry key="loadClassifierVersionsByEtalonIdOperationIdAndDateProtostuffSQL">
+        <![CDATA[
+            select
+                v.id::text,
+                v.origin_id::text,
+                v.operation_id,
+                v.revision,
+                v.valid_from,
+                v.valid_to,
+                v.data_b,
+                v.create_date as update_date,
+                v.created_by as updated_by,
+                v.status::text,
+                v.approval::text,
+                v.major,
+                v.minor,
+                o.create_date as create_date,
+                o.created_by as created_by,
+                o.source_system as source_system,
+                o.name as name,
+                o.node_id,
+                o.etalon_id::text as etalon_id,
+                -- record
+                o.origin_id_record::text,
+                ro.status::text as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system
+            from origins_classifiers_vistory v, (
+                select
+                    orv.origin_id,
+                    max(orv.revision) as revision
+                from
+                    origins_classifiers o, origins_classifiers_vistory orv
+                where
+                    o.etalon_id = ?::uuid
+                and orv.origin_id = o.id
+                and ? between coalesce(orv.valid_from, '-infinity') and coalesce(orv.valid_to, 'infinity')
+                and coalesce(orv.create_date, '-infinity') <=
+                        (select create_date from origins_classifiers_vistory where operation_id = ? and origin_id = o.id
+                         order by create_date desc fetch first 1 rows only)
+                and orv.status <> 'MERGED'::record_status
+                and (orv.approval <> 'DECLINED'::approval_state and (orv.approval <> 'PENDING'::approval_state or (? = 'true' or orv.created_by = ?)))
+                group by orv.origin_id ) as s, origins_classifiers o, origins ro
+            where
+                v.origin_id = s.origin_id
+            and v.revision = s.revision
+            and v.origin_id = o.id
+            and o.origin_id_record = ro.id
+        ]]>
+    </entry>
+    <!-- Keys -->
+    <entry key="loadKeysByClassiferOriginIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.node_id as origin_node_id,
+                o.source_system as origin_source_system,
+                o.status::text as origin_status,
+                (select max(v.revision) from origins_classifiers_vistory v where v.origin_id = o.id) as origin_revision,
+                -- connected origin record
+                o.origin_id_record::text,
+                ro.status::text as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status::text as etalon_status,
+                e.approval::text as etalon_state,
+                -- from
+                e.etalon_id_record::text,
+                re.status::text as etalon_record_status,
+                re.approval::text as etalon_record_state,
+                re.name as etalon_record_name
+            from
+                origins_classifiers o, etalons_classifiers e, origins ro, etalons re
+            where
+                o.etalon_id = e.id
+            and o.origin_id_record = ro.id
+            and e.etalon_id_record = re.id
+            and o.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByClassifierEtalonIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.node_id as origin_node_id,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_classifiers_vistory v where v.origin_id = o.id) as origin_revision,
+                -- connected origin record
+                o.origin_id_record::text,
+                ro.status as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_record::text,
+                re.status as etalon_record_status,
+                re.approval as etalon_record_state,
+                re.name as etalon_record_name
+            from
+                etalons_classifiers e
+            inner join etalons re
+            on e.etalon_id_record = re.id
+            left outer join origins_classifiers o
+            on (o.etalon_id = e.id and o.source_system = ?)
+            left outer join origins ro
+            on o.origin_id_record = ro.id
+            where e.id = ?::uuid
+        ]]>
+    </entry>
+    <entry key="loadKeysByRecordEtalonIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.node_id as origin_node_id,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_classifiers_vistory v where v.origin_id = o.id) as origin_revision,
+                -- connected origin record
+                o.origin_id_record::text,
+                ro.status as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- from
+                e.etalon_id_record::text,
+                re.status as etalon_record_status,
+                re.approval as etalon_record_state,
+                re.name as etalon_record_name
+            from
+                etalons_classifiers e
+            inner join etalons re
+            on e.etalon_id_record = re.id
+            left outer join origins_classifiers o
+            on (o.etalon_id = e.id and o.source_system = ?)
+            left outer join origins ro
+            on o.origin_id_record = ro.id
+            where e.etalon_id_record = ?::uuid
+            and e.name = ?
+        ]]>
+    </entry>
+    <entry key="loadKeysByRecordOriginIdSQL">
+        <![CDATA[
+            select
+                -- origins
+                o.id::text as origin_id,
+                o.name as origin_name,
+                o.node_id as origin_node_id,
+                o.source_system as origin_source_system,
+                o.status as origin_status,
+                (select max(v.revision) from origins_classifiers_vistory v where v.origin_id = o.id) as origin_revision,
+                -- connected origin record
+                o.origin_id_record::text,
+                ro.status as origin_record_status,
+                ro.external_id as origin_record_external_id,
+                ro.name as origin_record_name,
+                ro.source_system as origin_record_source_system,
+                -- etalons
+                e.id::text as etalon_id,
+                e.name as etalon_name,
+                e.status as etalon_status,
+                e.approval as etalon_state,
+                -- connected etalon record
+                e.etalon_id_record::text,
+                re.status as etalon_record_status,
+                re.approval as etalon_record_state,
+                re.name as etalon_record_name
+            from
+                origins_classifiers o, etalons_classifiers e, origins ro, etalons re
+            where
+                o.etalon_id = e.id
+            and o.origin_id_record = ro.id
+            and e.etalon_id_record = re.id
+            and o.origin_id_record = ?::uuid
+            and o.name = ?
+        ]]>
+    </entry>
+</properties>

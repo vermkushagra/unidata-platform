@@ -1,0 +1,88 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!--
+        Republish records Job with partitioning based on parallel execution in different threads on main node.
+    -->
+
+    <bean id="republishRegistryJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="8"/>
+    </bean>
+
+    <batch:job id="republishRegistryJob">
+        <batch:listeners>
+            <batch:listener ref="republishItemListener"/>
+        </batch:listeners>
+        <batch:step id="republishRegistry.master">
+            <batch:partition step="republishRegistry.slave" partitioner="republishRegistryPartitioner">
+                <batch:handler grid-size="10" task-executor="republishRegistryJobChunkTaskExecutor" />
+            </batch:partition>
+        </batch:step>
+    </batch:job>
+
+    <bean id="republishRegistryJobParameters"
+          class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="republishRegistryJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="publishType" value-ref="allEntityNameParameterExtractor"/>
+                <entry key="allPeriods" value-type="java.lang.Boolean" value="false"/>
+                <entry key="blockSize" value-type="java.lang.Long" value="500"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="republishRegistryPartitioner" class="com.unidata.mdm.backend.service.job.republishregistry.RepublishRegistryPartitioner"
+        scope="step">
+        <property name="type" value="#{jobParameters[publishType]}"/>
+        <property name="blockSize" value="#{jobParameters['blockSize']}"/>
+        <property name="allPeriods" value="#{jobParameters['allPeriods']}"/>
+    </bean>
+
+    <batch:step id="republishRegistry.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk commit-interval="1"
+                processor="republishRegistryItemProcessor"
+                reader="republishRegistryItemReader"
+                writer="republishRegistryItemWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="republishMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="republishItemListener" class="com.unidata.mdm.backend.service.job.reports.SimpleNotificationJobListener" scope="job">
+        <property name="jobDescription" value="app.job.batch.republish.data.name"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+    </bean>
+
+    <bean id="republishMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_REPUBLISH"/>
+    </bean>
+
+    <bean id="republishRegistryItemReader"
+          class="com.unidata.mdm.backend.service.job.republishregistry.RepublishRegistryItemReader"
+          scope="step">
+        <property name="ids" value="#{stepExecutionContext[ids]}"/>
+        <property name="resourceName" value="#{stepExecutionContext[entityName]}-#{stepExecutionContext[partition]}"/>
+    </bean>
+
+    <bean id="republishRegistryItemWriter"
+          class="com.unidata.mdm.backend.service.job.republishregistry.RepublishRegistryItemWriter"
+          scope="step">
+    </bean>
+
+    <bean id="republishRegistryItemProcessor" class="com.unidata.mdm.backend.service.job.republishregistry.RepublishRegistryItemProcessor"
+          scope="step">
+    </bean>
+
+</beans>

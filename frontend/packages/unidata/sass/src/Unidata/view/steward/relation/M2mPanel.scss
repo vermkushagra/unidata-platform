@@ -1,0 +1,13 @@
+$baseCls: '.un-relation-m2m-panel';
+
+#{$baseCls} {
+  padding: 0;
+
+  >.x-panel-body {
+    background: transparent;
+  }
+
+  //.x-panel-un-card {
+  //  margin-bottom: $un-ded-inner-gap;
+  //}
+}

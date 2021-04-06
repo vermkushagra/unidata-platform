@@ -1,0 +1,6 @@
+{
+  "enPhoneTypes": [
+    {  "key": "code", "value": "Телефон" },
+    {  "key": "code", "value": "Факс" }
+  ]
+}

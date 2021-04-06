@@ -1,0 +1,39 @@
+$baseCls: '.un-merge-panel';
+
+#{$baseCls} {
+  .merge-select-all {
+    padding-left: 70px;
+    .x-form-item-label {
+      text-align: right;
+    }
+  }
+
+  .un-attribute-winner .x-form-field {
+    background-color: rgba(45, 148, 52, 0.2);
+  }
+
+  .un-attribute-winner .x-component {
+    background-color: rgba(45, 148, 52, 0.2);
+  }
+
+  .un-recordpager {
+    padding-left: 18px;
+    padding-top: 3px;
+
+    .un-recordpager-next {
+      margin-left: 10px;
+    }
+
+    .un-recordpager-total {
+      margin-left: 10px;
+    }
+
+    .un-recordpager-next.x-item-disabled, .un-recordpager-prev.x-item-disabled {
+      a {
+        color: #d0d0d0;
+        text-decoration: none;
+      }
+    }
+  }
+}
+

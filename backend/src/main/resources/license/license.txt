@@ -1,0 +1,8 @@
+vendor=Taskdata
+phone=+7(812)677-21-86
+email=info@taskdata.ru
+issue-date=2016-02-25
+
+edition=Demo
+# In format https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html#ISO_LOCAL_DATE_TIME
+valid-until=2016-06-30T23:59:00

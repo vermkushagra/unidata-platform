@@ -1,0 +1,59 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.2.xsd">
+
+    <!-- BOF - Master job. -->
+    <batch:job id="extSampleItemsProcessingJob">
+   		<batch:step id="extProcessSampleItems.master">
+   			<batch:partition step="extProcessSampleItems" partitioner="extSampleItemPartitioner">
+                <batch:handler grid-size="5" task-executor="extSampleItemsJobChunkTaskExecutor"/>
+            </batch:partition>
+   		</batch:step>
+   	</batch:job>
+
+    <bean id="extSampleItemsJobChunkTaskExecutor" class="org.springframework.core.task.SimpleAsyncTaskExecutor">
+        <property name="concurrencyLimit" value="8"/>
+    </bean>
+
+    <bean id="extSampleItemsProcessingJobParameters"
+        class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+        <property name="jobName" value="extSampleItemsProcessingJob"/>
+        <property name="valueMap">
+            <util:map>
+                <entry key="param1" value-type="java.lang.String" value="value1"/>
+                <entry key="param2" value-type="java.lang.String" value="value2"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <bean id="extSampleItemPartitioner" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemPartitioner"/>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="extProcessSampleItems">
+   		<batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="extSampleItemReader" processor="extSampleItemProcessor" writer="extSampleItemWriter"
+                commit-interval="10"/>
+        </batch:tasklet>
+   	</batch:step>
+
+    <bean id="extSampleItemReader" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemReader" scope="step">
+        <property name="from" value="#{stepExecutionContext[minValue]}"/>
+        <property name="to" value="#{stepExecutionContext[maxValue]}"/>
+        <property name="firstParameter" value="#{jobParameters[param1]}"/>
+    </bean>
+
+    <bean id="extSampleItemProcessor" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemProcessor" scope="step"/>
+    <bean id="extSampleItemWriter" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+</beans>

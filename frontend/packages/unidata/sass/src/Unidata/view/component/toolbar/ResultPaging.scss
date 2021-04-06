@@ -1,0 +1,23 @@
+$baseCls: '.un-toolbar-result-paging';
+
+#{$baseCls} {
+
+  .x-form-trigger-wrap-un-field-default {
+    background-color: transparent !important;
+  }
+
+  .x-field-focus {
+    .x-form-trigger-wrap-un-field-default {
+      background-color: white !important;
+    }
+  }
+
+  .x-toolbar-text {
+    width: auto !important;
+  }
+
+  .x-form-field {
+    text-align: left !important;
+  }
+
+}

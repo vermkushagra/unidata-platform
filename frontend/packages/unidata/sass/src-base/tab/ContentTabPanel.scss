@@ -1,0 +1,32 @@
+$ui-name: 'un-content';
+
+@include extjs-panel-ui(
+  $ui: $ui-name,
+  $ui-body-background-color: $un-color-content-panel
+);
+
+@include extjs-tab-panel-ui(
+  $ui: $ui-name,
+  $ui-tab-padding: 5px
+);
+
+.#{$prefix}tab-#{$ui-name}:not(.#{$prefix}tab-active) .#{$prefix}tab-close-btn {
+  background: url(images/tab/tab-#{$ui-name}-dark-close.png) 0 0;
+}
+
+.#{$prefix}panel-body-#{$ui-name} {
+  > .#{$prefix}tabpanel-child {
+    > .#{$prefix}panel-body {
+      background: transparent;
+    }
+  }
+}
+
+.#{$prefix}tab-bar-strip-#{$ui-name} {
+  height: 1px;
+  background-color: gray;
+}
+
+.#{$prefix}tab-#{$ui-name} {
+  min-width: 84px;
+}

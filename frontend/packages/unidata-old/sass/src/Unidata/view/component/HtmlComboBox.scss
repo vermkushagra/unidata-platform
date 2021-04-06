@@ -1,0 +1,24 @@
+.un-htmlcombo {
+
+  .x-form-text-wrap {
+    position: relative;
+    padding: 4px 12px;
+  }
+}
+
+.un-htmlcombo-value.x-form-text {
+  display: inline-block;
+  min-height: 12px;
+}
+
+.un-htmlcombo-placeholder {
+  display: none;
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  color: #ADADAD;
+
+  .x-form-empty-field + & {
+    display: block;
+  }
+}

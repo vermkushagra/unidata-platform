@@ -1,0 +1,18 @@
+[class^="icon-"].x-form-trigger, [class*=" icon-"].x-form-trigger,
+.un-form-edit-trigger {
+  background-image: none !important;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.un-form-edit-trigger:after {
+  font-family: $font-family-linearicons;
+  content: "\e934";
+}
+
+.un-form-warning-trigger:before {
+  font-family: $font-family-linearicons;
+  font-size: 15px;
+  content: "\e955" !important;
+  color: #993300;
+}

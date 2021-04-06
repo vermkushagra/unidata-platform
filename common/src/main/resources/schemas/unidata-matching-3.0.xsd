@@ -12,8 +12,6 @@
         </xs:sequence>
         <xs:attribute name="description" type="xs:string" use="optional"/>
         <xs:attribute name="active" type="xs:boolean" use="required"/>
-        <xs:attribute name="autoMerge" type="xs:boolean" default="false"/>
-        <xs:attribute name="withPreprocessing" type="xs:boolean" default="true"/>
     </xs:complexType>
 
     <xs:complexType name="MatchingRuleKey">
@@ -44,9 +42,20 @@
         <xs:attribute name="constantField" type="xs:boolean" use="required"/>
     </xs:complexType>
 
+    <xs:complexType name="MatchingGroupDef">
+        <xs:sequence>
+            <xs:element name="ruleKeys" type="match:MatchingRuleKey" minOccurs="1" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="description" type="xs:string" use="required"/>
+        <xs:attribute name="active" type="xs:boolean" use="required"/>
+        <xs:attribute name="entityName" type="xs:string" use="required"/>
+    </xs:complexType>
+
     <xs:complexType name="MatchingSettingsDef">
         <xs:sequence>
             <xs:element name="userRules" type="match:MatchingRuleDef" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="userGroups" type="match:MatchingGroupDef" minOccurs="0" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 

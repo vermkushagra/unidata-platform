@@ -1,0 +1,15 @@
+$baseCls: '.un-classifier-node';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background-color: transparent;
+    //padding: 0px;
+  }
+
+  #{$baseCls}-attribute-container {
+    >.x-panel-body {
+      background-color: transparent;
+      //padding: 10px 0px 0px 0px;
+    }
+  }
+}

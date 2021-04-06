@@ -1,0 +1,138 @@
+$baseCls: '.un-result-grid';
+
+$un-result-card-top-bottom-padding: 10px;
+$un-result-card-left-padding: 15px;
+$un-result-card-right-padding: 10px;
+$un-result-card-line-padding: 1px;
+$un-grid-item-strip-width: 5px;
+$un-grid-item-strip-color: $color-primary-3-1;
+
+#{$baseCls} {
+  overflow-x: hidden;
+  .x-grid-body, .x-grid-item, .x-grid-item-alt, .x-grid-empty, .x-toolbar {
+    background: transparent;
+  }
+
+  .x-grid-view {
+    // normal
+    .x-grid-item {
+      color: $color-primary-1-1;
+      font: normal 14px $font-family-2;
+
+      // карточка выдачи
+      span.un-result-grid-item-header {
+        font: bold 13px $font-family-2;
+        text-transform: uppercase;
+        text-overflow: ellipsis;
+      }
+
+      span.un-result-grid-item-label {
+        font: normal 14px $font-family-2;
+      }
+
+      span.un-result-grid-item-data {
+        font: normal 13px arial;
+      }
+
+      span.un-result-grid-item-data__important {
+        font-weight: bold;
+      }
+
+      .un-result-grid-item-tag {
+        font-family: $font-family-1;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        background-color: gray;
+        line-height: 18px;
+        padding: 0 4px;
+        text-transform: uppercase;
+        border-radius: 2px;
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 5px;
+      }
+
+      ul {
+        list-style: none; /* Remove list bullets */
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        padding-bottom: $un-result-card-line-padding;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      li:last-child {
+        padding-bottom: 0;
+      }
+
+      .x-grid-cell-first {
+        .x-grid-cell-inner {
+          padding-top: $un-result-card-top-bottom-padding;
+          padding-bottom: $un-result-card-top-bottom-padding;
+          padding-left: $un-result-card-left-padding - $un-grid-item-strip-width;
+          padding-right: $un-result-card-right-padding;
+          border-left: $un-grid-item-strip-width solid transparent;
+          margin-left: 1px;
+          min-height: 38px;
+        }
+      }
+
+      .x-grid-cell-row-checker {
+        .x-grid-cell-inner {
+          border-left: $un-grid-item-strip-width solid transparent;
+        }
+      }
+    }
+
+    // over
+    .x-grid-item-over {
+      background-color: $color-primary-2-2;
+
+      .x-grid-cell-first {
+        .x-grid-cell-inner {
+          padding-left: $un-result-card-left-padding - $un-grid-item-strip-width;
+          border-left: $un-grid-item-strip-width solid $un-grid-item-strip-color;
+        }
+      }
+    }
+
+    // focused
+    .x-grid-item-focused {
+      color: $color-primary-1-1;
+    }
+
+    // selected
+    .x-grid-item-selected {
+      background-color: $color-primary-1-4;
+
+      .x-grid-cell-first {
+        .x-grid-cell-inner {
+          padding-left: $un-result-card-left-padding - $un-grid-item-strip-width;
+          border-left: $un-grid-item-strip-width solid $un-grid-item-strip-color;
+        }
+      }
+    }
+  }
+
+  /* line 79, /home/sergey/Projects/unidata-platform/frontend/build/temp/development/Unidata/sass/../../../../../ext/packages/ext-theme-neutral/sass/src/view/Table.scss */
+  .x-grid-with-row-lines .x-grid-item {
+    border-style: solid;
+    border-width: 1px 0 0;
+    border-color: $color-primary-4-3;
+  }
+
+  .x-grid-with-row-lines .x-grid-item.x-grid-item-over {
+    border-style: solid;
+    border-color: $color-primary-4-3;
+  }
+
+  /* line 96, /home/sergey/Projects/unidata-platform/frontend/build/temp/development/Unidata/sass/../../../../../ext/packages/ext-theme-neutral/sass/src/view/Table.scss */
+  .x-grid-with-row-lines .x-grid-item-over + .x-grid-item {
+    border-top-style: solid;
+    border-top-color: $color-primary-4-3;
+  }
+}

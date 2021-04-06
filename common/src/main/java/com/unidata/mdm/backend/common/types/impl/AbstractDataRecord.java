@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.types.impl;
 
 import java.time.LocalDate;
@@ -391,14 +372,6 @@ public class AbstractDataRecord implements DataRecord {
      * {@inheritDoc}
      */
     @Override
-    public Collection<DataRecord> putAttribute(String name, Collection<DataRecord> value) {
-        return Objects.nonNull(data) ? data.putAttribute(name, value) : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean containsAttribute(String name) {
         return Objects.isNull(data) ? false : data.containsAttribute(name);
     }
@@ -425,45 +398,5 @@ public class AbstractDataRecord implements DataRecord {
     @Override
     public int getSize() {
         return Objects.isNull(data) ? 0 : data.getSize();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isTopLevel() {
-        return Objects.nonNull(data) ? data.isTopLevel() : false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasParent() {
-        return Objects.nonNull(data) ? data.hasParent() : false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getOrdinal() {
-        return Objects.nonNull(data) ? data.getOrdinal() : 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataRecord getParentRecord() {
-        return Objects.nonNull(data) ? data.getParentRecord() : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ComplexAttribute getHolderAttribute() {
-        return Objects.nonNull(data) ? data.getHolderAttribute() : null;
     }
 }

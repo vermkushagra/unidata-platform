@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
@@ -33,9 +14,9 @@ public class ContextUtils {
      */
     public static final int CTX_FLAG_SEND_NOTIFICATION = 0;
     /**
-     * Skip matching preprocessing. Default is false.
+     * Skip matching. Default is false.
      */
-    public static final int CTX_FLAG_SKIP_MATCHING_PREPROCESSING = 1;
+    public static final int CTX_FLAG_SKIP_MATCHING = 1;
     /**
      * Skip DQ. Default is false.
      */
@@ -94,7 +75,7 @@ public class ContextUtils {
      */
     public static final int CTX_FLAG_FETCH_SOFT_DELETED = 22;
     /**
-     * Tells whether merged elements should be taken into account.
+     * Tells whether merged elements should be takenn into account.
      */
     public static final int CTX_FLAG_INCLUDE_MERGED = 23;
     /**
@@ -134,7 +115,7 @@ public class ContextUtils {
      */
     public static final int CTX_FLAG_WORKFLOW_ACTION = 32;
     /**
-     * Tells whether records should be inactivated in cascade fashion. Default is false.
+     * Tells whether records should be inactivated in cascade fashon. Default is false.
      */
     public static final int CTX_FLAG_INACTIVATE_CASCADE = 33;
     /**
@@ -181,19 +162,6 @@ public class ContextUtils {
      * Tells whether large objects should be fetched .
      */
     public static final int CTX_FLAG_FETCH_LARGE_OBJECTS = 44;
-    /**
-     * Tells whether large objects should be fetched.
-     */
-    public static final int CTX_FLAG_SEARCH_WITH_SCORE = 45;
-    /**
-     * Skip matching main phase. Default is false.
-     */
-    public static final int CTX_FLAG_SKIP_MATCHING = 46;
-    /**
-     * Skip matching main phase. Default is false.
-     */
-    public static final int CTX_FLAG_RESOLVE_BY_MATCHING = 47;
-
 
     /**
      * Constructor.
@@ -203,7 +171,7 @@ public class ContextUtils {
     }
 
     /**
-     * Copies values from one context to another.
+     * Copies system values from one context to another.
      * @param from the from
      * @param to the to
      * @param fields set of fields
@@ -214,7 +182,12 @@ public class ContextUtils {
         }
     }
 
+    /**
+     * Copies user values from one context to another.
+     * @param from the from
+     * @param to the to
+     */
     public static void userCopy(CommonRequestContext from, CommonRequestContext to) {
-        to.copyAllFromUserContext(from);
+        to.copyFromUserContext(from);
     }
 }

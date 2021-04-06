@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+    <!--
+     Import realtion with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+ -->
+    <hz:queue id="importRelationJobsQueue" instance-ref="instance" name="importRelationPartitionQueue" lazy-init="true"
+              depends-on="instance"/>
+
+
+    <!-- BOF - Master job. -->
+
+    <batch:job id="importRelationsJob" job-repository="jobRepository">
+        <batch:step id="importRelation.master">
+            <batch:partition partitioner="importRelationPartitioner" handler="importRelationRemotePartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="importRelationRemotePartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="importRelationRemote.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="importRelationJobsQueue"/>
+    </bean>
+
+    <bean id="importRelationPartitioner"
+          class="com.unidata.mdm.backend.service.job.importJob.relation.ImportRelationPartitioner"
+          scope="step">
+        <property name="batchSize" value="#{jobParameters[batchSize]}"/>
+        <property name="databaseUrl" value="#{jobParameters[databaseUrl]}"/>
+        <property name="definitionKey" value="#{jobParameters[definition]}"/>
+        <property name="offset" value="#{jobParameters[offset]}"/>
+        <property name="fromSourceSystem" value="#{jobParameters[fromSourceSystem]}"/>
+        <property name="quantityOfProcessedRecords" value="#{jobParameters[recordCount]}"/>
+        <property name="operationId" value="#{jobParameters[operationId]}"/>
+    </bean>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <bean id="importRelationsRemoteStepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="ImportRelations"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="importRelationJobsQueue"/>
+        <property name="threadCount" value="2"/>
+    </bean>
+
+    <batch:step id="importRelationRemote.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk commit-interval="1"
+                         processor="importRelationProcessor"
+                         reader="importRelationReader"
+                         writer="importRelationWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="importRelMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="importRelMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_IMPORT_RELATIONS"/>
+    </bean>
+
+    <bean id="importRelationReader" class="com.unidata.mdm.backend.service.job.importJob.relation.ImportRelationReader"
+          scope="step">
+        <property name="rowMapper" value="#{stepExecutionContext[rowMapper]}"/>
+        <property name="sql" value="#{stepExecutionContext[sql]}"/>
+        <property name="databaseUrl" value="#{stepExecutionContext[databaseUrl]}"/>
+        <property name="maxItemCount" value="#{stepExecutionContext[bulkSize]}"/>
+        <property name="operationId" value="#{stepExecutionContext[operationId]}"/>
+    </bean>
+
+    <bean id="importRelationProcessor"
+          class="com.unidata.mdm.backend.service.job.importJob.relation.ImportRelationProcessor"
+          scope="step">
+        <property name="entityName" value="#{stepExecutionContext[entityName]}"/>
+        <property name="fromSourceSystem" value="#{stepExecutionContext[fromSourceSystem]}"/>
+        <property name="toSourceSystem" value="#{stepExecutionContext[toSourceSystem]}"/>
+        <property name="from" value="#{stepExecutionContext[from]}"/>
+        <property name="to" value="#{stepExecutionContext[to]}"/>
+        <property name="normalizeFrom" value="#{stepExecutionContext[normalizeFrom]}"/>
+        <property name="normalizeTo" value="#{stepExecutionContext[normalizeTo]}"/>
+        <property name="toEntityAttributeName" value="#{stepExecutionContext[toEntityAttributeName]}"/>
+        <property name="operationId" value="#{stepExecutionContext[operationId]}"/>
+    </bean>
+
+    <bean id="importRelationWriter" class="com.unidata.mdm.backend.service.job.importJob.relation.ImportRelationWriter"
+          scope="step"/>
+
+    <!-- EOF - Slave job. -->
+</beans>

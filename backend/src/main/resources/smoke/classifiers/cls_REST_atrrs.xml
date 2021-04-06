@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FullClassifierDef xmlns="http://classifier.mdm.unidata.com/">
+	<classifier name="cls_REST_attrs" displayName="РЕСТ Классификатор с атрибутами" description="" codePattern=""/>
+	<classifierNodes name="РЕСТ Классификатор с атрибутами" description="" code="" id="cls_REST_attrs.root">
+		<attributes unique="false" nullable="true" name="root" displayName="корневой" description="" readOnly="false" hidden="false" valueType="String" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="root" type="String"/>
+		</attributes>
+	</classifierNodes>
+	<classifierNodes name="allAttrs" description="" code="" id="5be9aac1-a4ce-43cb-ac7f-49250c142ab7" parentId="cls_REST_attrs.root">
+		<attributes unique="false" nullable="true" name="dateTime" displayName="ДатаВремя" description="" readOnly="false" hidden="false" valueType="Timestamp" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="dateTime" type="Timestamp"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="time" displayName="Время" description="" readOnly="false" hidden="false" valueType="Time" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="time" type="Time"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="string" displayName="Строковый" description="" readOnly="false" hidden="false" valueType="String" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="string" type="String"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="num" displayName="Численный" description="" readOnly="false" hidden="false" valueType="Number" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="num" type="Number"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="int" displayName="Целочисленный" description="" readOnly="false" hidden="false" valueType="Integer" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="int" type="Integer"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="date" displayName="Дата" description="" readOnly="false" hidden="false" valueType="Date" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="date" type="Date"/>
+		</attributes>
+		<attributes unique="false" nullable="true" name="bool" displayName="Логический" description="" readOnly="false" hidden="false" valueType="Boolean" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="bool" type="Boolean">
+				<boolValue>false</boolValue>
+			</value>
+		</attributes>
+	</classifierNodes>
+	<classifierNodes name="node1" description="" code="" id="c967d849-6460-41d3-9738-ff607a751c07" parentId="cls_REST_attrs.root">
+		<attributes unique="false" nullable="true" name="level1" displayName="Уровень1" description="" readOnly="false" hidden="false" valueType="String" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="level1" type="String"/>
+		</attributes>
+	</classifierNodes>
+	<classifierNodes name="node1-1" description="" code="" id="aa269a4f-cd99-447b-9560-3cc5f6a02914" parentId="c967d849-6460-41d3-9738-ff607a751c07">
+		<attributes unique="false" nullable="true" name="level2" displayName="Уровень2" description="" readOnly="false" hidden="false" valueType="String" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="level2" type="String"/>
+		</attributes>
+	</classifierNodes>
+	<classifierNodes name="node1-2" description="" code="" id="d90a52a4-10dc-45a9-80ed-5ff14ac54a20" parentId="c967d849-6460-41d3-9738-ff607a751c07">
+		<attributes unique="false" nullable="true" name="level2-2" displayName="Уровень2-2" description="" readOnly="false" hidden="false" valueType="String" searchable="false" displayable="false" mainDisplayable="false">
+			<value path="level2-2" type="String"/>
+		</attributes>
+	</classifierNodes>
+</FullClassifierDef>

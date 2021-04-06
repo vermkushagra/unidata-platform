@@ -1,0 +1,154 @@
+// Миксин для panel, расширяющий настройки extjs-panel-ui
+
+@mixin un-panel-ui(
+  // переменные обёртки
+  $ui-body-padding: 0,
+  $ui-form-item-margin: null,
+
+  // переменные оригинального миксина
+  $ui: null,
+
+  $ui-border-color: $panel-border-color,
+  $ui-border-radius: $panel-border-radius,
+  $ui-border-width: $panel-border-width,
+  $ui-padding: 0,
+
+  $ui-header-color: $panel-header-color,
+  $ui-header-font-family: $panel-header-font-family,
+  $ui-header-font-size: $panel-header-font-size,
+  $ui-header-font-weight: $panel-header-font-weight,
+  $ui-header-line-height: $panel-header-line-height,
+  $ui-header-border-color: $panel-header-border-color,
+  $ui-header-border-width: $panel-header-border-width,
+  $ui-header-border-style: $panel-header-border-style,
+  $ui-header-background-color: $panel-header-background-color,
+  $ui-header-background-gradient: $panel-header-background-gradient,
+  $ui-header-inner-border-color: $panel-header-inner-border-color,
+  $ui-header-inner-border-width: $panel-header-inner-border-width,
+  $ui-header-text-padding: $panel-header-text-padding,
+  $ui-header-text-margin: $panel-header-text-margin,
+  $ui-header-text-transform: $panel-header-text-transform,
+  $ui-header-padding: $panel-header-padding,
+  $ui-header-icon-width: $panel-header-icon-width,
+  $ui-header-icon-height: $panel-header-icon-height,
+  $ui-header-icon-spacing: $panel-header-icon-spacing,
+  $ui-header-icon-background-position: $panel-header-icon-background-position,
+  $ui-header-glyph-color: $panel-header-glyph-color,
+  $ui-header-glyph-opacity: $panel-header-glyph-opacity,
+  $ui-header-noborder-adjust: $panel-header-noborder-adjust,
+
+  $ui-tool-spacing: $panel-tool-spacing,
+  $ui-tool-background-image: $panel-tool-background-image,
+
+  $ui-body-color: $panel-body-color,
+  $ui-body-border-color: $panel-body-border-color,
+  $ui-body-border-width: $panel-body-border-width,
+  $ui-body-border-style: $panel-body-border-style,
+  $ui-body-background-color: $panel-body-background-color,
+  $ui-body-font-size: $panel-body-font-size,
+  $ui-body-font-weight: $panel-body-font-weight,
+  $ui-body-font-family: $panel-body-font-family,
+
+  $ui-background-stretch-top: $panel-background-stretch-top,
+  $ui-background-stretch-bottom: $panel-background-stretch-bottom,
+  $ui-background-stretch-right: $panel-background-stretch-right,
+  $ui-background-stretch-left: $panel-background-stretch-left,
+
+  // See the docs above
+  $ui-include-border-management-rules: $panel-include-border-management-rules,
+  $ui-wrap-border-color: null,
+  $ui-wrap-border-width: null,
+  $ui-ignore-frame-padding: $panel-ignore-frame-padding,
+
+  // deprecated - use $ui instead
+  $ui-label: null
+) {
+
+  @include extjs-panel-ui(
+    $ui: $ui,
+
+    $ui-border-color: $ui-border-color,
+    $ui-border-radius: $ui-border-radius,
+    $ui-border-width: $ui-border-width,
+    $ui-padding: $ui-padding,
+
+    $ui-header-color: $ui-header-color,
+    $ui-header-font-family: $ui-header-font-family,
+    $ui-header-font-size: $ui-header-font-size,
+    $ui-header-font-weight: $ui-header-font-weight,
+    $ui-header-line-height: $ui-header-line-height,
+    $ui-header-border-color: $ui-header-border-color,
+    $ui-header-border-width: $ui-header-border-width,
+    $ui-header-border-style: $ui-header-border-style,
+    $ui-header-background-color: $ui-header-background-color,
+    $ui-header-background-gradient: $ui-header-background-gradient,
+    $ui-header-inner-border-color: $ui-header-inner-border-color,
+    $ui-header-inner-border-width: $ui-header-inner-border-width,
+    $ui-header-text-padding: $ui-header-text-padding,
+    $ui-header-text-margin: $ui-header-text-margin,
+    $ui-header-text-transform: $ui-header-text-transform,
+    $ui-header-padding: $ui-header-padding,
+    $ui-header-icon-width: $ui-header-icon-width,
+    $ui-header-icon-height: $ui-header-icon-height,
+    $ui-header-icon-spacing: $ui-header-icon-spacing,
+    $ui-header-icon-background-position: $ui-header-icon-background-position,
+    $ui-header-glyph-color: $ui-header-glyph-color,
+    $ui-header-glyph-opacity: $ui-header-glyph-opacity,
+    $ui-header-noborder-adjust: $ui-header-noborder-adjust,
+
+    $ui-tool-spacing: $ui-tool-spacing,
+    $ui-tool-background-image: $ui-tool-background-image,
+
+    $ui-body-color: $ui-body-color,
+    $ui-body-border-color: $ui-body-border-color,
+    $ui-body-border-width: $ui-body-border-width,
+    $ui-body-border-style: $ui-body-border-style,
+    $ui-body-background-color: $ui-body-background-color,
+    $ui-body-font-size: $ui-body-font-size,
+    $ui-body-font-weight: $ui-body-font-weight,
+    $ui-body-font-family: $ui-body-font-family,
+
+    $ui-background-stretch-top: $ui-background-stretch-top,
+    $ui-background-stretch-bottom: $ui-background-stretch-bottom,
+    $ui-background-stretch-right: $ui-background-stretch-right,
+    $ui-background-stretch-left: $ui-background-stretch-left,
+
+      // See the docs above
+    $ui-include-border-management-rules: $ui-include-border-management-rules,
+    $ui-wrap-border-color: $ui-wrap-border-color,
+    $ui-wrap-border-width: $ui-wrap-border-width,
+    $ui-ignore-frame-padding: $ui-ignore-frame-padding,
+
+      // deprecated - use $ui instead
+    $ui-label: $ui-label
+  );
+
+  .x-panel-#{$ui} {
+
+    .x-panel-header-#{$ui} {
+
+      &-collapsed-left,
+      &-collapsed-right {
+        background-color: $ui-body-background-color;
+        padding: $un-search-panel-body-padding / 2;
+
+        .x-title-text-#{$ui} {
+          padding-left: $un-search-panel-body-padding / 2;
+        }
+      }
+    }
+
+    .x-panel-body-#{$ui-name} {
+      padding: $ui-body-padding;
+    }
+
+    @if $ui-form-item-margin != null {
+      .x-btn,
+      .x-form-item {
+        margin: $ui-form-item-margin;
+      }
+    }
+
+  }
+
+}

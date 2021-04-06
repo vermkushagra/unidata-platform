@@ -1,39 +1,18 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.types;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Mikhail Mikhailov
  * Data record, which may contain other data records as part of complex attributes.
  */
 public interface DataRecord {
+
     /**
      * Gets all attribute names on this level.
      * E. g. it doesn't include attribute names from nested record of complex attributes.
@@ -234,13 +213,6 @@ public interface DataRecord {
      */
     CharacterLargeValue putAttribute(String name, CharacterLargeValue value);
     /**
-     * Puts a collection of {@link DataRecord} to complex attribute with name 'name'.
-     * @param name name of the attribute to put collection to
-     * @param value value of the complext attribute
-     * @return previous value if the key was already mapped
-     */
-    Collection<DataRecord> putAttribute(String name, Collection<DataRecord> value);
-    /**
      * Checks presence of an attribute.
      * @param name the attribute's name.
      * @return true, if mapped, false otherwise
@@ -263,55 +235,4 @@ public interface DataRecord {
      * @return size
      */
     int getSize();
-    /**
-     * Tells whether this record is a top level record (i. e. not owned by a complex attribute).
-     * @return true, if so, false otherwise
-     */
-    boolean isTopLevel();
-    /**
-     * Tells whether this record has a parent record (i. e. owned by a complex attribute).
-     * @return true, if so, false otherwise
-     */
-    boolean hasParent();
-    /**
-     * Gets ordinal starting from 0.
-     * @return ordinal number
-     */
-    int getOrdinal();
-    /**
-     * Gets its parent record if any.
-     * @return parent record or null, if this is a top level record
-     */
-    DataRecord getParentRecord();
-    /**
-     * Gets its holder attribute if any.
-     * @return parent attribute or null, if this is a top level record
-     */
-    ComplexAttribute getHolderAttribute();
-    /**
-     * Gets the local record path.
-     * @return local path, such as complex_attr[1]
-     */
-    default String toLocalPath() {
-
-        if (isTopLevel()) {
-            return StringUtils.EMPTY;
-        }
-
-        return new StringBuilder(128)
-                .append(getHolderAttribute().toLocalPath())
-                .append("[" + getOrdinal() + "]").toString();
-    }
-    /**
-     * Gets the path segments of this record.
-     * @return path segments
-     */
-    default List<String> toPathSegments() {
-
-        if (isTopLevel()) {
-            return Collections.emptyList();
-        }
-
-        return getHolderAttribute().toPathSegments();
-    }
 }

@@ -1,0 +1,8 @@
+$baseCls: '.un-classifier-node-container';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background-color: transparent;
+    padding: 0;
+  }
+}

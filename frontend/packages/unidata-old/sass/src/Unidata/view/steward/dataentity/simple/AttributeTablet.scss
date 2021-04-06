@@ -1,0 +1,15 @@
+$baseCls: '.un-attribute-tablet';
+
+#{$baseCls} {
+
+}
+
+#{$baseCls}-rendering:after {
+  content: url('../resources/images/ajax/fb-ajax-loader.gif');
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  height: 16px;
+  margin-top: -18px;
+  top: 100%;
+}

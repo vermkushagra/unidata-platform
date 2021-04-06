@@ -1,0 +1,76 @@
+{"data" : [
+{ "index" : { "_id" : 1}},
+{
+    "name" : "Иванов Иван",
+    "tax_number" : "1234567890123456",
+    "contact_data" : {
+        "phones" : [
+			{"number" : "+78121234567", "city_code" : "191040", "number_type" : "рабочий"}, 
+			{"number" : "+78121237654", "city_code" : "191040", "number_type" : "домашний"}],
+        "addresses" : []
+    }
+},
+{ "index" : { "_id" : 2}},
+{
+    "name" : "Петр Петров",
+    "tax_number" : "8472917402720912",
+    "contact_data" : {
+        "phones" : [{"number" : "+7812 12 34 777", "city_code" : "191040", "number_type" : "домашний"}],
+        "addresses" : [{
+            "city" : "Верхняя пышма",
+            "street" : "ул. Ленина",
+            "house_no" : "100",
+            "type" : "домашний"
+        }]
+    }
+},
+{ "index" : { "_id" : 3}},
+{
+    "name" : "Иванов Петр",
+    "tax_number" : "55566723419845673",
+    "contact_data" : {
+        "phones" : [{"number" : "+7812 12 34 999", "city_code" : "191040", "number_type" : "домашний"}],
+        "addresses" : [{
+            "city" : "Санкт-Петербург",
+            "street" : "ул. Лиговский проспект",
+            "house_no" : "56",
+            "type" : "домашний"
+        },
+        {
+            "city" : "Санкт-Петербург",
+            "street" : "ул. Товарищеский проспект",
+            "house_no" : "122",
+            "type" : "домашний"
+        }]
+    }
+},
+{ "index" : { "_id" : 4}},
+{
+    "name" : "Викторов Дмитрий",
+    "tax_number" : "57766723419845656",
+    "contact_data" : {
+        "phones" : [{"number" : "+7921 925 34 77", "city_code" : "191040", "number_type" : "сотовый"}],
+        "addresses" : [{
+            "city" : "СПб",
+            "street" : "ул. Дыбенко",
+            "house_no" : "34 к1",
+            "type" : "домашний"
+        }]
+    }
+},
+{ "index" : { "_id" : 5}},
+{
+    "name" : "Дмитриев Виктор",
+    "tax_number" : "59986723419845656",
+    "contact_data" : {
+        "phones" : [{"number" : "+7921 221 44 11", "city_code" : "191040", "number_type" : "сотовый"}],
+        "addresses" : [{
+            "city" : "Санкт-Петербург",
+            "street" : "ул. Крыленко",
+            "house_no" : "77 к2/22",
+            "type" : "домашний"
+        }]
+    }
+}
+]
+}

@@ -1,0 +1,11 @@
+$baseCls: '.un-mainmenu-list';
+
+#{$baseCls}-bottom {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  @include box-shadow(0px 0px 15px rgba(0, 0, 0, 0.6));
+  border-top: solid 1px $un-menu-color-4;
+}

@@ -1,0 +1,168 @@
+.un-notification-window {
+  background-color: #437FA1;
+
+  .x-window-body {
+    border: 0 !important;
+    color: #FFF;
+    background-color: #437FA1;
+    line-height: 2;
+    font-size: 12px;
+  }
+
+  .x-window-body {
+    .fa {
+      font-size: 26px;
+    }
+
+    .un-toast-icon {
+      display: inline;
+      float: left;
+      height: 0px;
+    }
+
+    .un-toast-msg {
+      margin-left: 30px;
+      width: 93%;
+      padding: 0px 0px 0px 10px;
+      min-height: 26px;
+      line-height: 20px;
+      overflow-y: auto;
+    }
+
+    .un-toast-msg ul {
+      padding: 0px 0px 0px 10px;
+      margin: 0px;
+    }
+
+    .un-toast-clear {
+      clear: both;
+    }
+  }
+
+  .x-toolbar{
+    padding: 10px 10px 10px 30px;
+  }
+
+  .x-toolbar a {
+    color: #E0E0E0;
+    font-size: 12px;
+  }
+
+  .x-component {
+    margin: 0px 10px;
+  }
+}
+
+.un-notification-window-error {
+  background-color: #880303;
+
+  .x-window-body {
+    background-color: #880303;
+  }
+
+  .x-toolbar {
+    background-color: #880303;
+  }
+
+  .x-window-header {
+    background-color: #880303;
+  }
+}
+
+.un-notification-window-error-low {
+  background-color: #b33900;
+
+  .x-window-body {
+    background-color: #b33900;
+  }
+
+  .x-toolbar {
+    background-color: #b33900;
+  }
+
+  .x-window-header {
+    background-color: #b33900;
+  }
+}
+
+.un-notification-window-error-normal {
+  background-color: #880303;
+
+  .x-window-body {
+    background-color: #880303;
+  }
+
+  .x-toolbar {
+    background-color: #880303;
+  }
+
+  .x-window-header {
+    background-color: #880303;
+  }
+}
+
+.un-notification-window-error-high {
+  background-color: #880303;
+
+  .x-window-body {
+    background-color: #880303;
+  }
+
+  .x-toolbar {
+    background-color: #880303;
+  }
+
+  .x-window-header {
+    background-color: #880303;
+  }
+}
+
+.un-notification-window-error-critical {
+  background-color: #880303;
+
+  .x-window-body {
+    background-color: #880303;
+  }
+
+  .x-toolbar {
+    background-color: #880303;
+  }
+
+  .x-window-header {
+    background-color: #880303;
+  }
+}
+
+.un-notification-window-warning {
+  background-color: #b33900;
+
+  .x-window-body {
+    background-color: #b33900;
+  }
+
+  .x-toolbar {
+    background-color: #b33900;
+  }
+
+  .x-window-header {
+    background-color: #b33900;
+  }
+}
+
+.un-error-detail-window {
+  .x-window-body {
+    .un-error-detail-info {
+      padding: 5px;
+      color: #505050;
+      font-size: 12px;
+    }
+
+    .un-error-detail-textarea {
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .x-form-trigger-wrap {
+      border: 0px;
+    }
+  }
+}

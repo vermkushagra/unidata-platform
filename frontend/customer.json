@@ -1,0 +1,27 @@
+{
+  "APP_MODE": "@appMode@",
+  "APP_MODE_URL": {
+    "admin": "@frontendUrlAdmin@",
+    "user": "@frontendUrlUser@"
+  },
+  "serverUrl": "@backendUrl@",
+  "GLOBAL_DATE_LIMITS": {
+    "MIN": "1900-01-01T00:00:00.000",
+    "MAX": "9999-12-31T23:59:59.999"
+  },
+  "SEARCH_ROWS": 30,
+  "BULK_SELECTION_LIMIT": 30,
+  "CHECK_SOURCESYSTEM_WEIGHT_UNIQUE": false,
+  "MAX_TABS": 20,
+  "MERGE_RECORD_DISPLAY_COUNT": 2,
+  "DECIMAL_PRECISION": 2,
+  "CDN_VENDOR_LIBS": [],
+  "PLATFORM_EXTERNAL_CLASSES": [],
+  "FIRST_RELATION_SEARCH_RECORDS_COUNT": 5,
+  "TIMEINTERVAL_ENABLED": true,
+  "TASKS_POLL_INTERVAL": 300,
+  "LOCALE": "ru",
+  "AJAX_REQUEST_TIMEOUT": null,
+  "ORIGIN_CAROUSEL_MAXCOUNT": 100,
+  "ORIGIN_CAROUSEL_DISPLAYCOUNT": 2
+}

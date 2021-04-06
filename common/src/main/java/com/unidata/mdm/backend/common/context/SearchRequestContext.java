@@ -1,27 +1,10 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
+/**
  *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package com.unidata.mdm.backend.common.context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -42,10 +25,11 @@ import com.unidata.mdm.backend.common.search.SortField;
 import com.unidata.mdm.backend.common.search.types.EntitySearchType;
 import com.unidata.mdm.backend.common.search.types.SearchType;
 import com.unidata.mdm.backend.common.search.types.ServiceSearchType;
+import org.apache.commons.lang3.tuple.Pair;
 
 /**
  * @author Mikhail Mikhailov
- *         Search execution context.
+ * Search execution context.
  */
 public class SearchRequestContext implements SearchContext {
 
@@ -97,10 +81,6 @@ public class SearchRequestContext implements SearchContext {
      */
     private final List<Object> values;
     /**
-     * Sort field values for last record in last search.
-     */
-    private final List<Object> searchAfter;
-    /**
      * Max hit count to return.
      */
     private final int count;
@@ -146,7 +126,7 @@ public class SearchRequestContext implements SearchContext {
      */
     private final boolean sayt;
     /**
-     * Use scroll scan mechanism
+     *  Use scroll scan mechanism
      */
     private final boolean scrollScan;
     /**
@@ -172,19 +152,13 @@ public class SearchRequestContext implements SearchContext {
     /**
      * Inner hits
      */
-    private final List<NestedSearchRequestContext> nestedSearch;
+    private final Pair<String, List<String>> innerHits;
     /**
      * Run user exits or not
      */
     private final boolean runExits;
     /**
-     * Various boolean flags.
-     */
-    protected BitSet flags = new BitSet();
-
-    /**
      * Building constructor.
-     *
      * @param builder the builder to use.
      */
     private SearchRequestContext(SearchRequestContextBuilder builder) {
@@ -216,9 +190,8 @@ public class SearchRequestContext implements SearchContext {
         this.nestedPath = builder.nestedPath;
         this.routings = builder.routings;
         this.runExits = builder.runExits;
-        this.searchAfter = builder.searchAfter;
         this.shardNumber = builder.shardNumber;
-        this.nestedSearch = builder.nestedSearch;
+        this.innerHits = builder.innerHits;
     }
 
     /**
@@ -330,6 +303,7 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
+     *
      * @return fields which will be used for result sorting.
      */
     public Collection<SortField> getSortFields() {
@@ -381,13 +355,6 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * @return the search after values
-     */
-    public List<Object> getSearchAfter() {
-        return searchAfter;
-    }
-
-    /**
      * @return the scroll scan
      */
     public Integer getShardNumber() {
@@ -397,32 +364,29 @@ public class SearchRequestContext implements SearchContext {
     /**
      * @return the scroll scan
      */
-    public List<NestedSearchRequestContext> getNestedSearch() {
-        return nestedSearch;
+    public Pair<String, List<String>> getInnerHits() {
+        return innerHits;
     }
 
     /**
      * Simple mode fields are set.
-     *
      * @return true if so
      */
     public boolean isSimple() {
-        boolean hasSimpleValues = StringUtils.isNoneBlank(text) || CollectionUtils.isNotEmpty(values);
-        return hasSimpleValues && (search == SearchRequestType.QSTRING || CollectionUtils.isNotEmpty(searchFields));
+        boolean hasSimpleValues = StringUtils.isNoneBlank(text) || (values != null && !values.isEmpty());
+        return hasSimpleValues && (search == SearchRequestType.QSTRING || (searchFields != null && !searchFields.isEmpty()));
     }
 
     /**
      * Form mode fields are set.
-     *
      * @return true if so
      */
     public boolean isForm() {
-        return CollectionUtils.isNotEmpty(form);
+        return form != null && !form.isEmpty();
     }
 
     /**
      * Combo mode (simple and form).
-     *
      * @return true if so
      */
     public boolean isCombo() {
@@ -433,10 +397,11 @@ public class SearchRequestContext implements SearchContext {
      * @return true if nothing supposed to be search
      */
     public boolean isEmpty() {
-        return !isSimple() && !isForm() && nestedSearch == null;
+        return !isSimple() && !isForm();
     }
 
     /**
+     *
      * @return true if it is "Search as you type", otherwise false
      */
     public boolean isSayt() {
@@ -444,15 +409,15 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * @return true if it is nested query / request
-     */
+    *
+    * @return true if it is nested query / request
+    */
     public boolean isNested() {
         return Objects.nonNull(this.nestedPath);
     }
 
     /**
      * Type of search entity
-     *
      * @return search
      */
     public SearchType getType() {
@@ -486,28 +451,6 @@ public class SearchRequestContext implements SearchContext {
      */
     public boolean isRunExits() {
         return runExits;
-    }
-
-    /**
-     * @return the returnEtalon
-     */
-    public boolean isScoreEnabled() {
-        return flags.get(ContextUtils.CTX_FLAG_SEARCH_WITH_SCORE);
-    }
-
-    /**
-     * Sets a known flag true.
-     * @param flag the flag to set
-     */
-    public void setFlag(int flag) {
-        flags.set(flag);
-    }
-    /**
-     * Sets a known flag false.
-     * @param flag the flag to clear
-     */
-    public void clearFlag(int flag) {
-        flags.clear(flag);
     }
 
     /**
@@ -583,7 +526,7 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * @return builder instance for index operation.
+     * @return builder instance fro index operation.
      */
     @Nonnull
     public static SearchRequestContextBuilder forIndex(@Nonnull String entity) {
@@ -594,32 +537,9 @@ public class SearchRequestContext implements SearchContext {
     }
 
     /**
-     * @return builder instance for matching operation.
-     */
-    @Nonnull
-    public static SearchRequestContextBuilder forMatching(@Nonnull String entity) {
-        SearchRequestContextBuilder builder = new SearchRequestContextBuilder();
-        builder.entity = entity;
-        builder.type = EntitySearchType.MATCHING;
-        return builder;
-    }
-
-    /**
-     * @return builder instance for etalon classifier.
-     */
-    @Nonnull
-    public static SearchRequestContextBuilder forEtalonClassifier(@Nonnull String entity) {
-        SearchRequestContextBuilder builder = new SearchRequestContextBuilder();
-        builder.entity = entity;
-        builder.type = EntitySearchType.CLASSIFIER;
-        return builder;
-    }
-
-    /**
      * By default search will be applied to etalon data.
      * Note: should be called entity method
      * Note: better will be used other static fabric methods
-     *
      * @return general builder builder
      */
     @Nonnull
@@ -628,12 +548,10 @@ public class SearchRequestContext implements SearchContext {
         builder.type = EntitySearchType.ETALON_DATA;
         return builder;
     }
-
     /**
      * By default search will be applied to etalon data.
      * Note: should be called entity method
      * Note: better will be used other static fabric methods
-     *
      * @return general builder builder
      */
     @Nonnull
@@ -642,12 +560,10 @@ public class SearchRequestContext implements SearchContext {
         builder.type = type;
         return builder;
     }
-
     /**
      * By default search will be applied to etalon data.
      * Note: should be called entity method
      * Note: better will be used other static fabric methods
-     *
      * @return general builder builder
      */
     @Nonnull
@@ -659,13 +575,19 @@ public class SearchRequestContext implements SearchContext {
     }
 
 
+
     /**
      * Context builder.
-     *
      * @author Mikhail Mikhailov
      */
     public static class SearchRequestContextBuilder {
 
+        /**
+         * Search type
+         */
+        private SearchRequestContextBuilder() {
+            super();
+        }
         /**
          * Type to operate on.
          */
@@ -756,7 +678,7 @@ public class SearchRequestContext implements SearchContext {
          */
         private boolean sayt = false;
         /**
-         * Use scroll scan mechanism
+         *  Use scroll scan mechanism
          */
         private boolean scrollScan = false;
         /**
@@ -780,24 +702,13 @@ public class SearchRequestContext implements SearchContext {
          */
         private boolean runExits = false;
         /**
-         * Sort field values for last record in last search.
-         */
-        private List<Object> searchAfter;
-        /**
          * Shard number for request
          */
         private Integer shardNumber;
         /**
          * Inner hits
          */
-        private List<NestedSearchRequestContext> nestedSearch;
-        /**
-         * Search type
-         */
-        private SearchRequestContextBuilder() {
-            super();
-        }
-
+        private Pair<String, List<String>> innerHits;
         /**
          * Builds a context from this builder.
          * @return new {@link SearchRequestContext}
@@ -852,35 +763,7 @@ public class SearchRequestContext implements SearchContext {
          * @return this
          */
         public SearchRequestContextBuilder returnFields(List<String> returnFields) {
-            for (int i = 0; returnFields != null && i < returnFields.size(); i++) {
-                returnField(returnFields.get(i));
-            }
-            return this;
-        }
-
-        /**
-         * Sets the return fields.
-         * @param returnFields the return fields to use
-         * @return this
-         */
-        public SearchRequestContextBuilder returnFields(String... returnFields) {
-            for (int i = 0; returnFields != null && i < returnFields.length; i++) {
-                returnField(returnFields[i]);
-            }
-            return this;
-        }
-
-        /**
-         * Sets the return fields.
-         *
-         * @param returnField the return fields to use
-         * @return this
-         */
-        public SearchRequestContextBuilder returnField(String returnField) {
-            if (returnFields == null) {
-                returnFields = new ArrayList<>();
-            }
-            returnFields.add(returnField);
+            this.returnFields = returnFields;
             return this;
         }
 
@@ -897,9 +780,9 @@ public class SearchRequestContext implements SearchContext {
                 this.form.add(group);
             }
             Arrays.stream(groups)
-                    .filter(Objects::nonNull)
-                    .filter(gr -> !gr.isEmpty())
-                    .collect(Collectors.toCollection(() -> this.form));
+                  .filter(Objects::nonNull)
+                  .filter(gr -> !gr.isEmpty())
+                  .collect(Collectors.toCollection(() -> this.form));
             return this;
         }
 
@@ -915,9 +798,9 @@ public class SearchRequestContext implements SearchContext {
             }
             this.form = CollectionUtils.isEmpty(this.form) ? new ArrayList<>() : this.form;
             groups.stream()
-                    .filter(Objects::nonNull)
-                    .filter(gr -> !gr.isEmpty())
-                    .collect(Collectors.toCollection(() -> this.form));
+                  .filter(Objects::nonNull)
+                  .filter(gr -> !gr.isEmpty())
+                  .collect(Collectors.toCollection(() -> this.form));
             return this;
         }
 
@@ -928,7 +811,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the search facets.
-         *
          * @param facets the facets to use
          * @return this
          */
@@ -937,9 +819,13 @@ public class SearchRequestContext implements SearchContext {
             return this;
         }
 
+        public SearchRequestContextBuilder addSorting(Collection<SortField> sortFields){
+            this.sortFields = sortFields;
+            return this;
+        }
+
         /**
          * Sets the search facets.
-         *
          * @param facets the facets to use
          * @return this
          */
@@ -948,14 +834,8 @@ public class SearchRequestContext implements SearchContext {
             return this;
         }
 
-        public SearchRequestContextBuilder addSorting(Collection<SortField> sortFields) {
-            this.sortFields = sortFields;
-            return this;
-        }
-
         /**
          * Sets the text to look for.
-         *
          * @param text the text
          * @return this
          */
@@ -967,7 +847,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the text to look for.
-         *
          * @param text the text
          * @param sayt - is sayt text
          * @return this
@@ -980,7 +859,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the text to look for(Search as you type)
-         *
          * @param text the text
          * @return this
          */
@@ -992,19 +870,17 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the values to look for, using dis max query.
-         *
          * @param values the values
          * @return this
          */
         @SuppressWarnings("unchecked")
-        public <T extends Object> SearchRequestContextBuilder values(List<T> values) {
+        public<T extends Object> SearchRequestContextBuilder values(List<T> values) {
             this.values = (List<Object>) values;
             return this;
         }
 
         /**
          * Sets page number, 0 based.
-         *
          * @param page the page
          * @return this
          */
@@ -1016,7 +892,6 @@ public class SearchRequestContext implements SearchContext {
         /**
          * Sets the max count to return.
          * Max count to return can't be more {@value MAX_PAGE_SIZE}.
-         *
          * @param count the count
          * @return this
          */
@@ -1028,7 +903,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the totalCount field.
-         *
          * @param totalCount return totalCount or not.
          * @return this
          */
@@ -1039,7 +913,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the countOnly field.
-         *
          * @param countOnly return countOnly or not.
          * @return this
          */
@@ -1050,7 +923,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the fetchAll field.
-         *
          * @param fetchAll return all, if no query string set, or not.
          * @return this
          */
@@ -1061,7 +933,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Sets the operator field.
-         *
          * @param operator the operator to set.
          * @return this
          */
@@ -1069,10 +940,8 @@ public class SearchRequestContext implements SearchContext {
             this.operator = operator;
             return this;
         }
-
         /**
          * Sets as of date for searches.
-         *
          * @param asOf the date
          * @return self
          */
@@ -1082,7 +951,6 @@ public class SearchRequestContext implements SearchContext {
         }
 
         /**
-         * @deprecated use static constructor with entity name
          * @param entityName - entity name
          * @return self
          */
@@ -1094,7 +962,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Overrides default storage id.
-         *
          * @param storageId the storage id to use
          * @return self
          */
@@ -1106,7 +973,6 @@ public class SearchRequestContext implements SearchContext {
         /**
          * Skip or add etalon ID to return fields. Add is the default.
          * This is used for type, which don't have etalon id.
-         *
          * @param skipEtalonId true or false
          * @return self
          */
@@ -1117,7 +983,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * use scroll scan mechanism
-         *
          * @param scrollScan true or false
          * @return self
          */
@@ -1125,10 +990,8 @@ public class SearchRequestContext implements SearchContext {
             this.scrollScan = scrollScan;
             return this;
         }
-
         /**
          * Generate nested query with given path.
-         *
          * @param nestedPath path
          * @return self
          */
@@ -1136,10 +999,8 @@ public class SearchRequestContext implements SearchContext {
             this.nestedPath = nestedPath;
             return this;
         }
-
         /**
          * Adds aggregations to this search context.
-         *
          * @param aggregations the aggregations.
          * @return self
          */
@@ -1147,11 +1008,9 @@ public class SearchRequestContext implements SearchContext {
             this.aggregations = aggregations;
             return this;
         }
-
         /**
          * Adds routig hints.
-         *
-         * @param routings the routingHints to set
+         * @param routingHints the routingHints to set
          * @return self
          */
         public SearchRequestContextBuilder routings(List<String> routings) {
@@ -1161,7 +1020,6 @@ public class SearchRequestContext implements SearchContext {
 
         /**
          * Change run exits flag
-         *
          * @param runExits run exits flag
          * @return self
          */
@@ -1170,35 +1028,13 @@ public class SearchRequestContext implements SearchContext {
             return this;
         }
 
-        /**
-         * Set values for last record in last search
-         * @param searchAfter search after values
-         * @return self
-         */
-        public SearchRequestContextBuilder searchAfter(List<Object> searchAfter) {
-            this.searchAfter = searchAfter;
-            return this;
-        }
-
         public SearchRequestContextBuilder shardNumber(Integer shardNumber) {
             this.shardNumber = shardNumber;
             return this;
         }
 
-        public SearchRequestContextBuilder nestedSearch(NestedSearchRequestContext... searches) {
-            for (int i = 0; searches != null && i < searches.length; i++) {
-                nestedSearch(searches[i]);
-            }
-            return this;
-        }
-
-        public SearchRequestContextBuilder nestedSearch(NestedSearchRequestContext newSearch) {
-
-            if(nestedSearch == null){
-                nestedSearch = new ArrayList<>();
-            }
-
-            nestedSearch.add(newSearch);
+        public SearchRequestContextBuilder innerHits(Pair<String, List<String>> innerHits) {
+            this.innerHits = innerHits;
             return this;
         }
     }
@@ -1218,7 +1054,6 @@ public class SearchRequestContext implements SearchContext {
             .append("source = ").append(source).append(", ")
             .append("searchFields = ").append(searchFields == null ? "null" : searchFields.toString()).append(", ")
             .append("returnFields = ").append(returnFields == null ? "null" : returnFields.toString()).append(", ")
-            .append("searchAfter = ").append(searchAfter == null ? "null" : searchAfter.toString()).append(", ")
             .append("text = ").append(text == null ? "null" : text).append(", ")
             .append("count = ").append(count).append(", ")
             .append("page = ").append(page).append(", ")

@@ -1,0 +1,99 @@
+$baseCls: 'un-toolbar-paging';
+$lineariconcorrect-margin: 4px;
+
+.#{$baseCls} {
+  padding-left: 0;
+  padding-right: 0;
+
+  .#{$prefix}toolbar-item {
+    margin: 0 0px 0 0;
+  }
+
+  .#{$prefix}btn-plain-toolbar-small {
+    padding: 5px 3px 5px 3px;
+  }
+
+  .#{$prefix}btn-over.#{$prefix}btn-plain-toolbar-small {
+    background-color: transparent;
+    border-color: transparent;
+    .#{$prefix}btn-icon-el:before {
+      color: #507fba;
+    }
+  }
+
+  .#{$prefix}tbar-page-number {
+    .#{$prefix}form-field {
+      text-align: end;
+    }
+  }
+
+  .#{$prefix}tbar-page-number + .#{$prefix}toolbar-text {
+    margin-right: 10px;
+  }
+}
+
+.x-toolbar-item {
+  span {
+    .x-tbar-page-first,
+    .x-tbar-page-prev,
+    .x-tbar-page-next,
+    .x-tbar-page-last,
+    .x-tbar-loading {
+      font-family: $font-family-linearicons;
+
+      line-height: 17px;
+      font-size: 16px;
+      color: gray;
+
+      background-image: none;
+    }
+  }
+  .x-tbar-page-first {
+    transform: rotate(270deg);
+
+    margin-top: $lineariconcorrect-margin;
+
+    &:before {
+      content: "\e802";
+    }
+  }
+
+  .x-tbar-loading {
+    margin-top: -$lineariconcorrect-margin;
+    margin-left: -$lineariconcorrect-margin;
+    &:before {
+      content: "\e8d3";
+    }
+  }
+
+  .x-tbar-page-prev {
+    transform: rotate(270deg);
+
+    margin-top: $lineariconcorrect-margin;
+
+    &:before {
+      content: "\e801";
+    }
+  }
+
+  .x-tbar-page-next {
+    transform: rotate(90deg);
+
+    margin-bottom: $lineariconcorrect-margin;
+
+    &:before {
+      content: "\e801";
+    }
+  }
+
+  .x-tbar-page-last {
+    transform: rotate(90deg);
+
+    margin-bottom: $lineariconcorrect-margin;
+
+    &:before {
+      content: "\e802";
+    }
+  }
+
+}

@@ -96,7 +96,6 @@
         <xs:attribute name="readOnly" type="xs:boolean" use="optional" default="false"/>
         <xs:attribute name="hidden" type="xs:boolean" use="optional" default="false"/>
         <xs:attribute name="valueType" type="classifier:ClassifierValueType" use="optional"/>
-        <xs:attribute name="enumDataType" type="xs:string" use="optional"/>
         <xs:attribute name="searchable" type="xs:boolean" use="optional" default="false" />
         <xs:attribute name="displayable" type="xs:boolean" use="optional" default="false" />
         <xs:attribute name="mainDisplayable" type="xs:boolean" use="optional" default="false" />

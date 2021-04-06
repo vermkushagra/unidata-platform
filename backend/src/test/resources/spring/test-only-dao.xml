@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop.xsd
+                           http://www.springframework.org/schema/jee
+                           http://www.springframework.org/schema/jee/spring-jee.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util.xsd
+                           http://camel.apache.org/schema/spring
+                           http://camel.apache.org/schema/spring/camel-spring.xsd
+                           http://www.hazelcast.com/schema/spring
+                           http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <context:property-placeholder
+            location="classpath:backend.properties" />
+    <bean class="com.unidata.mdm.backend.service.configuration.PlatformConfigurationImpl"/>
+    <context:component-scan base-package="com.unidata.mdm.backend.dao" />
+
+    <context:spring-configured />
+    <context:annotation-config />
+
+    <context:property-placeholder
+            ignore-resource-not-found="true"
+            ignore-unresolvable="true"
+            location="file:///${unidata.conf}/backend.properties" />
+    <bean
+            class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="environment">
+            <bean
+                    class="org.springframework.web.context.support.StandardServletEnvironment" />
+        </property>
+    </bean>
+
+    <import resource="dao/common-dao.xml" />
+
+    <!-- Put SQL propeties here to make them available to the utility, which doesn't use tx.xml -->
+    <util:properties id="records-sql" location="classpath:/db/records-sql.xml" />
+    <util:properties id="vistory-sql" location="classpath:/db/vistory-sql.xml" />
+    <util:properties id="measurement-sql" location="classpath:/db/measurement-sql.xml" />
+    <util:properties id="job-sql" location="classpath:/db/job-sql.xml" />
+    <util:properties id="cluster-sql" location="classpath:/db/cluster-sql.xml" />
+    <util:properties id="classifiers-sql" location="classpath:/db/classifiers-sql.xml" />
+    <util:properties id="classifier-data-sql" location="classpath:/db/classifier-data-sql.xml"/>
+    <util:properties id="relations-sql" location="classpath:/db/relations-sql.xml" />
+    <util:properties id="security-sql" location="classpath:/db/security-sql.xml" />
+    <util:properties id="message-sql" location="classpath:/db/message-sql.xml" />
+    <util:properties id="system-elements-sql" location="classpath:/db/system-elements-sql.xml" />
+    <util:properties id="meta-sql" location="classpath:/db/meta-sql.xml" />
+    <util:properties id="binary-data-sql" location="classpath:/db/binary-data-sql.xml" />
+    <util:properties id="audit-sql" location="classpath:/db/audit-sql.xml"/>
+    <util:properties id="statistic-sql" location="classpath:/db/statistic-sql.xml"/>
+    <util:properties id="custom-storage-sql" location="classpath:/db/custom-storage-sql.xml" />
+
+    <alias name="unidataDataSource" alias="dataSource"/>
+
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="unidataDataSource" />
+    </bean>
+    <tx:annotation-driven />
+
+    <!--
+        Override JNDI beans.
+    -->
+    <bean id="unidataDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${unidata.database.driver.class}"/>
+        <property name="url" value="${unidata.database.jdbc.url}"/>
+        <property name="username" value="${unidata.database.username}"/>
+        <property name="password" value="${unidata.database.password}"/>
+    </bean>
+
+    <bean id="unidataAuditDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${unidata.database.driver.class}"/>
+        <property name="url" value="${unidata.database.jdbc.url}"/>
+        <property name="username" value="${unidata.database.username}"/>
+        <property name="password" value="${unidata.database.password}"/>
+    </bean>
+
+    <bean id="jobDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${unidata.batch.job.database.driver.class}"/>
+        <property name="url" value="${unidata.batch.job.database.jdbc.url}"/>
+        <property name="username" value="${unidata.batch.job.database.username}"/>
+        <property name="password" value="${unidata.batch.job.database.password}"/>
+    </bean>
+
+    <bean id="wfDataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${unidata.batch.job.database.driver.class}"/>
+        <property name="url" value="${unidata.batch.job.database.jdbc.url}?currentSchema=unidata_work_flow"/>
+        <property name="username" value="${unidata.batch.job.database.username}"/>
+        <property name="password" value="${unidata.batch.job.database.password}"/>
+    </bean>
+
+    <!--Custom logging -->
+    <bean id="slf4CClientLogAppender" class="com.unidata.mdm.backend.service.logging.Sl4JLogAppender">
+        <constructor-arg value="UNIDATA_REST_CLIENT" />
+    </bean>
+    <bean id="restClientCLogger" class="com.unidata.mdm.backend.service.logging.LogService">
+        <constructor-arg ref="slf4CClientLogAppender" />
+        <constructor-arg value="30" />
+        <constructor-arg value="SECONDS" />
+    </bean>
+
+</beans>

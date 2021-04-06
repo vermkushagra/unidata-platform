@@ -1,0 +1,41 @@
+$baseCls: '.un-relation-record';
+
+#{$baseCls} {
+  #{$baseCls}-attribute {
+    margin-left: 16px;
+    margin-bottom: 10px;
+
+    .x-form-item-label {
+      width: 90px;
+      padding-top: 0;
+    }
+
+    &.un-dataentity-attribute-input-lookup {
+      .x-form-item-body {
+        border-bottom: 1px solid $color-primary-4-4;
+        max-width: 497px;
+        min-width: 497px;
+      }
+    }
+  }
+
+  .un-validity-period-panel {
+    margin-bottom: 10px;
+    .un-dataentity-attribute-input-date:last-child {
+      margin-left: 12px;
+    }
+
+    .un-dataentity-attribute-input .x-form-text {
+      margin-top: 5px;
+    }
+
+    .un-dataentity-attribute-input-date {
+      width: 142px;
+    }
+  }
+
+  .un-dirty-symbol {
+    color: #777;
+    font-size: 16px;
+  }
+}

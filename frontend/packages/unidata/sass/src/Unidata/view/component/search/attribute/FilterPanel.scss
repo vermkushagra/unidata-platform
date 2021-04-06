@@ -1,0 +1,17 @@
+$baseCls: '.un-search-attribute-filter-panel';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background: $un-search-panel-color-2;
+    border-top-width: 1px !important;
+    border-bottom-width: 1px !important;
+    border-style: solid;
+    border-color: $un-search-panel-color-3;
+  }
+}
+
+.un-search-attribute-filter-tagfield {
+  .x-tagfield-item {
+    display: none;
+  }
+}

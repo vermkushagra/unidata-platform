@@ -1,0 +1,11 @@
+$baseCls: '.un-search-window';
+
+#{$baseCls} {
+  >.x-window-header {
+    .x-title {
+      .x-title-text {
+        padding-left: 0;
+      }
+    }
+  }
+}

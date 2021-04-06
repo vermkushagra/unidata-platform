@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.meta.api.v5;
 
 import java.time.LocalDate;
@@ -51,7 +32,6 @@ import com.unidata.mdm.meta.DQRRaiseDef;
 import com.unidata.mdm.meta.DQRSourceSystemRef;
 import com.unidata.mdm.meta.DQRuleClass;
 import com.unidata.mdm.meta.DQRuleDef;
-import com.unidata.mdm.meta.DQRuleRunType;
 import com.unidata.mdm.meta.DQRuleType;
 import com.unidata.mdm.meta.DefaultClassifier;
 import com.unidata.mdm.meta.EntitiesGroupDef;
@@ -109,7 +89,7 @@ public class ToInternal {
 				.withValidityPeriod(fromValidityPeriod(source.getValidityPeriod())).withVersion(source.getVersion());
 		return target;
 	}
-
+	
 	/**
 	 * Convert.
 	 *
@@ -402,8 +382,7 @@ public class ToInternal {
 		DQRuleDef target = new DQRuleDef();
 		target.getApplicable().addAll(fromApplicable(source.getApplicable()));
 		target.setCleanseFunctionName(source.getCleanseFunctionName());
-		// UN-7293
-		// target.setComplexAttributeName(source.getComplexAttributeName());
+		target.setComplexAttributeName(source.getComplexAttributeName());
 		target.setDescription(source.getDescription());
 		target.setEnrich(fromEnrich(source.getEnrich()));
 		target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
@@ -414,7 +393,6 @@ public class ToInternal {
 		target.setRClass(fromRClass(source.getRClass()));
 		target.setSpecial(source.isSpecial());
 		target.getType().addAll(fromDQTypes(source.getType()));
-		target.setRunType(source.getRunType() == null ? null : DQRuleRunType.valueOf(source.getRunType().name()));
 
 		return target;
 	}
@@ -589,11 +567,10 @@ public class ToInternal {
 		DQRMappingDef target = new DQRMappingDef();
 		target.setAttributeConstantValue(fromAttributeConstantValue(source.getAttributeConstantValue()));
 		target.setAttributeName(source.getAttributeName());
-		// UN-7293
-		// target.setFilterValue(source.getFilterValue());
-		// target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
+		target.setFilterValue(source.getFilterValue());
 		target.setInputPort(source.getInputPort());
 		target.setOutputPort(source.getOutputPort());
+		target.getDqrMapping().addAll(fromDqrMappings(source.getDqrMapping()));
 
 		return target;
 	}
@@ -661,7 +638,7 @@ public class ToInternal {
 			return null;
 		}
 		LocalDateTime target = LocalDateTime
-				.from(source.toGregorianCalendar().toZonedDateTime());
+				.from(((XMLGregorianCalendar) source).toGregorianCalendar().toZonedDateTime());
 		return target;
 	}
 

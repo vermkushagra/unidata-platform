@@ -1,0 +1,108 @@
+{
+  "licensee": {
+    "simpleAttributes": [
+      {
+        "key": "sourceName",
+        "value": "Общество с ограниченной ответственнностью \"Санкт-Петербургский институт красоты\", ООО \"СПИК\""
+      },
+      {
+        "key": "directorName",
+        "value": "Иванов И.И."
+      },
+      {
+        "key": "inn",
+        "value": "7814123212"
+      },
+      {
+        "key": "ogrn",
+        "value": "1027807591261"
+      },
+      {
+        "key": "okp",
+        "value": "57904170"
+      },
+      {
+        "key": "licenseNumber",
+        "value": "ЛО-78-04-000001"
+      },
+      {
+        "key": "decisionDate",
+        "value": "19.01.2012"
+      }
+    ],
+    "complexAttributes": [
+      {
+        "name": "addressInfo",
+        "simpleAttributes": [
+          {
+            "key": "addressLine1",
+            "value": "Санкт-Петербург, Савушкина ул., д. 8, лит. А, пом. №46"
+          },
+          {
+            "key": "cityDistrict",
+            "value": "Приморский"
+          },
+          {
+            "key": "subwayStation",
+            "value": "Черная речка"
+          }
+        ]
+      },
+      {
+        "name": "licenseInfo",
+        "simpleAttributes": [
+          {
+            "key": "licenseStartDate",
+            "value": "19.01.2012"
+          },
+          {
+            "key": "infoLicenseConfirmation",
+            "value": "Переоформлена лицензия №99-06-003691 от 21.12.06. Приказ №1315 от 14.11.2013"
+          },
+          {
+            "key": "infoLicenseSuspension",
+            "value": ""
+          },
+          {
+            "key": "infoLicenseRenewal",
+            "value": ""
+          },
+          {
+            "key": "infoLicenseCancellation",
+            "value": ""
+          },
+          {
+            "key": "infoLicenseTermination",
+            "value": ""
+          }
+        ]
+      },
+      {
+        "name": "phones",
+        "simpleAttributes": [
+          {
+            "key": "combinedValue",
+            "value": "+78121234001"
+          },
+          {
+            "key": "type",
+            "value": "Телефон"
+          }
+        ]
+      },
+      {
+        "name": "phones",
+        "simpleAttributes": [
+          {
+            "key": "combinedValue",
+            "value": "+78124321001"
+          },
+          {
+            "key": "type",
+            "value": "Факс"
+          }
+        ]
+      }
+    ]
+  }
+}

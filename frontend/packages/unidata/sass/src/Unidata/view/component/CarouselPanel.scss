@@ -1,0 +1,51 @@
+$baseCls: '.un-carousel-panel';
+
+#{$baseCls} {
+  >.x-panel-body {
+    background-color: transparent;
+  }
+}
+
+#{$baseCls} {
+  .un-carousel-button-prev,
+  .un-carousel-button-next {
+    background-color: transparent !important;
+    border: none;
+
+    .x-btn-glyph {
+      color: $color-primary-1-2 !important;
+    }
+  }
+}
+
+#{$baseCls} .un-carousel-items-container {
+  //padding: ($un-ded-inner-gap / 2) 0 ($un-ded-inner-gap / 2) $un-ded-inner-gap;
+  padding: 0;
+  margin: 0;
+
+  .un-carousel-panel-item__firstvisible {
+    margin-left: 0px !important;
+  }
+
+  .un-carousel-panel-item__lastvisible {
+    margin-right: 0px !important;
+  }
+
+  >.x-box-inner {
+    >.x-box-target {
+      >.x-panel-un-card {
+        margin-right: $un-ded-inner-gap;
+        margin-bottom: 0;
+
+        &:last-child {
+          margin-right: $un-ded-inner-gap !important;
+        }
+      }
+    }
+  }
+}
+
+.un-no-data {
+  height: 20px;
+  color: $color-primary-1-3;
+}

@@ -1,0 +1,37 @@
+//$un-menu-base-color: lighten($color-primary-1-0, 18%);
+$un-menu-base-color: $un-color-main-menu;
+
+// фон основного меню #2f2f2f
+$un-menu-color-1: change-color($un-menu-base-color, $lightness: 20%);
+// фон вложенного меню #252525
+$un-menu-color-2: change-color($un-menu-base-color, $lightness: 14%);
+// фон выделенного раздела меню #3f3f3f
+$un-menu-color-3: change-color($un-menu-base-color, $lightness: 24%);
+// линия разделитель #3a3a3a
+$un-menu-color-4: change-color($un-menu-base-color, $lightness: 23%);
+// цвет шрифта меню
+$un-menu-color-5: change-color($un-menu-base-color, $lightness: 98%);
+// цвет шрифта вложенного меню #cccccc
+$un-menu-color-6: change-color($un-menu-base-color, $lightness: 80%);
+
+
+@mixin un-menu-split-borders() {
+  &:after,
+  &:before {
+    content: ' ';
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: $un-menu-color-4;
+  }
+
+  &:before {
+    top: 0;
+  }
+
+  &:after {
+    bottom: 0;
+  }
+}

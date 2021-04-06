@@ -1,0 +1,47 @@
+$baseCls: '.un-merge';
+$un-merge-preview-body-padding-top: 55px;
+
+#{$baseCls} {
+  #{$baseCls}-preview {
+    //.x-panel-header-title-un-card {
+    //  margin-top: 5px;
+    //}
+
+    >.x-panel-body {
+      padding-top: $un-merge-preview-body-padding-top;
+    }
+  }
+
+  .x-table-layout {
+    .x-table-layout-cell {
+      .x-panel-un-card {
+        margin-right: 8px;
+      }
+    }
+
+    .x-table-layout-cell:last-child {
+      .x-panel-un-card {
+        margin-right: 0;
+      }
+    }
+  }
+
+  .un-dataentity-attribute {
+  }
+
+  .un-dataentity-attribute-complex {
+    .un-dataentity-attribute {
+      border-bottom: none;
+    }
+  }
+
+  .un-dataentity-classifier {
+    .un-dataentity-attribute {
+      border-bottom: none;
+    }
+  }
+
+  //.x-panel-header-un-card {
+  //  border-color: transparent;
+  //}
+}

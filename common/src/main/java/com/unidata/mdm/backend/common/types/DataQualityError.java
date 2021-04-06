@@ -1,31 +1,8 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.types;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-
-import com.unidata.mdm.backend.common.dq.DataQualityExecutionMode;
 
 /**
  * DQ error type. Created from JAXB artefact.
@@ -40,12 +17,6 @@ public class DataQualityError implements Serializable
      * Id.
      */
     private final String id;
-
-    /**
-     * Etalon id
-     */
-    private String etalonId;
-
     /**
      * Create date.
      */
@@ -54,14 +25,6 @@ public class DataQualityError implements Serializable
      * Update date.
      */
     private final Date updateDate;
-    /**
-     * Originator.
-     */
-    private final String createdBy;
-    /**
-     * Problematic local paths, caused the error, if any.
-     */
-    private final List<String> paths;
     /**
      * Status.
      */
@@ -83,27 +46,19 @@ public class DataQualityError implements Serializable
      */
     private final String category;
     /**
-     * Execution mode.
-     */
-    private final DataQualityExecutionMode executionMode;
-    /**
      * Constructor.
      * @param b the builder
      */
     private DataQualityError(DataQualityErrorBuilder b) {
         super();
-        id = b.id;
-        etalonId = b.etalonId;
-        createDate = b.createDate;
-        updateDate = b.updateDate;
-        createdBy = b.createdBy;
-        paths = Objects.isNull(b.paths) ? Collections.emptyList() : b.paths;
-        status = b.status;
-        ruleName = b.ruleName;
-        message = b.message;
-        severity= b.severity;
-        category = b.category;
-        executionMode = b.executionMode;
+        this.id = b.id;
+        this.createDate = b.createDate;
+        this.updateDate = b.updateDate;
+        this.status = b.status;
+        this.ruleName = b.ruleName;
+        this.message = b.message;
+        this.severity= b.severity;
+        this.category = b.category;
     }
     /**
      * Gets the value of the errorId property.
@@ -115,18 +70,6 @@ public class DataQualityError implements Serializable
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * Gets the value of the etalonId property.
-     *
-     * @return
-     *     possible object is
-     *     {@link String }
-     *
-     */
-    public String getEtalonId() {
-        return etalonId;
     }
 
     /**
@@ -153,18 +96,6 @@ public class DataQualityError implements Serializable
         return updateDate;
     }
 
-    /**
-     * @return the createdBy
-     */
-    public String getCreatedBy() {
-        return createdBy;
-    }
-    /**
-     * @return the paths
-     */
-    public List<String> getPaths() {
-        return paths;
-    }
     /**
      * Gets the value of the status property.
      *
@@ -226,34 +157,6 @@ public class DataQualityError implements Serializable
     }
 
     /**
-     * @return the executionMode
-     */
-    public DataQualityExecutionMode getExecutionMode() {
-        return executionMode;
-    }
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String toString() {
-
-        StringBuilder sb = new StringBuilder()
-            .append("DQ error: ")
-            .append("rule name [")
-            .append(ruleName)
-            .append("], severity [")
-            .append(severity != null ? severity.name() : "<null>")
-            .append("], category [")
-            .append(category)
-            .append("], status [")
-            .append(status != null ? status.name() : "<null>")
-            .append("], message [")
-            .append(message)
-            .append("]");
-
-        return sb.toString();
-    }
-    /**
      * New builder,
      * @param error the rror to copy
      * @return new builder
@@ -273,14 +176,11 @@ public class DataQualityError implements Serializable
      * Builder type.
      */
     public static class DataQualityErrorBuilder {
+
         /**
          * Id.
          */
         private String id;
-        /**
-         * Etalon id
-         */
-        private String etalonId;
         /**
          * Create date.
          */
@@ -289,14 +189,6 @@ public class DataQualityError implements Serializable
          * Update date.
          */
         private Date updateDate;
-        /**
-         * Originator.
-         */
-        private String createdBy;
-        /**
-         * Problematic local paths, caused the error, if any.
-         */
-        private List<String> paths;
         /**
          * Status.
          */
@@ -317,10 +209,7 @@ public class DataQualityError implements Serializable
          * The category.
          */
         private String category;
-        /**
-         * Execution mode.
-         */
-        private DataQualityExecutionMode executionMode;
+
         /**
          * Constructor.
          */
@@ -331,24 +220,20 @@ public class DataQualityError implements Serializable
          * Constructor.
          */
         private DataQualityErrorBuilder(DataQualityError error) {
-
             this();
             if (Objects.isNull(error)) {
                 return;
             }
 
-            id = error.id;
-            etalonId = error.id;
-            createDate = error.createDate;
-            updateDate = error.updateDate;
-            status = error.status;
-            ruleName = error.ruleName;
-            message = error.message;
-            severity= error.severity;
-            category = error.category;
-            paths = error.paths;
+            this.id = error.id;
+            this.createDate = error.createDate;
+            this.updateDate = error.updateDate;
+            this.status = error.status;
+            this.ruleName = error.ruleName;
+            this.message = error.message;
+            this.severity= error.severity;
+            this.category = error.category;
         }
-
         /**
          * Sets error id.
          * @param value the value to set
@@ -358,17 +243,6 @@ public class DataQualityError implements Serializable
             this.id = value;
             return this;
         }
-
-        /**
-         * Sets etalon id.
-         * @param value the value to set
-         * @return self
-         */
-        public DataQualityErrorBuilder etalonId(final String value) {
-            this.etalonId = value;
-            return this;
-        }
-
         /**
          * Sets create date.
          * @param value the value to set
@@ -385,24 +259,6 @@ public class DataQualityError implements Serializable
          */
         public DataQualityErrorBuilder updateDate(Date value) {
             this.updateDate = value;
-            return this;
-        }
-        /**
-         * Sets the originator.
-         * @param createdBy the value to set
-         * @return self
-         */
-        public DataQualityErrorBuilder createdBy(String createdBy) {
-            this.createdBy = createdBy;
-            return this;
-        }
-        /**
-         * Problematic local paths, caused the error, if any.
-         * @param paths the paths to set
-         * @return self
-         */
-        public DataQualityErrorBuilder paths(List<String> paths) {
-            this.paths = paths;
             return this;
         }
         /**
@@ -457,15 +313,6 @@ public class DataQualityError implements Serializable
          */
         public DataQualityErrorBuilder category(String value) {
             this.category = value;
-            return this;
-        }
-        /**
-         * Sets execution mode.
-         * @param value the value to set
-         * @return self
-         */
-        public DataQualityErrorBuilder executionMode(DataQualityExecutionMode executionMode) {
-            this.executionMode = executionMode;
             return this;
         }
         /**

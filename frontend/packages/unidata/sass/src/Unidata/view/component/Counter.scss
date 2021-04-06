@@ -1,0 +1,47 @@
+$baseCls: 'un-counter';
+
+.#{$baseCls} {
+  //.#{$prefix}form-item-body {
+  //  padding-left: 4px;
+  //  padding-right: 4px;
+  //}
+
+  .#{$prefix}form-item-label {
+    font-family: $font-family-2;
+    font-size: 14px;
+  }
+
+  .#{$baseCls}-count {
+    padding: 1px 2px;
+    display: inline-block;
+    text-align: center;
+    width: 20px;
+    color: #fff;
+    font-weight: bold;
+    background-color: $un-color-section-task;
+    font-family: $font-family-2;
+    @include border-radius(3px);
+    @include user-select(none);
+    cursor: pointer;
+  }
+}
+
+.#{$baseCls}-available-task {
+  .#{$baseCls}-count {
+    background-color: $un-color-section-task;
+  }
+
+}
+
+.#{$baseCls}-my-task {
+  .#{$baseCls}-count {
+    background-color: #00a651;
+  }
+
+}
+
+.#{$baseCls}-zero {
+  .#{$baseCls}-count {
+    background-color: $color-primary-1-2;
+  }
+}

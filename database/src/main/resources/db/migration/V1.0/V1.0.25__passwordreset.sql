@@ -1,0 +1,1 @@
+alter table public.user_logins add column password_updated_at timestamptz;

@@ -1,0 +1,2 @@
+alter table origins_relations_vistory add column shift data_shift not null default 'PRISTINE'::data_shift;
+alter table origins_classifiers_vistory add column shift data_shift not null default 'PRISTINE'::data_shift;

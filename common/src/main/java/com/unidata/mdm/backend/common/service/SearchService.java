@@ -1,24 +1,6 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.service;
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.unidata.mdm.backend.common.context.ComplexSearchRequestContext;
@@ -61,4 +43,57 @@ public interface SearchService {
      */
     long countErrorsBySeverity(String severity, SearchRequestContext ctx);
 
+    /**
+     * Count records with errors.
+     *
+     * @param ctx search context.
+     * @return number of records with errors.
+     */
+    long countErrorRecords(SearchRequestContext ctx);
+
+    /**
+     * Search multiple.
+     * @param ctxts contexts
+     * @return map
+     */
+    @Deprecated
+    Map<SearchRequestContext, SearchResultDTO> search(Collection<SearchRequestContext> ctxts);
+
+    /**
+     * Search multiple.
+     * @param ctxts the contexts
+     * @param sayt search as you type mode
+     * @return map
+     */
+    @Deprecated
+    Map<SearchRequestContext, SearchResultDTO> search(Collection<SearchRequestContext> ctxts, boolean sayt);
+
+    /**
+     * Returns true, if a given ID exists.
+     *
+     * @param type object's type
+     * @param id   the object id
+     * @return true, if exists, false otherwise
+     */
+    @Deprecated
+    boolean exists(String type, String id);
+
+    /**
+     * Full blown search method, taking parameters from the context.
+     *
+     * @param ctx  the search context
+     * @param sayt use SAYT version
+     * @return search results
+     */
+    @Deprecated
+    SearchResultDTO search(SearchRequestContext ctx, boolean sayt);
+
+    /**
+     * Returns number of all existing records for an entity.
+     *
+     * @param type the name of the type
+     * @return count
+     */
+    @Deprecated
+    long countAll(String type);
 }

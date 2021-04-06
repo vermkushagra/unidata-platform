@@ -1,0 +1,17 @@
+$baseCls: '.un-relation-search-list';
+
+#{$baseCls} {
+  >.x-panel-header {
+    .x-title-text {
+      padding-left: 0px;
+    }
+  }
+
+  >.x-panel-body {
+    background: $un-search-panel-color-2;
+    border-top-width: 1px !important;
+    border-bottom-width: 1px !important;
+    border-style: solid;
+    border-color: $un-search-panel-color-3;
+  }
+}

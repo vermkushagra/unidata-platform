@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
@@ -29,6 +10,7 @@ import java.util.Map;
 import com.unidata.mdm.backend.common.keys.RecordKeys;
 import com.unidata.mdm.backend.common.types.DataQualityError;
 import com.unidata.mdm.backend.common.types.EtalonRecord;
+import com.unidata.mdm.backend.common.types.OriginRecord;
 import com.unidata.mdm.backend.common.types.UpsertAction;
 
 /**
@@ -36,11 +18,15 @@ import com.unidata.mdm.backend.common.types.UpsertAction;
  * Upsert result DTO.
  */
 public class UpsertRecordDTO
-implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, ClassifiersDTO<UpsertClassifierDTO> {
+implements RecordDTO, EtalonRecordDTO, OriginRecordDTO, RelationsDTO<UpsertRelationDTO>, ClassifiersDTO<UpsertClassifierDTO> {
     /**
      * Record keys for short upsert.
      */
     private RecordKeys recordKeys;
+    /**
+     * Origin record or null.
+     */
+    private OriginRecord origin;
     /**
      * Golden record or null.
      */
@@ -80,11 +66,13 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
     }
     /**
      * Constructor.
+     * @param origin the origin record to upsert
      * @param type action performed
      * @param dqErrors list of DQ errors
      */
-    public UpsertRecordDTO(UpsertAction type, List<DataQualityError> dqErrors) {
+    public UpsertRecordDTO(OriginRecord origin, UpsertAction type, List<DataQualityError> dqErrors) {
         super();
+        this.origin = origin;
         this.etalon = null;
         this.action = type;
         this.dqErrors = dqErrors;
@@ -100,6 +88,7 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
      */
     public UpsertRecordDTO(EtalonRecord etalon, UpsertAction type, List<DataQualityError> dqErrors, List<String> duplicateIds) {
         super();
+        this.origin = null;
         this.etalon = etalon;
         this.action = type;
         this.dqErrors = dqErrors;
@@ -122,6 +111,14 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
     }
 
     /**
+     * @return the origin record
+     */
+    @Override
+    public OriginRecord getOrigin() {
+        return origin;
+    }
+
+    /**
      * @return the golden record
      */
     @Override
@@ -134,6 +131,13 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
      */
     public boolean isEtalon() {
         return etalon != null;
+    }
+
+    /**
+     * @return true, if result is an origin record
+     */
+    public boolean isOrigin() {
+        return origin != null;
     }
 
     /**
@@ -158,10 +162,17 @@ implements RecordDTO, EtalonRecordDTO, RelationsDTO<UpsertRelationDTO>, Classifi
     }
 
     /**
-     * @param etalon the golden to set
+     * @param origin the origin to set
      */
-    public void setEtalon(EtalonRecord etalon) {
-        this.etalon = etalon;
+    public void setOrigin(OriginRecord origin) {
+        this.origin = origin;
+    }
+
+    /**
+     * @param golden the golden to set
+     */
+    public void setEtalon(EtalonRecord golden) {
+        this.etalon = golden;
     }
 
     /**

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch" xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd   http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd http://www.hazelcast.com/schema/spring http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+
+
+    <!--Removing records with partitioning based on parallel execution on several nodes with Hazelcast queue transport.-->
+    <hz:queue id="removeJobsQueue" instance-ref="instance" name="removeQueue" lazy-init="true"
+              depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+
+    <batch:job id="removeJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="removeJobListener"/>
+        </batch:listeners>
+        <batch:step id="remove.master">
+            <batch:partition partitioner="removeItemPartitioner" handler="removeRemotePartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="removeRemotePartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="remove.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="removeJobsQueue"/>
+    </bean>
+
+    <bean id="removeItemPartitioner"
+          class="com.unidata.mdm.backend.service.job.remove.RemoveItemPartitioner"
+          scope="job">
+        <property name="batchSize" value="${remove.batch.size:500}"/>
+        <property name="userKey" value="#{jobParameters['user']}"/>
+        <property name="idsKey" value="#{jobParameters['idsKey']}"/>
+    </bean>
+
+    <bean id="removeJobListener" class="com.unidata.mdm.backend.service.job.remove.RemoveJobReportGenerator" scope="job">
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="charSet" value="ansi-1251"/>
+        <property name="userName" value="#{jobParameters['userName']}"/>
+        <property name="separator" value=";"/>
+        <property name="jobDescription" value="app.job.batch.delete.data.name"/>
+        <property name="reportName" value="#{jobParameters['operationId']}.csv"/>
+    </bean>
+
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <bean id="removeRemoteStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="removeRecords"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="removeJobsQueue"/>
+        <property name="threadCount" value="2"/>
+    </bean>
+
+    <batch:step id="remove.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk processor="removeProcessor" commit-interval="1" reader="removeReader"
+                         writer="removeWriter"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="removeMeasurementListener"/>
+            <batch:listener ref="authAdjusterRemove"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="removeMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener" scope="step">
+        <property name="contextName" value="MEASURE_STEP_REMOVE"/>
+    </bean>
+
+    <bean id="authAdjusterRemove" class="com.unidata.mdm.backend.service.job.AuthAdjuster" scope="step">
+        <property name="userName" value="#{jobParameters[userName]}"/>
+        <property name="userToken" value="#{jobParameters[userToken]}"/>
+    </bean>
+
+    <bean id="removeReader"
+          class="org.springframework.batch.item.support.IteratorItemReader"
+          scope="step">
+        <constructor-arg value="#{stepExecutionContext['ids']}"/>
+    </bean>
+
+    <bean id="removeProcessor"
+          class="com.unidata.mdm.backend.service.job.remove.RemoveItemProcessor"
+          scope="step">
+        <property name="entityName" value="#{jobParameters['entityName']}"/>
+        <property name="operationId" value="#{jobParameters['operationId']}"/>
+        <property name="operationExecutor" value="#{jobParameters['userName']}"/>
+        <property name="wipe" value="#{jobParameters['wipe']}"/>
+    </bean>
+
+    <bean id="removeWriter"
+          class="com.unidata.mdm.backend.service.job.remove.RemoveItemWriter"
+          scope="step"/>
+    <!-- EOF - Slave job. -->
+</beans>

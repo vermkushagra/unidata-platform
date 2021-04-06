@@ -1,0 +1,30 @@
+$warning-background-color: #FFF3E0;
+$warning-text-color: #993300;
+$warning-border-color: #FF9900;
+
+.un-warning-text {
+  border: solid 1px $warning-border-color;
+  border-radius: 3px;
+  color: $warning-text-color;
+  background-color: $warning-background-color;
+  padding: 17px 20px;
+  padding-left: 60px;
+  position: relative;
+  display: inline-block;
+  font-size: 12px;
+
+  &:after {
+    font-size: 20px;
+    line-height: 50px;
+    font-family: $font-family-linearicons;
+    background-color: $warning-border-color;
+    content: '\e955';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 100%;
+    color: white;
+  }
+}

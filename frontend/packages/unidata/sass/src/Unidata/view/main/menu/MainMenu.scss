@@ -1,0 +1,85 @@
+$baseCls: '.un-mainmenu';
+
+#{$baseCls} {
+  font-family: $font-family-1;
+  font-size: 12px;
+  background-color: $un-menu-color-1;
+  color: $un-menu-color-5;
+  height: 100%;
+  z-index: 10;
+
+  #{$baseCls}-body {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+  }
+
+  .x-tip {
+    z-index: 1 !important;
+
+    .x-tip-anchor {
+      visibility: visible !important;
+      border-right-color: inherit;
+      border-top-color: transparent;
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      top: 50%;
+      right: 100%;
+      margin-top: -8px;
+    }
+  }
+}
+
+// прячем часть внутренностей при сворачивании меню
+#{$baseCls}-collapsed {
+  #{$baseCls}-item-inner {
+    #{$baseCls}-item-body {
+      height: 0;
+    }
+
+    #{$baseCls}-item-text {
+      padding-right: 0;
+    }
+
+    &#{$baseCls}-item-selected,
+    &#{$baseCls}-item-pinned,
+    &#{$baseCls}-item-pinned-temp {
+      #{$baseCls}-item-body {
+        height: $un-menu-item-inner-height;
+      }
+    }
+  }
+
+  #{$baseCls}-list-top {
+    padding-bottom: $un-menu-top-list-padding + $un-menu-item-height;
+  }
+
+  #{$baseCls}-list-center {
+    #{$baseCls}-item-group#{$baseCls}-item-group__hideable > #{$baseCls}-item-body {
+      height: 3px;
+    }
+
+    #{$baseCls}-item-group#{$baseCls}-item-group__hideable:first-child > #{$baseCls}-item-body {
+      height: 0;
+    }
+  }
+
+}
+
+#{$baseCls}-collapsed,
+#{$baseCls}-animating {
+  #{$baseCls}-item-pin {
+    display: none !important;
+  }
+
+  #{$baseCls}-item-group > #{$baseCls}-item-body #{$baseCls}-item-text:after,
+  #{$baseCls}-list-center #{$baseCls}-item-group#{$baseCls}-item-group__hideable > #{$baseCls}-item-body {
+    visibility: hidden !important;
+  }
+
+  #{$baseCls}-item-text {
+    text-overflow: clip;
+  }
+}
+

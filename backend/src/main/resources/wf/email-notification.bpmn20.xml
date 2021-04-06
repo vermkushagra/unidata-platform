@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:activiti="http://activiti.org/bpmn"
+             typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath"
+             targetNamespace="http://www.ocrv.ru/data-record-approval" exporter="Camunda Modeler"
+             exporterVersion="1.2.0">
+    <process id="processStartEmailNotification" name="Почтовая нотификация при старте процесса">
+        <!--<extensionElements>-->
+            <!--<activiti:eventListener class="com.unidata.mdm.backend.service.wf.EmailEventListener"-->
+                                    <!--events="JOB_EXECUTION_FAILURE,JOB_EXECUTION_SUCCESS" entityType="job" />-->
+        <!--</extensionElements>-->
+
+        <startEvent id="theStart"/>
+        <sequenceFlow sourceRef="theStart" targetRef="sendMail"/>
+
+        <!--<serviceTask id="sendMail" activiti:type="mail" activiti:async="true">-->
+        <serviceTask id="sendMail" activiti:type="mail">
+            <extensionElements>
+                <activiti:field name="from" stringValue="customer@unidata.com"/>
+                <activiti:field name="to" expression="${recipient}"/>
+                <activiti:field name="bcc" expression="${bccRecipient}"/>
+                <activiti:field name="subject" expression="Старт: '${processDescription}'"/>
+                <activiti:field name="html">
+                    <activiti:expression>
+                        <![CDATA[
+          <html>
+            <body>
+              Уважаемый(ая) ${recipientName},<br/><br/>
+
+              Вы запустили процесс ${processName}.<br/><br/>
+
+              С уважением,<br/>
+
+              Команда Юнидата.
+            </body>
+          </html>
+        ]]>
+                    </activiti:expression>
+                </activiti:field>
+            </extensionElements>
+        </serviceTask>
+
+        <sequenceFlow sourceRef="sendMail" targetRef="theEnd"/>
+        <endEvent id="theEnd"/>
+    </process>
+</definitions>
+

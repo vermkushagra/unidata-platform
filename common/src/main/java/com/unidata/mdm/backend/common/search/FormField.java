@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  *
  */
@@ -25,16 +6,10 @@ package com.unidata.mdm.backend.common.search;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import com.unidata.mdm.backend.common.types.SimpleAttribute;
 import com.unidata.mdm.meta.SimpleDataType;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Mikhail Mikhailov
@@ -52,10 +27,6 @@ public class FormField {
      */
     @Nullable
     private final Object single;
-
-    @Nullable
-    private final Collection<?> values;
-
     /**
      * Field path.
      */
@@ -71,37 +42,44 @@ public class FormField {
      */
     @Nonnull
     private final FormType formType;
-
+    /**
+     * is Strict;
+     */
+    private final boolean isStrict;
+    /**
+     * Like
+     */
+    private final boolean like;
     /**
      * Search type
      */
     private final SearchType searchType;
-
     /**
-     * Constructor for single.
+     * Constructor.
      */
     private FormField(@Nonnull SimpleDataType type, @Nonnull String path, @Nonnull FormType formType,
-                      @Nullable Collection<?> values, @Nonnull SearchType searchType) {
-        this.path = path;
-        this.type = type;
-        this.values = values;
-        this.formType = formType;
-        this.range = null;
-        this.single = null;
-        this.searchType = searchType;
-    }
-
-    /**
-     * Constructor for single.
-     */
-    private FormField(@Nonnull SimpleDataType type, @Nonnull String path, @Nonnull FormType formType,
-            @Nullable Object single, @Nonnull SearchType searchType) {
+            @Nullable Object single, boolean strict, boolean like) {
         this.path = path;
         this.type = type;
         this.single = single;
         this.formType = formType;
         this.range = null;
-        this.values = null;
+        this.isStrict = strict;
+        this.like = like;
+        this.searchType = SearchType.DEFAULT;
+    }
+
+    /**
+     * Constructor.
+     */
+    private FormField(@Nonnull SimpleDataType type, @Nonnull String path,@Nullable Object value, @Nonnull SearchType searchType) {
+        this.path = path;
+        this.type = type;
+        this.single = value;
+        this.formType = FormType.POSITIVE;
+        this.range = null;
+        this.isStrict = searchType != SearchType.FUZZY && searchType != SearchType.MORPHOLOGICAL;
+        this.like = false;
         this.searchType = searchType;
     }
 
@@ -109,25 +87,33 @@ public class FormField {
      * Constructor for ranges.
      */
     private FormField(@Nonnull SimpleDataType type, @Nonnull String path, @Nonnull FormType formType,
-            @Nullable Object leftBoundary, @Nullable Object rightBoundary, SearchType searchType) {
+            @Nullable Object leftBoundary, @Nullable Object rightBoundary, boolean strict) {
         this.path = path;
         this.type = type;
         this.formType = formType;
         this.range = new Range(leftBoundary, rightBoundary);
         this.single = null;
-        this.values = null;
-        this.searchType = searchType;
+        //can be use for using gt/lt
+        this.isStrict = strict;
+        this.like = false;
+        this.searchType = SearchType.DEFAULT;
     }
 
+    /**
+     * @param type     - type of data
+     * @param path     -  field name
+     * @param formType - type of field
+     * @param single   - value
+     * @return form field for strict value
+     */
     public static FormField strictValue(@Nonnull SimpleDataType type, @Nonnull String path,
-                                        @Nonnull FormType formType, @Nullable Object single, SearchType searchType) {
+            @Nonnull FormType formType, @Nullable Object single) {
         Object value = single;
         if (SimpleDataType.STRING == type) {
             value = single == null || single.toString().isEmpty() ? null : single;
         }
-        return new FormField(type, path, formType, value, searchType);
+        return new FormField(type, path, formType, value, true, false);
     }
-
 
     /**
      * @param type     - type of data
@@ -137,50 +123,8 @@ public class FormField {
      */
     public static FormField strictValue(@Nonnull SimpleDataType type, @Nonnull String path,
             @Nullable Object single) {
-        return strictValue(type, path, FormType.POSITIVE, single, SearchType.EXACT);
+        return strictValue(type, path, FormType.POSITIVE, single);
     }
-
-    /**
-     * @param type   - type of data
-     * @param path   -  field name
-     * @param single - value
-     * @return form field for strict value
-     */
-    public static FormField exceptStrictValue(@Nonnull SimpleDataType type, @Nonnull String path,
-                                              @Nullable Object single) {
-        return strictValue(type, path, FormType.NEGATIVE, single, SearchType.EXACT);
-    }
-
-    /**
-     * @param type   - type of data
-     * @param path   -  field name
-     * @param values - value list
-     * @return form field for strict value
-     */
-    public static FormField strictValues(@Nonnull SimpleDataType type, @Nonnull String path,
-                                              @Nonnull Collection<?> values) {
-        Collection<?> transformedValues = values;
-        if (SimpleDataType.STRING == type) {
-            transformedValues = values.stream().map(o -> o != null ? o.toString() : null).collect(Collectors.toList());
-        }
-        return new FormField(type, path, FormType.POSITIVE, transformedValues, SearchType.EXACT);
-    }
-
-    /**
-     * @param type   - type of data
-     * @param path   -  field name
-     * @param values - value list
-     * @return form field for strict value
-     */
-    public static FormField exceptStrictValues(@Nonnull SimpleDataType type, @Nonnull String path,
-                                              @Nonnull List<Object> values) {
-        Collection<?> transformedValues = values;
-        if (SimpleDataType.STRING == type) {
-            transformedValues = values.stream().map(o -> o != null ? o.toString() : null).collect(Collectors.toList());
-        }
-        return new FormField(type, path, FormType.NEGATIVE, transformedValues, SearchType.EXACT);
-    }
-
 
     /**
      * @param type     - type of data
@@ -193,11 +137,22 @@ public class FormField {
         if (SimpleDataType.STRING == type) {
             value = single == null || single.toString().isEmpty() ? null : single;
         }
-        return new FormField(type, path, FormType.POSITIVE, value, SearchType.FUZZY);
+        return new FormField(type, path,value, SearchType.FUZZY);
     }
 
     public static FormField morphologicalValue(@Nonnull String path, @Nullable String single) {
-        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, single, SearchType.MORPHOLOGICAL);
+        return new FormField(SimpleDataType.STRING, path, single, SearchType.MORPHOLOGICAL);
+    }
+
+    /**
+     * @param type   - type of data
+     * @param path   -  field name
+     * @param single - value
+     * @return form field for strict value
+     */
+    public static FormField exceptStrictValue(@Nonnull SimpleDataType type, @Nonnull String path,
+            @Nullable Object single) {
+        return strictValue(type, path, FormType.NEGATIVE, single);
     }
 
     /**
@@ -216,7 +171,7 @@ public class FormField {
             left = leftBoundary == null || leftBoundary.toString().isEmpty() ? null : leftBoundary;
             right = rightBoundary == null || rightBoundary.toString().isEmpty() ? null : rightBoundary;
         }
-        return new FormField(type, path, formType, left, right,  SearchType.RANGE);
+        return new FormField(type, path, formType, left, right, true);
     }
 
     /**
@@ -250,7 +205,7 @@ public class FormField {
      */
     public static FormField strictString(@Nonnull String path, @Nullable Object single) {
         Object value = single == null || single.toString().isEmpty() ? null : single;
-        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, SearchType.EXACT);
+        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, true, false);
     }
 
     /**
@@ -260,7 +215,7 @@ public class FormField {
      */
     public static FormField startWithString(@Nonnull String path, @Nullable Object single) {
         Object value = single == null || single.toString().isEmpty() ? null : single;
-        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, SearchType.START_WITH);
+        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, false, false);
     }
 
     /**
@@ -270,7 +225,7 @@ public class FormField {
      */
     public static FormField notStartWithString(@Nonnull String path, @Nullable Object single) {
         Object value = single == null || single.toString().isEmpty() ? null : single;
-        return new FormField(SimpleDataType.STRING, path, FormType.NEGATIVE, value, SearchType.START_WITH);
+        return new FormField(SimpleDataType.STRING, path, FormType.NEGATIVE, value, false, false);
     }
 
     /**
@@ -282,7 +237,7 @@ public class FormField {
         Object value = single == null || single.toString().isEmpty() ? null : single;
         //remove all ? and *
         value = value == null ? null : "*" + value.toString().replace("*", "\\*").replace("?", "\\?") + "*";
-        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, SearchType.LIKE);
+        return new FormField(SimpleDataType.STRING, path, FormType.POSITIVE, value, false, true);
     }
 
     /**
@@ -294,15 +249,7 @@ public class FormField {
         Object value = single == null || single.toString().isEmpty() ? null : single;
         //remove all ? and *
         value = value == null ? null : "*" + value.toString().replace("*", "\\*").replace("?", "\\?") + "*";
-        return new FormField(SimpleDataType.STRING, path, FormType.NEGATIVE, value, SearchType.LIKE);
-    }
-
-    /**
-     * @param path - field name
-     * @return form field for empty results
-     */
-    public static FormField noneMatch() {
-        return new FormField(SimpleDataType.ANY, null, FormType.POSITIVE, null, SearchType.NONE_MATCH);
+        return new FormField(SimpleDataType.STRING, path, FormType.NEGATIVE, value, false, true);
     }
 
     /**
@@ -310,7 +257,7 @@ public class FormField {
      * @return form field for empty results
      */
     public static FormField empty(@Nonnull String path) {
-        return new FormField(SimpleDataType.ANY, path, FormType.NEGATIVE, null, SearchType.EXIST);
+        return new FormField(SimpleDataType.ANY, path, FormType.POSITIVE, null, true, false);
     }
 
     /**
@@ -318,7 +265,7 @@ public class FormField {
      * @return form field for not empty results
      */
     public static FormField notEmpty(@Nonnull String path) {
-        return new FormField(SimpleDataType.ANY, path, FormType.POSITIVE, null, SearchType.EXIST);
+        return new FormField(SimpleDataType.ANY, path, FormType.NEGATIVE, null, true, false);
     }
     /**
      * @param value - simple attribute
@@ -354,13 +301,46 @@ public class FormField {
     }
 
 
+    @Deprecated
+    // use strictValue
+    public static FormField singleValue(@Nonnull SimpleDataType type, @Nonnull String path, @Nonnull FormType formType,
+            @Nullable Object single) {
+        return strictValue(type, path, formType, single);
+    }
+
+    @Deprecated
+    //use strictString/startWithString/likeString
+    public static FormField stringValue(@Nonnull String path, @Nonnull FormType formType, @Nullable Object single,
+            boolean strict) {
+        Object value = single == null || single.toString().isEmpty() ? null : single;
+        return new FormField(SimpleDataType.STRING, path, formType, value, strict, false);
+    }
+
+    /**
+     * Tells whether this form denotes single value or not.
+     *
+     * @return true if so, false otherwise
+     */
+    public boolean isSingle() {
+        return single != null && range == null;
+    }
+
+    /**
+     * Tells whether this form denotes range value or not.
+     *
+     * @return true if so, false otherwise
+     */
+    public boolean isRange() {
+        return single == null && range != null;
+    }
+
     /**
      * Tells whether this form denotes null value.
      *
      * @return true if so, false otherwise
      */
     public boolean isNull() {
-        return single == null && range == null && values == null;
+        return single == null && range == null;
     }
 
     /**
@@ -408,6 +388,22 @@ public class FormField {
         return type;
     }
 
+    /**
+     * Depends on this field search will be strict or not
+     *
+     * @return
+     */
+    public boolean isStrict() {
+        return isStrict;
+    }
+
+    /**
+     * @return true if it single string value in like
+     */
+    public boolean isLike() {
+        return like;
+    }
+
     private Object convertToType(Object value) {
         if (value == null) {
             return null;
@@ -425,44 +421,20 @@ public class FormField {
         return value;
     }
 
-    private List<Object> convertToType(Collection<?> values) {
-        if (values == null) {
-            return Collections.emptyList();
-        }
-
-        return values.stream()
-                .map(this::convertToType)
-                .collect(Collectors.toList());
-    }
 
     public SearchType getSearchType() {
         return searchType;
     }
 
-    /**
-     * List values.
-     */
-    public List<Object> getValues() {
-        return convertToType(values);
-    }
-
-    public boolean isMultiValues(){
-        return values != null;
-    }
     public enum FormType {
         NEGATIVE, POSITIVE
     }
 
     public enum SearchType{
         DEFAULT,
-        EXACT,
+        STRICT,
         FUZZY,
-        MORPHOLOGICAL,
-        EXIST,
-        START_WITH,
-        LIKE,
-        RANGE,
-        NONE_MATCH
+        MORPHOLOGICAL
     }
 
     //todo in future class like google guava range for using gt/lt ES abilities.

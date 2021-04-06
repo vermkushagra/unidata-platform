@@ -1,0 +1,22 @@
+.x-window-header-title {
+  .x-title-text {
+    text-transform: uppercase;
+  }
+}
+
+.x-window {
+  .x-toolbar {
+    background-color: transparent;
+  }
+
+  .x-tool-img {
+    color: #000000;
+  }
+
+  .x-tool-close {
+    &:before {
+      font-family: $font-family-linearicons;
+      content: "\e92a";
+    }
+  }
+}

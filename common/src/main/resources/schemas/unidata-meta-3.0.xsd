@@ -140,22 +140,6 @@
             <xs:enumeration value="AFTER_MERGE" />
         </xs:restriction>
     </xs:simpleType>
-    
-    <xs:simpleType name="DQRuleExecutionContext">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="GLOBAL" /> <!-- allow filtering for input and output of any depth. -->
-            <xs:enumeration value="LOCAL" /> <!-- execute for filtered records, their direct ancestors and their leaves.  -->
-        </xs:restriction>
-    </xs:simpleType>
-    
-    <xs:simpleType name="DQRuleRunType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="RUN_ALWAYS" /> <!-- Skip port value validation -->
-            <xs:enumeration value="RUN_NEVER" /> <!-- Disabled -->
-            <xs:enumeration value="RUN_ON_REQUIRED_PRESENT" /> <!-- Run only if required ports have values. Other ports may miss values. -->
-            <xs:enumeration value="RUN_ON_ALL_PRESENT" /> <!-- Run only if all ports have values. Skip run otherwise. -->
-        </xs:restriction>
-    </xs:simpleType>
 
     <xs:simpleType name="DQRActionType">
         <xs:restriction base="xs:string">
@@ -175,21 +159,6 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="SYSTEM" />
             <xs:enumeration value="USER_DEFINED" />
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="DQCleanseFunctionPortApplicationMode">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="MODE_ALL" />
-            <xs:enumeration value="MODE_ALL_WITH_INCOMPLETE" />
-            <xs:enumeration value="MODE_ONCE" />
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="DQApplicableType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="ORIGIN" />
-            <xs:enumeration value="ETALON" />
         </xs:restriction>
     </xs:simpleType>
 
@@ -508,19 +477,15 @@
     </xs:simpleType>
 
     <xs:complexType name="DQRMappingDef">
-        <xs:annotation>
-            <xs:appinfo>
-                <jaxb:class implClass="com.unidata.mdm.backend.common.types.impl.DQRMappingDefImpl"/>
-            </xs:appinfo>
-        </xs:annotation>
         <xs:sequence>
+            <xs:element name="dqrMapping" type="meta:DQRMappingDef" minOccurs="0" maxOccurs="unbounded" />
             <xs:element name="attributeConstantValue" type="meta:ConstantValueDef" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
         <xs:attribute name="attributeName" type="meta:KeyAttribute" use="required" />
+        <xs:attribute name="filterValue" type="xs:string" use="optional" />
         <xs:attribute name="inputPort" type="xs:string" use="optional" />
         <xs:attribute name="outputPort" type="xs:string" use="optional" />
     </xs:complexType>
-    
     <xs:complexType name="DQREnrichDef">
         <xs:attribute name="sourceSystem" type="xs:string" use="optional" />
         <xs:attribute name="action" type="meta:DQRActionType"
@@ -533,10 +498,10 @@
         <xs:attribute name="messagePort" type="xs:string" use="optional" />
         <xs:attribute name="messageText" type="xs:string" use="optional" />
         <xs:attribute name="severityPort" type="xs:string" use="optional" />
-        <xs:attribute name="severityValue" type="meta:SeverityType" use="optional" />
+        <xs:attribute name="severityValue" type="meta:SeverityType"
+            use="optional" />
         <xs:attribute name="categoryPort" type="xs:string" use="optional" />
         <xs:attribute name="categoryText" type="xs:string" use="optional" />
-        <xs:attribute name="pathsPort" type="xs:string" use="optional" />
         <xs:attribute name="phase" type="meta:DQRPhaseType" use="optional" />
     </xs:complexType>
 
@@ -553,28 +518,31 @@
     </xs:complexType>
 
     <xs:complexType name="DQRuleDef">
-        <xs:annotation>
-            <xs:appinfo>
-                <jaxb:class implClass="com.unidata.mdm.backend.common.types.impl.DQRuleDefImpl"/>
-            </xs:appinfo>
-        </xs:annotation>
         <xs:sequence>
-            <xs:element name="dqrMapping" type="meta:DQRMappingDef" minOccurs="1" maxOccurs="unbounded" />
-            <xs:element name="origins" type="meta:DQROriginsDef" minOccurs="1" maxOccurs="1" />
-            <xs:element name="raise" type="meta:DQRRaiseDef" minOccurs="0" maxOccurs="1" />
-            <xs:element name="enrich" type="meta:DQREnrichDef" minOccurs="0" maxOccurs="1" />
-            <xs:element name="type" type="meta:DQRuleType" minOccurs="1" maxOccurs="2" />
-            <xs:element name="rClass" type="meta:DQRuleClass" minOccurs="0" maxOccurs="1" />
-            <xs:element name="applicable" type="meta:DQApplicableType" minOccurs="0" maxOccurs="2" />
+            <xs:element name="dqrMapping" type="meta:DQRMappingDef"
+                minOccurs="1" maxOccurs="unbounded" />
+            <xs:element name="origins" type="meta:DQROriginsDef"
+                minOccurs="1" maxOccurs="1" />
+            <xs:element name="raise" type="meta:DQRRaiseDef"
+                minOccurs="0" maxOccurs="1" />
+            <xs:element name="enrich" type="meta:DQREnrichDef"
+                minOccurs="0" maxOccurs="1" />
+            <xs:element name="type" type="meta:DQRuleType" minOccurs="1"
+                maxOccurs="2" />
+            <xs:element name="rClass" type="meta:DQRuleClass" minOccurs="0"
+                maxOccurs="1" />
+            <xs:element name="applicable" type="meta:DQApplicableType" minOccurs="0"
+                maxOccurs="2" />
         </xs:sequence>
         <xs:attribute name="name" type="meta:KeyAttribute" use="required" />
-        <xs:attribute name="cleanseFunctionName" type="xs:string" use="required" />
+        <xs:attribute name="cleanseFunctionName" type="xs:string"
+            use="required" />
+        <xs:attribute name="complexAttributeName" type="xs:string"
+            use="required" />
         <xs:attribute name="description" type="xs:string" use="optional" />
         <xs:attribute name="order" type="xs:integer" use="required" />
+        <xs:attribute name="id" type="xs:string" use="optional" />
         <xs:attribute name="special" type="xs:boolean" default="false" />
-        <xs:attribute name="runType" type="meta:DQRuleRunType" default="RUN_ON_REQUIRED_PRESENT"/>
-        <xs:attribute name="executionContextPath" type="xs:string" />
-        <xs:attribute name="executionContext" type="meta:DQRuleExecutionContext" default="GLOBAL"/>
     </xs:complexType>
     <xs:simpleType name="PhaseDef">
         <xs:restriction base="xs:string">
@@ -678,29 +646,28 @@
         </xs:complexContent>
     </xs:complexType>
 
-    <xs:complexType name="Port" >
-        <xs:attribute name="name" type="xs:string" use="required" />
-        <xs:attribute name="dataType" type="meta:SimpleDataType" use="required" />
-        <xs:attribute name="required" type="xs:boolean" use="required" />
-        <xs:attribute name="description" type="xs:string" use="optional" />
-        <xs:attribute name="applicationMode" type="meta:DQCleanseFunctionPortApplicationMode" default="MODE_ALL"/>
-    </xs:complexType>
-
     <xs:complexType name="CleansePortList">
         <xs:sequence>
-            <xs:element name="port" type="meta:Port" minOccurs="1" maxOccurs="unbounded"/>
+            <xs:element name="port" minOccurs="1" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:attribute name="name" type="xs:string" use="required" />
+                    <xs:attribute name="dataType" type="meta:SimpleDataType"
+                        use="required" />
+                    <xs:attribute name="required" type="xs:boolean" use="required" />
+                    <xs:attribute name="description" type="xs:string" use="optional" />
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
-
+    <xs:simpleType name="DQApplicableType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ORIGIN" />
+            <xs:enumeration value="ETALON" />
+        </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="CompositeCleanseFunctionNodeType">
         <xs:restriction base="xs:string">
             <xs:enumeration value="Constant" />
-            <xs:enumeration value="ifthenelse" />
-            <xs:enumeration value="OutputTrue" />
-            <xs:enumeration value="OutputFalse" />
-            <xs:enumeration value="Condition" />
-            <xs:enumeration value="Input" />
-            <xs:enumeration value="Output" />
             <xs:enumeration value="InputPorts" />
             <xs:enumeration value="OutputPorts" />
             <xs:enumeration value="Function" />
@@ -727,8 +694,6 @@
                                 <xs:sequence>
                                     <xs:element name="constant" type="meta:CleanseFunctionConstant"
                                         minOccurs="0" maxOccurs="1" />
-                                    <xs:element name="value" type="meta:ConstantValueDef"
-                                        minOccurs="0" maxOccurs="1" />
                                 </xs:sequence>
                                 <xs:attribute name="nodeId" type="xs:integer" use="required" />
                                 <xs:attribute name="nodeType"
@@ -748,11 +713,9 @@
                                 <xs:attribute name="fromNodeId" type="xs:integer"
                                     use="required" />
                                 <xs:attribute name="fromPort" type="xs:string" use="required" />
-                                 <xs:attribute name="fromPortType" type="meta:CompositeCleanseFunctionNodeType" use="optional" />
                                 <xs:attribute name="toNodeId" type="xs:integer"
                                     use="required" />
                                 <xs:attribute name="toPort" type="xs:string" use="required" />
-                                <xs:attribute name="toPortType" type="meta:CompositeCleanseFunctionNodeType" use="optional" />
                             </xs:complexType>
                         </xs:element>
                     </xs:sequence>
@@ -762,9 +725,6 @@
     </xs:complexType>
 
     <xs:complexType name="CleanseFunctionDef">
-        <xs:sequence>
-            <xs:element name="supportedExecutionContexts" type="meta:DQRuleExecutionContext" default="GLOBAL" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
         <xs:attribute name="functionName" type="xs:string" use="required" />
         <xs:attribute name="javaClass" type="xs:string" use="optional" />
         <xs:attribute name="description" type="xs:string" use="optional" />
@@ -774,8 +734,10 @@
         <xs:complexContent>
             <xs:extension base="meta:CleanseFunctionDef">
                 <xs:sequence>
-                    <xs:element name="inputPorts" type="meta:CleansePortList" minOccurs="1" maxOccurs="1" />
-                    <xs:element name="outputPorts" type="meta:CleansePortList" minOccurs="1" maxOccurs="1" />
+                    <xs:element name="inputPorts" type="meta:CleansePortList"
+                        minOccurs="1" maxOccurs="1" />
+                    <xs:element name="outputPorts" type="meta:CleansePortList"
+                        minOccurs="1" maxOccurs="1" />
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>

@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                           http://www.springframework.org/schema/util
+                           http://www.springframework.org/schema/util/spring-util-3.0.xsd"
+       profile="standalone,test-data,default">
+
+    <import resource="dao/common-dao.xml" />
+
+    <!-- Put SQL propeties here to make them available to the utility, which doesn't use tx.xml -->
+    <util:properties id="records-sql" location="classpath:/db/records-sql.xml" />
+    <util:properties id="vistory-sql" location="classpath:/db/vistory-sql.xml" />
+    <util:properties id="measurement-sql" location="classpath:/db/measurement-sql.xml" />
+    <util:properties id="job-sql" location="classpath:/db/job-sql.xml" />
+    <util:properties id="cluster-sql" location="classpath:/db/cluster-sql.xml" />
+    <util:properties id="matching-sql" location="classpath:/db/matching-sql.xml"/>
+    <util:properties id="classifiers-sql" location="classpath:/db/classifiers-sql.xml" />
+    <util:properties id="classifier-data-sql" location="classpath:/db/classifier-data-sql.xml"/>
+    <util:properties id="relations-sql" location="classpath:/db/relations-sql.xml" />
+    <util:properties id="security-sql" location="classpath:/db/security-sql.xml" />
+    <util:properties id="message-sql" location="classpath:/db/message-sql.xml" />
+    <util:properties id="system-elements-sql" location="classpath:/db/system-elements-sql.xml" />
+    <util:properties id="meta-sql" location="classpath:/db/meta-sql.xml" />
+    <util:properties id="binary-data-sql" location="classpath:/db/binary-data-sql.xml" />
+    <util:properties id="audit-sql" location="classpath:/db/audit-sql.xml" />
+    <util:properties id="import-data-job-sql" location="classpath:/db/import-data-job-sql.xml"/>
+    <util:properties id="statistic-sql" location="classpath:/db/statistic-sql.xml" />
+    <util:properties id="custom-storage-sql" location="classpath:/db/custom-storage-sql.xml" />
+    <util:properties id="configuration-sql" location="classpath:/db/configuration-sql.xml" />
+    <util:properties id="meta-draft-sql" location="classpath:/db/meta-draft-sql.xml" />
+
+    <bean id="basicCleanseProperties" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:cleanse.properties"/>
+    </bean>
+
+    <!-- Thread pool for etalon upsert -->
+    <bean id="etalonsCalculationPoolingExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="awaitTerminationSeconds" value="2"/>
+        <property name="waitForTasksToCompleteOnShutdown" value="true" />
+        <property name="threadNamePrefix" value="UEC-Thread-"/>
+        <property name="threadGroupName" value="UEC-Pool-"/>
+    </bean>
+
+    <!-- START OF Etalon composition drivers -->
+    <bean class="com.unidata.mdm.backend.service.data.driver.ClassifierRecordsCompositionDriver" id="CLASSIFIER"/>
+    <bean class="com.unidata.mdm.backend.service.data.driver.RecordCompositionDriver" id="RECORD"/>
+    <bean class="com.unidata.mdm.backend.service.data.driver.RelationToCompositionDriver" id="RELATION_TO"/>
+    <bean class="com.unidata.mdm.backend.service.data.driver.TimeIntervalCompositionDriver" id="TIME_INTERVAL"/>
+
+    <util:map id="driversMap"
+              key-type="com.unidata.mdm.backend.service.data.driver.CalculableType"
+              value-type="com.unidata.mdm.backend.service.data.driver.EtalonCompositionDriver">
+        <description>Driver type to implementation class map.</description>
+        <entry key="#{T(com.unidata.mdm.backend.service.data.driver.CalculableType).RECORD}" value-ref="RECORD"/>
+        <entry key="#{T(com.unidata.mdm.backend.service.data.driver.CalculableType).RELATION_TO}" value-ref="RELATION_TO"/>
+        <entry key="#{T(com.unidata.mdm.backend.service.data.driver.CalculableType).TIME_INTERVAL}" value-ref="TIME_INTERVAL"/>
+        <entry key="#{T(com.unidata.mdm.backend.service.data.driver.CalculableType).CLASSIFIER}" value-ref="CLASSIFIER"/>
+    </util:map>
+    <bean class="com.unidata.mdm.backend.service.data.driver.EtalonComposer" id="etalonComposer">
+        <constructor-arg ref="driversMap"/>
+    </bean>
+    <!-- END OF Etalon composition drivers -->
+
+    <!-- START OF Bulk operations -->
+    <bean class="com.unidata.mdm.backend.service.bulk.ModifyRecordsBulkOperation" id="MODIFY_RECORDS"/>
+    <bean class="com.unidata.mdm.backend.service.bulk.RepublishRecordsBulkOperation" id="REPUBLISH_RECORDS"/>
+    <bean class="com.unidata.mdm.backend.service.bulk.ExportRecordsToXlsBulkOperation" id="EXPORT_RECORDS_TO_XLS"/>
+    <bean class="com.unidata.mdm.backend.service.bulk.ImportRecordsFromXlsBulkOperation" id="IMPORT_RECORDS_FROM_XLS"/>
+    <bean class="com.unidata.mdm.backend.service.bulk.RemoveRecordsBulkOperation" id="REMOVE_RECORDS"/>
+    <bean class="com.unidata.mdm.backend.service.bulk.RemoveRelationsFromBulkOperation" id="REMOVE_RELATIONS_FROM"/>
+
+    <util:map id="bulkOperationsMap"
+              key-type="com.unidata.mdm.backend.common.types.BulkOperationType"
+              value-type="com.unidata.mdm.backend.service.bulk.BulkOperation">
+        <description>Active bulk operation types.</description>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).MODIFY_RECORDS}" value-ref="MODIFY_RECORDS"/>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).REPUBLISH_RECORDS}" value-ref="REPUBLISH_RECORDS"/>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).EXPORT_RECORDS_TO_XLS}" value-ref="EXPORT_RECORDS_TO_XLS"/>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).IMPORT_RECORDS_FROM_XLS}" value-ref="IMPORT_RECORDS_FROM_XLS"/>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).REMOVE_RECORDS}" value-ref="REMOVE_RECORDS"/>
+        <entry key="#{T(com.unidata.mdm.backend.common.types.BulkOperationType).REMOVE_RELATIONS_FROM}" value-ref="REMOVE_RELATIONS_FROM"/>
+    </util:map>
+    <!-- END OF Bulk operations -->
+
+    <!-- START OF Lifecycle listeners -->
+    <!-- GET action life cycle listener. Empty so far. -->
+    <bean id="getRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="recordGetAttributesProcessingAfterExecutor"/>
+            </list>
+        </property>
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="getValidateBeforeExecutor"/>
+                <ref bean="getSecurityBeforeExecutor"/>
+            </list>
+        </property>
+    </bean>
+    <!-- DELETE action life cycle listener. -->
+    <bean id="deleteRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="deleteUserExitAfterExecutor"/>
+                <ref bean="deleteSearchAfterExecutor"/>
+                <ref bean="deleteWorkflowProcessStarterAfterExecutor"/>
+                <ref bean="deleteRecordMatchingExecutor"/>
+                <ref bean="dataRecordDeleteRelationsAfterExecutor"/>
+                <ref bean="dataRecordDeleteClassifiersAfterExecutor"/>
+                <ref bean="deleteNotificationAfterExecutor"/>
+            </list>
+        </property>
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="deleteValidateBeforeExecutor"/>
+                <ref bean="deleteSecurityBeforeExecutor"/>
+                <ref bean="deleteRecordCheckDatesBeforeExecutor"/>
+                <ref bean="deleteWorkflowTaskDecliner"/>
+                <ref bean="deleteEtalonMaterializer"/>
+                <ref bean="deleteConsistencyBeforeExecutor"/>
+                <ref bean="deleteUserExitBeforeExecutor"/>
+                <ref bean="wipeRelationsBeforeExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UPSERT (origin) action life cycle listener. -->
+    <bean id="upsertRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="lobSubmitAfterExecutor"/>
+                <!--
+                <ref bean="upsertOriginNotificationAfterExecutor" />
+                -->
+                <ref bean="dataRecordUpsertEnsureAfterExecutor"/>
+                <!-- User exit executor is always the last one -->
+                <ref bean="upsertUserExitAfterOriginExecutor"/>
+            </list>
+        </property>
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="upsertRecordEnrichMeasuredAttributesExecutor"/>
+                <ref bean="dataRecordUpsertEnsureBeforeExecutor"/>
+                <ref bean="upsertOriginValidateBeforeExecutor"/>
+                <ref bean="upsertBeforeSecurityExecutor"/>
+                <ref bean="upsertRecordCheckDatesBeforeExecutor"/>
+                <ref bean="upsertRecordSaveTimelineBeforeExecutor"/>
+                <ref bean="modifyBeforeExecutor"/>
+                <ref bean="dqOriginExecutor"/>
+                <ref bean="upsertRecordMeasurementMetaBeforeExecutor"/>
+                <!-- User exit executor is always the last one -->
+                <ref bean="upsertUserExitBeforeOriginExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- RESTORE action life cycle listener. -->
+    <bean id="restoreRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="restoreValidateBeforeExecutor"/>
+                <ref bean="upsertRecordCheckDatesBeforeExecutor"/>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="restoreEtalonNotificationAfterExecutor"/>
+                <ref bean="restoreRelationsAfterExecutor"/>
+                <ref bean="restoreClassifiersAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ACCEPT RECORD action life cycle listener. -->
+    <bean id="acceptRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ACCEPT PERIOD action life cycle listener. -->
+    <bean id="acceptRecordPeriodActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="deleteNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- REJECT RECORD action life cycle listener. -->
+    <bean id="rejectRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ETALON CALCULATION after UPSERT life cycle listener -->
+    <bean id="etalonCalculationActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="dqEtalonExecutor"/>
+                <ref bean="upsertRecordMeasurementMetaAfterExecutor"/>
+                <ref bean="upsertRecalculateStateAfterExecutor"/>
+                <ref bean="lobSubmitAfterExecutor"/>
+                <ref bean="indexUpsertAfterExecutor"/>
+                <ref bean="upsertWorkflowProcessStarterAfterExecutor"/>
+                <ref bean="upsertMatchingAfterExecutor"/>
+                <ref bean="upsertUserExitAfterEtalonExecutor"/>
+                <ref bean="upsertEtalonAttributesProcessingAfterExecutor"/>
+                <ref bean="upsertEtalonNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- MERGE action life cycle listener. -->
+    <bean id="mergeRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="indexMergeAfterExecutor"/>
+                <ref bean="mergeUserExitAfterExecutor"/>
+                <ref bean="mergeEtalonNotificationAfterExecutor"/>
+            </list>
+        </property>
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="mergeValidateBeforeExecutor"/>
+                <ref bean="mergeSecurityBeforeExecutor"/>
+                <ref bean="mergeClusterCleaningBeforeExecutor"/>
+                <!-- User exit executor is always the last one -->
+                <ref bean="mergeUserExitBeforeExecutor"/>
+                <ref bean="mergeSaveTimelineBeforeExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- SPLIT action life cycle listener. -->
+    <bean id="splitRecordActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="splitUserExitBeforeExecutor"/>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="splitUserExitAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UPSERT RELATION life cycle listener -->
+    <bean id="upsertRelationActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="upsertRelationModifyBeforeExecutor"/>
+                <ref bean="upsertRelationEnsureContextBeforeExecutor"/>
+                <ref bean="upsertRelationSecurityBeforeExecutor"/>
+                <ref bean="upsertRelationCheckDatesBeforeExecutor"/>
+                <ref bean="upsertRelationContainmentBeforeExecutor"/>
+                <ref bean="upsertRelationMoveWindowBeforeExecutor"/>
+                <ref bean="upsertRelationOriginUserExitBeforeExecutor"/>
+
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="upsertRelationCheckOverlappingAfterExecutor"/>
+                <ref bean="upsertRelationOriginUserExitAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ETALON CALCULATION after UPSERT life cycle listener for relations -->
+    <bean id="etalonCalculationRelationActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="afterExecutors">
+            <list>
+                <ref bean="upsertRelationNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- DELETE RELATION life cycle listener -->
+    <bean id="deleteRelationActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="deleteRelationCheckKeysBeforeExecutor"/>
+                <ref bean="deleteRelationSecurityBeforeExecutor"/>
+                <ref bean="deleteRelationCheckDatesBeforeExecutor"/>
+                <ref bean="deleteRelationUserExitBeforeExecutor"/>
+                <ref bean="deleteRelationDropContainmentBeforeExecutor"/>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="deleteRelationUserExitAfterExecutor"/>
+                <ref bean="deleteRelationDropContainmentAfterExecutor"/>
+                <ref bean="deleteRelationDropFromIndexAfterExecutor"/>
+                <ref bean="deleteRelationNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GET RELATION life cycle listener -->
+    <bean id="getRelationActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="getRelationCheckKeysBeforeExecutor"/>
+                <ref bean="getRelationSecurityBeforeExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- UPSERT CLASSIFIER life cycle listener -->
+    <bean id="upsertClassifierActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="classifierUpsertValidateBeforeExecutor"/>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="classifierUpsertNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- DELETE CLASSIFIER life cycle listener -->
+    <bean id="deleteClassifierActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="classifierDeleteValidateBeforeExecutor"/>
+            </list>
+        </property>
+        <property name="afterExecutors">
+            <list>
+                <ref bean="classifierDeleteNotificationAfterExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- GET CLASSIFIER life cycle listener -->
+    <bean id="getClassifierActionListener"
+          class="com.unidata.mdm.backend.service.data.listener.DataRecordLifecycleListener">
+        <property name="beforeExecutors">
+            <list>
+                <ref bean="classifierGetValidateBeforeExecutor"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- START OF Lifecycle listeners -->
+    <bean id="deleteNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteNotificationAfterExecutor"/>
+    <bean id="mergeEtalonNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeEtalonNotificationAfterExecutor"/>
+    <bean id="upsertOriginNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertOriginNotificationAfterExecutor"/>
+    <bean id="dataRecordUpsertEnsureAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEnsureAfterExecutor"/>
+    <bean id="upsertEtalonNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonNotificationAfterExecutor"/>
+    <bean id="restoreEtalonNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordRestoreEtalonNotificationExecutor"/>
+    <bean id="restoreRelationsAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordRestoreRelationsAfterExecutor"/>
+    <bean id="restoreClassifiersAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordRestoreClassifiersAfterExecutor"/>
+    <bean id="restoreValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordRestoreValidateBeforeExecutor"/>
+    <bean id="upsertOriginValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertValidateBeforeExecutor"/>
+    <bean id="upsertRecordMeasurementMetaBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertMeasurementMetaSetterBeforeExecutor"/>
+    <bean id="modifyBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertModifyBeforeExecutor"/>
+    <bean id="upsertRecordCheckDatesBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertCheckDatesBeforeExecutor"/>
+    <bean id="deleteRecordCheckDatesBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteCheckDatesBeforeExecutor"/>
+    <bean id="upsertRecordSaveTimelineBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertSaveTimelineBeforeExecutor"/>
+    <bean id="lobSubmitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertLobSubmitAfterExecutor"/>
+    <bean id="recordGetAttributesProcessingAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordGetAttributesProcessingAfterExecutor"/>
+    <bean id="deleteSearchAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteSearchAfterExecutor"/>
+    <bean id="dataRecordDeleteRelationsAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteRelationsAfterExecutor"/>
+    <bean id="dataRecordDeleteClassifiersAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteClassifiersAfterExecutor"/>
+    <bean id="indexMergeAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeSearchAfterExecutor"/>
+    <bean id="indexUpsertAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertSearchAfterExecutor"/>
+    <bean id="dqOriginExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertOriginDQBeforeExecutor"/>
+    <bean id="dqEtalonExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonDQAfterExecutor"/>
+    <bean id="upsertRecordMeasurementMetaAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertMeasurementMetaSetterAfterExecutor"/>
+    <bean id="upsertRecalculateStateAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonRecalculateStateAfterExecutor" />
+    <bean id="upsertUserExitBeforeOriginExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertOriginUserExitBeforeExecutor"/>
+    <bean id="upsertUserExitAfterOriginExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertOriginUserExitAfterExecutor"/>
+    <bean id="upsertUserExitAfterEtalonExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonUserExitAfterExecutor"/>
+    <bean id="mergeUserExitBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeUserExitBeforeExecutor"/>
+    <bean id="mergeUserExitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeUserExitAfterExecutor"/>
+    <bean id="mergeValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeValidateBeforeExecutor"/>
+    <bean id="mergeClusterCleaningBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeClusterCleaningBeforeExecutor"/>
+    <bean id="mergeSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeSecurityBeforeExecutor"/>
+    <bean id="mergeSaveTimelineBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordMergeSaveTimelineBeforeExecutor"/>
+    <bean id="deleteConsistencyBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteConsistencyBeforeExecutor"/>
+    <bean id="deleteUserExitBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteUserExitBeforeExecutor"/>
+    <bean id="deleteUserExitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteUserExitAfterExecutor"/>
+    <bean id="upsertRecordEnrichMeasuredAttributesExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEnrichMeasuredAttributesBeforeExecutor"/>
+    <bean id="dataRecordUpsertEnsureBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEnsureBeforeExecutor"/>
+    <bean id="upsertWorkflowProcessStarterAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertWorkflowProcessStarterAfterExecutor"/>
+    <bean id="upsertMatchingAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonMatchingAfterExecutor"/>
+    <bean id="upsertEtalonAttributesProcessingAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertEtalonAttributesProcessingAfterExecutor"/>
+    <bean id="deleteValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteValidateBeforeExecutor"/>
+    <bean id="deleteWorkflowTaskDecliner"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteWorkflowTaskDeclinerExecutor"  />
+    <bean id="deleteEtalonMaterializer"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteEtalonMaterializer"/>
+    <bean id="deleteRecordMatchingExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteMatchingExecutor"/>
+    <bean id="deleteWorkflowProcessStarterAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteWorkflowProcessStarterAfterExecutor"/>
+    <bean id="upsertBeforeSecurityExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordUpsertBeforeSecurityExecutor"/>
+    <bean id="getValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordGetValidateBeforeExecutor"/>
+    <bean id="getSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordGetSecurityBeforeExecutor"/>
+    <bean id="deleteSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordDeleteSecurityBeforeExecutor"/>
+    <bean id="wipeRelationsBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordWipeRelationsBeforeExecutor"/>
+    <bean id="splitUserExitBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordSplitUserExitBeforeExecutor"/>
+    <bean id="splitUserExitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.record.DataRecordSplitUserExitAfterExecutor"/>
+
+    <!-- RELATION(s) section -->
+    <bean id="upsertRelationModifyBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertModifyBeforeExecutor"/>
+    <bean id="upsertRelationMoveWindowBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertMoveWindowBeforeExecutor"/>
+    <bean id="upsertRelationCheckOverlappingAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertCheckOverlappingAfterExecutor"/>
+    <bean id="upsertRelationContainmentBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertContainmentBeforeExecutor"/>
+    <bean id="upsertRelationCheckDatesBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertCheckDatesBeforeExecutor"/>
+    <bean id="upsertRelationEnsureContextBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertEnsureContextBeforeExecutor"/>
+    <bean id="upsertRelationSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertCheckSecurityBeforeExecutor"/>
+    <bean id="upsertRelationNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertNotificationAfterExecutor"/>
+    <bean id="upsertRelationOriginUserExitBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertOriginUserExitBeforeExecutor"/>
+    <bean id="upsertRelationOriginUserExitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationUpsertOriginUserExitAfterExecutor"/>
+    <bean id="getRelationCheckKeysBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationGetCheckKeysBeforeExecutor"/>
+    <bean id="getRelationSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationGetCheckSecurityBeforeExecutor"/>
+    <bean id="deleteRelationCheckDatesBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteCheckDatesBeforeExecutor"/>
+    <bean id="deleteRelationSecurityBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteCheckSecurityBeforeExecutor"/>
+    <bean id="deleteRelationCheckKeysBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteCheckKeysBeforeExecutor"/>
+    <bean id="deleteRelationDropContainmentAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteDropContainmentAfterExecutor"/>
+    <bean id="deleteRelationDropContainmentBeforeExecutor" 
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteDropContainmentBeforeExecutor"/>
+    <bean id="deleteRelationDropFromIndexAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteDropFromIndexAfterExecutor"/>
+     <bean id="deleteRelationNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteNotificationAfterExecutor"/>
+    <bean id="deleteRelationUserExitBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteUserExitBeforeExecutor"/>
+    <bean id="deleteRelationUserExitAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.relation.RelationDeleteUserExitAfterExecutor"/>
+
+    <!-- CLASSIFIER(S) section -->
+    <bean id="classifierUpsertValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.classifier.ClassifierUpsertValidateBeforeExecutor"/>
+    <bean id="classifierUpsertNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.classifier.ClassifierUpsertNotificationAfterExecutor"/>
+    <bean id="classifierDeleteNotificationAfterExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.classifier.ClassifierDeleteNotificationAfterExecutor"/>
+    <bean id="classifierGetValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.classifier.ClassifierGetValidateBeforeExecutor"/>
+    <bean id="classifierDeleteValidateBeforeExecutor"
+          class="com.unidata.mdm.backend.service.data.listener.classifier.ClassifierDeleteValidateBeforeExecutor"/>
+    <!-- END OF Lifecycle listeners -->
+
+    <bean id="conversionService" class="com.unidata.mdm.backend.converter.UnidataConversionServiceFactoryBean"/>
+</beans>

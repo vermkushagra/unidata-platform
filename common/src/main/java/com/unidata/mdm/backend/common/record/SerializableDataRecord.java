@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.backend.common.record;
 
 import java.time.LocalDate;
@@ -89,14 +70,6 @@ public class SerializableDataRecord implements DataRecord {
      */
     private Map<String, Attribute> map;
     /**
-     * Ordinal of this record.
-     */
-    private int ordinal = -1;
-    /**
-     * This record's holder attribute.
-     */
-    private ComplexAttribute holder;
-    /**
      * Constructor.
      * @param predictedSize number of attributes.
      */
@@ -155,8 +128,8 @@ public class SerializableDataRecord implements DataRecord {
         }
 
         ComplexAttributeImpl result = new ComplexAttributeImpl(attr.getName());
-        for (DataRecord dr : attr) {
-            result.add(of(dr));
+        for (DataRecord dr : attr.getRecords()) {
+            result.getRecords().add(of(dr));
         }
 
         return result;
@@ -335,11 +308,11 @@ public class SerializableDataRecord implements DataRecord {
                 collected.add(en.getValue());
 
                 ComplexAttribute inner = (ComplexAttribute) en.getValue();
-                if (inner.isEmpty()) {
+                if (inner.getRecords().isEmpty()) {
                     continue;
                 }
 
-                for (DataRecord r : inner) {
+                for (DataRecord r : inner.getRecords()) {
                     collected.addAll(r.getAllAttributesRecursive());
                 }
             } else {
@@ -376,8 +349,8 @@ public class SerializableDataRecord implements DataRecord {
             if (Objects.nonNull(complex) && complex.getAttributeType() == AttributeType.COMPLEX) {
 
                 ComplexAttribute complexAttr = (ComplexAttribute) complex;
-                List<Attribute> result = new ArrayList<>(complexAttr.size());
-                for (DataRecord nested : complexAttr) {
+                List<Attribute> result = new ArrayList<>(complexAttr.getRecords().size());
+                for (DataRecord nested : complexAttr.getRecords()) {
                     result.addAll(nested.getAttributeRecursive(StringUtils.join(tokens, '.', 1, tokens.length)));
                 }
 
@@ -909,32 +882,6 @@ public class SerializableDataRecord implements DataRecord {
      * {@inheritDoc}
      */
     @Override
-    public Collection<DataRecord> putAttribute(String name, Collection<DataRecord> value) {
-
-        Collection<DataRecord> oldValue = null;
-        Attribute existing = map.get(name);
-        if (Objects.isNull(existing)) {
-            addAttribute(new ComplexAttributeImpl(name, value));
-        } else {
-            if (existing.getAttributeType() != AttributeType.COMPLEX) {
-                final String message = "Put complex attribute '{}': Attribute exists and is not complex.";
-                throw new DataProcessingException(message,
-                        ExceptionId.EX_DATA_ATTRIBUTE_PUT_NOT_COMPLEX,
-                        name);
-            }
-
-            ComplexAttributeImpl cast = (ComplexAttributeImpl) existing;
-            oldValue = cast.removeAll();
-            cast.addAll(value);
-        }
-
-        return oldValue;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean containsAttribute(String name) {
         return map.containsKey(name);
     }
@@ -974,8 +921,8 @@ public class SerializableDataRecord implements DataRecord {
                 if (Objects.nonNull(complex) && complex.getAttributeType() == AttributeType.COMPLEX) {
 
                     ComplexAttribute complexAttr = ((ComplexAttribute) complex);
-                    List<Attribute> result = new ArrayList<>(complexAttr.size());
-                    for (DataRecord nested : complexAttr) {
+                    List<Attribute> result = new ArrayList<>(complexAttr.getRecords().size());
+                    for (DataRecord nested : complexAttr.getRecords()) {
                         result.addAll(nested.removeAttributeRecursive(StringUtils.join(tokens, '.', 1, tokens.length)));
                     }
 
@@ -993,61 +940,5 @@ public class SerializableDataRecord implements DataRecord {
     @Override
     public int getSize() {
         return map.size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isTopLevel() {
-        return !hasParent();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasParent() {
-        return Objects.nonNull(holder) && Objects.nonNull(holder.getRecord());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getOrdinal() {
-        return ordinal;
-    }
-
-    /**
-     * Sets this record's ordinal.
-     * @param ordinal the ordinal to set
-     */
-    public void setOrdinal(int ordinal) {
-        this.ordinal = ordinal;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public DataRecord getParentRecord() {
-        return Objects.nonNull(holder) ? holder.getRecord() : null;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ComplexAttribute getHolderAttribute() {
-        return holder;
-    }
-
-    /**
-     * Sets the holder attribute.
-     * @param holder the holder attribute
-     */
-    public void setHolderAttribute(ComplexAttribute holder) {
-        this.holder = holder;
     }
 }

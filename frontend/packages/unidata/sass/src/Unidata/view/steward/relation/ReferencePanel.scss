@@ -1,0 +1,13 @@
+$baseCls: '.un-relation-reference-panel';
+
+#{$baseCls} {
+  padding: 0;
+
+  >.x-panel-body {
+    background-color: transparent;
+  }
+
+  //.x-panel-un-card {
+  //  margin-bottom: $un-ded-inner-gap;
+  //}
+}

@@ -1,0 +1,12 @@
+$baseCls: '.un-dataviewer';
+
+#{$baseCls} {
+  // для un-field-default синия и красная граница толщиной 1px
+  .x-form-item-un-field-default.x-field-focus .x-form-trigger-wrap-un-field-default {
+    border-width: 1px;
+  }
+
+  .x-form-item-un-field-default.x-field-focus .x-form-item-body-un-field-default {
+    border: solid 1px transparent;
+  }
+}

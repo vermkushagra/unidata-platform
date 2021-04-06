@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model storageId="default" xmlns="http://meta.mdm.unidata.com/">
+	<cleanseFunctions>
+		<group groupName="Корень" description="Корневая группа" version="4">
+			<group groupName="Строковые" description="Строковые" version="1">
+				<cleanseFunction functionName="НижнийРегистр"
+					javaClass="com.unidata.mdm.cleanse.string.CFToLowerCase"
+					description="Переводит символы в строке в нижний регистр." />
+				<cleanseFunction functionName="ОчисткаШума"
+					javaClass="com.unidata.mdm.cleanse.string.CFCleanupNoise"
+					description="Убирает пробелы в начале и в конце строки. Убирает лишние (повторяющиеся) пробелы. Переводит в верхний регистр первую букву в предложении. Переводит в нижний регистр все остальные буквы в предложении (если они не внутри кавычек)." />
+				<cleanseFunction functionName="ВыровнятьСправа"
+					javaClass="com.unidata.mdm.cleanse.string.CFPadRight"
+					description="Выравнивает строку, добавляя в нее пробелы справа таким образом, чтобы в выходной строке было необходимое количество символов" />
+				<cleanseFunction functionName="Подстрока"
+					javaClass="com.unidata.mdm.cleanse.string.CFSubstring"
+					description="Извлекает подстроку из строки. Принимает в качестве входных параметров: строку для обработки, позицию первого и последнего символа подстроки." />
+				<cleanseFunction functionName="ВыровнятьСлева"
+					javaClass="com.unidata.mdm.cleanse.string.CFPadLeft"
+					description="Выравнивает строку, добавляя в нее пробелы слева таким образом, чтобы в выходной строке было необходимое количество символов" />
+				<cleanseFunction functionName="РегулярноеВыражение"
+					javaClass="com.unidata.mdm.cleanse.string.CFRegExp"
+					description="Выбирает подстроку согласно регулярному выражению. Пример: используя паттерн формата &quot;d+&quot; и группу &quot;0&quot;, из строки формата &quot;Великая октябрьская революция 1917 года&quot; на выходе получаем значение &quot;1917&quot;" />
+				<cleanseFunction functionName="УбратьПробелы"
+					javaClass="com.unidata.mdm.cleanse.string.CFTrim" description="Убирает пробелы в начале и в конце строки." />
+				<cleanseFunction functionName="ВерхнийРегистр"
+					javaClass="com.unidata.mdm.cleanse.string.CFToUpperCase"
+					description="Переводит символы в строке в верхний регистр." />
+				<cleanseFunction functionName="Форматировать"
+					javaClass="com.unidata.mdm.cleanse.string.CFFormatString"
+					description="Форматирует строку согласно заданному паттерну. Формат паттерна можно уточнить по ссылке: https://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html  Пример: используя паттерн &quot;%-6s&quot;, входной параметр будет дополнен пробелами справа, если количество символов входного параметра будет меньше 6." />
+				<cleanseFunction functionName="ПроверкаДлиныСтроки"
+					javaClass="com.unidata.mdm.cleanse.string.CFCCheckLength"
+					description="Проверяет строку на минимальное и максимальное количество символов." />
+				<cleanseFunction functionName="Соединить"
+					javaClass="com.unidata.mdm.cleanse.string.CFConcatenate"
+					description="Соединяет строки. Пример: соединение строк «микро» и «мир» даст результат «микромир»." />
+				<cleanseFunction functionName="УбратьЛишниеПробелы"
+					javaClass="com.unidata.mdm.cleanse.string.CFCompressWhitespaces"
+					description="Заменяет повторяющиеся пробелы одним пробелом. Замена пробелов может происходить в начале, в средине и в конце строки" />
+				<cleanseFunction functionName="ЗначениеПоУмолчанию"
+					javaClass="com.unidata.mdm.cleanse.string.CFDefaultValue"
+					description="Устанавливает значение по умолчанию, если входной параметр не заполнен." />
+				<cleanseFunction functionName="Заголовок"
+					javaClass="com.unidata.mdm.cleanse.string.CFToTitleCase"
+					description="Переводит все первые буквы слов в строке в верхний регистр." />
+			</group>
+			<group groupName="Математические" description="Математические"
+				version="1">
+				<cleanseFunction functionName="ПроверкаДиапазонаЧисел"
+					javaClass="com.unidata.mdm.cleanse.math.CFCheckRange" description="Проверяет число на минимальное и максимальное значение." />
+				<cleanseFunction functionName="Деление"
+					javaClass="com.unidata.mdm.cleanse.math.CFDivide" description="Производит операцию деления." />
+				<cleanseFunction functionName="Максимум"
+					javaClass="com.unidata.mdm.cleanse.math.CFMax" description="Возвращает максимальное число среди пары." />
+				<cleanseFunction functionName="Вычитание"
+					javaClass="com.unidata.mdm.cleanse.math.CFSubstract" description="Производит операцию вычитания." />
+				<cleanseFunction functionName="Минимум"
+					javaClass="com.unidata.mdm.cleanse.math.CFMin" description="Возвращает минимальное число среди пары." />
+				<cleanseFunction functionName="Умножение"
+					javaClass="com.unidata.mdm.cleanse.math.CFMultiply" description="Производит операцию умножения." />
+				<cleanseFunction functionName="Сложение"
+					javaClass="com.unidata.mdm.cleanse.math.CFSum" description="Производит операцию сложения." />
+				<cleanseFunction functionName="ПроверкаДиапазонаДробныхЧисел"
+					javaClass="com.unidata.mdm.cleanse.math.CFCheckRangeNumber"
+					description="Проверяет дробное число на минимальное и максимальное значение." />
+				<cleanseFunction functionName="Округление"
+					javaClass="com.unidata.mdm.cleanse.math.CFRound" description="Производит операцию округления числа." />
+			</group>
+			<group groupName="Логические" description="Логические" version="1">
+				<cleanseFunction functionName="not"
+					javaClass="com.unidata.mdm.cleanse.logic.CFNot"
+					description="Инвертирует входное значение(true-&gt;false или false-&gt;true)." />
+				<cleanseFunction functionName="xor"
+					javaClass="com.unidata.mdm.cleanse.logic.CFXor" description="Исключающее ИЛИ." />
+				<cleanseFunction functionName="and"
+					javaClass="com.unidata.mdm.cleanse.logic.CFAnd" description="Логическое И." />
+				<cleanseFunction functionName="IsEmpty"
+					javaClass="com.unidata.mdm.cleanse.logic.CFIsEmpty" description="Проверка isEmpty." />
+				<cleanseFunction functionName="or"
+					javaClass="com.unidata.mdm.cleanse.logic.CFOr" description="Логическое ИЛИ." />
+			</group>
+			<group groupName="РазборТиповДанных" description="РазборТиповДанных"
+				version="1">
+				<cleanseFunction functionName="РазобратьNumber"
+					javaClass="com.unidata.mdm.cleanse.convert.CFParseNumber"
+					description="Переводит строку, содержащую число, в Number." />
+				<cleanseFunction functionName="РазобратьBoolean"
+					javaClass="com.unidata.mdm.cleanse.convert.CFParseBoolean"
+					description="Переводит строку в Boolean. Функция возращает логическое true, если входная строка &quot;true&quot; (не принимая во внимание регистр)." />
+				<cleanseFunction functionName="РазобратьInteger"
+					javaClass="com.unidata.mdm.cleanse.convert.CFParseInteger"
+					description="Переводит строку, содержащую целое число, в Integer." />
+				<cleanseFunction functionName="РазобратьDate"
+					javaClass="com.unidata.mdm.cleanse.convert.CFParseDate"
+					description="Переводит строку, содержащую дату в указанном формате, в формат Date. Пример формата даты: yyyy.MM.dd" />
+			</group>
+			<group groupName="Разное" description="Разное" version="1">
+				<cleanseFunction functionName="ПроверкаЛицензии"
+					javaClass="com.unidata.mdm.cleanse.misc.CFCheckLicense"
+					description="Выполняет проверку формата лицензии на валидность." />
+				<cleanseFunction functionName="ПроверкаИИсправлениеТелКода"
+					javaClass="com.unidata.mdm.cleanse.misc.CFFixPhoneCode"
+					description="Выполняет проверку соответствия номера телефона городу." />
+				<cleanseFunction functionName="ПроверкаЗначений"
+					javaClass="com.unidata.mdm.cleanse.misc.CFCheckValue"
+					description="Проверка значений по регулярному выражению. В качестве входных параметров принимает регулярное выражение и значение для проверки. Значение может быть строковым или числовым." />
+	
+				<cleanseFunction functionName="ПроверкаСуществованияАтрибута"
+					javaClass="com.unidata.mdm.cleanse.misc.CFIsExists" description="Выполняет проверку существования атрибута." />
+				<cleanseFunction functionName="ПроверкаКонтрольнойЦифрыКодаСтанции"
+					javaClass="com.unidata.mdm.cleanse.misc.CFCheckCSCS" description="Проверка контрольной цифры кода станции." />
+				<cleanseFunction functionName="РазобратьИсходноеИмя"
+					javaClass="com.unidata.mdm.cleanse.misc.CFParseFullName"
+					description="Разбирает исходное имя на короткое и полное." />
+				<cleanseFunction functionName="РассчетКонтрольнойЦифрыКодаСтанции"
+					javaClass="com.unidata.mdm.cleanse.misc.CFCalcCSCS" description="Рассчет контрольной цифры кода станции." />
+				<cleanseFunction functionName="ПроверкаИНН"
+					javaClass="com.unidata.mdm.cleanse.misc.CFCheckINN" description="Выполняет проверку ИНН по контрольной сумме." />
+			</group>
+			<compositeCleanseFunction functionName="ПолноеИмя"
+				description="Создает полное имя">
+				<inputPorts>
+					<port name="port0" dataType="String" required="true"
+						description="Фамилия" />
+					<port name="port1" dataType="String" required="true"
+						description="Пробел" />
+					<port name="port2" dataType="String" required="true"
+						description="Имя" />
+					<port name="port3" dataType="String" required="true"
+						description="Пробел" />
+					<port name="port4" dataType="String" required="false"
+						description="Отчество" />
+				</inputPorts>
+				<outputPorts>
+					<port name="port0" dataType="String" required="true"
+						description="Результат" />
+				</outputPorts>
+				<logic>
+					<nodes>
+						<node nodeId="0" nodeType="InputPorts" functionName="">
+							<constant stringValue="" />
+						</node>
+						<node nodeId="1" nodeType="OutputPorts" functionName="">
+							<constant stringValue="" />
+						</node>
+						<node nodeId="2" nodeType="Function" functionName="Строковые.ВерхнийРегистр">
+							<constant stringValue="60.526315789473685,70.22364217252395" />
+						</node>
+						<node nodeId="3" nodeType="Function" functionName="Строковые.Соединить">
+							<constant stringValue="4.3343653250774,19.169329073482427" />
+						</node>
+						<node nodeId="4" nodeType="Function" functionName="Строковые.УбратьПробелы">
+							<constant stringValue="34.984520123839005,52.9073482428115" />
+						</node>
+						<node nodeId="5" nodeType="Function" functionName="Строковые.Соединить">
+							<constant stringValue="41.795665634674926,23.130990415335464" />
+						</node>
+					</nodes>
+					<links>
+						<nodeLink fromNodeId="3" fromPort="port1" toNodeId="5"
+							toPort="port1" />
+						<nodeLink fromNodeId="2" fromPort="port1" toNodeId="1"
+							toPort="port0" />
+						<nodeLink fromNodeId="5" fromPort="port1" toNodeId="4"
+							toPort="port1" />
+						<nodeLink fromNodeId="4" fromPort="port1" toNodeId="2"
+							toPort="port1" />
+						<nodeLink fromNodeId="0" fromPort="port0" toNodeId="3"
+							toPort="port1" />
+						<nodeLink fromNodeId="0" fromPort="port1" toNodeId="3"
+							toPort="port2" />
+						<nodeLink fromNodeId="0" fromPort="port2" toNodeId="3"
+							toPort="port3" />
+						<nodeLink fromNodeId="0" fromPort="port3" toNodeId="5"
+							toPort="port2" />
+						<nodeLink fromNodeId="0" fromPort="port4" toNodeId="5"
+							toPort="port3" />
+					</links>
+				</logic>
+			</compositeCleanseFunction>
+		</group>
+	</cleanseFunctions>
+	<sourceSystems>
+		<sourceSystem name="unidata" weight="100"
+			description="От имени этого источника данных будут производится все системные операции"
+			admin="true" version="2" />
+	</sourceSystems>
+	<enumerations>
+		<enumeration name="sex" displayName="Пол" version="2">
+			<enumVal name="male" displayName="Мужской" />
+			<enumVal name="female" displayName="Женский" />
+		</enumeration>
+		<enumeration name="marital_status" displayName="Семейное пложение"
+			version="1">
+			<enumVal name="widowed" displayName="Вдовец (вдова)" />
+			<enumVal name="married" displayName="Состоит в зарегистрированном браке" />
+			<enumVal name="unmarried" displayName="Никогда не состоял (не состояла) в браке" />
+			<enumVal name="divorced" displayName="Разведен (разведена)" />
+		</enumeration>
+		<enumeration name="doc_status" displayName="Статус документа"
+			version="1">
+			<enumVal name="suspended" displayName="Действие приостановлено" />
+			<enumVal name="active" displayName="Действующий" />
+			<enumVal name="inactive" displayName="Не действующий" />
+		</enumeration>
+		<enumeration name="motor_fuel" displayName="Моторное топливо"
+			version="1">
+			<enumVal name="gasoline" displayName="Бензин" />
+			<enumVal name="diesel" displayName="Дизель" />
+		</enumeration>
+		<enumeration name="drivetrain" displayName="Тип привода"
+			version="1">
+			<enumVal name="full" displayName="Полный" />
+			<enumVal name="front" displayName="Передний" />
+			<enumVal name="rear" displayName="Задний" />
+		</enumeration>
+	</enumerations>
+	<lookupEntities>
+		<lookupEntity dashboardVisible="false" groupName="ROOT"
+			name="countries" displayName="Страны" description="" version="3">
+			<dataQuality>
+				<dqRule name="attr__countryCode__Check_Unique"
+					cleanseFunctionName="Разное.ПроверкаДубликатов" description="System rule to check unique attribute."
+					order="1" id="attr__countryCode__Check_Unique" special="true">
+					<dqrMapping attributeName="countryCode" inputPort="port1" />
+					<dqrMapping inputPort="IS_CODE_ATTR">
+						<attributeConstantValue type="Boolean">
+							<boolValue>true</boolValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<origins all="true" />
+					<raise functionRaiseErrorPort="port1"
+						messageText="Значение атрибута [Код страны] не уникально."
+						severityValue="CRITICAL" categoryText="SYSTEM" phase="BEFORE_UPSERT" />
+					<type>VALIDATE</type>
+					<rClass>SYSTEM</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+			</dataQuality>
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="countryName" displayName="Название"
+				description="" readOnly="false" hidden="false" />
+			<codeAttribute nullable="false" unique="true" mask=""
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="countryCode" displayName="Код страны"
+				description="" readOnly="false" hidden="false" />
+		</lookupEntity>
+		<lookupEntity dashboardVisible="false" groupName="ROOT"
+			name="documentTypes" displayName="Типы документов" description=""
+			version="2">
+			<dataQuality />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="2"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="typeName" displayName="Название"
+				description="" readOnly="false" hidden="false" />
+			<codeAttribute nullable="false" unique="true" mask=""
+				simpleDataType="Integer" searchable="true" displayable="true"
+				mainDisplayable="false" name="typeCode" displayName="Код типа"
+				description="" readOnly="false" hidden="false" />
+		</lookupEntity>
+	</lookupEntities>
+	<nestedEntities>
+		<nestedEntity name="citizenship" displayName="Гражданство"
+			description="" version="3">
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="countries" mask=""
+				order="9" searchable="false" displayable="true" mainDisplayable="true"
+				name="country" displayName="Страна" description="" readOnly="false"
+				hidden="false" />
+		</nestedEntity>
+		<nestedEntity name="documents" displayName="Документы"
+			description="" version="3">
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="4"
+				simpleDataType="Date" searchable="true" displayable="false"
+				mainDisplayable="false" name="docIssueDate" displayName="Дата выдачи"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="3"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="docNumber" displayName="Номер документа"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="doc_status" linkDataType="" lookupEntityType="" mask=""
+				order="2" searchable="false" displayable="false" mainDisplayable="false"
+				name="docStatus" displayName="Статус документа" description=""
+				readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="documentTypes"
+				mask="" order="1" searchable="true" displayable="true"
+				mainDisplayable="false" name="docType" displayName="Тип документа"
+				description="" readOnly="false" hidden="false" />
+		</nestedEntity>
+	</nestedEntities>
+	<entities>
+		<entity dashboardVisible="false" groupName="ROOT" name="product"
+			displayName="Продукция" description="" version="9">
+			<mergeSettings>
+				<bvtSettings />
+				<bvrSettings>
+					<sourceSystemsConfig />
+				</bvrSettings>
+			</mergeSettings>
+			<dataQuality>
+				<dqRule name="product_name_upper_case" cleanseFunctionName="Строковые.ВерхнийРегистр"
+					description="" order="0" id="03fc7e9e-2bc4-4f43-bc77-896860ebab9c"
+					special="false">
+					<dqrMapping attributeName="name" inputPort="port1" />
+					<dqrMapping attributeName="name" outputPort="port1" />
+					<origins all="true" />
+					<enrich sourceSystem="" action="UPDATE_CURRENT" phase="BEFORE_UPSERT" />
+					<type>ENRICH</type>
+					<rClass>USER_DEFINED</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+				<dqRule name="product_name_length" cleanseFunctionName="Строковые.ПроверкаДлиныСтроки"
+					description="" order="1" id="e07d6e5f-1c5f-49a7-aacb-4582204aa702"
+					special="false">
+					<dqrMapping attributeName="name" inputPort="port1" />
+					<dqrMapping inputPort="port2">
+						<attributeConstantValue type="Integer">
+							<intValue>3</intValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<dqrMapping inputPort="port3">
+						<attributeConstantValue type="Integer">
+							<intValue>20</intValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<origins all="true" />
+					<raise functionRaiseErrorPort="port1" messagePort=""
+						messageText="Product name should be more than 3 and less than 20 symbols"
+						severityPort="" severityValue="HIGH" categoryPort="" categoryText="Product checks"
+						phase="BEFORE_UPSERT" />
+					<type>VALIDATE</type>
+					<rClass>USER_DEFINED</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+				<dqRule name="product_price_size" cleanseFunctionName="Математические.ПроверкаДиапазонаДробныхЧисел"
+					description="" order="2" id="7ace566d-4854-4931-9b3b-41423a7be250"
+					special="false">
+					<dqrMapping attributeName="price" inputPort="port1" />
+					<dqrMapping inputPort="port2">
+						<attributeConstantValue type="Number">
+							<numberValue>1.0</numberValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<dqrMapping inputPort="port3">
+						<attributeConstantValue type="Number">
+							<numberValue>1000000.0</numberValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<origins all="true" />
+					<raise functionRaiseErrorPort="port1" messagePort=""
+						messageText="Product price should be greater than 1 and less than million"
+						severityPort="" severityValue="HIGH" categoryPort="" categoryText="Product checks"
+						phase="BEFORE_UPSERT" />
+					<type>VALIDATE</type>
+					<rClass>USER_DEFINED</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+			</dataQuality>
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="name" displayName="Наименование"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="L-99999"
+				order="2" simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="code" displayName="Код" description=""
+				readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="3"
+				simpleDataType="Blob" searchable="false" displayable="false"
+				mainDisplayable="false" name="image" displayName="Изображение"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="4"
+				simpleDataType="Measured" searchable="false" displayable="false"
+				mainDisplayable="false" name="price" displayName="Стоимость"
+				description="" readOnly="false" hidden="false">
+				<measureSettings valueId="4" defaultUnitId="dollar" />
+			</simpleAttribute>
+		</entity>
+		<entity dashboardVisible="false" groupName="ROOT" name="organization"
+			displayName="Организации" description="" version="3">
+			<mergeSettings>
+				<bvtSettings />
+				<bvrSettings>
+					<sourceSystemsConfig />
+				</bvrSettings>
+			</mergeSettings>
+			<dataQuality>
+				<dqRule name="check_orgINN" cleanseFunctionName="Разное.ПроверкаИНН"
+					description="" order="0" id="4750a20f-0075-469c-940f-5bf46ee4edcb"
+					special="false">
+					<dqrMapping attributeName="orgINN" inputPort="port1" />
+					<origins all="true" />
+					<raise functionRaiseErrorPort="port1" messagePort=""
+						messageText="Указан некорректный ИНН" severityPort=""
+						severityValue="HIGH" categoryPort="" categoryText="Проверки юр. лиц"
+						phase="BEFORE_UPSERT" />
+					<type>VALIDATE</type>
+					<rClass>USER_DEFINED</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+			</dataQuality>
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="true" displayable="false"
+				mainDisplayable="false" name="orgINN" displayName="ИНН" description=""
+				readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="0"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="orgName" displayName="Название"
+				description="" readOnly="false" hidden="false" />
+		</entity>
+		<entity dashboardVisible="false" groupName="ROOT" name="address"
+			displayName="Адреса" description="" version="2">
+			<mergeSettings>
+				<bvtSettings />
+				<bvrSettings>
+					<sourceSystemsConfig />
+				</bvrSettings>
+			</mergeSettings>
+			<dataQuality />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="999999"
+				order="1" simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="postalCode" displayName="Индекс"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="4"
+				simpleDataType="Integer" searchable="false" displayable="false"
+				mainDisplayable="false" name="building" displayName="Номер дома"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="3"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="street" displayName="Улица"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="2"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="city" displayName="Город" description=""
+				readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="countries" mask=""
+				order="0" searchable="false" displayable="false" mainDisplayable="false"
+				name="country" displayName="Страна" description="" readOnly="false"
+				hidden="false" />
+		</entity>
+		<entity dashboardVisible="false" groupName="ROOT" name="automobile"
+			displayName="Автомобили" description="" version="1">
+			<classifiers>cars_catalog</classifiers>
+			<dataQuality />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="drivetrain" linkDataType="" lookupEntityType="" mask=""
+				order="4" searchable="false" displayable="false" mainDisplayable="false"
+				name="driveTrain" displayName="Тип привода" description="" readOnly="false"
+				hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="3"
+				simpleDataType="Integer" searchable="false" displayable="false"
+				mainDisplayable="false" name="power" displayName="Мощность"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="motor_fuel" linkDataType="" lookupEntityType="" mask=""
+				order="2" searchable="false" displayable="true" mainDisplayable="false"
+				name="fuelType" displayName="Тип топлива" description="" readOnly="false"
+				hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="model" displayName="Модель"
+				description="" readOnly="false" hidden="false" />
+		</entity>
+		<entity dashboardVisible="true" groupName="ROOT" name="person"
+			displayName="Физические лица" description="" version="6">
+			<mergeSettings>
+				<bvtSettings />
+				<bvrSettings>
+					<sourceSystemsConfig />
+				</bvrSettings>
+			</mergeSettings>
+			<dataQuality>
+				<dqRule name="generate_fullName" cleanseFunctionName="ПолноеИмя"
+					description="" order="0" id="cab691f3-6032-4309-83d9-6ffd1a60d9d8"
+					special="false">
+					<dqrMapping inputPort="port1">
+						<attributeConstantValue type="String">
+							<stringValue>
+							</stringValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<dqrMapping attributeName="lastName" inputPort="port0" />
+					<dqrMapping attributeName="firstName" inputPort="port2" />
+					<dqrMapping inputPort="port3">
+						<attributeConstantValue type="String">
+							<stringValue>
+							</stringValue>
+						</attributeConstantValue>
+					</dqrMapping>
+					<dqrMapping attributeName="patronymic" inputPort="port4" />
+					<dqrMapping attributeName="fullName" outputPort="port0" />
+					<origins all="true" />
+					<enrich sourceSystem="" action="UPDATE_CURRENT" phase="BEFORE_UPSERT" />
+					<type>ENRICH</type>
+					<rClass>USER_DEFINED</rClass>
+					<applicable>ORIGIN</applicable>
+				</dqRule>
+			</dataQuality>
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="false" displayable="false"
+				mainDisplayable="false" name="fullName" displayName="Полное имя"
+				description="" readOnly="true" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="2"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="lastName" displayName="Фамилия"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="false" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="3"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="true" name="firstName" displayName="Имя"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="4"
+				simpleDataType="String" searchable="true" displayable="true"
+				mainDisplayable="false" name="patronymic" displayName="Отчество"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="sex" linkDataType="" lookupEntityType="" mask=""
+				order="5" searchable="true" displayable="false" mainDisplayable="false"
+				name="gender" displayName="Пол" description="" readOnly="false"
+				hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="6"
+				simpleDataType="Date" searchable="true" displayable="true"
+				mainDisplayable="false" name="birthDate" displayName="Дата рождения"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="7"
+				simpleDataType="String" searchable="true" displayable="false"
+				mainDisplayable="false" name="birthPlace" displayName="Место рождения"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="countries" mask=""
+				order="8" searchable="false" displayable="true" mainDisplayable="false"
+				name="citizenship" displayName="Гражданство" description=""
+				readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="marital_status" linkDataType="" lookupEntityType=""
+				mask="" order="9" searchable="false" displayable="false"
+				mainDisplayable="false" name="maritalStatus" displayName="Семейное положение"
+				description="" readOnly="false" hidden="false" />
+			<complexAttribute nestedEntityName="documents"
+				minCount="0" subEntityKeyAttribute="" order="10" name="documents"
+				displayName="Документы" description="" readOnly="false" hidden="false" />
+		</entity>
+	</entities>
+	<relations>
+		<rel fromEntity="person" toEntity="address" relType="Contains"
+			required="false" name="person_address_rel"
+			displayName="Адреса" version="1" />
+		<rel fromEntity="person" toEntity="organization" relType="References"
+			required="false" name="person_org_rel"
+			displayName="Место работы" version="1">
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="2"
+				simpleDataType="Integer" searchable="false" displayable="false"
+				mainDisplayable="false" name="salary" displayName="Оклад"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="String" searchable="false" displayable="false"
+				mainDisplayable="false" name="position" displayName="Должность"
+				description="" readOnly="false" hidden="false" />
+		</rel>
+		<rel fromEntity="person" toEntity="automobile" relType="ManyToMany"
+			required="false" name="person_auto_rel"
+			displayName="Автомашины" version="1">
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="9999"
+				order="2" simpleDataType="String" searchable="false" displayable="false"
+				mainDisplayable="false" name="prodYear" displayName="Год выпуска"
+				description="" readOnly="false" hidden="false" />
+			<simpleAttribute nullable="true" unique="false"
+				enumDataType="" linkDataType="" lookupEntityType="" mask="" order="1"
+				simpleDataType="Integer" searchable="false" displayable="false"
+				mainDisplayable="false" name="mileage" displayName="Пробег"
+				description="" readOnly="false" hidden="false" />
+		</rel>
+	</relations>
+	<entitiesGroup groupName="ROOT" title="Корневая группа"
+		version="4" />
+	<defaultClassifiers>
+		<defaultClassifier>
+			<name>cars_catalog</name>
+			<displayName>Каталог марок/моделей</displayName>
+		</defaultClassifier>
+	</defaultClassifiers>
+</model>

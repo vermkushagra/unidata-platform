@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd">
+    <!--
+        Reindex Meta Job with partitioning based on parallel execution on several nodes with Hazelcast queue transport.
+    -->
+
+    <hz:queue id="reindexMetaJobQueue" instance-ref="instance" name="reindexMetaJobsPartitionQueue"
+              lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="reindexMetaJob" job-repository="jobRepository">
+        <batch:listeners>
+            <batch:listener ref="reindexMetaMappingListener"/>
+        </batch:listeners>
+        <batch:step id="reindexMeta.master">
+            <batch:partition partitioner="reindexMetaPartitioner" handler="reindexMetaPartitionHandler"/>
+        </batch:step>
+    </batch:job>
+
+    <bean id="reindexMetaPartitioner" class="com.unidata.mdm.backend.service.job.reindexMeta.ReindexMetaPartitioner"
+          scope="job">
+        <property name="reindexModelMeta" value="#{jobParameters['reindexModelMeta']}"/>
+        <property name="reindexClassifiersMeta" value="#{jobParameters['reindexClassifiersMeta']}"/>
+    </bean>
+
+    <bean id="reindexMetaMappingListener"
+          class="com.unidata.mdm.backend.service.job.reindexMeta.ReindexMetaMappingListener" scope="job">
+        <property name="recreateAudit" value="false"/>
+    </bean>
+
+    <bean id="reindexMetaPartitionHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="reindexMeta.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="reindexMetaJobQueue"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="reindexMeta.slave">
+        <batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="reindexMetaItemReader"
+                         processor="reindexMetaItemProcessor"
+                         writer="reindexMetaItemWriter"
+                         commit-interval="1"/>
+        </batch:tasklet>
+        <batch:listeners>
+            <batch:listener ref="reindexMetaMeasurementListener"/>
+        </batch:listeners>
+    </batch:step>
+
+    <bean id="reindexMetaMeasurementListener" class="com.unidata.mdm.backend.service.job.MeasurementStepListener">
+        <property name="contextName" value="MEASURE_STEP_META_REINDEX"/>
+    </bean>
+
+    <bean id="reindexMetaItemReader"
+          class="com.unidata.mdm.backend.service.job.reindexMeta.ReindexMetaReader"
+          scope="step">
+        <property name="classifier" value="#{stepExecutionContext[isClassifier]}"/>
+        <property name="entity" value="#{stepExecutionContext[entityName]}"/>
+    </bean>
+
+    <bean id="reindexMetaItemProcessor" class="org.springframework.batch.item.support.PassThroughItemProcessor"
+          scope="step"/>
+
+    <bean id="reindexMetaItemWriter"
+          class="com.unidata.mdm.backend.service.job.reindexMeta.ReindexMetaWriter"
+          scope="step">
+        <property name="classifier" value="#{stepExecutionContext[isClassifier]}"/>
+        <property name="entity" value="#{stepExecutionContext[entityName]}"/>
+    </bean>
+    <!-- EOF - Slave job. -->
+
+    <bean id="reindexMetaStepExecutionRequestHandler" class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobRepository" ref="jobRepository"/>
+        <property name="jobName" value="reindexMetaJob"/>
+        <property name="stepLocator" ref="jobStepLocator"/>
+        <property name="queue" ref="reindexMetaJobQueue"/>
+        <property name="threadCount" value="${unidata.job.reindex_meta.thread_count:2}"/>
+    </bean>
+</beans>

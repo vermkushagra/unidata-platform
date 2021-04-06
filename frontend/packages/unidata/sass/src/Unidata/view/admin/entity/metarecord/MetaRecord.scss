@@ -1,0 +1,20 @@
+/*
+* Специальные стили для раздела "Администрирование. Метамодель"
+*/
+$baseCls: 'un-section';
+$section: 'admin-metarecord';
+$section-color: hsl(165, 58%, 55%);
+
+//@include set-section-color($baseCls, $section, $section-color);
+
+.#{$baseCls}-#{$section} {
+  .un-admin-metarecord-panel-inner {
+    >.#{$prefix}panel-body {
+      padding: 10px;
+    }
+
+    .#{$prefix}form-checkboxgroup {
+      margin-bottom: 10px;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+// General Search
+.un-search-panel {
+  .x-header {
+    padding: 10px 10px 10px 0px;
+  }
+
+  .x-collapsed {
+    padding: 10px;
+  }
+
+  .x-header .x-title-item {
+    color: #fff;
+  }
+
+  .x-collapsed .x-title-item {
+    color: #fff;
+    padding-left: 10px;
+  }
+
+  >.x-panel-body {
+    padding: 10px;
+  }
+}

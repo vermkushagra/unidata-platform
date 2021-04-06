@@ -1,0 +1,107 @@
+.unidata-diagramm {
+  position: relative;
+  cursor: move;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
+  @include user-select(none);
+}
+
+.unidata-diagramm__panning {
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+.unidata-diagramm-cont-wrapper {
+  min-height: 100%;
+}
+
+.unidata-diagramm-cont {
+  position: relative;
+  padding: 50px;
+}
+
+.unidata-diagramm-toolbar {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 2;
+  padding: 10px;
+  cursor: default;
+  background-color: rgba(0, 0, 0, 0.27);
+
+  > .x-btn {
+    display: block;
+  }
+}
+
+.unidata-model-container {
+  position: absolute;
+  min-width: 300px;
+}
+
+.unidata-model-table {
+  background: #155B83;
+  display: table;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  border-spacing: 0;
+  table-layout: fixed;
+  min-width: 300px;
+}
+
+.unidata-model-table__entity {
+  background: #009088;
+}
+
+.unidata-model-table__nested {
+  background: #009933;
+}
+
+.unidata-model-table__lookup {
+  background: #6b6571;
+}
+
+.unidata-model-table-title-row {
+  font-size: 11px;
+  padding: 0 10px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 15px;
+  color: #F2F2F2;
+}
+
+.unidata-model-table-title-displayName {
+  width: 300px;
+  border-bottom: 1px dashed rgba(249, 239, 255, 0.55);
+}
+
+.unidata-model-row {
+  line-height: 1.2;
+}
+
+.unidata-model-row-title, .unidata-model-row-value {
+  vertical-align: top;
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(249, 239, 255, 0.55);
+}
+
+.unidata-model-row-title {
+  width: 200px;
+}
+
+.unidata-model-row-value {
+  text-align: right;
+}
+
+.diagramm-background {
+  background-image: linear-gradient(0deg, transparent 24%, rgba(255, 255, 255, 0.0470588) 25%, rgba(255, 255, 255, 0.0470588) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.0470588) 75%, rgba(255, 255, 255, 0.0470588) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(255, 255, 255, 0.0470588) 25%, rgba(255, 255, 255, 0.0470588) 26%, transparent 27%, transparent 74%, rgba(255, 255, 255, 0.0470588) 75%, rgba(255, 255, 255, 0.0470588) 76%, transparent 77%, transparent);
+  background-color: #414141;
+  background-size: 50px 50px;
+}
+
+//._jsPlumb_source_hover,
+//._jsPlumb_target_hover,
+//.unidata-model-row:hover {
+//  background: #2D5B75;
+//}

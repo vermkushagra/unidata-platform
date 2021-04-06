@@ -1,0 +1,83 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xmlns:hz="http://www.hazelcast.com/schema/spring"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/batch
+        http://www.springframework.org/schema/batch/spring-batch.xsd
+        http://www.hazelcast.com/schema/spring
+        http://www.hazelcast.com/schema/spring/hazelcast-spring-3.6.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <hz:queue id="extSampleItems2JobQueue" instance-ref="instance" name="sampleItems2JobsPartitionQueue"
+                  lazy-init="true" depends-on="instance"/>
+
+    <!-- BOF - Master job. -->
+    <batch:job id="extSampleItems2ProcessingJob">
+   		<batch:step id="extProcessSampleItems2.master">
+   			<batch:partition partitioner="extSampleItem2Partitioner" handler="extSampleItem2PartitionHandler">
+
+            </batch:partition>
+   		</batch:step>
+   	</batch:job>
+
+    <bean id="extSampleItems2ProcessingJobParameters" class="com.unidata.mdm.backend.service.job.registry.JobTemplateParameters">
+   		<property name="jobName" value="extSampleItems2ProcessingJob"/>
+   		<property name="valueMap">
+            <util:map>
+   				<entry key="param1"	value-type="java.lang.String" value="value1"/>
+   				<entry key="param2"	value-type="java.lang.String" value="value2"/>
+   			</util:map>
+   		</property>
+   	</bean>
+
+    <bean id="extSampleItem2Partitioner" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemPartitioner"/>
+
+    <bean id="extSampleItem2PartitionHandler" class="com.unidata.mdm.backend.service.job.HazelcastMessagePartitionHandler">
+        <property name="stepName" value="extProcessSampleItems2.slave"/>
+        <property name="gridSize" value="5"/>
+        <property name="dataSource" ref="jobDataSource"/>
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="messagingGateway" ref="extSampleItems2JobQueue"/>
+    </bean>
+    <!-- EOF - Master job. -->
+
+    <!-- BOF - Slave job. -->
+    <batch:step id="extProcessSampleItems2.slave">
+   		<batch:tasklet transaction-manager="jobTransactionManager">
+            <batch:chunk reader="extSampleItemReader" processor="extSampleItemProcessor" writer="extSampleItemWriter"
+                commit-interval="10"/>
+        </batch:tasklet>
+   	</batch:step>
+
+    <bean id="extSampleItemReader" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemReader" scope="step">
+        <property name="from" value="#{stepExecutionContext[minValue]}"/>
+        <property name="to" value="#{stepExecutionContext[maxValue]}"/>
+        <property name="firstParameter" value="#{jobParameters[param1]}"/>
+    </bean>
+
+    <bean id="extSampleItemProcessor" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemProcessor" scope="step"/>
+    <bean id="extSampleItemWriter" class="com.unidata.mdm.integration.job.extsample.ExtSampleItemWriter" scope="step"/>
+    <!-- EOF - Slave job. -->
+
+    <bean id="extSampleItem2StepExecutionRequestHandler"
+          class="com.unidata.mdm.backend.service.job.HazelcastStepExecutionRequestHandler">
+        <property name="jobExplorer" ref="jobExplorer"/>
+        <property name="jobName" value="ext-sampl2"/>
+        <property name="stepLocator" ref="extSampleItem2JobStepLocator"/>
+        <property name="queue" ref="extSampleItems2JobQueue"/>
+        <property name="threadCount" value="2"/>
+        <property name="awaitTerminationInMinutes" value="1"/>
+    </bean>
+
+    <!--
+        Note, make sure to declare own jobStepLocator for every job to avoid issues
+        when parent JobStepLocator can't find steps in child contexts.
+    -->
+    <bean id="extSampleItem2JobStepLocator" class="org.springframework.batch.integration.partition.BeanFactoryStepLocator"/>
+
+</beans>

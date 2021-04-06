@@ -1,22 +1,3 @@
-/*
- * Unidata Platform Community Edition
- * Copyright (c) 2013-2020, UNIDATA LLC, All rights reserved.
- * This file is part of the Unidata Platform Community Edition software.
- *
- * Unidata Platform Community Edition is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Unidata Platform Community Edition is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 package com.unidata.mdm.api.wsdl.v4;
 
 import java.time.LocalDate;
@@ -526,7 +507,7 @@ public class DumpUtils {
         ComplexAttribute val = JaxbUtils.getDataObjectFactory().createComplexAttribute();
         val.setName(attr.getName());
 
-        for (DataRecord record : attr) {
+        for (DataRecord record : attr.getRecords()) {
             val.getNestedRecord().add(to(record));
         }
 
@@ -783,7 +764,7 @@ public class DumpUtils {
                 arrayAttributesSize +
                 complexAttributesSize + 1);
 
-        record.getSimpleAttributes().forEach(attr -> sdr.addAttribute(from(attr)));
+        record.getSimpleAttributes().forEach(attr -> sdr.addAttribute(fromSimpleAttribute(attr)));
         record.getCodeAttributes().forEach(a -> sdr.addAttribute(fromCodeAttribute(a)));
         record.getArrayAttributes().forEach(a -> sdr.addAttribute(fromArrayAttribute(a)));
         record.getComplexAttributes().forEach(a -> sdr.addAttribute(fromComplexAttribute(a)));
@@ -810,7 +791,7 @@ public class DumpUtils {
             int complexAttributesSize = relto.getComplexAttributes().size();
 
             sdr = new SerializableDataRecord(simpleAttributesSize + complexAttributesSize + 1);
-            relto.getSimpleAttributes().forEach(attr -> sdr.addAttribute(from(attr)));
+            relto.getSimpleAttributes().forEach(attr -> sdr.addAttribute(fromSimpleAttribute(attr)));
             relto.getComplexAttributes().forEach(a -> sdr.addAttribute(fromComplexAttribute(a)));
         } else if (IntegralRecord.class.isInstance(relation)) {
             IntegralRecord integral = (IntegralRecord) relation;
@@ -861,7 +842,7 @@ public class DumpUtils {
         }
 
         ComplexAttributeImpl complex = new ComplexAttributeImpl(jaxbAttr.getName());
-        jaxbAttr.getNestedRecord().forEach(nr -> complex.add(from(nr)));
+        jaxbAttr.getNestedRecord().forEach(nr -> complex.getRecords().add(from(nr)));
 
         return complex;
     }
@@ -915,7 +896,7 @@ public class DumpUtils {
      * @param jaxbAttr JAXB attribute
      * @return attribute
      */
-    public static Attribute from(SimpleAttribute jaxbAttr) {
+    private static Attribute fromSimpleAttribute(SimpleAttribute jaxbAttr) {
 
         if (Objects.isNull(jaxbAttr)) {
             return null;
