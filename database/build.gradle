@@ -36,7 +36,7 @@ targetCompatibility = '1.8'
 
 idea {
     module {
-        sourceDirs += file('src/main/generated')
+        sourceDirs += file('build/generated/src/main/java')
         downloadJavadoc = true
         downloadSources = true
     }
@@ -45,13 +45,13 @@ idea {
 dependencies {
 
     // DB engine and Drivers
-    compile ('org.postgresql:postgresql:42.2.2') { // BSD like
+    implementation ('org.postgresql:postgresql:42.2.2') { // BSD like
         exclude group: 'org.slf4j', module: 'slf4j-simple'
     }
 
-    compile 'org.flywaydb:flyway-core:3.2.1'
-    compile 'com.google.guava:guava:23.0'
-    compile ('com.beust:jcommander:1.48') {
+    implementation 'org.flywaydb:flyway-core:3.2.1'
+    implementation 'com.google.guava:guava:23.0'
+    implementation ('com.beust:jcommander:1.48') {
         exclude group: 'org.slf4j', module: 'slf4j-simple'
     }
 }
@@ -64,13 +64,13 @@ jar{
 
 task fatJar(type: Jar, group: 'build'){
     // Bundle all dependencies aka 'fat jar' to allow run from single file anywhere!
-    from files(sourceSets.main.output.classesDir)
-    from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+    from files(sourceSets.main.output.classesDirs)
+    from configurations.runtimeClasspath.asFileTree.files.collect { zipTree(it) }
 
-    archiveName = "${baseName}-${project.version}.svn.${getScmRevision()}.full.jar"
+    archiveFileName = "${archiveBaseName}-${project.version}.svn.${getScmRevision()}.full.jar"
 }
 
 tasks.withType(Jar){ // Common for Jars
-    baseName = 'unidata-db-updater'
-    destinationDir = new File(project.rootDir, '/target')
+    archiveBaseName = 'unidata-db-updater'
+    destinationDirectory = new File(project.rootDir, '/target')
 }

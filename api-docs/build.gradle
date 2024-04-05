@@ -3,8 +3,8 @@
 // WAR packaging
 //
 war {
-    war.destinationDir = new File(project.rootDir, '/target')
-    war.archiveName = 'api-docs.war'
+    war.destinationDirectory = new File(project.rootDir, '/target')
+    war.archiveFileName = 'api-docs.war'
     war.from projectDir
     war.exclude("build/**")
     war.exclude("src/**")

@@ -3,23 +3,22 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 
 dependencies {
-    compile files("${project.rootDir}/backend/extlib/license3j-1.0.8-SNAPSHOT.jar")
-    compile 'org.bouncycastle:bcprov-jdk15on:1.57'
+    implementation files("${project.rootDir}/backend/extlib/license3j-1.0.8-SNAPSHOT.jar")
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.57'
 }
 
 task tarFile(type: Tar) {
     dependsOn jar
 
-    destinationDir = new File(project.rootDir, '/distribution')
+    destinationDirectory = new File(project.rootDir, '/distribution')
     description = 'Creates the distribution gzip file'
-    extension = 'tar.gz'
+    archiveExtension = 'tar.gz'
     compression = Compression.GZIP
-
     from('scripts') {
         into('/')
     }
 
-    from configurations.runtime {
+    from configurations.runtimeClasspath {
         into('libs')
     }
 

@@ -220,14 +220,14 @@ task wsdl2javaV5Login(type: JavaExec) {
 }
 dependencies {
 
-    compile project(':common')
+    implementation project(':common')
 
     // Java Servlet API
-    providedCompile "javax.servlet:javax.servlet-api:3.0.1"
+    implementation "javax.servlet:javax.servlet-api:3.0.1"
 
     // Springframework - Apache License, v.2.0
-    compile 'org.springframework:spring-beans'
-    compile 'org.springframework.security:spring-security-core'
+    implementation 'org.springframework:spring-beans'
+    implementation 'org.springframework.security:spring-security-core'
 
     cxf "org.apache.cxf:cxf-tools-wsdlto-core:$cxfVersion"
     cxf "org.apache.cxf:cxf-tools-wsdlto-frontend-jaxws:$cxfVersion"
@@ -236,13 +236,17 @@ dependencies {
     cxf "org.jvnet.jaxb2_commons:jaxb2-fluent-api:3.0"
     cxf "org.apache.cxf.xjcplugins:cxf-xjc-ts:$xjcVersion"
 
-    compile "org.apache.cxf.xjc-utils:cxf-xjc-runtime:$xjcVersion"
-    compile "org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion"
+    implementation "org.apache.cxf.xjc-utils:cxf-xjc-runtime:$xjcVersion"
+    implementation "org.apache.cxf:cxf-rt-bindings-soap:$cxfVersion"
+    implementation 'org.slf4j:slf4j-api:1.7.25'
+    implementation 'javax.xml.ws:jaxws-api:2.2.6'
 
-    compile 'commons-lang:commons-lang:2.6'
-    compile group: 'com.google.guava', name: 'guava', version: '21.0'
+    implementation 'org.slf4j:slf4j-api:1.7.25'
 
-    testCompile 'org.spockframework:spock-core:1.1-groovy-2.4'
+    implementation 'commons-lang:commons-lang:2.6'
+    implementation group: 'com.google.guava', name: 'guava', version: '21.0'
+
+    testImplementation 'org.spockframework:spock-core:1.1-groovy-2.4'
 }
 
 sourceSets.main.compileClasspath += configurations.providedCompile
@@ -252,7 +256,7 @@ sourceSets.test.runtimeClasspath += configurations.providedCompile
 compileJava.dependsOn wsdl2javaV3, wsdl2javaV4, wsdl2javaV4DQ,  wsdl2javaV5Meta, wsdl2javaV5Login, wsdl2javaV5, wsdl2javaV5DQ
 
 tasks.withType(Jar) { // Common for Jars
-    destinationDir = new File(project.rootDir, '/target')
+    destinationDirectory = new File(project.rootDir, '/target')
 }
 
 /**

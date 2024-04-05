@@ -29,8 +29,8 @@ task senchaBuild(type: Exec) {
 // WAR packaging
 //
 war {
-    war.destinationDir = new File(project.rootDir, '/target')
-    war.archiveName = rootProject.name + '-frontend-admin.war'
+    war.destinationDirectory = new File(project.rootDir, '/target')
+    war.archiveFileName = rootProject.name + '-frontend-admin.war'
     war.from '../frontend/build/' + senchaEnvironment + '/Unidata'
     war.manifest {
         attributes(

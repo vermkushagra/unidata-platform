@@ -1,6 +1,6 @@
 project.ext{
     cxfVersion  = '3.1.0'
-    generatedWsdlDir = file("src/main/generated")
+    generatedWsdlDir = file("build/generated/src/main/java")
     wsdlDir = file("src/main/resources/schemas")
     wsdlsToGenerate =[
             ["$wsdlDir/unidata-api.wsdl"]
@@ -20,7 +20,7 @@ dependencies {
 
 task wsdl2Java() {
     inputs.files wsdlDir.listFiles()
-    outputs.files generatedWsdlDir
+    outputs.files "${project.buildDir}/generated/src/main/java"
     doLast {
         wsdlsToGenerate.each { wsdlFile ->
             createJavaFromWsdl(wsdlFile, generatedWsdlDir)

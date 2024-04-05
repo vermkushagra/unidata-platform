@@ -11,14 +11,14 @@ apply from: "${project.rootDir}/gradle/dependencies.gradle"
 compileJava.options.encoding = 'UTF-8'
 
 dependencies {
-    compile project(':backend')
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-    compile 'com.beust:jcommander:1.48' // Apache License, v.2.0
-    compile fileTree(dir: '../target', include: ['*.jar'])
+    implementation project(':backend')
+    testImplementation group: 'junit', name: 'junit', version: '4.11'
+    implementation 'com.beust:jcommander:1.48' // Apache License, v.2.0
+    implementation fileTree(dir: '../target', include: ['*.jar'])
 }
 
 task slimJar(type: Jar) {
-    archiveName = rootProject.name + '-migration.jar'
+    archiveFileName = rootProject.name + '-migration.jar'
     from(sourceSets.main.output) {
         include 'com/unidata/migration/**'
     }

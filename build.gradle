@@ -1,10 +1,12 @@
 buildscript {
     repositories {
         maven { url 'https://plugins.gradle.org/m2/' }
-        maven { url 'http://www.soapui.org/repository/maven2/' }
+        maven { url 'https://www.soapui.org/repository/maven2/' }
         maven { url 'https://repository.jboss.org/maven2/' }
+        maven { url 'https://repo.maven.apache.org/maven2' }
+
+        mavenLocal()
         mavenCentral()
-        jcenter()
     }
 
     dependencies {
@@ -45,10 +47,6 @@ if (project.hasProperty('profile')) {
     }
 } else {
     throw new StopExecutionException('Profile undefined! Please define property ext.profile in gradle.properties');
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.12'
 }
 
 apply plugin: 'idea'
@@ -209,7 +207,7 @@ def copyTomcatFiles(packageDir, confDir, profile) {
 task tarFile (type: Tar, group: 'distribution') {
     dependsOn createversionfile,':migrations:prepareTool', ':backend:war', ':backend:prepareTool', ':frontend:war', ':frontend-admin:war', ':tools:tarFile', ':common:javadocJar'
 
-    destinationDir = new File(project.rootDir, '/distribution')
+    destinationDirectory = new File(project.rootDir, '/distribution')
     def packageDir = project.name + '-' +  project.version
     description = 'Creates the distribution gzip file'
 
@@ -270,8 +268,8 @@ task tarFile (type: Tar, group: 'distribution') {
         include 'tools*.tar.gz'
     }
 
-    classifier = (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
-    extension = 'tar.gz'
+    archiveClassifier = (project.hasProperty('svn_revision') ? project.svn_revision : getScmRevision())
+    archiveExtension = 'tar.gz'
     compression = Compression.GZIP
     println 'Within the child tarDist'
 }
@@ -360,8 +358,9 @@ configurations {
     jacocoant
 }
 dependencies{
-    jacocoant 'org.jacoco:org.jacoco.ant:0.7.9'
-    jacocoant 'org.jacoco:org.jacoco.core:0.7.9'
+    jacocoant 'org.jacoco:org.jacoco.ant:0.8.9'
+    jacocoant 'org.jacoco:org.jacoco.core:0.8.9'
+    jacocoant 'org.jacoco:org.jacoco.agent:0.8.9'
 }
 
 task fetchJacocoResult{

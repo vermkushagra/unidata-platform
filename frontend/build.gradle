@@ -30,8 +30,8 @@ task senchaBuild(type: Exec) {
 // WAR packaging
 //
 war {
-    war.destinationDir = new File(project.rootDir, '/target')
-    war.archiveName = rootProject.name + '-frontend.war'
+    war.destinationDirectory = new File(project.rootDir, '/target')
+    war.archiveFileName = rootProject.name + '-frontend.war'
     war.from 'build/' + senchaEnvironment + '/Unidata'
     war.manifest {
         attributes(
