@@ -25,8 +25,11 @@ dependencies {
 // JAXB @XmlElementWrapper Plugin: https://github.com/dmak/jaxb-xew-plugin
 task xsd2Java() {
 
+    doFirst {
+        generatedXsdDir.mkdirs()
+    }
     inputs.files xsdDir.listFiles()
-    outputs.files "${project.buildDir}/generated/src/main/java"
+    outputs.dir "${projectDir}/build/generated/src/main/java"
 
     doLast {
 

@@ -1,4 +1,5 @@
-project.ext {
+project.ext{
+    generatedXsdDir = new File(projectDir, "build/generated/src/main/java")
     // TODO: add API version component as a variable
     xsdDir = new File(projectDir, "src/main/resources/schemas")
     bindingDir = new File (projectDir, "binding")
@@ -10,16 +11,13 @@ configurations {
 }
 
 dependencies {
-
     antXjc 'org.glassfish.jaxb:jaxb-xjc:2.2.11'
     antXjc 'org.glassfish.jaxb:jaxb-core:2.2.11'
     antXjc 'org.glassfish.jaxb:jaxb-runtime:2.2.11'
-    
     // antXjc 'javax.xml.bind:jaxb-api:2.2.11'
-    antXjcPlugin "com.github.jaxb-xew-plugin:jaxb-xew-plugin:2.1"
+    antXjcPlugin "com.github.jaxb-xew-plugin:jaxb-xew-plugin:1.9"
     antXjcPlugin "net.java.dev.jaxb2-commons:jaxb-fluent-api:2.1.8"
     antXjcPlugin "org.jvnet.jaxb2_commons:jaxb2-basics-annotate:1.0.2"
-    
     // antXjcPlugin "net.codesup.util:jaxb2-rich-contract-plugin:1.15.0"
 }
 
@@ -27,8 +25,11 @@ dependencies {
 // JAXB @XmlElementWrapper Plugin: https://github.com/dmak/jaxb-xew-plugin
 task xsd2Java() {
 
+    doFirst {
+        generatedXsdDir.mkdirs()
+    }
     inputs.files xsdDir.listFiles()
-    outputs.files "${project.buildDir}/generated/src/main/java"
+    outputs.dir "${projectDir}/build/generated/src/main/java"
 
     doLast {
 
@@ -38,7 +39,7 @@ task xsd2Java() {
         ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask',
                 classpath: configurations.antXjc.asPath)
 
-        ant.xjc(destdir: outputDir, encoding: 'UTF-8', removeOldOutput: 'yes', extension: true) {
+        ant.xjc(destdir: generatedXsdDir, encoding: 'UTF-8', removeOldOutput: 'yes', extension: true) {
 
             classpath {
                 pathelement(path: configurations.antXjcPlugin.asPath)
