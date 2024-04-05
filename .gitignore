@@ -1,1 +1,4 @@
 /frontend/ext/
+/.gradle/**
+/.idea/**
+**/build/**
