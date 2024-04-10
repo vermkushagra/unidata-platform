@@ -55,7 +55,7 @@ import javax.ws.rs.core.Response;
 import javax.xml.bind.DatatypeConverter;
 
 import com.unidata.mdm.backend.common.search.FormFieldsGroup;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;

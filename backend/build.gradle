@@ -153,6 +153,7 @@ dependencies {
 
     // Template engine
     implementation 'org.freemarker:freemarker:2.3.22' // BSD like
+    implementation 'org.apache.commons:commons-lang3:3.6'
 
     // Apache Commons
     implementation 'org.apache.commons:commons-pool2:2.3', // Apache License, v.2.0
